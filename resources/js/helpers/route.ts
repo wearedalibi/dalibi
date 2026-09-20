@@ -208,6 +208,7 @@ export function route(name: string, params?: any): string {
         'enrollments.update': `/enrollments/${params}`,
         'enrollments.destroy': `/enrollments/${params}`,
         'enrollments.invoice': `/enrollments/${params}/invoice`,
+        'enrollments.invoice.print': `/enrollments/${params}/invoice/print`,
         'enrollments.payments.store': `/enrollments/${params}/payments`,
 
         // Payments routes

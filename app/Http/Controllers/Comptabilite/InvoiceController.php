@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Comptabilite;
 use App\Http\Controllers\Controller;
 
+use App\Constants\Currencies;
 use App\Constants\Roles;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\CashAccount;
 use App\Models\Enrollment;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\School;
+use App\Services\DocumentRenderer;
 use App\Services\InvoiceService;
+use App\Support\FrenchNumberSpeller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -19,7 +23,26 @@ use Inertia\Response;
 
 class InvoiceController extends Controller
 {
-    public function __construct(private readonly InvoiceService $invoiceService) {}
+    public function __construct(
+        private readonly InvoiceService $invoiceService,
+        private readonly DocumentRenderer $documents,
+    ) {}
+
+    /**
+     * En-tête officielle (logo + ministère + établissement + République + devise),
+     * identique à celle des bulletins, pour un rendu unifié des documents financiers.
+     *
+     * @return array{header: string, headerCss: string}
+     */
+    private function officialHeader(?School $school): array
+    {
+        return [
+            'header' => $school
+                ? $this->documents->headerHtml($school, $this->documents->resolveVariables($school))
+                : '',
+            'headerCss' => $this->documents->headerCss(),
+        ];
+    }
 
     /**
      * Page principale : facture + historique des paiements + formulaire ajout paiement.
@@ -83,6 +106,34 @@ class InvoiceController extends Controller
     }
 
     /**
+     * Facture imprimable (document officiel) : en-tête unifiée, détail des lignes,
+     * total en toutes lettres, récapitulatif des paiements et zone de signature.
+     */
+    public function printInvoice(Enrollment $enrollment): Response
+    {
+        $enrollment->load(['school', 'student', 'classroom', 'academicYear', 'enrolledBy']);
+
+        $invoice = $enrollment->invoice()->with(['items', 'payments' => fn ($q) => $q->orderBy('paid_at')])->first();
+
+        if (! $invoice) {
+            $invoice = $this->invoiceService->createFromEnrollment($enrollment);
+            $invoice->load(['items', 'payments']);
+        }
+
+        $school = $enrollment->school;
+
+        return Inertia::render('Eleves/Enrollments/InvoicePrint', [
+            'enrollment'   => $enrollment,
+            'invoice'      => $invoice,
+            'totalInWords' => FrenchNumberSpeller::money(
+                (float) $invoice->total,
+                $school?->currency ?: Currencies::DEFAULT,
+            ),
+            ...$this->officialHeader($school),
+        ]);
+    }
+
+    /**
      * Page d'impression du reçu d'un paiement.
      */
     public function receipt(Payment $payment): Response
@@ -97,8 +148,16 @@ class InvoiceController extends Controller
             'createdBy',
         ]);
 
+        $school = $payment->invoice?->enrollment?->school;
+
         return Inertia::render('Comptabilite/Payments/Receipt', [
-            'payment' => $payment,
+            'payment'        => $payment,
+            'amountInWords'  => FrenchNumberSpeller::money(
+                (float) $payment->amount,
+                $school?->currency ?: Currencies::DEFAULT,
+            ),
+            'verifyUrl'      => route('receipts.verify'),
+            ...$this->officialHeader($school),
         ]);
     }
 

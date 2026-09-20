@@ -20,7 +20,7 @@ export const mainNavItems: NavItem[] = [
         icon: Users,
         items: [
             { title: 'Élèves', href: route('students.index'), icon: Users, permission: 'view_students' },
-            { title: 'Inscriptions', href: route('enrollments.index'), icon: ClipboardList, permission: 'view_enrollments' },
+            { title: 'Inscriptions & Paiements', href: route('enrollments.index'), icon: ClipboardList, permission: 'view_enrollments' },
             { title: 'Effectifs / Listes', href: route('roster.index'), icon: ListChecks, permission: 'view_roster' },
             { title: 'Passage de classe', href: route('promotion.index'), icon: ArrowLeftRight, permission: 'execute_promotion' },
             { title: 'Statistiques élèves', href: route('students.stats'), icon: BarChart3, permission: 'view_students' },
