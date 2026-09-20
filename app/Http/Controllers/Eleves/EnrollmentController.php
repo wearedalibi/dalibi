@@ -28,56 +28,74 @@ class EnrollmentController extends Controller
             'invoice:id,enrollment_id,total,amount_paid,amount_remaining,status',
         ]);
 
-        if ($request->filled('search')) {
-            $searchTerm = strtolower($request->string('search')->toString());
-
-            $query->where(function ($subQuery) use ($searchTerm): void {
-                $subQuery->whereRaw('LOWER(enrollment_code) LIKE ?', ["%{$searchTerm}%"])
-                    ->orWhereRaw('LOWER(status) LIKE ?', ["%{$searchTerm}%"])
-                    ->orWhereHas('student', function ($studentQuery) use ($searchTerm): void {
-                        $studentQuery->whereRaw('LOWER(firstname) LIKE ?', ["%{$searchTerm}%"])
-                            ->orWhereRaw('LOWER(lastname) LIKE ?', ["%{$searchTerm}%"])
-                            ->orWhereRaw('LOWER(matricule) LIKE ?', ["%{$searchTerm}%"]);
-                    })
-                    ->orWhereHas('classroom', function ($classroomQuery) use ($searchTerm): void {
-                        $classroomQuery->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
-                            ->orWhereRaw('LOWER(code) LIKE ?', ["%{$searchTerm}%"]);
-                    })
-                    ->orWhereHas('academicYear', function ($yearQuery) use ($searchTerm): void {
-                        $yearQuery->whereRaw('LOWER(year) LIKE ?', ["%{$searchTerm}%"]);
-                    });
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->string('status')->toString());
-        }
-
         // Filtre année : par défaut sur l'année active tant qu'aucun paramètre n'est
         // fourni ; un paramètre vide (« Toutes les années ») désactive le filtre.
         $activeYearId = AcademicYear::where('active', true)->orderByDesc('year')->value('id');
         $yearFilter = $request->has('academic_year_id')
             ? $request->string('academic_year_id')->toString()
             : (string) $activeYearId;
-        if ($yearFilter !== '') {
-            $query->where('academic_year_id', $yearFilter);
-        }
 
-        if ($request->filled('class_id')) {
-            $query->where('class_id', $request->string('class_id')->toString());
-        }
+        // Filtres partagés par la liste ET l'agrégat financier. Colonnes qualifiées
+        // (`enrollments.*`) pour rester non ambiguës une fois la table `invoices` jointe.
+        $applyFilters = function ($q) use ($request, $yearFilter): void {
+            if ($request->filled('search')) {
+                $searchTerm = strtolower($request->string('search')->toString());
+
+                $q->where(function ($subQuery) use ($searchTerm): void {
+                    $subQuery->whereRaw('LOWER(enrollments.enrollment_code) LIKE ?', ["%{$searchTerm}%"])
+                        ->orWhereRaw('LOWER(enrollments.status) LIKE ?', ["%{$searchTerm}%"])
+                        ->orWhereHas('student', function ($studentQuery) use ($searchTerm): void {
+                            $studentQuery->whereRaw('LOWER(firstname) LIKE ?', ["%{$searchTerm}%"])
+                                ->orWhereRaw('LOWER(lastname) LIKE ?', ["%{$searchTerm}%"])
+                                ->orWhereRaw('LOWER(matricule) LIKE ?', ["%{$searchTerm}%"]);
+                        })
+                        ->orWhereHas('classroom', function ($classroomQuery) use ($searchTerm): void {
+                            $classroomQuery->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
+                                ->orWhereRaw('LOWER(code) LIKE ?', ["%{$searchTerm}%"]);
+                        })
+                        ->orWhereHas('academicYear', function ($yearQuery) use ($searchTerm): void {
+                            $yearQuery->whereRaw('LOWER(year) LIKE ?', ["%{$searchTerm}%"]);
+                        });
+                });
+            }
+
+            if ($request->filled('status')) {
+                $q->where('enrollments.status', $request->string('status')->toString());
+            }
+
+            if ($yearFilter !== '') {
+                $q->where('enrollments.academic_year_id', $yearFilter);
+            }
+
+            if ($request->filled('class_id')) {
+                $q->where('enrollments.class_id', $request->string('class_id')->toString());
+            }
+        };
+
+        $applyFilters($query);
 
         $perPage = in_array((int) $request->per_page, [10, 25, 50, 100], true)
             ? (int) $request->per_page : 25;
 
         $enrollments = $query->latest()->paginate($perPage)->withQueryString();
 
-        $stats = Enrollment::selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as pending,
-            SUM(CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END) as active,
-            SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
-        ")->first();
+        // Synthèse financière (recouvrement) sur le même périmètre que la liste,
+        // hors inscriptions annulées (facture annulée = ni due, ni à recouvrer).
+        $aggQuery = Enrollment::query()
+            ->join('invoices', 'invoices.enrollment_id', '=', 'enrollments.id')
+            ->where('invoices.status', '!=', 'CANCELLED');
+        $applyFilters($aggQuery);
+
+        $agg = $aggQuery->selectRaw('
+            COALESCE(SUM(invoices.total), 0) as billed,
+            COALESCE(SUM(invoices.amount_paid), 0) as collected,
+            COALESCE(SUM(invoices.amount_remaining), 0) as remaining,
+            COALESCE(SUM(CASE WHEN invoices.amount_paid = 0 AND invoices.total > 0 THEN 1 ELSE 0 END), 0) as unpaid_count,
+            COALESCE(SUM(CASE WHEN invoices.amount_paid = 0 THEN invoices.amount_remaining ELSE 0 END), 0) as unpaid_amount
+        ')->first();
+
+        $billed    = (float) $agg->billed;
+        $collected = (float) $agg->collected;
 
         return Inertia::render('Eleves/Enrollments/Index', [
             'enrollments'   => $enrollments,
@@ -89,11 +107,13 @@ class EnrollmentController extends Controller
                 'class_id'         => $request->string('class_id')->toString(),
                 'per_page'         => (string) $perPage,
             ],
-            'stats'         => [
-                'total'     => (int) $stats->total,
-                'pending'   => (int) $stats->pending,
-                'active'    => (int) $stats->active,
-                'cancelled' => (int) $stats->cancelled,
+            'finance'       => [
+                'billed'        => $billed,
+                'collected'     => $collected,
+                'remaining'     => (float) $agg->remaining,
+                'recovery_rate' => $billed > 0 ? (int) round($collected / $billed * 100) : 0,
+                'unpaid_count'  => (int) $agg->unpaid_count,
+                'unpaid_amount' => (float) $agg->unpaid_amount,
             ],
             'academicYears' => AcademicYear::orderByDesc('year')->get(['id', 'year']),
             'classrooms'    => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),

@@ -81,11 +81,13 @@ interface IndexProps {
         class_id?: string;
         per_page?: string;
     };
-    stats: {
-        total: number;
-        pending: number;
-        active: number;
-        cancelled: number;
+    finance: {
+        billed: number;
+        collected: number;
+        remaining: number;
+        recovery_rate: number;
+        unpaid_count: number;
+        unpaid_amount: number;
     };
     academicYears: AcademicYear[];
     classrooms: Classroom[];
@@ -116,7 +118,7 @@ function PaymentBadge({ invoice, fmt }: Readonly<{ invoice: Invoice | null; fmt:
     return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Impayé</span>;
 }
 
-export default function Index({ enrollments, perPage, filters, stats, academicYears, classrooms }: Readonly<IndexProps>) {
+export default function Index({ enrollments, perPage, filters, finance, academicYears, classrooms }: Readonly<IndexProps>) {
     const fmt = useMoney();
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
@@ -190,20 +192,22 @@ export default function Index({ enrollments, perPage, filters, stats, academicYe
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 shadow-sm">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total</p>
-                        <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{stats.total}</p>
-                    </div>
-                    <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-6 shadow-sm">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">En attente</p>
-                        <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">{stats.pending}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total facturé</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2 break-words">{fmt(finance.billed)}</p>
                     </div>
                     <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 shadow-sm">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Actifs</p>
-                        <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{stats.active}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Encaissé</p>
+                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2 break-words">{fmt(finance.collected)}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{finance.recovery_rate}% recouvré</p>
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-6 shadow-sm">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Reste à recouvrer</p>
+                        <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2 break-words">{fmt(finance.remaining)}</p>
                     </div>
                     <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 shadow-sm">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Annulés</p>
-                        <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">{stats.cancelled}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Impayées</p>
+                        <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{finance.unpaid_count}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{fmt(finance.unpaid_amount)} sans paiement</p>
                     </div>
                 </div>
 
