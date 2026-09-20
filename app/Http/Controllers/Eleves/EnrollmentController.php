@@ -11,6 +11,7 @@ use App\Models\Enrollment;
 use App\Models\FeeStructure;
 use App\Models\School;
 use App\Models\Student;
+use App\Services\DocumentRenderer;
 use App\Services\InvoiceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -171,8 +172,13 @@ class EnrollmentController extends Controller
     {
         $enrollment->load(['school', 'student', 'classroom', 'academicYear', 'enrolledBy']);
 
+        $school   = $enrollment->school;
+        $renderer = app(DocumentRenderer::class);
+
         return Inertia::render('Eleves/Enrollments/Receipt', [
             'enrollment' => $enrollment,
+            'header'     => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
+            'headerCss'  => $renderer->headerCss(),
         ]);
     }
 

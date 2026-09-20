@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { useMoney } from '@/helpers/money';
-import { ArrowLeft, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle2, Clock, AlertCircle, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
 import AppLayout from '@/layouts/app-layout';
@@ -104,6 +104,10 @@ export default function Show({ enrollment, invoice }: Readonly<ShowProps>) {
                         </div>
                     </div>
                     <div className="flex gap-3">
+                        <Button variant="outline" onClick={() => window.open(route('enrollments.receipt', enrollment.id), '_blank')} className="gap-2">
+                            <Printer className="w-4 h-4" />
+                            Confirmation
+                        </Button>
                         <Button onClick={() => router.get(route('enrollments.invoice', enrollment.id))} className="bg-green-600 hover:bg-green-700 gap-2">
                             <FileText className="w-4 h-4" />
                             Suivi financier
