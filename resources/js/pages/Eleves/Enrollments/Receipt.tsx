@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { useMoney } from '@/helpers/money';
 import { OfficialHeader } from '@/components/documents/official-header';
 
 interface School { name: string; code: string; }
@@ -20,10 +21,18 @@ interface Enrollment {
     enrolled_by?: User | null;
 }
 
+interface Finance {
+    total: number;
+    amount_paid: number;
+    amount_remaining: number;
+    status: 'ISSUED' | 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';
+}
+
 interface ReceiptProps {
     enrollment: Enrollment;
     header?: string | null;
     headerCss?: string | null;
+    finance?: Finance | null;
 }
 
 const statusLabel: Record<Enrollment['status'], string> = {
@@ -38,11 +47,28 @@ const statusClass: Record<Enrollment['status'], string> = {
     CANCELLED: 'bg-red-100 text-red-700',
 };
 
-export default function Receipt({ enrollment, header, headerCss }: Readonly<ReceiptProps>) {
+export default function Receipt({ enrollment, header, headerCss, finance }: Readonly<ReceiptProps>) {
+    const fmt = useMoney();
     const enrolledByName = [enrollment.enrolled_by?.firstname, enrollment.enrolled_by?.lastname].filter(Boolean).join(' ');
     const studentName = enrollment.student ? `${enrollment.student.lastname} ${enrollment.student.firstname}` : '—';
     const enrollmentDate = new Date(enrollment.enrollment_date).toLocaleDateString('fr-FR');
     const issuedAt = new Date(enrollment.created_at).toLocaleString('fr-FR');
+
+    // Mention conditionnelle selon le solde : soldée / partielle / impayée.
+    const hasFees   = !!finance && finance.total > 0;
+    const remaining = finance?.amount_remaining ?? 0;
+    const settlement = (() => {
+        if (!hasFees) {
+            return { label: 'Aucun frais facturé', cls: 'bg-gray-100 text-gray-600' };
+        }
+        if (remaining <= 0) {
+            return { label: 'Inscription soldée', cls: 'bg-green-100 text-green-700' };
+        }
+        if ((finance?.amount_paid ?? 0) > 0) {
+            return { label: `Partiellement réglée — reste ${fmt(remaining)}`, cls: 'bg-amber-100 text-amber-700' };
+        }
+        return { label: `Non réglée — reste ${fmt(remaining)}`, cls: 'bg-red-100 text-red-700' };
+    })();
 
     const field = (label: string, value: string) => (
         <div>
@@ -91,15 +117,28 @@ export default function Receipt({ enrollment, header, headerCss }: Readonly<Rece
                                     {statusLabel[enrollment.status]}
                                 </span>
                             </div>
+                            <div>
+                                <p className="text-gray-400 text-[10px] uppercase tracking-wide">Règlement</p>
+                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${settlement.cls}`}>
+                                    {settlement.label}
+                                </span>
+                            </div>
                             {field('Enregistrée par', enrolledByName || enrollment.enrolled_by?.email || '—')}
                         </div>
 
                         {/* Mention */}
-                        <p className="text-sm text-gray-700 leading-relaxed border-l-4 border-blue-600 pl-4 py-1 mb-10">
-                            La direction confirme l'inscription de l'élève <span className="font-semibold">{studentName}</span> en
-                            classe de <span className="font-semibold">{enrollment.classroom?.name ?? '—'}</span> pour l'année
-                            académique <span className="font-semibold">{enrollment.academic_year?.year ?? '—'}</span>.
-                        </p>
+                        <div className="border-l-4 border-blue-600 pl-4 py-1 mb-10">
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                                La direction confirme l'inscription de l'élève <span className="font-semibold">{studentName}</span> en
+                                classe de <span className="font-semibold">{enrollment.classroom?.name ?? '—'}</span> pour l'année
+                                académique <span className="font-semibold">{enrollment.academic_year?.year ?? '—'}</span>.
+                            </p>
+                            {hasFees && remaining > 0 && (
+                                <p className="text-xs text-gray-500 italic mt-2">
+                                    Document délivré sous réserve du règlement du solde restant ({fmt(remaining)}).
+                                </p>
+                            )}
+                        </div>
 
                         {/* Signature & cachet */}
                         <div className="grid grid-cols-2 gap-8 text-xs">

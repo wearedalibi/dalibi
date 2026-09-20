@@ -175,10 +175,21 @@ class EnrollmentController extends Controller
         $school   = $enrollment->school;
         $renderer = app(DocumentRenderer::class);
 
+        // État de règlement pour la mention conditionnelle (soldée / partielle / impayée).
+        $invoice = $enrollment->invoice()
+            ->select(['id', 'enrollment_id', 'total', 'amount_paid', 'amount_remaining', 'status'])
+            ->first();
+
         return Inertia::render('Eleves/Enrollments/Receipt', [
             'enrollment' => $enrollment,
             'header'     => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
             'headerCss'  => $renderer->headerCss(),
+            'finance'    => $invoice ? [
+                'total'            => (float) $invoice->total,
+                'amount_paid'      => (float) $invoice->amount_paid,
+                'amount_remaining' => (float) $invoice->amount_remaining,
+                'status'           => $invoice->status,
+            ] : null,
         ]);
     }
 
