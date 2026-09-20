@@ -295,7 +295,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middlewareFor(['create', 'store'], 'can:create_enrollments')
         ->middlewareFor(['edit', 'update'], 'can:edit_enrollments')
         ->middlewareFor('destroy', 'can:delete_enrollments');
+    Route::get('enrollments/{enrollment}/receipt', [EnrollmentController::class, 'receipt'])->middleware('can:view_enrollments')->name('enrollments.receipt');
     Route::get('enrollments/{enrollment}/invoice', [InvoiceController::class, 'show'])->middleware('can:view_invoices')->name('enrollments.invoice');
+    Route::get('enrollments/{enrollment}/invoice/print', [InvoiceController::class, 'printInvoice'])->middleware('can:view_invoices')->name('enrollments.invoice.print');
     Route::post('enrollments/{enrollment}/payments', [InvoiceController::class, 'storePayment'])->middleware('can:create_invoices')->name('enrollments.payments.store');
     Route::get('payments/{payment}/receipt', [InvoiceController::class, 'receipt'])->middleware('can:view_invoices')->name('payments.receipt');
     Route::get('receipts/verify', [InvoiceController::class, 'verifyReceipt'])

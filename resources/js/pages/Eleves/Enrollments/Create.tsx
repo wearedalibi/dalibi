@@ -347,11 +347,16 @@ export default function Create({ schools, students, classrooms, academicYears, f
     const [errors, setErrors]           = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Pré-sélection par défaut : l'unique (ou première) école active et l'année
+    // académique active, pour éviter à l'utilisateur de les choisir à chaque fois.
+    const defaultSchoolId = schools[0]?.id ?? '';
+    const defaultYearId   = (academicYears.find(y => y.active) ?? academicYears[0])?.id ?? '';
+
     const [enrollment, setEnrollment] = useState({
-        school_id:        '',
+        school_id:        defaultSchoolId,
         student_id:       '',
         class_id:         '',
-        academic_year_id: '',
+        academic_year_id: defaultYearId,
         enrollment_code:  '',
         enrollment_date:  new Date().toISOString().slice(0, 10),
         status:           'PENDING',
