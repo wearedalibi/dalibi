@@ -141,7 +141,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
             <div className="w-full space-y-6">
 
                 {/* ── En-tête ── */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <button type="button" onClick={() => router.get(route('enrollments.show', enrollment.id))}
                             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">
@@ -160,6 +160,14 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                             </p>
                         </div>
                     </div>
+                    <Button
+                        variant="outline"
+                        className="gap-1.5 shrink-0"
+                        onClick={() => window.open(route('enrollments.invoice.print', enrollment.id), '_blank')}
+                    >
+                        <Printer className="w-4 h-4" />
+                        Imprimer la facture
+                    </Button>
                 </div>
 
                 {/* ── Carte récap financier ── */}
