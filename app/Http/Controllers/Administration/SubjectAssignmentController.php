@@ -15,6 +15,7 @@ use App\Services\DocumentRenderer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -82,48 +83,34 @@ class SubjectAssignmentController extends Controller
      */
     public function statistics(Request $request): Response
     {
-        $activeYearId = AcademicYear::where('active', true)->orderBy('year', 'desc')->value('id');
         $yearFilter = $request->has('academic_year_id')
-            ? $request->input('academic_year_id')
-            : $activeYearId;
+            ? (string) $request->input('academic_year_id')
+            : (string) $this->activeYearId();
 
         $teacherId = (string) $request->input('teacher_id', '');
+        $selected  = $teacherId !== '' && $yearFilter !== '';
 
-        $assignments = collect();
-        $teacher = null;
-
-        if ($teacherId !== '' && ! empty($yearFilter)) {
-            $teacher = User::find($teacherId);
-
-            $assignments = SubjectAssignment::with(['subject:id,name', 'classroom:id,name,code'])
-                ->where('teacher_id', $teacherId)
-                ->where('academic_year_id', $yearFilter)
-                ->get()
-                ->map(fn ($a) => [
-                    'id'             => $a->id,
-                    'subject'        => $a->subject?->name ?? '—',
-                    'classroom'      => $a->classroom?->name ?? '—',
-                    'classroom_code' => $a->classroom?->code,
-                    'active'         => (bool) $a->active,
-                    'notes'          => $a->notes,
-                ])
-                ->sortBy(fn ($a) => $a['subject'] . ' ' . $a['classroom'])
-                ->values();
-        }
+        $teacher   = $selected ? User::find($teacherId) : null;
+        $assignments = $selected
+            ? $this->teacherAssignments($teacherId, $yearFilter)->map(fn ($a) => [
+                'id'        => $a->id,
+                'subject'   => $a->subject?->name ?? '—',
+                'classroom' => $a->classroom?->name ?? '—',
+                'active'    => (bool) $a->active,
+            ])
+            : collect();
 
         return Inertia::render('Administration/SubjectAssignments/Statistics', [
-            'teachers'      => User::permission('create_marks')
-                ->orderBy('firstname')->orderBy('lastname')
-                ->get(['id', 'firstname', 'lastname']),
+            'teachers'      => $this->markTeachers(),
             'academicYears' => AcademicYear::orderBy('year', 'desc')->get(['id', 'year']),
             'filters'       => [
-                'academic_year_id' => (string) ($yearFilter ?? ''),
+                'academic_year_id' => $yearFilter,
                 'teacher_id'       => $teacherId,
             ],
             'teacher'       => $teacher
                 ? ['id' => $teacher->id, 'name' => trim($teacher->firstname . ' ' . $teacher->lastname)]
                 : null,
-            'assignments'   => $assignments,
+            'assignments'   => $assignments->values(),
             'summary'       => [
                 'total'    => $assignments->count(),
                 'active'   => $assignments->where('active', true)->count(),
@@ -143,18 +130,9 @@ class SubjectAssignmentController extends Controller
             'academic_year_id' => ['nullable', 'uuid', 'exists:academic_years,id'],
         ]);
 
-        $activeYearId = AcademicYear::where('active', true)->orderBy('year', 'desc')->value('id');
-        $yearId = $validated['academic_year_id'] ?? $activeYearId;
-
+        $yearId  = (string) ($validated['academic_year_id'] ?? $this->activeYearId());
         $year    = AcademicYear::find($yearId);
         $teacher = User::findOrFail($validated['teacher_id']);
-
-        $assignments = SubjectAssignment::with(['subject:id,name', 'classroom:id,name,code'])
-            ->where('teacher_id', $teacher->id)
-            ->where('academic_year_id', $yearId)
-            ->get()
-            ->sortBy(fn ($a) => ($a->subject?->name ?? '') . ' ' . ($a->classroom?->name ?? ''))
-            ->values();
 
         $school   = School::where('active', true)->first() ?? School::query()->first();
         $renderer = app(DocumentRenderer::class);
@@ -165,10 +143,38 @@ class SubjectAssignmentController extends Controller
             'headerCss'   => $renderer->headerCss(),
             'teacher'     => $teacher,
             'year'        => $year,
-            'assignments' => $assignments,
+            'assignments' => $this->teacherAssignments($teacher->id, $yearId),
         ])->setPaper('a4', 'portrait');
 
         return $pdf->stream('affectations-' . Str::slug(trim($teacher->firstname . ' ' . $teacher->lastname) . '-' . ($year?->year ?? '')) . '.pdf');
+    }
+
+    /** Identifiant de l'année académique active (la plus récente marquée active). */
+    private function activeYearId(): ?string
+    {
+        return AcademicYear::where('active', true)->orderBy('year', 'desc')->value('id');
+    }
+
+    /** Enseignants (utilisateurs pouvant saisir des notes), triés par nom. */
+    private function markTeachers(): Collection
+    {
+        return User::permission('create_marks')
+            ->orderBy('firstname')->orderBy('lastname')
+            ->get(['id', 'firstname', 'lastname']);
+    }
+
+    /**
+     * Affectations d'un enseignant pour une année, triées par matière puis classe.
+     * Source unique partagée par l'affichage des statistiques et l'export PDF.
+     */
+    private function teacherAssignments(string $teacherId, string $yearId): Collection
+    {
+        return SubjectAssignment::with(['subject:id,name', 'classroom:id,name'])
+            ->where('teacher_id', $teacherId)
+            ->where('academic_year_id', $yearId)
+            ->get()
+            ->sortBy(fn ($a) => ($a->subject?->name ?? '') . ' ' . ($a->classroom?->name ?? ''))
+            ->values();
     }
 
     public function create(): Response

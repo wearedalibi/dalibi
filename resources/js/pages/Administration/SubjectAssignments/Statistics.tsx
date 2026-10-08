@@ -27,9 +27,7 @@ interface Assignment {
     id: string;
     subject: string;
     classroom: string;
-    classroom_code?: string | null;
     active: boolean;
-    notes: string | null;
 }
 
 interface Summary {
