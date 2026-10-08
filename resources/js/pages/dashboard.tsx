@@ -129,6 +129,8 @@ interface DashboardProps {
         total_users:       number;
         enrollments_year:  number;
         enrollments_week:  number;
+        teachers_count:    number;
+        rem:               number | null;
         recentEnrollments: RecentEnrollment[];
         byClass:           EnrollmentByClass[];
     };
@@ -146,6 +148,11 @@ interface DashboardProps {
         exam_registrations:  number;
         pendingPermissions:  PendingPermission[];
         upcomingExams:       UpcomingExam[];
+    };
+    bulletins?: {
+        period:    string | null;
+        validated: number;
+        average:   number | null;
     };
 }
 
@@ -266,7 +273,7 @@ function SectionCard({ title, icon, count, children, action }: {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tableau de bord', href: '/dashboard' }];
 
-export default function Dashboard({ activeYear, selectedYearId, selectedYear, academicYears, userRole, financial, enrollments, teaching, academic }: Readonly<DashboardProps>) {
+export default function Dashboard({ activeYear, selectedYearId, selectedYear, academicYears, userRole, financial, enrollments, teaching, academic, bulletins }: Readonly<DashboardProps>) {
     const theme = useChartTheme();
     const fmt = useMoney();
 
@@ -287,7 +294,12 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
     const isEnrollment = !!enrollments;
     const isTeacher    = !!teaching;
     const isAcademic   = !!academic;
+    const isBulletins  = !!bulletins;
     const reasonLabel: Record<string, string> = { medical: 'Médical', familial: 'Familial', autre: 'Autre' };
+
+    // Taux de présence du jour (présents / pointés), calculé depuis les compteurs existants.
+    const pointedToday = academic ? academic.present_today + academic.absent_today : 0;
+    const presenceRateToday = pointedToday > 0 ? Math.round((academic!.present_today / pointedToday) * 100) : null;
 
     const g = enrollments?.students_by_gender;
     const genderTotal = g ? g.male + g.female + g.other : 0;
@@ -412,6 +424,20 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             icon={Users}
                             color="orange"
                         />
+                        <KpiCard
+                            title="Enseignants"
+                            value={enrollments.teachers_count}
+                            sub="Personnel pédagogique"
+                            icon={GraduationCap}
+                            color="purple"
+                        />
+                        <KpiCard
+                            title="Ratio élèves/enseignant"
+                            value={enrollments.rem ?? '—'}
+                            sub={`REM · ${enrollments.teachers_count} enseignant${enrollments.teachers_count > 1 ? 's' : ''}`}
+                            icon={Users}
+                            color="blue"
+                        />
                     </div>
                 )}
 
@@ -424,6 +450,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             sub={`${academic.absent_today} absence${academic.absent_today > 1 ? 's' : ''} aujourd'hui`}
                             icon={UserCheck}
                             color="green"
+                        />
+                        <KpiCard
+                            title="Taux de présence (jour)"
+                            value={presenceRateToday !== null ? `${presenceRateToday}%` : '—'}
+                            sub={pointedToday > 0 ? `${academic.present_today}/${pointedToday} pointés` : 'Aucun pointage'}
+                            icon={UserCheck}
+                            color={presenceRateToday === null ? 'blue' : presenceRateToday >= 90 ? 'green' : presenceRateToday >= 75 ? 'orange' : 'red'}
                         />
                         <KpiCard
                             title="Permissions en attente"
@@ -445,6 +478,26 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             sub={`${academic.exam_registrations} inscription${academic.exam_registrations > 1 ? 's' : ''}`}
                             icon={GraduationCap}
                             color="blue"
+                        />
+                    </div>
+                )}
+
+                {/* ── KPIs bulletins (validés + moyenne de la période) ────── */}
+                {isBulletins && (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <KpiCard
+                            title="Bulletins validés"
+                            value={bulletins.validated}
+                            sub={bulletins.period ? `Période : ${bulletins.period}` : 'Toutes périodes'}
+                            icon={FileBadge}
+                            color="blue"
+                        />
+                        <KpiCard
+                            title="Moyenne générale"
+                            value={bulletins.average !== null ? `${bulletins.average}/20` : '—'}
+                            sub={bulletins.period ? `Période : ${bulletins.period}` : 'Période courante'}
+                            icon={CheckCircle2}
+                            color="green"
                         />
                     </div>
                 )}

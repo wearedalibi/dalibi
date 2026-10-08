@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\AbsencePermission;
+use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\AccountingTransaction;
 use App\Models\AttendanceRecord;
@@ -17,6 +18,7 @@ use App\Models\Invoice;
 use App\Models\OfficialExam;
 use App\Models\OfficialExamRegistration;
 use App\Models\Payment;
+use App\Models\ReportCard;
 use App\Models\Student;
 use App\Models\SubjectAssignment;
 use App\Models\TimetableSlot;
@@ -219,6 +221,9 @@ class DashboardController extends Controller
                 ->groupBy('students.gender')
                 ->pluck('total', 'gender');
 
+            $enrollmentsYear = Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))->count();
+            $teachersCount = User::permission('create_marks')->count();
+
             $data['enrollments'] = [
                 'total_students' => Student::count(),
                 'active_students' => Student::where('active', true)->count(),
@@ -229,7 +234,10 @@ class DashboardController extends Controller
                 ],
                 'active_classrooms' => Classroom::where('active', true)->count(),
                 'total_users' => User::count(),
-                'enrollments_year' => Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))->count(),
+                // Encadrement : nombre d'enseignants et ratio élèves/enseignant (REM).
+                'teachers_count' => $teachersCount,
+                'rem' => $teachersCount > 0 ? round($enrollmentsYear / $teachersCount, 1) : null,
+                'enrollments_year' => $enrollmentsYear,
                 'enrollments_week' => Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
                     ->where('enrollment_date', '>=', now()->startOfWeek())
                     ->count(),
@@ -287,6 +295,30 @@ class DashboardController extends Controller
                 'exam_registrations' => OfficialExamRegistration::count(),
                 'pendingPermissions' => $pendingPermissions,
                 'upcomingExams' => $upcomingExams,
+            ];
+        }
+
+        /* ── Section bulletins (permission view_bulletins) ──────────────── */
+        if ($user->can('view_bulletins')) {
+            // Période « courante » de l'année sélectionnée (is_current), si définie.
+            $period = AcademicPeriod::query()
+                ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
+                ->where('is_current', true)
+                ->first(['id', 'name']);
+
+            // Bulletins figés (locked_at) de l'année (et de la période courante le cas échéant).
+            $rc = ReportCard::query()
+                ->whereNotNull('locked_at')
+                ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
+                ->when($period, fn ($q) => $q->where('academic_period_id', $period->id))
+                ->selectRaw('COUNT(*) AS validated, AVG(average) AS avg_general')
+                ->first();
+
+            $validated = (int) ($rc->validated ?? 0);
+            $data['bulletins'] = [
+                'period' => $period?->name,
+                'validated' => $validated,
+                'average' => $validated > 0 ? round((float) $rc->avg_general, 2) : null,
             ];
         }
 
