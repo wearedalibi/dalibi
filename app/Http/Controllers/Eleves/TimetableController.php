@@ -93,7 +93,6 @@ class TimetableController extends Controller
     public function export(Request $request, string $classId)
     {
         $classroom    = Classroom::findOrFail($classId);
-        $school       = School::query()->first();
         $activeYearId = $this->activeYearId();
 
         $slots = TimetableSlot::with(['subject:id,name', 'teacher:id,firstname,lastname'])
@@ -102,33 +101,12 @@ class TimetableController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        // Lignes = plages horaires distinctes (triées), colonnes = jours
-        $timeRanges = $slots
-            ->map(fn ($s) => substr($s->start_time, 0, 5) . '-' . substr($s->end_time, 0, 5))
-            ->unique()
-            ->sort()
-            ->values();
-
-        // Index : [plage][jour] => slot
-        $grid = [];
-        foreach ($slots as $slot) {
-            $range = substr($slot->start_time, 0, 5) . '-' . substr($slot->end_time, 0, 5);
-            $grid[$range][$slot->day_of_week] = $slot;
-        }
-
-        $renderer = app(DocumentRenderer::class);
-
-        $pdf = Pdf::loadView('exports.timetable', [
-            'school'     => $school,
-            'headerHtml' => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
-            'headerCss'  => $renderer->headerCss(),
-            'classroom'  => $classroom,
-            'days'       => TimetableSlot::DAYS,
-            'timeRanges' => $timeRanges,
-            'grid'       => $grid,
-        ])->setPaper('a4', 'landscape');
-
-        return $pdf->stream('emploi-du-temps-' . Str::slug($classroom->name) . '.pdf');
+        return $this->schedulePdf(
+            $slots,
+            title: 'EMPLOI DU TEMPS',
+            subtitle: 'Classe : ' . $classroom->name,
+            filename: 'emploi-du-temps-' . Str::slug($classroom->name),
+        );
     }
 
     /**
@@ -144,34 +122,12 @@ class TimetableController extends Controller
         $teacher      = User::findOrFail($validated['teacher_id']);
         $year         = $activeYearId ? AcademicYear::find($activeYearId) : null;
 
-        $slots = $this->teacherSlots($teacher->id, $activeYearId);
-
-        // Lignes = plages horaires distinctes (triées), colonnes = jours.
-        $timeRanges = $slots
-            ->map(fn ($s) => substr($s->start_time, 0, 5) . '-' . substr($s->end_time, 0, 5))
-            ->unique()->sort()->values();
-
-        $grid = [];
-        foreach ($slots as $slot) {
-            $range = substr($slot->start_time, 0, 5) . '-' . substr($slot->end_time, 0, 5);
-            $grid[$range][$slot->day_of_week] = $slot;
-        }
-
-        $school   = School::query()->first();
-        $renderer = app(DocumentRenderer::class);
-
-        $pdf = Pdf::loadView('exports.timetable-teacher', [
-            'school'     => $school,
-            'headerHtml' => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
-            'headerCss'  => $renderer->headerCss(),
-            'teacher'    => $teacher,
-            'year'       => $year,
-            'days'       => TimetableSlot::DAYS,
-            'timeRanges' => $timeRanges,
-            'grid'       => $grid,
-        ])->setPaper('a4', 'landscape');
-
-        return $pdf->stream('emploi-du-temps-' . Str::slug($teacher->name) . '.pdf');
+        return $this->schedulePdf(
+            $this->teacherSlots($teacher->id, $activeYearId),
+            title: 'EMPLOI DU TEMPS — ENSEIGNANT',
+            subtitle: $teacher->name . ' — Année : ' . ($year?->year ?? '—'),
+            filename: 'emploi-du-temps-' . Str::slug($teacher->name),
+        );
     }
 
     public function store(Request $request): RedirectResponse
@@ -244,5 +200,49 @@ class TimetableController extends Controller
             ->orderBy('day_of_week')
             ->orderBy('start_time')
             ->get();
+    }
+
+    /**
+     * Construit la grille d'emploi du temps : lignes = plages horaires distinctes
+     * triées, colonnes = jours. Index : [plage][jour] => créneau.
+     *
+     * @param  Collection<int, TimetableSlot>  $slots
+     * @return array{timeRanges: Collection<int, string>, grid: array<string, array<int, TimetableSlot>>}
+     */
+    private function buildScheduleGrid(Collection $slots): array
+    {
+        $range = fn ($s) => substr($s->start_time, 0, 5) . '-' . substr($s->end_time, 0, 5);
+
+        $grid = [];
+        foreach ($slots as $slot) {
+            $grid[$range($slot)][$slot->day_of_week] = $slot;
+        }
+
+        return [
+            'timeRanges' => $slots->map($range)->unique()->sort()->values(),
+            'grid'       => $grid,
+        ];
+    }
+
+    /** Rend et télécharge un emploi du temps en PDF (gabarit et en-tête unifiés). */
+    private function schedulePdf(Collection $slots, string $title, string $subtitle, string $filename)
+    {
+        ['timeRanges' => $timeRanges, 'grid' => $grid] = $this->buildScheduleGrid($slots);
+
+        $school   = School::query()->first();
+        $renderer = app(DocumentRenderer::class);
+
+        $pdf = Pdf::loadView('exports.timetable', [
+            'school'     => $school,
+            'headerHtml' => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
+            'headerCss'  => $renderer->headerCss(),
+            'title'      => $title,
+            'subtitle'   => $subtitle,
+            'days'       => TimetableSlot::DAYS,
+            'timeRanges' => $timeRanges,
+            'grid'       => $grid,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream($filename . '.pdf');
     }
 }
