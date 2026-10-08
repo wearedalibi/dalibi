@@ -12,6 +12,7 @@ use App\Models\Receipt;
 use App\Models\StudentScholarship;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class InvoiceService
 {
@@ -91,6 +92,19 @@ class InvoiceService
     public function recordPayment(Invoice $invoice, array $data): Payment
     {
         return DB::transaction(function () use ($invoice, $data): Payment {
+            // Garde anti trop-perçu, évaluée SOUS VERROU : sans cela, deux requêtes
+            // concurrentes (double-clic, deux caissiers) liraient le même reste dû et
+            // passeraient toutes les deux — le trop-perçu étant ensuite masqué par le
+            // max(0, …) de recalculate().
+            $invoice = Invoice::whereKey($invoice->id)->lockForUpdate()->firstOrFail();
+
+            $remaining = (float) $invoice->amount_remaining;
+            if ((float) ($data['amount'] ?? 0) > $remaining + 0.001) {
+                throw ValidationException::withMessages([
+                    'amount' => 'Le montant dépasse le reste à payer ('.number_format($remaining, 0, ',', ' ').' F).',
+                ]);
+            }
+
             $data['invoice_id'] = $invoice->id;
 
             // Rattache le paiement à la caisse correspondant au moyen de paiement

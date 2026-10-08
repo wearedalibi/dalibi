@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\CashAccount;
 use App\Models\Enrollment;
-use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Receipt;
 use App\Models\School;
@@ -16,8 +15,6 @@ use App\Services\InvoiceService;
 use App\Support\FrenchNumberSpeller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -84,22 +81,9 @@ class InvoiceController extends Controller
         $data = $request->validated();
         $data['created_by'] = auth()->id();
 
-        // Garde anti trop-perçu, évaluée SOUS VERROU : sans cela, deux requêtes
-        // concurrentes (double-clic, deux caissiers) liraient le même reste dû et
-        // passeraient toutes les deux — le trop-perçu étant ensuite masqué par le
-        // `max(0, …)` de `recalculate()`.
-        DB::transaction(function () use ($data, $invoice): void {
-            $locked = Invoice::whereKey($invoice->id)->lockForUpdate()->firstOrFail();
-
-            $remaining = (float) $locked->amount_remaining;
-            if ((float) $data['amount'] > $remaining + 0.001) {
-                throw ValidationException::withMessages([
-                    'amount' => 'Le montant dépasse le reste à payer ('.number_format($remaining, 0, ',', ' ').' F).',
-                ]);
-            }
-
-            $this->invoiceService->recordPayment($locked, $data);
-        });
+        // Le verrou pessimiste et la garde anti trop-perçu sont assurés
+        // par InvoiceService::recordPayment() (logique métier côté service).
+        $this->invoiceService->recordPayment($invoice, $data);
 
         return redirect()->route('enrollments.invoice', $enrollment->id)
             ->with('success', 'Paiement enregistré avec succès.');

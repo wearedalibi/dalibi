@@ -41,7 +41,13 @@ class CashAccountBalanceTest extends TestCase
         $student = Student::create(['firstname' => 'Koffi', 'lastname' => 'Mensah', 'gender' => 'male', 'birth_date' => '2012-01-01', 'user_id' => User::factory()->create()->id, 'active' => true, 'matricule' => Str::random(6)]);
         $enr = Enrollment::create(['school_id' => $school->id, 'student_id' => $student->id, 'class_id' => $class->id, 'academic_year_id' => $year->id, 'enrollment_code' => 'INS-'.Str::random(5), 'enrollment_date' => '2025-09-02', 'status' => 'PENDING', 'academic_status' => 'en_cours']);
 
-        return Invoice::create(['enrollment_id' => $enr->id, 'invoice_number' => 'INV-'.Str::random(6), 'subtotal' => $total, 'discount_amount' => 0, 'total' => $total, 'amount_paid' => 0, 'amount_remaining' => $total, 'status' => 'ISSUED', 'issued_at' => '2025-09-02']);
+        $invoice = Invoice::create(['enrollment_id' => $enr->id, 'invoice_number' => 'INV-'.Str::random(6), 'subtotal' => $total, 'discount_amount' => 0, 'total' => $total, 'amount_paid' => 0, 'amount_remaining' => $total, 'status' => 'ISSUED', 'issued_at' => '2025-09-02']);
+
+        // Ligne de frais correspondant au total : recalculate() dérive le total des
+        // items, une facture réaliste doit donc en porter (sinon le total retombe à 0).
+        $invoice->items()->create(['label' => 'Scolarité', 'type' => 'FEE', 'amount' => $total, 'sort_order' => 0]);
+
+        return $invoice;
     }
 
     private function cash(string $type, string $name): CashAccount
