@@ -17,7 +17,7 @@ return new class extends Migration
                 $table->dropForeign(['school_id']);
                 $table->dropColumn('school_id');
             }
-            
+
             // Drop name column if exists (drop unique index first for SQLite compatibility)
             if (Schema::hasColumn('users', 'name')) {
                 $table->dropUnique('users_name_unique');
@@ -33,12 +33,12 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Restore name column
-            if (!Schema::hasColumn('users', 'name')) {
+            if (! Schema::hasColumn('users', 'name')) {
                 $table->string('name')->unique()->nullable()->after('lastname');
             }
-            
+
             // Restore school_id foreign key
-            if (!Schema::hasColumn('users', 'school_id')) {
+            if (! Schema::hasColumn('users', 'school_id')) {
                 $table->uuid('school_id')->nullable()->after('address');
                 $table->foreign('school_id')->references('id')->on('schools')->onDelete('set null');
             }

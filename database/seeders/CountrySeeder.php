@@ -283,9 +283,9 @@ class CountrySeeder extends Seeder
         // UUID généré pour les insertions ; sur conflit de `code`, seul le nom
         // est mis à jour (l'id existant reste stable).
         $rows = array_map(fn (array $c) => [
-            'id'         => (string) Str::uuid(),
-            'name'       => $c['name'],
-            'code'       => $c['code'],
+            'id' => (string) Str::uuid(),
+            'name' => $c['name'],
+            'code' => $c['code'],
             'created_at' => $now,
             'updated_at' => $now,
         ], $countries);

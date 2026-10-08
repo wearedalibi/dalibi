@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Models\FeeStructure;
 use App\Models\Installment;
 use Illuminate\Http\RedirectResponse;
@@ -24,12 +23,12 @@ class InstallmentController extends Controller
         );
 
         $request->validate([
-            'installments'                          => ['required', 'array', 'min:1'],
-            'installments.*.name'                   => ['required', 'string', 'max:255'],
-            'installments.*.installment_number'     => ['required', 'integer', 'min:1'],
-            'installments.*.amount'                 => ['required', 'numeric', 'min:0', 'max:99999999'],
-            'installments.*.due_date'               => ['nullable', 'date'],
-            'installments.*.academic_period_id'     => ['nullable', 'uuid', 'exists:academic_periods,id'],
+            'installments' => ['required', 'array', 'min:1'],
+            'installments.*.name' => ['required', 'string', 'max:255'],
+            'installments.*.installment_number' => ['required', 'integer', 'min:1'],
+            'installments.*.amount' => ['required', 'numeric', 'min:0', 'max:99999999'],
+            'installments.*.due_date' => ['nullable', 'date'],
+            'installments.*.academic_period_id' => ['nullable', 'uuid', 'exists:academic_periods,id'],
         ]);
 
         // Le total des tranches ne doit jamais dépasser le montant de la structure
@@ -49,11 +48,11 @@ class InstallmentController extends Controller
 
             foreach ($request->installments as $data) {
                 Installment::create([
-                    'fee_structure_id'   => $feeStructure->id,
-                    'name'               => $data['name'],
+                    'fee_structure_id' => $feeStructure->id,
+                    'name' => $data['name'],
                     'installment_number' => $data['installment_number'],
-                    'amount'             => $data['amount'],
-                    'due_date'           => $data['due_date'] ?? null,
+                    'amount' => $data['amount'],
+                    'due_date' => $data['due_date'] ?? null,
                     'academic_period_id' => $data['academic_period_id'] ?? null,
                 ]);
             }

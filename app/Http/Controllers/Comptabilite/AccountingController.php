@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Comptabilite;
-use App\Http\Controllers\Controller;
 
-use App\Models\AccountingTransaction;
+use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
+use App\Models\AccountingTransaction;
 use App\Models\CashAccount;
 use App\Models\Classroom;
 use App\Models\Enrollment;
@@ -18,7 +18,7 @@ class AccountingController extends Controller
 {
     public function index(Request $request): Response
     {
-        $yearId  = $request->string('academic_year_id')->toString() ?: null;
+        $yearId = $request->string('academic_year_id')->toString() ?: null;
         $classId = $request->string('class_id')->toString() ?: null;
 
         if (! $yearId) {
@@ -28,10 +28,10 @@ class AccountingController extends Controller
         }
 
         $academicYears = AcademicYear::orderByDesc('year')->get(['id', 'year', 'active']);
-        $classrooms    = Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']);
+        $classrooms = Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']);
 
         /* -------------------------------------------------------------- */
-        /* Stats globales pour l'année                                     */
+        /* Stats globales pour l'année */
         /* -------------------------------------------------------------- */
         $globalStats = DB::table('invoices')
             ->join('enrollments', 'invoices.enrollment_id', '=', 'enrollments.id')
@@ -50,19 +50,19 @@ class AccountingController extends Controller
             ->first();
 
         /* -------------------------------------------------------------- */
-        /* Évolution mensuelle des paiements — format portable multi-DB   */
+        /* Évolution mensuelle des paiements — format portable multi-DB */
         /* -------------------------------------------------------------- */
         $driver = DB::getDriverName();
 
         $monthExpr = match ($driver) {
-            'mysql'  => "DATE_FORMAT(payments.paid_at, '%Y-%m')",
+            'mysql' => "DATE_FORMAT(payments.paid_at, '%Y-%m')",
             'sqlite' => "strftime('%Y-%m', payments.paid_at)",
-            default  => "to_char(payments.paid_at, 'YYYY-MM')",   // pgsql
+            default => "to_char(payments.paid_at, 'YYYY-MM')",   // pgsql
         };
         $monthLabelExpr = match ($driver) {
-            'mysql'  => "DATE_FORMAT(payments.paid_at, '%b %Y')",
+            'mysql' => "DATE_FORMAT(payments.paid_at, '%b %Y')",
             'sqlite' => "strftime('%m/%Y', payments.paid_at)",
-            default  => "to_char(payments.paid_at, 'Mon YYYY')",   // pgsql
+            default => "to_char(payments.paid_at, 'Mon YYYY')",   // pgsql
         };
 
         $monthlyPayments = DB::table('payments')
@@ -80,7 +80,7 @@ class AccountingController extends Controller
             ->get();
 
         /* -------------------------------------------------------------- */
-        /* Répartition par classe                                          */
+        /* Répartition par classe */
         /* -------------------------------------------------------------- */
         $byClass = DB::table('invoices')
             ->join('enrollments', 'invoices.enrollment_id', '=', 'enrollments.id')
@@ -104,14 +104,13 @@ class AccountingController extends Controller
             ->get();
 
         /* -------------------------------------------------------------- */
-        /* Élèves avec solde impayé — tri SQL via sous-requête corrélée   */
+        /* Élèves avec solde impayé — tri SQL via sous-requête corrélée */
         /* -------------------------------------------------------------- */
         // Limité aux plus gros soldes (perf + lisibilité) ; le total sert au « Voir tout ».
         $unpaidQuery = Enrollment::where('academic_year_id', $yearId)
             ->when($classId, fn ($q) => $q->where('class_id', $classId))
-            ->whereHas('invoice', fn ($q) =>
-                $q->whereIn('status', ['ISSUED', 'PARTIALLY_PAID'])
-                  ->where('amount_remaining', '>', 0)
+            ->whereHas('invoice', fn ($q) => $q->whereIn('status', ['ISSUED', 'PARTIALLY_PAID'])
+                ->where('amount_remaining', '>', 0)
             );
 
         $studentsUnpaidTotal = (clone $unpaidQuery)->count();
@@ -131,7 +130,7 @@ class AccountingController extends Controller
             ->get();
 
         /* -------------------------------------------------------------- */
-        /* Soldes des caisses + stats de transactions                      */
+        /* Soldes des caisses + stats de transactions */
         /* -------------------------------------------------------------- */
         $cashAccounts = CashAccount::where('active', true)
             ->orderBy('type')
@@ -144,18 +143,18 @@ class AccountingController extends Controller
         ")->first();
 
         return Inertia::render('Comptabilite/Accounting/Dashboard', [
-            'academicYears'    => $academicYears,
-            'classrooms'       => $classrooms,
-            'filters'          => [
+            'academicYears' => $academicYears,
+            'classrooms' => $classrooms,
+            'filters' => [
                 'academic_year_id' => $yearId,
-                'class_id'         => $classId,
+                'class_id' => $classId,
             ],
-            'globalStats'      => $globalStats,
-            'monthlyPayments'  => $monthlyPayments,
-            'byClass'          => $byClass,
-            'studentsUnpaid'      => $studentsUnpaid,
+            'globalStats' => $globalStats,
+            'monthlyPayments' => $monthlyPayments,
+            'byClass' => $byClass,
+            'studentsUnpaid' => $studentsUnpaid,
             'studentsUnpaidTotal' => $studentsUnpaidTotal,
-            'cashAccounts'     => $cashAccounts,
+            'cashAccounts' => $cashAccounts,
             'transactionStats' => $transactionStats,
         ]);
     }

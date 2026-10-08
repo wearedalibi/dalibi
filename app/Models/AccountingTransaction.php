@@ -26,12 +26,12 @@ class AccountingTransaction extends Model
     ];
 
     protected $casts = [
-        'amount'           => 'float',
+        'amount' => 'float',
         'transaction_date' => 'datetime',
     ];
 
     /* ------------------------------------------------------------------ */
-    /* Relations                                                            */
+    /* Relations */
     /* ------------------------------------------------------------------ */
 
     public function cashAccount(): BelongsTo

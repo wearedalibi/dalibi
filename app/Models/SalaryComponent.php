@@ -10,7 +10,8 @@ class SalaryComponent extends Model
 {
     use HasFactory, HasUuids;
 
-    public const EARNING   = 'earning';
+    public const EARNING = 'earning';
+
     public const DEDUCTION = 'deduction';
 
     protected $fillable = [
@@ -25,8 +26,8 @@ class SalaryComponent extends Model
 
     protected $casts = [
         'default_amount' => 'float',
-        'is_default'     => 'boolean',
-        'active'         => 'boolean',
-        'sort_order'     => 'integer',
+        'is_default' => 'boolean',
+        'active' => 'boolean',
+        'sort_order' => 'integer',
     ];
 }

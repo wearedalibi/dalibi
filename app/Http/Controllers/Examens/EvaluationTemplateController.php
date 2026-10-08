@@ -6,8 +6,8 @@
  */
 
 namespace App\Http\Controllers\Examens;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\ClassroomType;
@@ -24,7 +24,7 @@ class EvaluationTemplateController extends Controller
 {
     public function index(Request $request): Response
     {
-        $search   = $request->string('search')->toString();
+        $search = $request->string('search')->toString();
         $periodId = $request->string('period_id')->toString();
 
         $query = EvaluationTemplate::query()
@@ -36,32 +36,32 @@ class EvaluationTemplateController extends Controller
         $templates = $query->orderBy('academic_period_id')->orderBy('name')->paginate(15)->withQueryString();
 
         $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
-        $periods    = AcademicPeriod::when(
+        $periods = AcademicPeriod::when(
             $activeYear,
             fn ($q) => $q->where('academic_year_id', $activeYear->id)
         )->orderBy('start_date')->get(['id', 'name']);
 
         return Inertia::render('Examens/EvaluationTemplates/Index', [
-            'templates'      => $templates,
-            'periods'        => $periods,
-            'activeYear'     => $activeYear,
-            'filters'        => ['search' => $search, 'period_id' => $periodId],
+            'templates' => $templates,
+            'periods' => $periods,
+            'activeYear' => $activeYear,
+            'filters' => ['search' => $search, 'period_id' => $periodId],
         ]);
     }
 
     public function create(): Response
     {
         $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
-        $periods    = AcademicPeriod::when(
+        $periods = AcademicPeriod::when(
             $activeYear,
             fn ($q) => $q->where('academic_year_id', $activeYear->id)
         )->orderBy('start_date')->get(['id', 'name', 'is_current']);
 
         return Inertia::render('Examens/EvaluationTemplates/Create', [
-            'periods'         => $periods,
+            'periods' => $periods,
             'evaluationTypes' => EvaluationType::orderBy('name')->get(['id', 'name']),
-            'classroomTypes'  => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name']),
-            'activeYear'      => $activeYear,
+            'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name']),
+            'activeYear' => $activeYear,
         ]);
     }
 
@@ -70,20 +70,20 @@ class EvaluationTemplateController extends Controller
         abort_unless($request->user()->can('create_evaluation_templates'), 403);
 
         $validated = $request->validate([
-            'academic_period_id'  => ['required', 'uuid', 'exists:academic_periods,id'],
-            'evaluation_type_id'  => ['required', 'uuid', 'exists:evaluation_types,id'],
-            'class_type_id'       => ['nullable', 'uuid', 'exists:classroom_types,id'],
-            'name'                => ['required', 'string', 'max:255'],
-            'description'         => ['nullable', 'string'],
-            'coefficient'         => ['required', 'numeric', 'gt:0', 'max:99.99'],
-            'max_score'           => ['required', 'numeric', 'gt:0', 'max:1000'],
-            'date'                => ['nullable', 'date'],
+            'academic_period_id' => ['required', 'uuid', 'exists:academic_periods,id'],
+            'evaluation_type_id' => ['required', 'uuid', 'exists:evaluation_types,id'],
+            'class_type_id' => ['nullable', 'uuid', 'exists:classroom_types,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'coefficient' => ['required', 'numeric', 'gt:0', 'max:99.99'],
+            'max_score' => ['required', 'numeric', 'gt:0', 'max:1000'],
+            'date' => ['nullable', 'date'],
         ], [
             'academic_period_id.required' => 'La période académique est obligatoire.',
             'evaluation_type_id.required' => 'Le type d\'évaluation est obligatoire.',
-            'name.required'               => 'Le nom est obligatoire.',
-            'coefficient.gt'              => 'Le coefficient doit être supérieur à 0.',
-            'max_score.gt'                => 'Le barème doit être supérieur à 0.',
+            'name.required' => 'Le nom est obligatoire.',
+            'coefficient.gt' => 'Le coefficient doit être supérieur à 0.',
+            'max_score.gt' => 'Le barème doit être supérieur à 0.',
         ]);
 
         EvaluationTemplate::create($validated);
@@ -107,7 +107,7 @@ class EvaluationTemplateController extends Controller
             ->get();
 
         // Toutes les class_subjects de l'année active pour ce trimestre
-        $activeYear     = AcademicYear::where('active', true)->first(['id']);
+        $activeYear = AcademicYear::where('active', true)->first(['id']);
         $alreadyDoneIds = $evaluations->pluck('class_subject_id')->all();
 
         $availableClassSubjects = ClassSubject::where('academic_year_id', $activeYear?->id)
@@ -121,26 +121,26 @@ class EvaluationTemplateController extends Controller
             ->get(['id', 'class_id', 'subject_id', 'coefficient']);
 
         return Inertia::render('Examens/EvaluationTemplates/Show', [
-            'template'               => $evaluationTemplate,
-            'evaluations'            => $evaluations,
+            'template' => $evaluationTemplate,
+            'evaluations' => $evaluations,
             'availableClassSubjects' => $availableClassSubjects,
-            'activeYear'             => $activeYear,
+            'activeYear' => $activeYear,
         ]);
     }
 
     public function edit(EvaluationTemplate $evaluationTemplate): Response
     {
         $activeYear = AcademicYear::where('active', true)->first(['id']);
-        $periods    = AcademicPeriod::when(
+        $periods = AcademicPeriod::when(
             $activeYear,
             fn ($q) => $q->where('academic_year_id', $activeYear->id)
         )->orderBy('start_date')->get(['id', 'name']);
 
         return Inertia::render('Examens/EvaluationTemplates/Edit', [
-            'template'        => $evaluationTemplate->load(['academicPeriod:id,name', 'evaluationType:id,name']),
-            'periods'         => $periods,
+            'template' => $evaluationTemplate->load(['academicPeriod:id,name', 'evaluationType:id,name']),
+            'periods' => $periods,
             'evaluationTypes' => EvaluationType::orderBy('name')->get(['id', 'name']),
-            'classroomTypes'  => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name']),
+            'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -149,14 +149,14 @@ class EvaluationTemplateController extends Controller
         abort_unless($request->user()->can('edit_evaluation_templates'), 403);
 
         $validated = $request->validate([
-            'academic_period_id'  => ['required', 'uuid', 'exists:academic_periods,id'],
-            'evaluation_type_id'  => ['required', 'uuid', 'exists:evaluation_types,id'],
-            'class_type_id'       => ['nullable', 'uuid', 'exists:classroom_types,id'],
-            'name'                => ['required', 'string', 'max:255'],
-            'description'         => ['nullable', 'string'],
-            'coefficient'         => ['required', 'numeric', 'gt:0', 'max:99.99'],
-            'max_score'           => ['required', 'numeric', 'gt:0', 'max:1000'],
-            'date'                => ['nullable', 'date'],
+            'academic_period_id' => ['required', 'uuid', 'exists:academic_periods,id'],
+            'evaluation_type_id' => ['required', 'uuid', 'exists:evaluation_types,id'],
+            'class_type_id' => ['nullable', 'uuid', 'exists:classroom_types,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'coefficient' => ['required', 'numeric', 'gt:0', 'max:99.99'],
+            'max_score' => ['required', 'numeric', 'gt:0', 'max:1000'],
+            'date' => ['nullable', 'date'],
         ]);
 
         $evaluationTemplate->update($validated);
@@ -182,8 +182,8 @@ class EvaluationTemplateController extends Controller
     public function generate(Request $request, EvaluationTemplate $evaluationTemplate)
     {
         $validated = $request->validate([
-            'class_subjects'        => ['required', 'array', 'min:1'],
-            'class_subjects.*.id'   => ['required', 'uuid', 'exists:class_subjects,id'],
+            'class_subjects' => ['required', 'array', 'min:1'],
+            'class_subjects.*.id' => ['required', 'uuid', 'exists:class_subjects,id'],
             'class_subjects.*.date' => ['nullable', 'date'],
         ], [
             'class_subjects.required' => 'Sélectionnez au moins une classe/matière.',
@@ -196,10 +196,10 @@ class EvaluationTemplateController extends Controller
                 Evaluation::firstOrCreate(
                     [
                         'evaluation_template_id' => $evaluationTemplate->id,
-                        'class_subject_id'       => $item['id'],
+                        'class_subject_id' => $item['id'],
                     ],
                     [
-                        'date'   => $date,
+                        'date' => $date,
                         'status' => 'scheduled',
                     ]
                 );

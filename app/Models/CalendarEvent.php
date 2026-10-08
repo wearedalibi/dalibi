@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CalendarEvent extends Model
 {
-    use HasUuids, Auditable;
+    use Auditable, HasUuids;
 
     protected $fillable = [
         'title',
@@ -27,17 +27,17 @@ class CalendarEvent extends Model
 
     protected $casts = [
         'start_date' => 'date',
-        'end_date'   => 'date',
-        'all_day'    => 'boolean',
+        'end_date' => 'date',
+        'all_day' => 'boolean',
     ];
 
     /** Types d'événements (clé => libellé). */
     public const TYPES = [
         'holiday' => 'Congé / vacances',
-        'exam'    => 'Examen',
+        'exam' => 'Examen',
         'meeting' => 'Réunion',
-        'event'   => 'Événement',
-        'other'   => 'Autre',
+        'event' => 'Événement',
+        'other' => 'Autre',
     ];
 
     public function academicYear(): BelongsTo

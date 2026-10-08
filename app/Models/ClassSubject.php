@@ -4,23 +4,23 @@
  * Projet : Système de Gestion Scolaire (SIGE) - Togo
  * Description : Gestion des élèves, des notes et des bulletins.
  * * Copyright (c) 2026 Kudayah Sassou Horacio Herve.
- * * Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier 
- * selon les termes de la Licence Publique Générale GNU (GPL v3) telle que publiée 
+ * * Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+ * selon les termes de la Licence Publique Générale GNU (GPL v3) telle que publiée
  * par la Free Software Foundation.
- * * Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; 
- * sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN BUT PARTICULIER. 
+ * * Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ;
+ * sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN BUT PARTICULIER.
  * Consultez la Licence Publique Générale GNU pour plus de détails.
- * * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU 
+ * * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU
  * avec ce programme. Sinon, voir <https://www.gnu.org/licenses/>.
  */
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class ClassSubject extends Model
 {
@@ -41,7 +41,7 @@ class ClassSubject extends Model
     /** Groupes de matières (bulletin). */
     public const GROUPS = [
         'obligatoire' => 'Matières obligatoires',
-        'facultatif'  => 'Matières facultatives',
+        'facultatif' => 'Matières facultatives',
     ];
 
     /**
@@ -94,17 +94,17 @@ class ClassSubject extends Model
             ->with(['template:id,coefficient', 'marks' => fn ($q) => $q->where('student_id', $studentId)])
             ->get();
 
-        $totalCoeff  = 0;
+        $totalCoeff = 0;
         $weightedSum = 0;
-        $hasAny      = false;
+        $hasAny = false;
 
         foreach ($evaluations as $eval) {
             $mark = $eval->marks->first();
             if ($mark && ! $mark->absent && $mark->score !== null) {
-                $coeff        = (float) $eval->template->coefficient;
-                $totalCoeff  += $coeff;
+                $coeff = (float) $eval->template->coefficient;
+                $totalCoeff += $coeff;
                 $weightedSum += (float) $mark->score * $coeff;
-                $hasAny       = true;
+                $hasAny = true;
             }
         }
 

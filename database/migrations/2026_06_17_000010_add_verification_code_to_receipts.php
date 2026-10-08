@@ -23,7 +23,7 @@ return new class extends Migration
     public static function makeCode(): string
     {
         do {
-            $code = 'DAL-' . strtoupper(Str::random(12));
+            $code = 'DAL-'.strtoupper(Str::random(12));
         } while (Receipt::where('verification_code', $code)->exists());
 
         return $code;

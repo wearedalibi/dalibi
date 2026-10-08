@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFeeCategorieRequest;
 use App\Http\Requests\UpdateFeeCategorieRequest;
 use App\Models\FeeCategorie;

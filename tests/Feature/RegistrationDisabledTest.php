@@ -18,10 +18,10 @@ class RegistrationDisabledTest extends TestCase
     {
         $response = $this->post('/register', [
             'firstname' => 'Hacker',
-            'lastname'  => 'Anon',
-            'email'     => 'hacker@example.com',
-            'gender'    => 'male',
-            'password'  => 'Password123!',
+            'lastname' => 'Anon',
+            'email' => 'hacker@example.com',
+            'gender' => 'male',
+            'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
         ]);
 

@@ -72,18 +72,18 @@ class DashboardTest extends TestCase
     public function test_teacher_dashboard_is_personalized(): void
     {
         $this->seed(RolesAndPermissionsSeeder::class);
-        $year    = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
-        $class   = Classroom::factory()->create();
+        $year = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
+        $class = Classroom::factory()->create();
         $subject = Subject::create(['name' => 'Maths', 'code' => 'MATH']);
 
         $teacher = User::factory()->create();
         $teacher->assignRole(Roles::TEACHER);
         SubjectAssignment::create([
-            'subject_id'       => $subject->id,
-            'teacher_id'       => $teacher->id,
-            'class_id'         => $class->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+            'class_id' => $class->id,
             'academic_year_id' => $year->id,
-            'active'           => true,
+            'active' => true,
         ]);
 
         $this->actingAs($teacher)
@@ -99,7 +99,7 @@ class DashboardTest extends TestCase
     public function test_dashboard_respects_selected_year_filter()
     {
         $school = School::factory()->create();
-        $old    = AcademicYear::create(['school_id' => $school->id, 'year' => '2024-2025', 'start_date' => '2024-09-01', 'end_date' => '2025-07-31', 'active' => false]);
+        $old = AcademicYear::create(['school_id' => $school->id, 'year' => '2024-2025', 'start_date' => '2024-09-01', 'end_date' => '2025-07-31', 'active' => false]);
         AcademicYear::create(['school_id' => $school->id, 'year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
 
         $this->actingAs(User::factory()->create())

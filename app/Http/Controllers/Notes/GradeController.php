@@ -10,13 +10,13 @@
  */
 
 namespace App\Http\Controllers\Notes;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
-use App\Models\ClassSubject;
 use App\Models\Classroom;
 use App\Models\ClassroomType;
+use App\Models\ClassSubject;
 use App\Models\Enrollment;
 use App\Models\Grade;
 use App\Models\GradingConfig;
@@ -205,9 +205,9 @@ class GradeController extends Controller
                 ->get();
 
             // Configuration de notation applicable au type de classe de l'élève
-            $school  = School::query()->first();
-            $type    = ClassroomType::find($enrollment->classroom?->classroom_type_id);
-            $config  = GradingConfig::resolveOrDefault($school, $type);
+            $school = School::query()->first();
+            $type = ClassroomType::find($enrollment->classroom?->classroom_type_id);
+            $config = GradingConfig::resolveOrDefault($school, $type);
             $service = app(GradingService::class);
 
             $grades = $classSubjects->map(function ($cs) use ($service, $student, $periodId, $config) {
@@ -215,20 +215,20 @@ class GradeController extends Controller
 
                 return [
                     'class_subject_id' => $cs->id,
-                    'subject'     => $cs->subject,
+                    'subject' => $cs->subject,
                     'coefficient' => (float) $cs->coefficient,
-                    'score'       => $grade?->score !== null ? (float) $grade->score : null,
-                    'comments'    => $grade?->comments,
-                    'rang'        => $service->subjectRanking($cs, $periodId, $config)->get($student->id)['rank'] ?? null,
+                    'score' => $grade?->score !== null ? (float) $grade->score : null,
+                    'comments' => $grade?->comments,
+                    'rang' => $service->subjectRanking($cs, $periodId, $config)->get($student->id)['rank'] ?? null,
                 ];
             });
 
             if ($enrollment->classroom) {
-                $ranking    = $service->classRanking($enrollment->classroom, $periodId, $config);
-                $me         = $ranking->get($student->id);
-                $average    = $me['average'] ?? null;
+                $ranking = $service->classRanking($enrollment->classroom, $periodId, $config);
+                $me = $ranking->get($student->id);
+                $average = $me['average'] ?? null;
                 $rangGlobal = $me['rank'] ?? null;
-                $mention    = $service->mention($average, $config);
+                $mention = $service->mention($average, $config);
             }
         }
 

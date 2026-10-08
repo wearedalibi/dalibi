@@ -22,41 +22,41 @@ class DocumentRenderer
             'ecole' => [
                 'label' => 'École',
                 'variables' => [
-                    'ecole.nom'    => 'Nom de l\'école',
+                    'ecole.nom' => 'Nom de l\'école',
                     'ecole.ministere' => 'Ministère de tutelle',
-                    'ecole.terme'  => 'Terme (ex. République Togolaise)',
+                    'ecole.terme' => 'Terme (ex. République Togolaise)',
                     'ecole.devise' => 'Devise',
-                    'ecole.bp'     => 'Boîte postale',
-                    'ecole.ville'  => 'Ville',
+                    'ecole.bp' => 'Boîte postale',
+                    'ecole.ville' => 'Ville',
                     'ecole.telephone' => 'Téléphone',
-                    'ecole.email'  => 'E-mail',
+                    'ecole.email' => 'E-mail',
                 ],
             ],
             'eleve' => [
                 'label' => 'Élève',
                 'variables' => [
-                    'eleve.nom_complet'    => 'Nom complet',
-                    'eleve.nom'            => 'Nom',
-                    'eleve.prenom'         => 'Prénom(s)',
-                    'eleve.matricule'      => 'Matricule',
+                    'eleve.nom_complet' => 'Nom complet',
+                    'eleve.nom' => 'Nom',
+                    'eleve.prenom' => 'Prénom(s)',
+                    'eleve.matricule' => 'Matricule',
                     'eleve.date_naissance' => 'Date de naissance',
                     'eleve.lieu_naissance' => 'Lieu de naissance',
-                    'eleve.sexe'           => 'Sexe',
-                    'eleve.nationalite'    => 'Nationalité',
+                    'eleve.sexe' => 'Sexe',
+                    'eleve.nationalite' => 'Nationalité',
                 ],
             ],
             'scolarite' => [
                 'label' => 'Scolarité',
                 'variables' => [
-                    'classe.nom'     => 'Classe',
+                    'classe.nom' => 'Classe',
                     'annee_scolaire' => 'Année scolaire',
                 ],
             ],
             'document' => [
                 'label' => 'Document',
                 'variables' => [
-                    'date.aujourdhui'  => 'Date du jour',
-                    'date.lieu'        => 'Fait à (ville)',
+                    'date.aujourdhui' => 'Date du jour',
+                    'date.lieu' => 'Fait à (ville)',
                     'document.reference' => 'N° de référence',
                     'signataire.titre' => 'Titre du signataire',
                 ],
@@ -75,34 +75,34 @@ class DocumentRenderer
         array $extra = []
     ): array {
         $vars = [
-            'ecole.nom'       => $school->name ?? '',
+            'ecole.nom' => $school->name ?? '',
             'ecole.ministere' => $school->ministry ?? 'Ministère des Enseignements Primaire, Secondaire et Technique',
-            'ecole.terme'     => $school->terme ?? 'République Togolaise',
-            'ecole.devise'    => $school->devise ?? '',
-            'ecole.bp'        => $school->po_box ?? '',
-            'ecole.ville'     => $school->city ?? '',
+            'ecole.terme' => $school->terme ?? 'République Togolaise',
+            'ecole.devise' => $school->devise ?? '',
+            'ecole.bp' => $school->po_box ?? '',
+            'ecole.ville' => $school->city ?? '',
             'ecole.telephone' => $school->phone ?? '',
-            'ecole.email'     => $school->email ?? '',
+            'ecole.email' => $school->email ?? '',
             'date.aujourdhui' => Carbon::now()->locale('fr')->isoFormat('D MMMM YYYY'),
-            'date.lieu'       => $school->city ?? '',
+            'date.lieu' => $school->city ?? '',
         ];
 
         if ($student) {
             $vars += [
-                'eleve.nom_complet'    => trim(($student->lastname ?? '') . ' ' . ($student->firstname ?? '')),
-                'eleve.nom'            => $student->lastname ?? '',
-                'eleve.prenom'         => $student->firstname ?? '',
-                'eleve.matricule'      => $student->matricule ?? '',
+                'eleve.nom_complet' => trim(($student->lastname ?? '').' '.($student->firstname ?? '')),
+                'eleve.nom' => $student->lastname ?? '',
+                'eleve.prenom' => $student->firstname ?? '',
+                'eleve.matricule' => $student->matricule ?? '',
                 'eleve.date_naissance' => $student->birth_date
                     ? Carbon::parse($student->birth_date)->locale('fr')->isoFormat('D MMMM YYYY')
                     : '',
                 'eleve.lieu_naissance' => $student->place_of_birth ?? '',
-                'eleve.sexe'           => match ($student->gender) {
-                    'male'   => 'Masculin',
+                'eleve.sexe' => match ($student->gender) {
+                    'male' => 'Masculin',
                     'female' => 'Féminin',
-                    default  => '',
+                    default => '',
                 },
-                'eleve.nationalite'    => $student->nationality ?? '',
+                'eleve.nationalite' => $student->nationality ?? '',
             ];
         }
 
@@ -129,8 +129,8 @@ class DocumentRenderer
      */
     public function render(DocumentTemplate $template, array $variables): string
     {
-        $body      = $this->renderBody($template, $variables);
-        $header    = $template->header_enabled ? $this->renderHeader($template, $variables) : '';
+        $body = $this->renderBody($template, $variables);
+        $header = $template->header_enabled ? $this->renderHeader($template, $variables) : '';
         $signature = $template->show_signature ? $this->renderSignature($template, $variables) : '';
         $watermark = $this->renderWatermark($template->school, $variables);
 
@@ -205,7 +205,7 @@ class DocumentRenderer
         }
 
         $layout = $header->layout;
-        $width  = (int) ($layout['width'] ?? DocumentHeader::CANVAS_WIDTH);
+        $width = (int) ($layout['width'] ?? DocumentHeader::CANVAS_WIDTH);
         $height = (int) ($layout['height'] ?? 130);
 
         $inner = '';
@@ -223,11 +223,11 @@ class DocumentRenderer
     /** Rend un bloc positionné de l'en-tête (texte interpolé ou logo). */
     protected function renderElement(array $el, DocumentTemplate $template, array $variables): string
     {
-        $x     = (int) ($el['x'] ?? 0);
-        $y     = (int) ($el['y'] ?? 0);
-        $w     = (int) ($el['w'] ?? 200);
+        $x = (int) ($el['x'] ?? 0);
+        $y = (int) ($el['y'] ?? 0);
+        $w = (int) ($el['w'] ?? 200);
         $align = in_array($el['align'] ?? 'left', ['left', 'center', 'right'], true) ? $el['align'] : 'left';
-        $base  = "position:absolute;left:{$x}px;top:{$y}px;width:{$w}px;text-align:{$align};";
+        $base = "position:absolute;left:{$x}px;top:{$y}px;width:{$w}px;text-align:{$align};";
 
         if (($el['type'] ?? 'text') === 'logo') {
             $logo = $this->logoDataUri($template->school);
@@ -235,7 +235,7 @@ class DocumentRenderer
                 return '';
             }
 
-            return '<div style="' . $base . '"><img src="' . $logo . '" style="max-width:' . $w . 'px;max-height:' . $w . 'px;object-fit:contain;" alt="logo"></div>';
+            return '<div style="'.$base.'"><img src="'.$logo.'" style="max-width:'.$w.'px;max-height:'.$w.'px;object-fit:contain;" alt="logo"></div>';
         }
 
         $content = e($this->interpolate((string) ($el['content'] ?? ''), $variables));
@@ -243,12 +243,12 @@ class DocumentRenderer
             return '';
         }
 
-        $size   = (int) ($el['fontSize'] ?? 12);
+        $size = (int) ($el['fontSize'] ?? 12);
         $weight = ! empty($el['bold']) ? 'bold' : 'normal';
         $italic = ! empty($el['italic']) ? 'italic' : 'normal';
-        $color  = $this->cssColor($el['color'] ?? null);
+        $color = $this->cssColor($el['color'] ?? null);
 
-        return '<div style="' . $base . "font-size:{$size}px;font-weight:{$weight};font-style:{$italic};color:{$color};line-height:1.3;\">" . $content . '</div>';
+        return '<div style="'.$base."font-size:{$size}px;font-weight:{$weight};font-style:{$italic};color:{$color};line-height:1.3;\">".$content.'</div>';
     }
 
     /** Filigrane (texte ou image) répété sur chaque page. */
@@ -259,21 +259,21 @@ class DocumentRenderer
             return '';
         }
 
-        $opacity  = max(0, min(100, (int) ($wm['opacity'] ?? 8))) / 100;
+        $opacity = max(0, min(100, (int) ($wm['opacity'] ?? 8))) / 100;
         $rotation = (int) ($wm['rotation'] ?? -30);
-        $size     = (int) ($wm['size'] ?? 60);
+        $size = (int) ($wm['size'] ?? 60);
 
         if (($wm['type'] ?? 'text') === 'image' && ! empty($wm['image_path']) && Storage::disk('media')->exists($wm['image_path'])) {
-            $mime    = Storage::disk('media')->mimeType($wm['image_path']) ?: 'image/png';
-            $data    = 'data:' . $mime . ';base64,' . base64_encode(Storage::disk('media')->get($wm['image_path']));
-            $content = '<img src="' . $data . '" style="width:' . ($size * 6) . 'px;max-width:90%;">';
+            $mime = Storage::disk('media')->mimeType($wm['image_path']) ?: 'image/png';
+            $data = 'data:'.$mime.';base64,'.base64_encode(Storage::disk('media')->get($wm['image_path']));
+            $content = '<img src="'.$data.'" style="width:'.($size * 6).'px;max-width:90%;">';
         } else {
             $text = e($this->interpolate((string) ($wm['text'] ?? ''), $variables));
             if (trim($text) === '') {
                 return '';
             }
-            $color   = $this->cssColor($wm['color'] ?? null);
-            $content = '<div style="font-size:' . $size . 'px;font-weight:bold;color:' . $color . ';white-space:nowrap;">' . $text . '</div>';
+            $color = $this->cssColor($wm['color'] ?? null);
+            $content = '<div style="font-size:'.$size.'px;font-weight:bold;color:'.$color.';white-space:nowrap;">'.$text.'</div>';
         }
 
         return <<<HTML
@@ -291,19 +291,19 @@ class DocumentRenderer
     protected function renderMinisterialHeader(DocumentTemplate $template, array $variables): string
     {
         $ministere = e($variables['ecole.ministere'] ?? '');
-        $nom       = e($variables['ecole.nom'] ?? '');
-        $terme     = e($variables['ecole.terme'] ?? '');
-        $devise    = e($variables['ecole.devise'] ?? '');
+        $nom = e($variables['ecole.nom'] ?? '');
+        $terme = e($variables['ecole.terme'] ?? '');
+        $devise = e($variables['ecole.devise'] ?? '');
 
         // Coordonnées : « B.P. … – Tél. : … » puis la ville.
         $ligne1 = collect([
-                ! empty($variables['ecole.bp']) ? 'B.P. ' . $variables['ecole.bp'] : null,
-                ! empty($variables['ecole.telephone']) ? 'Tél. : ' . $variables['ecole.telephone'] : null,
-            ])->filter()->implode(' – ');
+            ! empty($variables['ecole.bp']) ? 'B.P. '.$variables['ecole.bp'] : null,
+            ! empty($variables['ecole.telephone']) ? 'Tél. : '.$variables['ecole.telephone'] : null,
+        ])->filter()->implode(' – ');
         $ligne2 = $variables['ecole.ville'] ?? '';
-        $info   = e($ligne1) . ($ligne1 && $ligne2 ? '<br>' : '') . e($ligne2);
+        $info = e($ligne1).($ligne1 && $ligne2 ? '<br>' : '').e($ligne2);
 
-        $sep  = '<div class="mh-sep"></div>';
+        $sep = '<div class="mh-sep"></div>';
         $left = <<<HTML
             <div class="mh-ministere">{$ministere}</div>
             {$sep}
@@ -319,8 +319,8 @@ class DocumentRenderer
         // Colonne logo au centre uniquement si un logo est disponible.
         $logo = $this->logoDataUri($template->school);
         if ($logo) {
-            $center = '<td class="mh-col mh-logo"><img class="mh-logo-img" src="' . $logo . '" alt="logo"></td>';
-            $cols   = "<td class=\"mh-col mh-side\" style=\"width:38%\">{$left}</td>{$center}<td class=\"mh-col mh-side\" style=\"width:38%\">{$right}</td>";
+            $center = '<td class="mh-col mh-logo"><img class="mh-logo-img" src="'.$logo.'" alt="logo"></td>';
+            $cols = "<td class=\"mh-col mh-side\" style=\"width:38%\">{$left}</td>{$center}<td class=\"mh-col mh-side\" style=\"width:38%\">{$right}</td>";
         } else {
             $cols = "<td class=\"mh-col mh-side\" style=\"width:50%\">{$left}</td><td class=\"mh-col mh-side\" style=\"width:50%\">{$right}</td>";
         }
@@ -348,7 +348,7 @@ class DocumentRenderer
         if ($logoPath && Storage::disk('media')->exists($logoPath)) {
             $mime = Storage::disk('media')->mimeType($logoPath) ?: 'image/png';
 
-            return 'data:' . $mime . ';base64,' . base64_encode(Storage::disk('media')->get($logoPath));
+            return 'data:'.$mime.';base64,'.base64_encode(Storage::disk('media')->get($logoPath));
         }
 
         return null;
@@ -356,8 +356,8 @@ class DocumentRenderer
 
     protected function renderSignature(DocumentTemplate $template, array $variables): string
     {
-        $lieu  = e($variables['date.lieu'] ?? '');
-        $date  = e($variables['date.aujourdhui'] ?? '');
+        $lieu = e($variables['date.lieu'] ?? '');
+        $date = e($variables['date.aujourdhui'] ?? '');
         $titre = e($template->signatory_title ?: ($variables['signataire.titre'] ?? 'Le Directeur'));
 
         return <<<HTML
@@ -377,7 +377,7 @@ class DocumentRenderer
      */
     public function headerCss(): string
     {
-        return <<<CSS
+        return <<<'CSS'
         .doc-mheader { margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 10px;
             font-family: 'DejaVu Serif', 'Times New Roman', serif; color: #1a1a1a; }
         .mh-table { width: 100%; border-collapse: collapse; }
@@ -398,7 +398,7 @@ class DocumentRenderer
         // L'en-tête ministérielle (règles .mh-* / .doc-mheader) vient d'une source
         // unique — headerCss() — pour que les documents officiels partagent
         // exactement l'en-tête du bulletin. Ici, seuls le corps et la signature.
-        return $this->headerCss() . <<<CSS
+        return $this->headerCss().<<<'CSS'
         * { box-sizing: border-box; }
         body { font-family: 'DejaVu Sans', sans-serif; color: #1a1a1a; font-size: 13px; line-height: 1.6; margin: 0; }
         .doc-body { margin: 28px 0; }

@@ -27,11 +27,11 @@ class UserPayrollProfileTest extends TestCase
     private function payload(array $override = []): array
     {
         return array_merge([
-            'job_title'      => 'Enseignant',
-            'contract_type'  => 'CDI',
-            'base_salary'    => 120000,
+            'job_title' => 'Enseignant',
+            'contract_type' => 'CDI',
+            'base_salary' => 120000,
             'payment_method' => 'CASH',
-            'status'         => 'active',
+            'status' => 'active',
         ], $override);
     }
 
@@ -52,7 +52,7 @@ class UserPayrollProfileTest extends TestCase
     public function test_updating_again_does_not_create_a_second_profile(): void
     {
         $target = User::factory()->create();
-        $admin  = $this->admin();
+        $admin = $this->admin();
 
         $this->actingAs($admin)->put(route('users.payroll.update', $target->id), $this->payload());
         $this->actingAs($admin)->put(route('users.payroll.update', $target->id), $this->payload(['base_salary' => 150000]));
@@ -64,7 +64,7 @@ class UserPayrollProfileTest extends TestCase
     public function test_can_detach_profile_without_payslips(): void
     {
         $target = User::factory()->create();
-        $admin  = $this->admin();
+        $admin = $this->admin();
         $this->actingAs($admin)->put(route('users.payroll.update', $target->id), $this->payload());
 
         $this->actingAs($admin)->delete(route('users.payroll.destroy', $target->id))->assertRedirect();
@@ -75,7 +75,7 @@ class UserPayrollProfileTest extends TestCase
     public function test_requires_edit_employees_permission(): void
     {
         $teacher = tap(User::factory()->create(), fn ($u) => $u->assignRole(Roles::TEACHER));
-        $target  = User::factory()->create();
+        $target = User::factory()->create();
 
         $this->actingAs($teacher)
             ->put(route('users.payroll.update', $target->id), $this->payload())

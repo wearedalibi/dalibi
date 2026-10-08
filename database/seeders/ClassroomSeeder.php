@@ -58,11 +58,11 @@ class ClassroomSeeder extends Seeder
             // Idempotent : on insère seulement si absent (ne pas réécrire l'id existant → FK enrollments)
             if (! Classroom::where('code', $class['code'])->exists()) {
                 Classroom::create([
-                    'name'              => $class['name'],
-                    'code'              => $class['code'],
-                    'capacity'          => $class['capacity'],
+                    'name' => $class['name'],
+                    'code' => $class['code'],
+                    'capacity' => $class['capacity'],
                     'classroom_type_id' => $class['type_id'],
-                    'active'            => true,
+                    'active' => true,
                 ]);
             }
         }

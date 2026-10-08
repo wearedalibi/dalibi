@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Archives;
 
 use App\Http\Controllers\Controller;
-use App\Constants\Roles;
 use App\Models\ArchivedDocument;
 use App\Models\Classroom;
 use App\Models\DocumentTag;
@@ -17,7 +16,6 @@ use Inertia\Response;
 
 class ArchiveController extends Controller
 {
-
     private const TYPES = ['student' => Student::class, 'classroom' => Classroom::class];
 
     private function authorizeManage(Request $request): void
@@ -33,17 +31,17 @@ class ArchiveController extends Controller
     {
         $this->authorizeManage($request);
 
-        $search   = $request->string('search')->toString();
+        $search = $request->string('search')->toString();
         $category = $request->string('category')->toString();
-        $tagIds   = array_filter((array) $request->input('tags', []));
+        $tagIds = array_filter((array) $request->input('tags', []));
         $dateFrom = $request->string('date_from')->toString();
-        $dateTo   = $request->string('date_to')->toString();
-        $trashed  = $request->boolean('trashed');
+        $dateTo = $request->string('date_to')->toString();
+        $trashed = $request->boolean('trashed');
 
         $documents = ArchivedDocument::with(['tags:id,name,color', 'archivedBy:id,firstname,lastname', 'documentable'])
             ->when($trashed, fn ($q) => $q->onlyTrashed())
             ->when($search, fn ($q) => $q->where(function ($w) use ($search) {
-                $s = '%' . strtolower($search) . '%';
+                $s = '%'.strtolower($search).'%';
                 $w->whereRaw('LOWER(title) LIKE ?', [$s])
                     ->orWhereRaw('LOWER(reference) LIKE ?', [$s])
                     ->orWhereRaw('LOWER(description) LIKE ?', [$s]);
@@ -56,36 +54,36 @@ class ArchiveController extends Controller
             ->paginate(15)
             ->withQueryString()
             ->through(fn (ArchivedDocument $d) => [
-                'id'            => $d->id,
-                'reference'     => $d->reference,
-                'title'         => $d->title,
-                'description'   => $d->description,
-                'category'      => $d->category,
+                'id' => $d->id,
+                'reference' => $d->reference,
+                'title' => $d->title,
+                'description' => $d->description,
+                'category' => $d->category,
                 'original_name' => $d->original_name,
-                'mime'          => $d->mime,
-                'size'          => $d->size,
+                'mime' => $d->mime,
+                'size' => $d->size,
                 'retention_until' => $d->retention_until?->format('Y-m-d'),
-                'archived_by'   => $d->archivedBy?->name,
-                'archived_at'   => $d->archived_at?->format('d/m/Y'),
-                'link'          => $this->linkLabel($d),
-                'tags'          => $d->tags->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'color' => $t->color]),
+                'archived_by' => $d->archivedBy?->name,
+                'archived_at' => $d->archived_at?->format('d/m/Y'),
+                'link' => $this->linkLabel($d),
+                'tags' => $d->tags->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'color' => $t->color]),
             ]);
 
         return Inertia::render('Archives/Index', [
-            'documents'  => $documents,
-            'tags'       => DocumentTag::orderBy('name')->get(['id', 'name', 'color']),
+            'documents' => $documents,
+            'tags' => DocumentTag::orderBy('name')->get(['id', 'name', 'color']),
             'categories' => ArchivedDocument::CATEGORIES,
             'classrooms' => Classroom::orderBy('name')->get(['id', 'name', 'code']),
-            'filters'    => [
-                'search'    => $search,
-                'category'  => $category,
-                'tags'      => array_values($tagIds),
+            'filters' => [
+                'search' => $search,
+                'category' => $category,
+                'tags' => array_values($tagIds),
                 'date_from' => $dateFrom,
-                'date_to'   => $dateTo,
-                'trashed'   => $trashed,
+                'date_to' => $dateTo,
+                'trashed' => $trashed,
             ],
             'stats' => [
-                'total'   => ArchivedDocument::count(),
+                'total' => ArchivedDocument::count(),
                 'trashed' => ArchivedDocument::onlyTrashed()->count(),
             ],
         ]);
@@ -101,24 +99,24 @@ class ArchiveController extends Controller
         $path = $file->store('archives', 'secure');
 
         $document = ArchivedDocument::create([
-            'reference'      => ArchivedDocument::nextReference(),
-            'title'          => $data['title'],
-            'description'    => $data['description'] ?? null,
-            'category'       => $data['category'],
-            'path'           => $path,
-            'disk'           => 'secure',
-            'original_name'  => $file->getClientOriginalName(),
-            'mime'           => $file->getClientMimeType(),
-            'size'           => $file->getSize(),
+            'reference' => ArchivedDocument::nextReference(),
+            'title' => $data['title'],
+            'description' => $data['description'] ?? null,
+            'category' => $data['category'],
+            'path' => $path,
+            'disk' => 'secure',
+            'original_name' => $file->getClientOriginalName(),
+            'mime' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
             'retention_until' => $data['retention_until'] ?? null,
-            'archived_by'    => $request->user()->id,
-            'archived_at'    => now(),
+            'archived_by' => $request->user()->id,
+            'archived_at' => now(),
             ...$this->resolveDocumentable($data),
         ]);
 
         $document->tags()->sync($this->resolveTags($data['tags'] ?? []));
 
-        return back()->with('success', 'Document archivé (' . $document->reference . ').');
+        return back()->with('success', 'Document archivé ('.$document->reference.').');
     }
 
     public function update(Request $request, ArchivedDocument $archive): RedirectResponse
@@ -128,9 +126,9 @@ class ArchiveController extends Controller
         $data = $this->validateDocument($request, fileRequired: false);
 
         $archive->update([
-            'title'           => $data['title'],
-            'description'     => $data['description'] ?? null,
-            'category'        => $data['category'],
+            'title' => $data['title'],
+            'description' => $data['description'] ?? null,
+            'category' => $data['category'],
             'retention_until' => $data['retention_until'] ?? null,
             ...$this->resolveDocumentable($data),
         ]);
@@ -180,18 +178,18 @@ class ArchiveController extends Controller
     private function validateDocument(Request $request, bool $fileRequired): array
     {
         return $request->validate([
-            'title'           => ['required', 'string', 'max:200'],
-            'description'     => ['nullable', 'string', 'max:2000'],
-            'category'        => ['required', 'in:' . implode(',', array_keys(ArchivedDocument::CATEGORIES))],
-            'file'            => [$fileRequired ? 'required' : 'nullable', 'file', 'max:20480', 'mimes:pdf,doc,docx,xls,xlsx,csv,txt,jpg,jpeg,png,webp,zip'],
-            'tags'            => ['array'],
-            'tags.*'          => ['string', 'max:50'],
+            'title' => ['required', 'string', 'max:200'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'category' => ['required', 'in:'.implode(',', array_keys(ArchivedDocument::CATEGORIES))],
+            'file' => [$fileRequired ? 'required' : 'nullable', 'file', 'max:20480', 'mimes:pdf,doc,docx,xls,xlsx,csv,txt,jpg,jpeg,png,webp,zip'],
+            'tags' => ['array'],
+            'tags.*' => ['string', 'max:50'],
             'retention_until' => ['nullable', 'date'],
-            'link_type'       => ['nullable', 'in:student,classroom'],
+            'link_type' => ['nullable', 'in:student,classroom'],
             'link_classroom_id' => ['nullable', 'uuid', 'exists:classes,id'],
             'link_student_matricule' => ['nullable', 'string', 'max:50'],
         ], [
-            'file.max'   => 'Le fichier ne doit pas dépasser 20 Mo.',
+            'file.max' => 'Le fichier ne doit pas dépasser 20 Mo.',
             'file.mimes' => 'Format non supporté (PDF, Office, image, CSV, TXT, ZIP).',
         ]);
     }
@@ -237,9 +235,9 @@ class ArchiveController extends Controller
         }
 
         return match ($d->documentable_type) {
-            Student::class   => 'Élève : ' . $d->documentable->name,
-            Classroom::class => 'Classe : ' . $d->documentable->name,
-            default          => null,
+            Student::class => 'Élève : '.$d->documentable->name,
+            Classroom::class => 'Classe : '.$d->documentable->name,
+            default => null,
         };
     }
 }

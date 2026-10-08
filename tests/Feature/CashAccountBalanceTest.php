@@ -8,10 +8,10 @@ use App\Models\CashAccount;
 use App\Models\Classroom;
 use App\Models\Enrollment;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\AccountingService;
 use App\Services\InvoiceService;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,13 +35,13 @@ class CashAccountBalanceTest extends TestCase
 
     private function invoice(float $total = 50000): Invoice
     {
-        $school  = School::factory()->create();
-        $year    = AcademicYear::create(['school_id' => $school->id, 'year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
-        $class   = Classroom::create(['name' => '6A', 'code' => Str::random(4), 'capacity' => 40, 'active' => true]);
+        $school = School::factory()->create();
+        $year = AcademicYear::create(['school_id' => $school->id, 'year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
+        $class = Classroom::create(['name' => '6A', 'code' => Str::random(4), 'capacity' => 40, 'active' => true]);
         $student = Student::create(['firstname' => 'Koffi', 'lastname' => 'Mensah', 'gender' => 'male', 'birth_date' => '2012-01-01', 'user_id' => User::factory()->create()->id, 'active' => true, 'matricule' => Str::random(6)]);
-        $enr     = Enrollment::create(['school_id' => $school->id, 'student_id' => $student->id, 'class_id' => $class->id, 'academic_year_id' => $year->id, 'enrollment_code' => 'INS-' . Str::random(5), 'enrollment_date' => '2025-09-02', 'status' => 'PENDING', 'academic_status' => 'en_cours']);
+        $enr = Enrollment::create(['school_id' => $school->id, 'student_id' => $student->id, 'class_id' => $class->id, 'academic_year_id' => $year->id, 'enrollment_code' => 'INS-'.Str::random(5), 'enrollment_date' => '2025-09-02', 'status' => 'PENDING', 'academic_status' => 'en_cours']);
 
-        return Invoice::create(['enrollment_id' => $enr->id, 'invoice_number' => 'INV-' . Str::random(6), 'subtotal' => $total, 'discount_amount' => 0, 'total' => $total, 'amount_paid' => 0, 'amount_remaining' => $total, 'status' => 'ISSUED', 'issued_at' => '2025-09-02']);
+        return Invoice::create(['enrollment_id' => $enr->id, 'invoice_number' => 'INV-'.Str::random(6), 'subtotal' => $total, 'discount_amount' => 0, 'total' => $total, 'amount_paid' => 0, 'amount_remaining' => $total, 'status' => 'ISSUED', 'issued_at' => '2025-09-02']);
     }
 
     private function cash(string $type, string $name): CashAccount
@@ -66,9 +66,9 @@ class CashAccountBalanceTest extends TestCase
     public function test_payment_credits_the_matching_type(): void
     {
         $this->actingAs($this->admin());
-        $cash  = $this->cash('CASH', 'Espèces');
-        $momo  = $this->cash('MOBILE_MONEY', 'Mobile Money');
-        $bank  = $this->cash('BANK', 'Banque');
+        $cash = $this->cash('CASH', 'Espèces');
+        $momo = $this->cash('MOBILE_MONEY', 'Mobile Money');
+        $bank = $this->cash('BANK', 'Banque');
         $invoice = $this->invoice(100000);
 
         app(InvoiceService::class)->recordPayment($invoice, ['amount' => 10000, 'payment_method' => 'MOBILE_MONEY', 'paid_at' => '2025-09-03']);
@@ -89,7 +89,7 @@ class CashAccountBalanceTest extends TestCase
         $payment = app(InvoiceService::class)->recordPayment($invoice, ['amount' => 20000, 'payment_method' => 'CASH', 'paid_at' => '2025-09-03']);
         $this->assertEqualsWithDelta(20000, (float) $cash->fresh()->balance, 0.01);
 
-        app(\App\Services\AccountingService::class)->cancelPaymentTransaction($payment->fresh());
+        app(AccountingService::class)->cancelPaymentTransaction($payment->fresh());
 
         $this->assertEqualsWithDelta(0, (float) $cash->fresh()->balance, 0.01);
     }

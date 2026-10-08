@@ -16,15 +16,15 @@ class CountryController extends Controller
 
         $countries = Country::query()
             ->when($search, fn ($q) => $q->where(fn ($q) => $q
-                ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
-                ->orWhereRaw('LOWER(code) LIKE ?', ['%' . strtolower($search) . '%'])))
+                ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
+                ->orWhereRaw('LOWER(code) LIKE ?', ['%'.strtolower($search).'%'])))
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Parametres/Countries/Index', [
             'countries' => $countries,
-            'filters'   => ['search' => $search ?? ''],
+            'filters' => ['search' => $search ?? ''],
         ]);
     }
 

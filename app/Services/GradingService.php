@@ -60,7 +60,7 @@ class GradingService
     public function classRanking(Classroom $class, string $periodId, GradingConfig $config): Collection
     {
         $classSubjects = $class->classSubjects()->get(['id', 'coefficient']);
-        $coeffs        = $classSubjects->pluck('coefficient', 'id');
+        $coeffs = $classSubjects->pluck('coefficient', 'id');
 
         $studentIds = $this->activeStudentIds($class->id);
 
@@ -76,7 +76,7 @@ class GradingService
 
             return [
                 'student_id' => $studentId,
-                'average'    => $this->weightedAverage($scores, $coeffs, $config)['average'],
+                'average' => $this->weightedAverage($scores, $coeffs, $config)['average'],
             ];
         });
 
@@ -99,7 +99,7 @@ class GradingService
 
         $rows = $studentIds->map(fn ($studentId) => [
             'student_id' => $studentId,
-            'average'    => isset($scores[$studentId]) ? $this->round((float) $scores[$studentId], $config) : null,
+            'average' => isset($scores[$studentId]) ? $this->round((float) $scores[$studentId], $config) : null,
         ]);
 
         return $this->assignRanks($rows);
@@ -109,23 +109,23 @@ class GradingService
      * Moyenne annuelle pondérée par le poids des périodes (2 ou 3 selon le type de classe).
      *
      * @param  Collection<int, AcademicPeriod>  $periods
-     * @param  Collection<int, ClassSubject>    $classSubjects
+     * @param  Collection<int, ClassSubject>  $classSubjects
      */
     public function annualAverage(string $studentId, Collection $periods, Collection $classSubjects, GradingConfig $config): ?float
     {
         $totalWeight = 0.0;
-        $weighted    = 0.0;
-        $hasAny      = false;
+        $weighted = 0.0;
+        $hasAny = false;
 
         foreach ($periods as $period) {
             $avg = $this->periodAverage($studentId, $period->id, $classSubjects, $config)['average'];
             if ($avg === null) {
                 continue;
             }
-            $weight       = (float) ($period->weight ?? 1);
+            $weight = (float) ($period->weight ?? 1);
             $totalWeight += $weight;
-            $weighted    += $avg * $weight;
-            $hasAny       = true;
+            $weighted += $avg * $weight;
+            $hasAny = true;
         }
 
         return ($hasAny && $totalWeight > 0) ? $this->round($weighted / $totalWeight, $config) : null;
@@ -146,7 +146,7 @@ class GradingService
     {
         return [
             'classe' => $this->subjectAverageByType($classSubject, $studentId, $periodId, null, 'continu'),
-            'compo'  => $this->subjectAverageByType($classSubject, $studentId, $periodId, null, 'composition'),
+            'compo' => $this->subjectAverageByType($classSubject, $studentId, $periodId, null, 'composition'),
         ];
     }
 
@@ -179,7 +179,7 @@ class GradingService
             ->get();
 
         $weight = 0.0;
-        $sum    = 0.0;
+        $sum = 0.0;
 
         foreach ($evaluations as $evaluation) {
             $mark = $evaluation->marks->first();
@@ -187,12 +187,12 @@ class GradingService
                 continue;
             }
 
-            $max        = (float) ($evaluation->template->max_score ?: 20);
-            $coeff      = (float) ($evaluation->template->coefficient ?: 1);
+            $max = (float) ($evaluation->template->max_score ?: 20);
+            $coeff = (float) ($evaluation->template->coefficient ?: 1);
             $normalized = $max > 0 ? ((float) $mark->score / $max) * 20 : 0.0;
 
             $weight += $coeff;
-            $sum    += $normalized * $coeff;
+            $sum += $normalized * $coeff;
         }
 
         return $weight > 0 ? round($sum / $weight, 2) : null;
@@ -252,11 +252,11 @@ class GradingService
             }
 
             $index[$evaluation->class_subject_id][$periodId][] = [
-                'type_id'  => $template->evaluation_type_id,
+                'type_id' => $template->evaluation_type_id,
                 'category' => $template->evaluationType?->category,
-                'coeff'    => (float) ($template->coefficient ?: 1),
-                'max'      => (float) ($template->max_score ?: 20),
-                'scores'   => $scores,
+                'coeff' => (float) ($template->coefficient ?: 1),
+                'max' => (float) ($template->max_score ?: 20),
+                'scores' => $scores,
             ];
         }
 
@@ -274,7 +274,7 @@ class GradingService
         $entries = $index[$classSubjectId][$periodId] ?? [];
 
         $weight = 0.0;
-        $sum    = 0.0;
+        $sum = 0.0;
 
         foreach ($entries as $e) {
             if ($typeId !== null && $e['type_id'] !== $typeId) {
@@ -287,12 +287,12 @@ class GradingService
                 continue;
             }
 
-            $max        = $e['max'] > 0 ? $e['max'] : 20;
-            $coeff      = $e['coeff'] > 0 ? $e['coeff'] : 1;
+            $max = $e['max'] > 0 ? $e['max'] : 20;
+            $coeff = $e['coeff'] > 0 ? $e['coeff'] : 1;
             $normalized = ($e['scores'][$studentId] / $max) * 20;
 
             $weight += $coeff;
-            $sum    += $normalized * $coeff;
+            $sum += $normalized * $coeff;
         }
 
         return $weight > 0 ? round($sum / $weight, 2) : null;
@@ -308,7 +308,7 @@ class GradingService
     {
         return [
             'classe' => $this->subjectAverageFromIndex($index, $classSubjectId, $studentId, $periodId, null, 'continu'),
-            'compo'  => $this->subjectAverageFromIndex($index, $classSubjectId, $studentId, $periodId, null, 'composition'),
+            'compo' => $this->subjectAverageFromIndex($index, $classSubjectId, $studentId, $periodId, null, 'composition'),
         ];
     }
 
@@ -321,17 +321,17 @@ class GradingService
     public function periodAverageFromIndex(array $index, string $studentId, string $periodId, Collection $classSubjects, GradingConfig $config): ?float
     {
         $totalCoeff = 0.0;
-        $weighted   = 0.0;
+        $weighted = 0.0;
 
         foreach ($classSubjects as $cs) {
-            $cc  = $this->subjectClasseCompoFromIndex($index, $cs->id, $studentId, $periodId);
+            $cc = $this->subjectClasseCompoFromIndex($index, $cs->id, $studentId, $periodId);
             $moy = $this->combineClasseCompo($cc['classe'], $cc['compo'], $config);
             if ($moy === null) {
                 continue;
             }
-            $coeff       = (float) $cs->coefficient;
+            $coeff = (float) $cs->coefficient;
             $totalCoeff += $coeff;
-            $weighted   += $moy * $coeff;
+            $weighted += $moy * $coeff;
         }
 
         return $totalCoeff > 0 ? $this->round($weighted / $totalCoeff, $config) : null;
@@ -348,16 +348,16 @@ class GradingService
     public function annualAverageFromIndex(array $index, string $studentId, Collection $periods, Collection $classSubjects, GradingConfig $config): ?float
     {
         $totalWeight = 0.0;
-        $weighted    = 0.0;
+        $weighted = 0.0;
 
         foreach ($periods as $period) {
             $avg = $this->periodAverageFromIndex($index, $studentId, $period->id, $classSubjects, $config);
             if ($avg === null) {
                 continue;
             }
-            $weight       = (float) ($period->weight ?? 1);
+            $weight = (float) ($period->weight ?? 1);
             $totalWeight += $weight;
-            $weighted    += $avg * $weight;
+            $weighted += $avg * $weight;
         }
 
         return $totalWeight > 0 ? $this->round($weighted / $totalWeight, $config) : null;
@@ -376,8 +376,8 @@ class GradingService
             return $this->round($classe, $config);
         }
 
-        $cw    = (float) $config->class_weight;
-        $pw    = (float) $config->comp_weight;
+        $cw = (float) $config->class_weight;
+        $pw = (float) $config->comp_weight;
         $total = $cw + $pw;
 
         return $total > 0 ? $this->round(($classe * $cw + $compo * $pw) / $total, $config) : null;
@@ -400,22 +400,22 @@ class GradingService
     public function periodAverageFromEvaluations(string $studentId, string $periodId, Collection $classSubjects, GradingConfig $config): array
     {
         $totalCoeff = 0.0;
-        $weighted   = 0.0;
+        $weighted = 0.0;
 
         foreach ($classSubjects as $classSubject) {
             $moyenne = $this->subjectMoyenne($classSubject, $studentId, $periodId, $config);
             if ($moyenne === null) {
                 continue;
             }
-            $coeff       = (float) $classSubject->coefficient;
+            $coeff = (float) $classSubject->coefficient;
             $totalCoeff += $coeff;
-            $weighted   += $moyenne * $coeff;
+            $weighted += $moyenne * $coeff;
         }
 
         return [
-            'average'      => $totalCoeff > 0 ? $this->round($weighted / $totalCoeff, $config) : null,
+            'average' => $totalCoeff > 0 ? $this->round($weighted / $totalCoeff, $config) : null,
             'total_points' => round($weighted, $config->round_precision),
-            'total_coeff'  => $totalCoeff,
+            'total_coeff' => $totalCoeff,
         ];
     }
 
@@ -438,21 +438,21 @@ class GradingService
     private function weightedAverage(Collection $scores, Collection $coeffs, GradingConfig $config): array
     {
         $totalCoeff = 0.0;
-        $weighted   = 0.0;
+        $weighted = 0.0;
 
         foreach ($scores as $classSubjectId => $score) {
             if ($score === null) {
                 continue;
             }
-            $coeff       = (float) ($coeffs[$classSubjectId] ?? 1);
+            $coeff = (float) ($coeffs[$classSubjectId] ?? 1);
             $totalCoeff += $coeff;
-            $weighted   += (float) $score * $coeff;
+            $weighted += (float) $score * $coeff;
         }
 
         return [
-            'average'      => $totalCoeff > 0 ? $this->round($weighted / $totalCoeff, $config) : null,
+            'average' => $totalCoeff > 0 ? $this->round($weighted / $totalCoeff, $config) : null,
             'total_points' => round($weighted, $config->round_precision),
-            'total_coeff'  => $totalCoeff,
+            'total_coeff' => $totalCoeff,
         ];
     }
 
@@ -475,20 +475,21 @@ class GradingService
         $sorted = $rows->sortByDesc(fn ($r) => $r['average'] ?? -1)->values();
         $result = collect();
 
-        $rank     = 0;
+        $rank = 0;
         $position = 0;
-        $lastAvg  = null;
+        $lastAvg = null;
 
         foreach ($sorted as $row) {
             $position++;
 
             if ($row['average'] === null) {
                 $result[$row['student_id']] = ['average' => null, 'rank' => null];
+
                 continue;
             }
 
             if ($lastAvg === null || $row['average'] < $lastAvg) {
-                $rank    = $position;
+                $rank = $position;
                 $lastAvg = $row['average'];
             }
 

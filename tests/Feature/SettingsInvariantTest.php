@@ -28,16 +28,16 @@ class SettingsInvariantTest extends TestCase
     private function year(string $year, bool $active): AcademicYear
     {
         return AcademicYear::create([
-            'year'       => $year,
-            'start_date' => substr($year, 0, 4) . '-09-01',
-            'end_date'   => substr($year, 5, 4) . '-07-01',
-            'active'     => $active,
+            'year' => $year,
+            'start_date' => substr($year, 0, 4).'-09-01',
+            'end_date' => substr($year, 5, 4).'-07-01',
+            'active' => $active,
         ]);
     }
 
     public function test_activating_a_year_deactivates_the_others(): void
     {
-        $first  = $this->year('2024-2025', true);
+        $first = $this->year('2024-2025', true);
         $second = $this->year('2025-2026', true);
 
         $this->assertFalse($first->fresh()->active);
@@ -47,7 +47,7 @@ class SettingsInvariantTest extends TestCase
 
     public function test_reactivating_an_older_year_switches_the_flag(): void
     {
-        $first  = $this->year('2024-2025', true);
+        $first = $this->year('2024-2025', true);
         $second = $this->year('2025-2026', true);
 
         // Comme dans une requête réelle, l'année est rechargée depuis la base

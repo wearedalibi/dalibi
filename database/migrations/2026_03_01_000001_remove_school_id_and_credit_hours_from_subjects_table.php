@@ -25,7 +25,7 @@ return new class extends Migration
         Schema::table('subjects', function (Blueprint $table) {
             $table->uuid('school_id')->nullable()->after('id');
             $table->integer('credit_hours')->nullable()->after('description');
-            
+
             $table->foreign('school_id')
                 ->references('id')
                 ->on('schools')

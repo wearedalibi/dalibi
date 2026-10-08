@@ -23,20 +23,20 @@ class DocumentHeaderController extends Controller
         $school = $this->activeSchool();
         $header = $school->documentHeader;
 
-        $config  = $header
+        $config = $header
             ? ['layout' => $header->layout, 'watermark' => $header->watermark]
             : DocumentHeader::defaultLayout($school);
 
         return Inertia::render('Parametres/Documents/HeaderDesigner', [
-            'header'            => $config,
-            'preset'            => $header?->preset ?? 'ministeriel',
-            'presets'           => DocumentHeader::PRESETS,
-            'default'           => DocumentHeader::defaultLayout($school),
+            'header' => $config,
+            'preset' => $header?->preset ?? 'ministeriel',
+            'presets' => DocumentHeader::PRESETS,
+            'default' => DocumentHeader::defaultLayout($school),
             'watermarkImageUrl' => $this->mediaUrl($config['watermark']['image_path'] ?? null),
-            'variables'         => DocumentRenderer::variableCatalog(),
-            'canvasWidth'       => DocumentHeader::CANVAS_WIDTH,
-            'school'            => [
-                'name'     => $school->name,
+            'variables' => DocumentRenderer::variableCatalog(),
+            'canvasWidth' => DocumentHeader::CANVAS_WIDTH,
+            'school' => [
+                'name' => $school->name,
                 'logo_url' => $this->mediaUrl($school->logo),
             ],
         ]);
@@ -48,13 +48,13 @@ class DocumentHeaderController extends Controller
         abort_unless($request->user()->can('edit_document_headers'), 403);
 
         $validated = $request->validate([
-            'preset'          => ['required', Rule::in(array_keys(DocumentHeader::PRESETS))],
-            'layout'          => ['required', 'string'],
-            'watermark'       => ['required', 'string'],
+            'preset' => ['required', Rule::in(array_keys(DocumentHeader::PRESETS))],
+            'layout' => ['required', 'string'],
+            'watermark' => ['required', 'string'],
             'watermark_image' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $layout    = json_decode($validated['layout'], true);
+        $layout = json_decode($validated['layout'], true);
         $watermark = json_decode($validated['watermark'], true);
 
         abort_unless(is_array($layout) && is_array($watermark), 422, 'Données invalides.');
@@ -72,8 +72,8 @@ class DocumentHeaderController extends Controller
         DocumentHeader::updateOrCreate(
             ['school_id' => $school->id],
             [
-                'preset'    => $validated['preset'],
-                'layout'    => $this->sanitizeLayout($layout),
+                'preset' => $validated['preset'],
+                'layout' => $this->sanitizeLayout($layout),
                 'watermark' => $watermark,
             ],
         );
@@ -85,8 +85,8 @@ class DocumentHeaderController extends Controller
     private function sanitizeLayout(array $layout): array
     {
         return [
-            'width'    => (int) ($layout['width'] ?? DocumentHeader::CANVAS_WIDTH),
-            'height'   => max(60, min(400, (int) ($layout['height'] ?? 130))),
+            'width' => (int) ($layout['width'] ?? DocumentHeader::CANVAS_WIDTH),
+            'height' => max(60, min(400, (int) ($layout['height'] ?? 130))),
             'elements' => array_values(array_filter(
                 $layout['elements'] ?? [],
                 fn ($e) => is_array($e) && isset($e['type']),

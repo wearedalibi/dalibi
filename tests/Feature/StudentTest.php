@@ -13,7 +13,8 @@ class StudentTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const DOB_MALE   = '2010-01-01';
+    private const DOB_MALE = '2010-01-01';
+
     private const DOB_FEMALE = '2011-01-01';
 
     protected function setUp(): void
@@ -55,24 +56,24 @@ class StudentTest extends TestCase
         $counter++;
 
         return Student::create(array_merge([
-            'firstname'  => 'Koffi',
-            'lastname'   => 'Amegah',
-            'gender'     => 'male',
+            'firstname' => 'Koffi',
+            'lastname' => 'Amegah',
+            'gender' => 'male',
             'birth_date' => '2010-05-15',
-            'user_id'    => $this->user()->id,
-            'active'     => true,
-            'matricule'  => 'TESSTU' . str_pad($counter, 3, '0', STR_PAD_LEFT),
+            'user_id' => $this->user()->id,
+            'active' => true,
+            'matricule' => 'TESSTU'.str_pad($counter, 3, '0', STR_PAD_LEFT),
         ], $overrides));
     }
 
     private function validPayload(array $overrides = []): array
     {
         return array_merge([
-            'firstname'  => 'Koffi',
-            'lastname'   => 'Amegah',
-            'gender'     => 'male',
+            'firstname' => 'Koffi',
+            'lastname' => 'Amegah',
+            'gender' => 'male',
             'birth_date' => '2010-05-15',
-            'active'     => true,
+            'active' => true,
 
             'information' => [
                 'admission_type' => 'new',
@@ -80,9 +81,9 @@ class StudentTest extends TestCase
 
             'parent' => [
                 'father_firstname' => 'Jean',
-                'father_lastname'  => 'Amegah',
+                'father_lastname' => 'Amegah',
                 'mother_firstname' => 'Marie',
-                'mother_lastname'  => 'Amegah',
+                'mother_lastname' => 'Amegah',
             ],
 
             'medical' => [],
@@ -225,8 +226,8 @@ class StudentTest extends TestCase
 
         $this->assertDatabaseHas('students', [
             'firstname' => 'Koffi',
-            'lastname'  => 'Amegah',
-            'gender'    => 'male',
+            'lastname' => 'Amegah',
+            'gender' => 'male',
         ]);
     }
 
@@ -239,7 +240,7 @@ class StudentTest extends TestCase
         $student = Student::where('firstname', 'Koffi')->first();
         $this->assertNotNull($student);
         $this->assertDatabaseHas('student_parents', [
-            'student_id'       => $student->id,
+            'student_id' => $student->id,
             'father_firstname' => 'Jean',
             'mother_firstname' => 'Marie',
         ]);
@@ -253,7 +254,7 @@ class StudentTest extends TestCase
 
         $student = Student::where('firstname', 'Koffi')->first();
         $this->assertDatabaseHas('student_information', [
-            'student_id'     => $student->id,
+            'student_id' => $student->id,
             'admission_type' => 'new',
         ]);
     }
@@ -301,11 +302,11 @@ class StudentTest extends TestCase
     public function test_cannot_create_student_with_duplicate_email(): void
     {
         $this->makeStudent([
-            'firstname'  => 'Afi',
-            'lastname'   => 'Togbe',
-            'gender'     => 'female',
+            'firstname' => 'Afi',
+            'lastname' => 'Togbe',
+            'gender' => 'female',
             'birth_date' => self::DOB_FEMALE,
-            'email'      => 'afi@school.tg',
+            'email' => 'afi@school.tg',
         ]);
 
         $this->actingAs($this->admin())
@@ -352,9 +353,9 @@ class StudentTest extends TestCase
         $student->information()->create(['admission_type' => 'new']);
         $student->parentInfo()->create([
             'father_firstname' => 'Jean',
-            'father_lastname'  => 'Amegah',
+            'father_lastname' => 'Amegah',
             'mother_firstname' => 'Marie',
-            'mother_lastname'  => 'Amegah',
+            'mother_lastname' => 'Amegah',
         ]);
         $student->medicalInfo()->create([]);
 

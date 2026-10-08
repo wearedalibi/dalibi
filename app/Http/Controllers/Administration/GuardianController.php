@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\GuardianInvitation;
 use App\Models\Guardian;
 use App\Models\Student;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -19,7 +20,7 @@ class GuardianController extends Controller
     {
         $search = trim((string) $request->query('search', ''));
 
-        $like = '%' . strtolower($search) . '%';
+        $like = '%'.strtolower($search).'%';
 
         $guardians = Guardian::query()
             ->withCount('children')
@@ -38,21 +39,21 @@ class GuardianController extends Controller
             ->orderBy('last_name')
             ->paginate(20)->withQueryString()
             ->through(fn (Guardian $g) => [
-                'id'             => $g->id,
-                'first_name'     => $g->first_name,
-                'last_name'      => $g->last_name,
-                'name'           => $g->fullName(),
-                'email'          => $g->email,
-                'phone'          => $g->phone,
+                'id' => $g->id,
+                'first_name' => $g->first_name,
+                'last_name' => $g->last_name,
+                'name' => $g->fullName(),
+                'email' => $g->email,
+                'phone' => $g->phone,
                 'children_count' => $g->children_count,
-                'matricules'     => $g->children->pluck('matricule')->all(),
-                'is_active'      => $g->is_active,
-                'activated'      => $g->password !== null,
+                'matricules' => $g->children->pluck('matricule')->all(),
+                'is_active' => $g->is_active,
+                'activated' => $g->password !== null,
             ]);
 
         return Inertia::render('Administration/Guardians/Index', [
             'guardians' => $guardians,
-            'filters'   => ['search' => $search],
+            'filters' => ['search' => $search],
         ]);
     }
 
@@ -62,7 +63,7 @@ class GuardianController extends Controller
     }
 
     /** Autocomplétion d'élèves par nom ou matricule (pour lier des enfants). */
-    public function searchStudents(Request $request): \Illuminate\Http\JsonResponse
+    public function searchStudents(Request $request): JsonResponse
     {
         $q = strtolower(trim((string) $request->query('q', '')));
         if ($q === '') {
@@ -80,7 +81,7 @@ class GuardianController extends Controller
             ->get(['matricule', 'firstname', 'lastname'])
             ->map(fn (Student $s) => [
                 'matricule' => $s->matricule,
-                'name'      => trim("{$s->lastname} {$s->firstname}"),
+                'name' => trim("{$s->lastname} {$s->firstname}"),
             ]);
 
         return response()->json($students);
@@ -92,10 +93,10 @@ class GuardianController extends Controller
 
         $guardian = Guardian::create([
             'first_name' => $data['first_name'],
-            'last_name'  => $data['last_name'],
-            'email'      => $data['email'],
-            'phone'      => $data['phone'] ?? null,
-            'is_active'  => true,
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
+            'is_active' => true,
         ]);
 
         $guardian->children()->sync($this->resolveStudentIds($data['student_matricules'] ?? []));
@@ -113,14 +114,14 @@ class GuardianController extends Controller
 
         return Inertia::render('Administration/Guardians/Edit', [
             'guardian' => [
-                'id'         => $guardian->id,
+                'id' => $guardian->id,
                 'first_name' => $guardian->first_name,
-                'last_name'  => $guardian->last_name,
-                'email'      => $guardian->email,
-                'phone'      => $guardian->phone,
-                'children'   => $guardian->children->map(fn ($c) => [
+                'last_name' => $guardian->last_name,
+                'email' => $guardian->email,
+                'phone' => $guardian->phone,
+                'children' => $guardian->children->map(fn ($c) => [
                     'matricule' => $c->matricule,
-                    'name'      => trim("{$c->lastname} {$c->firstname}"),
+                    'name' => trim("{$c->lastname} {$c->firstname}"),
                 ])->all(),
             ],
         ]);
@@ -132,9 +133,9 @@ class GuardianController extends Controller
 
         $guardian->update([
             'first_name' => $data['first_name'],
-            'last_name'  => $data['last_name'],
-            'email'      => $data['email'],
-            'phone'      => $data['phone'] ?? null,
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
         ]);
         $guardian->children()->sync($this->resolveStudentIds($data['student_matricules'] ?? []));
 
@@ -159,7 +160,7 @@ class GuardianController extends Controller
     private function sendInvitation(Guardian $guardian, bool $isReset): void
     {
         $token = $guardian->issueResetToken();
-        $url   = rtrim(config('app.url'), '/') . '/portal/reset?email=' . urlencode($guardian->email) . '&token=' . $token;
+        $url = rtrim(config('app.url'), '/').'/portal/reset?email='.urlencode($guardian->email).'&token='.$token;
 
         Mail::to($guardian->email)->send(new GuardianInvitation($guardian, $url, $isReset));
     }
@@ -177,13 +178,13 @@ class GuardianController extends Controller
     private function validateData(Request $request, ?string $ignoreId = null): array
     {
         return $request->validate([
-            'first_name'           => ['required', 'string', 'max:100'],
-            'last_name'            => ['required', 'string', 'max:100'],
-            'email'                => ['required', 'email', Rule::unique('guardians', 'email')->ignore($ignoreId)],
-            'phone'                => ['nullable', 'string', 'max:30'],
-            'student_matricules'   => ['array'],
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', Rule::unique('guardians', 'email')->ignore($ignoreId)],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'student_matricules' => ['array'],
             'student_matricules.*' => ['string', 'exists:students,matricule'],
-            'send_invitation'      => ['boolean'],
+            'send_invitation' => ['boolean'],
         ]);
     }
 }

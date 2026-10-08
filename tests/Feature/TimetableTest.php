@@ -50,22 +50,22 @@ class TimetableTest extends TestCase
     private function slot(Classroom $class, array $overrides = []): TimetableSlot
     {
         return TimetableSlot::create(array_merge([
-            'class_id'    => $class->id,
+            'class_id' => $class->id,
             'day_of_week' => 1,
-            'start_time'  => '08:00',
-            'end_time'    => '09:00',
-            'room'        => 'Salle 1',
+            'start_time' => '08:00',
+            'end_time' => '09:00',
+            'room' => 'Salle 1',
         ], $overrides));
     }
 
     private function validPayload(Classroom $class, array $overrides = []): array
     {
         return array_merge([
-            'class_id'    => $class->id,
+            'class_id' => $class->id,
             'day_of_week' => 1,
-            'start_time'  => '08:00',
-            'end_time'    => '09:00',
-            'room'        => 'Salle 12',
+            'start_time' => '08:00',
+            'end_time' => '09:00',
+            'room' => 'Salle 12',
         ], $overrides);
     }
 
@@ -96,7 +96,7 @@ class TimetableTest extends TestCase
 
     public function test_admin_can_create_slot(): void
     {
-        $class   = $this->classroom();
+        $class = $this->classroom();
         $subject = $this->subject();
 
         $this->actingAs($this->admin())
@@ -104,9 +104,9 @@ class TimetableTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseHas('timetable_slots', [
-            'class_id'   => $class->id,
+            'class_id' => $class->id,
             'subject_id' => $subject->id,
-            'room'       => 'Salle 12',
+            'room' => 'Salle 12',
         ]);
     }
 
@@ -138,7 +138,7 @@ class TimetableTest extends TestCase
     public function test_admin_can_update_slot(): void
     {
         $class = $this->classroom();
-        $slot  = $this->slot($class);
+        $slot = $this->slot($class);
 
         $this->actingAs($this->admin())
             ->put(route('timetable.update', $slot), $this->validPayload($class, ['room' => 'Salle 99']))
@@ -150,7 +150,7 @@ class TimetableTest extends TestCase
     public function test_admin_can_delete_slot(): void
     {
         $class = $this->classroom();
-        $slot  = $this->slot($class);
+        $slot = $this->slot($class);
 
         $this->actingAs($this->admin())
             ->delete(route('timetable.destroy', $slot))

@@ -10,12 +10,12 @@ class ReportCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'        => $this->id,
+            'id' => $this->id,
             'reference' => $this->reference,
-            'period'    => $this->payload['period']['name'] ?? null,
-            'average'   => $this->average,
-            'rank'      => $this->rank,
-            'mention'   => $this->mention,
+            'period' => $this->payload['period']['name'] ?? null,
+            'average' => $this->average,
+            'rank' => $this->rank,
+            'mention' => $this->mention,
             'issued_at' => $this->locked_at?->toIso8601String(),
         ];
     }

@@ -46,38 +46,38 @@ class FrenchNumberSpeller
     /** Montant en toutes lettres suivi de la monnaie, ex. « Douze mille francs CFA ». */
     public static function money(float|int $amount, ?string $currencyCode = null): string
     {
-        $code  = $currencyCode ?: Currencies::DEFAULT;
+        $code = $currencyCode ?: Currencies::DEFAULT;
         $words = self::spell((int) round($amount));
-        $unit  = self::CURRENCY_WORDS[$code] ?? Currencies::symbol($code);
+        $unit = self::CURRENCY_WORDS[$code] ?? Currencies::symbol($code);
 
-        return ucfirst(trim($words . ' ' . $unit));
+        return ucfirst(trim($words.' '.$unit));
     }
 
     /** Entier positif en toutes lettres (français), sans monnaie. */
     public static function spell(int $number): string
     {
         if ($number < 0) {
-            return 'moins ' . self::spell(-$number);
+            return 'moins '.self::spell(-$number);
         }
 
         if ($number === 0) {
             return 'zéro';
         }
 
-        $millions  = intdiv($number, 1_000_000);
+        $millions = intdiv($number, 1_000_000);
         $thousands = intdiv($number % 1_000_000, 1000);
-        $rest      = $number % 1000;
+        $rest = $number % 1000;
 
         $parts = [];
 
         if ($millions > 0) {
-            $parts[] = self::chunk($millions, true) . ' million' . ($millions > 1 ? 's' : '');
+            $parts[] = self::chunk($millions, true).' million'.($millions > 1 ? 's' : '');
         }
 
         if ($thousands > 0) {
             // « mille » est invariable et ne prend jamais de pluriel ni ne fait
             // fléchir vingt/cent qui le précèdent → dernier segment = false.
-            $parts[] = $thousands === 1 ? 'mille' : self::chunk($thousands, false) . ' mille';
+            $parts[] = $thousands === 1 ? 'mille' : self::chunk($thousands, false).' mille';
         }
 
         if ($rest > 0) {
@@ -96,12 +96,12 @@ class FrenchNumberSpeller
     private static function chunk(int $n, bool $isFinal): string
     {
         $hundreds = intdiv($n, 100);
-        $tens     = $n % 100;
+        $tens = $n % 100;
 
         $out = '';
 
         if ($hundreds > 0) {
-            $out = $hundreds === 1 ? 'cent' : self::UNITS[$hundreds] . ' cent';
+            $out = $hundreds === 1 ? 'cent' : self::UNITS[$hundreds].' cent';
             // « cents » ne prend l's que multiplié et non suivi d'un autre nombre.
             if ($hundreds > 1 && $tens === 0 && $isFinal) {
                 $out .= 's';
@@ -109,7 +109,7 @@ class FrenchNumberSpeller
         }
 
         if ($tens > 0) {
-            $out .= ($out !== '' ? ' ' : '') . self::tens($tens, $isFinal);
+            $out .= ($out !== '' ? ' ' : '').self::tens($tens, $isFinal);
         }
 
         return $out;
@@ -128,14 +128,14 @@ class FrenchNumberSpeller
         return match ($base) {
             20, 30, 40, 50, 60 => self::simpleTens(self::TENS[intdiv($base, 10)], $unit),
             70 => match ($unit) {
-                0       => 'soixante-dix',
-                1       => 'soixante-et-onze',
-                default => 'soixante-' . self::UNITS[10 + $unit],
+                0 => 'soixante-dix',
+                1 => 'soixante-et-onze',
+                default => 'soixante-'.self::UNITS[10 + $unit],
             },
             80 => $unit === 0
                 ? ($isFinal ? 'quatre-vingts' : 'quatre-vingt')
-                : 'quatre-vingt-' . self::UNITS[$unit],
-            90 => 'quatre-vingt-' . self::UNITS[10 + $unit],
+                : 'quatre-vingt-'.self::UNITS[$unit],
+            90 => 'quatre-vingt-'.self::UNITS[10 + $unit],
             default => self::UNITS[$n], // inatteignable, garde-fou
         };
     }
@@ -145,8 +145,8 @@ class FrenchNumberSpeller
     {
         return match (true) {
             $unit === 0 => $base,
-            $unit === 1 => $base . '-et-un',
-            default     => $base . '-' . self::UNITS[$unit],
+            $unit === 1 => $base.'-et-un',
+            default => $base.'-'.self::UNITS[$unit],
         };
     }
 }

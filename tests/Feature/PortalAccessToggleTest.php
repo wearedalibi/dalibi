@@ -3,13 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\AcademicYear;
-use App\Models\Classroom;
-use App\Models\ClassroomType;
-use App\Models\Enrollment;
 use App\Models\Guardian;
 use App\Models\School;
-use App\Models\Student;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
@@ -30,7 +25,7 @@ class PortalAccessToggleTest extends TestCase
 
     private function guardian(): Guardian
     {
-        $g = Guardian::create(['first_name' => 'P', 'last_name' => Str::random(5), 'email' => Str::random(8) . '@ex.com', 'is_active' => true]);
+        $g = Guardian::create(['first_name' => 'P', 'last_name' => Str::random(5), 'email' => Str::random(8).'@ex.com', 'is_active' => true]);
         $g->password = 'secret123';
         $g->save();
 

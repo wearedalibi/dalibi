@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Dashboard;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\AbsencePermission;
-use App\Models\AccountingTransaction;
 use App\Models\AcademicYear;
+use App\Models\AccountingTransaction;
 use App\Models\AttendanceRecord;
 use App\Models\CashAccount;
 use App\Models\Classroom;
@@ -13,7 +13,6 @@ use App\Models\ClassSubject;
 use App\Models\DocumentIssuance;
 use App\Models\Enrollment;
 use App\Models\Evaluation;
-use App\Models\User;
 use App\Models\Invoice;
 use App\Models\OfficialExam;
 use App\Models\OfficialExamRegistration;
@@ -21,6 +20,7 @@ use App\Models\Payment;
 use App\Models\Student;
 use App\Models\SubjectAssignment;
 use App\Models\TimetableSlot;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -30,24 +30,24 @@ class DashboardController extends Controller
 {
     public function index(Request $request): Response
     {
-        $user       = auth()->user();
+        $user = auth()->user();
         $activeYear = AcademicYear::where('active', true)->first();
-        $years      = AcademicYear::orderByDesc('start_date')->get(['id', 'year', 'active']);
+        $years = AcademicYear::orderByDesc('start_date')->get(['id', 'year', 'active']);
 
         // Année sélectionnée via le filtre, par défaut l'année académique active
         $requested = $request->string('academic_year_id')->toString();
-        $yearId    = ($requested && $years->contains('id', $requested))
+        $yearId = ($requested && $years->contains('id', $requested))
             ? $requested
             : $activeYear?->id;
 
         $selectedYear = $years->firstWhere('id', $yearId);
 
         $data = [
-            'activeYear'     => $activeYear ? ['id' => $activeYear->id, 'year' => $activeYear->year] : null,
+            'activeYear' => $activeYear ? ['id' => $activeYear->id, 'year' => $activeYear->year] : null,
             'selectedYearId' => $yearId,
-            'selectedYear'   => $selectedYear ? ['id' => $selectedYear->id, 'year' => $selectedYear->year] : null,
-            'academicYears'  => $years,
-            'userRole'       => $user->roles->first()?->name,
+            'selectedYear' => $selectedYear ? ['id' => $selectedYear->id, 'year' => $selectedYear->year] : null,
+            'academicYears' => $years,
+            'userRole' => $user->roles->first()?->name,
         ];
 
         /* ── Section financière (permission view_finances) ──────────────── */
@@ -70,14 +70,14 @@ class DashboardController extends Controller
             /* Évolution mensuelle des paiements — 6 derniers mois */
             $driver = DB::getDriverName();
             $monthExpr = match ($driver) {
-                'mysql'  => "DATE_FORMAT(payments.paid_at, '%Y-%m')",
+                'mysql' => "DATE_FORMAT(payments.paid_at, '%Y-%m')",
                 'sqlite' => "strftime('%Y-%m', payments.paid_at)",
-                default  => "to_char(payments.paid_at, 'YYYY-MM')",
+                default => "to_char(payments.paid_at, 'YYYY-MM')",
             };
             $monthLabelExpr = match ($driver) {
-                'mysql'  => "DATE_FORMAT(payments.paid_at, '%b %Y')",
+                'mysql' => "DATE_FORMAT(payments.paid_at, '%b %Y')",
                 'sqlite' => "strftime('%m/%Y', payments.paid_at)",
-                default  => "to_char(payments.paid_at, 'Mon YYYY')",
+                default => "to_char(payments.paid_at, 'Mon YYYY')",
             };
 
             $monthlyPayments = DB::table('payments')
@@ -102,31 +102,31 @@ class DashboardController extends Controller
 
             /* 5 derniers paiements */
             $recentPayments = Payment::with([
-                    'invoice.enrollment.student:id,firstname,lastname',
-                    'invoice.enrollment.classroom:id,name',
-                    'cashAccount:id,name,type',
-                ])
+                'invoice.enrollment.student:id,firstname,lastname',
+                'invoice.enrollment.classroom:id,name',
+                'cashAccount:id,name,type',
+            ])
                 ->latest('paid_at')
                 ->limit(5)
                 ->get()
                 ->map(fn ($p) => [
-                    'id'            => $p->id,
-                    'amount'        => (float) $p->amount,
-                    'payment_method'=> $p->payment_method,
-                    'paid_at'       => $p->paid_at?->toDateString(),
-                    'cash_account'  => $p->cashAccount?->name,
-                    'student_name'  => $p->invoice?->enrollment?->student
-                        ? $p->invoice->enrollment->student->firstname . ' ' . $p->invoice->enrollment->student->lastname
+                    'id' => $p->id,
+                    'amount' => (float) $p->amount,
+                    'payment_method' => $p->payment_method,
+                    'paid_at' => $p->paid_at?->toDateString(),
+                    'cash_account' => $p->cashAccount?->name,
+                    'student_name' => $p->invoice?->enrollment?->student
+                        ? $p->invoice->enrollment->student->firstname.' '.$p->invoice->enrollment->student->lastname
                         : '—',
-                    'class_name'    => $p->invoice?->enrollment?->classroom?->name ?? '—',
+                    'class_name' => $p->invoice?->enrollment?->classroom?->name ?? '—',
                 ]);
 
             /* Élèves avec aucun paiement (status ISSUED) — top 5 restant le + élevé */
             $studentsNoPay = Enrollment::with([
-                    'student:id,firstname,lastname,matricule',
-                    'classroom:id,name,code',
-                    'invoice:id,enrollment_id,total,amount_remaining,status',
-                ])
+                'student:id,firstname,lastname,matricule',
+                'classroom:id,name,code',
+                'invoice:id,enrollment_id,total,amount_remaining,status',
+            ])
                 ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
                 ->whereHas('invoice', fn ($q) => $q->where('status', 'ISSUED'))
                 ->orderByDesc(
@@ -139,7 +139,7 @@ class DashboardController extends Controller
 
             /* Ce mois-ci : encaissé, dépenses, solde net */
             $startMonth = now()->startOfMonth();
-            $endMonth   = now()->endOfMonth();
+            $endMonth = now()->endOfMonth();
 
             $incomeMonth = DB::table('payments')
                 ->join('invoices', 'payments.invoice_id', '=', 'invoices.id')
@@ -164,15 +164,15 @@ class DashboardController extends Controller
                 ->map(fn ($r) => ['method' => $r->method ?? 'AUTRE', 'total' => (float) $r->total]);
 
             $data['financial'] = [
-                'stats'          => $stats,
-                'monthlyPayments'=> $monthlyPayments,
-                'cashAccounts'   => $cashAccounts,
+                'stats' => $stats,
+                'monthlyPayments' => $monthlyPayments,
+                'cashAccounts' => $cashAccounts,
                 'recentPayments' => $recentPayments,
-                'studentsNoPay'  => $studentsNoPay,
-                'month'          => [
-                    'income'   => (float) $incomeMonth,
+                'studentsNoPay' => $studentsNoPay,
+                'month' => [
+                    'income' => (float) $incomeMonth,
                     'expenses' => (float) $expensesMonth,
-                    'net'      => (float) $incomeMonth - (float) $expensesMonth,
+                    'net' => (float) $incomeMonth - (float) $expensesMonth,
                 ],
                 'paymentMethods' => $methodRows,
             ];
@@ -181,22 +181,22 @@ class DashboardController extends Controller
         /* ── Section inscriptions (permission view_enrollments) ─────────── */
         if ($user->can('view_enrollments')) {
             $recentEnrollments = Enrollment::with([
-                    'student:id,firstname,lastname,matricule',
-                    'classroom:id,name,code',
-                ])
+                'student:id,firstname,lastname,matricule',
+                'classroom:id,name,code',
+            ])
                 ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
                 ->latest('enrollment_date')
                 ->limit(6)
                 ->get()
                 ->map(fn ($e) => [
-                    'id'              => $e->id,
+                    'id' => $e->id,
                     'enrollment_code' => $e->enrollment_code,
                     'enrollment_date' => $e->enrollment_date?->toDateString(),
-                    'status'          => $e->status,
-                    'student_name'    => $e->student
-                        ? $e->student->firstname . ' ' . $e->student->lastname
+                    'status' => $e->status,
+                    'student_name' => $e->student
+                        ? $e->student->firstname.' '.$e->student->lastname
                         : '—',
-                    'matricule'  => $e->student?->matricule,
+                    'matricule' => $e->student?->matricule,
                     'class_name' => $e->classroom?->name ?? '—',
                     'class_code' => $e->classroom?->code ?? '—',
                 ]);
@@ -220,21 +220,21 @@ class DashboardController extends Controller
                 ->pluck('total', 'gender');
 
             $data['enrollments'] = [
-                'total_students'    => Student::count(),
-                'active_students'   => Student::where('active', true)->count(),
+                'total_students' => Student::count(),
+                'active_students' => Student::where('active', true)->count(),
                 'students_by_gender' => [
-                    'male'   => (int) ($genderRows['male'] ?? 0),
+                    'male' => (int) ($genderRows['male'] ?? 0),
                     'female' => (int) ($genderRows['female'] ?? 0),
-                    'other'  => (int) ($genderRows['other'] ?? 0),
+                    'other' => (int) ($genderRows['other'] ?? 0),
                 ],
                 'active_classrooms' => Classroom::where('active', true)->count(),
-                'total_users'       => User::count(),
-                'enrollments_year'  => Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))->count(),
-                'enrollments_week'  => Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
+                'total_users' => User::count(),
+                'enrollments_year' => Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))->count(),
+                'enrollments_week' => Enrollment::when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
                     ->where('enrollment_date', '>=', now()->startOfWeek())
                     ->count(),
                 'recentEnrollments' => $recentEnrollments,
-                'byClass'           => $enrollmentsByClass,
+                'byClass' => $enrollmentsByClass,
             ];
         }
 
@@ -254,11 +254,11 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get()
                 ->map(fn ($p) => [
-                    'id'           => $p->id,
-                    'student_name' => $p->student ? $p->student->lastname . ' ' . $p->student->firstname : '—',
-                    'reason'       => $p->reason,
-                    'start_date'   => $p->start_date?->format('d/m/Y'),
-                    'end_date'     => $p->end_date?->format('d/m/Y'),
+                    'id' => $p->id,
+                    'student_name' => $p->student ? $p->student->lastname.' '.$p->student->firstname : '—',
+                    'reason' => $p->reason,
+                    'start_date' => $p->start_date?->format('d/m/Y'),
+                    'end_date' => $p->end_date?->format('d/m/Y'),
                 ]);
 
             /* Prochains examens officiels */
@@ -269,24 +269,24 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get()
                 ->map(fn ($e) => [
-                    'id'         => $e->id,
-                    'name'       => $e->name,
-                    'type'       => $e->type,
-                    'exam_date'  => $e->exam_date?->format('d/m/Y'),
-                    'center'     => $e->center,
+                    'id' => $e->id,
+                    'name' => $e->name,
+                    'type' => $e->type,
+                    'exam_date' => $e->exam_date?->format('d/m/Y'),
+                    'center' => $e->center,
                     'registrations' => $e->registrations_count,
                 ]);
 
             $data['academic'] = [
-                'present_today'        => $presentToday,
-                'absent_today'         => $absentToday,
-                'pending_permissions'  => AbsencePermission::where('status', 'pending')->count(),
-                'documents_month'      => DocumentIssuance::whereYear('issued_at', now()->year)
+                'present_today' => $presentToday,
+                'absent_today' => $absentToday,
+                'pending_permissions' => AbsencePermission::where('status', 'pending')->count(),
+                'documents_month' => DocumentIssuance::whereYear('issued_at', now()->year)
                     ->whereMonth('issued_at', now()->month)->count(),
-                'exams_open'           => OfficialExam::where('status', 'ouvert')->count(),
-                'exam_registrations'   => OfficialExamRegistration::count(),
-                'pendingPermissions'   => $pendingPermissions,
-                'upcomingExams'        => $upcomingExams,
+                'exams_open' => OfficialExam::where('status', 'ouvert')->count(),
+                'exam_registrations' => OfficialExamRegistration::count(),
+                'pendingPermissions' => $pendingPermissions,
+                'upcomingExams' => $upcomingExams,
             ];
         }
 
@@ -299,9 +299,9 @@ class DashboardController extends Controller
                 ->get();
 
             $myAssignments = $assignments->map(fn ($a) => [
-                'id'         => $a->id,
-                'subject'    => $a->subject?->name ?? '—',
-                'class_id'   => $a->class_id,
+                'id' => $a->id,
+                'subject' => $a->subject?->name ?? '—',
+                'class_id' => $a->class_id,
                 'class_name' => $a->classroom?->name ?? '—',
                 'class_code' => $a->classroom?->code ?? '—',
             ]);
@@ -315,18 +315,18 @@ class DashboardController extends Controller
                 ->orderBy('start_time')
                 ->get()
                 ->map(fn ($s) => [
-                    'id'         => $s->id,
+                    'id' => $s->id,
                     'start_time' => substr((string) $s->start_time, 0, 5),
-                    'end_time'   => substr((string) $s->end_time, 0, 5),
-                    'subject'    => $s->subject?->name ?? '—',
+                    'end_time' => substr((string) $s->end_time, 0, 5),
+                    'subject' => $s->subject?->name ?? '—',
                     'class_name' => $s->classroom?->name ?? '—',
-                    'room'       => $s->room,
+                    'room' => $s->room,
                 ]);
 
             /* Notes à saisir : ses évaluations non « terminées » (statut != completed) */
             $classSubjectIds = collect();
             if ($assignments->isNotEmpty()) {
-                $classSubjectIds = \App\Models\ClassSubject::query()
+                $classSubjectIds = ClassSubject::query()
                     ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
                     ->where(function ($q) use ($assignments) {
                         foreach ($assignments as $a) {
@@ -336,7 +336,7 @@ class DashboardController extends Controller
                     ->pluck('id');
             }
 
-            $pendingQuery = \App\Models\Evaluation::whereIn('class_subject_id', $classSubjectIds)
+            $pendingQuery = Evaluation::whereIn('class_subject_id', $classSubjectIds)
                 ->where('status', '!=', 'completed');
 
             $pendingItems = (clone $pendingQuery)
@@ -345,16 +345,16 @@ class DashboardController extends Controller
                 ->limit(6)
                 ->get()
                 ->map(fn ($e) => [
-                    'id'         => $e->id,
-                    'name'       => $e->template?->name ?? 'Évaluation',
-                    'subject'    => $e->classSubject?->subject?->name ?? '—',
+                    'id' => $e->id,
+                    'name' => $e->template?->name ?? 'Évaluation',
+                    'subject' => $e->classSubject?->subject?->name ?? '—',
                     'class_name' => $e->classSubject?->class?->name ?? '—',
-                    'date'       => $e->date?->format('d/m/Y'),
+                    'date' => $e->date?->format('d/m/Y'),
                 ]);
 
             $data['teaching'] = [
                 'assignments' => $myAssignments,
-                'today'       => $todaySlots,
+                'today' => $todaySlots,
                 'pendingMarks' => [
                     'count' => (clone $pendingQuery)->count(),
                     'items' => $pendingItems,

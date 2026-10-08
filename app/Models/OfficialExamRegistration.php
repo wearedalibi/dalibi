@@ -20,16 +20,16 @@ class OfficialExamRegistration extends Model
 
     public const STATUSES = [
         'inscrit' => 'Inscrit',
-        'admis'   => 'Admis',
-        'echoue'  => 'Échoué',
-        'absent'  => 'Absent',
+        'admis' => 'Admis',
+        'echoue' => 'Échoué',
+        'absent' => 'Absent',
     ];
 
     public const MENTIONS = [
-        'passable'   => 'Passable',
+        'passable' => 'Passable',
         'assez_bien' => 'Assez bien',
-        'bien'       => 'Bien',
-        'tres_bien'  => 'Très bien',
+        'bien' => 'Bien',
+        'tres_bien' => 'Très bien',
     ];
 
     public function officialExam(): BelongsTo

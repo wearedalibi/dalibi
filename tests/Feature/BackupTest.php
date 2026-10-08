@@ -40,10 +40,10 @@ class BackupTest extends TestCase
     private function academicYear(string $year = '2024-2025', bool $active = true): AcademicYear
     {
         return AcademicYear::create([
-            'year'       => $year,
-            'start_date' => substr($year, 0, 4) . '-09-01',
-            'end_date'   => substr($year, 5, 4) . '-07-01',
-            'active'     => $active,
+            'year' => $year,
+            'start_date' => substr($year, 0, 4).'-09-01',
+            'end_date' => substr($year, 5, 4).'-07-01',
+            'active' => $active,
         ]);
     }
 
@@ -80,11 +80,11 @@ class BackupTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->post(route('backups.schedule'), [
-                'frequency'   => 'weekly',
-                'time'        => '04:00',
+                'frequency' => 'weekly',
+                'time' => '04:00',
                 'day_of_week' => 2,
-                'formats'     => ['json', 'sql'],
-                'retention'   => 5,
+                'formats' => ['json', 'sql'],
+                'retention' => 5,
             ])
             ->assertRedirect();
 
@@ -134,7 +134,7 @@ class BackupTest extends TestCase
     public function test_admin_can_upload_and_restore_via_endpoint(): void
     {
         $admin = $this->admin();
-        $json  = json_encode(['tables' => ['users' => User::all()->map(fn ($x) => $x->getAttributes())->all()]]);
+        $json = json_encode(['tables' => ['users' => User::all()->map(fn ($x) => $x->getAttributes())->all()]]);
 
         $this->actingAs($admin)
             ->post(route('backups.restore'), [
@@ -186,7 +186,7 @@ class BackupTest extends TestCase
 
         $this->actingAs($this->admin())->post(route('backups.store'), ['formats' => ['json']]);
         $backup = Backup::where('format', 'json')->firstOrFail();
-        $gz     = Storage::disk('media')->get($backup->path);
+        $gz = Storage::disk('media')->get($backup->path);
 
         $u->forceDelete();
         $this->assertDatabaseMissing('users', ['id' => $u->id]);
@@ -277,7 +277,7 @@ class BackupTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->post(route('backups.restore'), [
-                'file'       => UploadedFile::fake()->createWithContent('dump.sql', '-- vide'),
+                'file' => UploadedFile::fake()->createWithContent('dump.sql', '-- vide'),
                 'only_table' => 'users',
             ])
             ->assertSessionHas('error');
@@ -287,7 +287,7 @@ class BackupTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->post(route('backups.restore'), [
-                'file'       => UploadedFile::fake()->createWithContent('d.json', '{"tables":{}}'),
+                'file' => UploadedFile::fake()->createWithContent('d.json', '{"tables":{}}'),
                 'only_table' => 'table_inexistante',
             ])
             ->assertSessionHasErrors('only_table');
@@ -308,7 +308,7 @@ class BackupTest extends TestCase
         // Le ZIP contient bien la base et les médias.
         $tmp = tempnam(sys_get_temp_dir(), 'ziptest_');
         file_put_contents($tmp, Storage::disk('media')->get($backup->path));
-        $zip = new \ZipArchive();
+        $zip = new \ZipArchive;
         $zip->open($tmp);
 
         $this->assertNotFalse($zip->locateName('media/logos/ecole.png'));
@@ -401,10 +401,10 @@ class BackupTest extends TestCase
 
         $this->actingAs($this->admin())
             ->put(route('academic-years.update', $year), [
-                'year'       => '2023-2024',
+                'year' => '2023-2024',
                 'start_date' => '2023-09-01',
-                'end_date'   => '2024-07-01',
-                'active'     => false,
+                'end_date' => '2024-07-01',
+                'active' => false,
             ])
             ->assertRedirect();
 

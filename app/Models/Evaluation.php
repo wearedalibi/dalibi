@@ -28,7 +28,7 @@ class Evaluation extends Model
     ];
 
     protected $casts = [
-        'date'      => 'date',
+        'date' => 'date',
         'locked_at' => 'datetime',
     ];
 

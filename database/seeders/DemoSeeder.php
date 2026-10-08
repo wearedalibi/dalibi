@@ -27,8 +27,8 @@ use App\Models\Invoice;
 use App\Models\NoteReclamation;
 use App\Models\OfficialExam;
 use App\Models\OfficialExamRegistration;
-use App\Models\PayRun;
 use App\Models\PayrollSetting;
+use App\Models\PayRun;
 use App\Models\SalaryComponent;
 use App\Models\SalaryGrade;
 use App\Models\Scholarship;
@@ -81,11 +81,11 @@ class DemoSeeder extends Seeder
      * {@see self::targetSize()} — au moins 20 élèves.
      */
     private const CLASS_SIZES = [
-        'CP1'   => 28,
-        'CE2'   => 30,
-        'CM2'   => 32,
-        '6ème'  => 35,
-        '3ème'  => 30,
+        'CP1' => 28,
+        'CE2' => 30,
+        'CM2' => 32,
+        '6ème' => 35,
+        '3ème' => 30,
         'Tle D' => 25,
     ];
 
@@ -155,8 +155,8 @@ class DemoSeeder extends Seeder
         'Maritime' => 40,
         'Plateaux' => 25,
         'Centrale' => 15,
-        'Kara'     => 12,
-        'Savanes'  => 8,
+        'Kara' => 12,
+        'Savanes' => 8,
     ];
 
     public function run(): void
@@ -200,7 +200,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Contexte                                                            */
+    /* Contexte */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -210,7 +210,7 @@ class DemoSeeder extends Seeder
     private function resolveContext(): bool
     {
         $school = School::query()->first();
-        $year   = AcademicYear::query()->where('active', true)->first()
+        $year = AcademicYear::query()->where('active', true)->first()
             ?? AcademicYear::query()->latest('start_date')->first();
 
         if (! $school || ! $year) {
@@ -220,7 +220,7 @@ class DemoSeeder extends Seeder
         }
 
         $this->school = $school;
-        $this->year   = $year;
+        $this->year = $year;
 
         $this->periods = AcademicPeriod::query()
             ->where('academic_year_id', $year->id)
@@ -255,8 +255,8 @@ class DemoSeeder extends Seeder
 
         return match (true) {
             str_contains($type, 'primaire'), str_contains($type, 'maternelle') => 'primaire',
-            str_contains($type, 'collège')                                     => 'college',
-            default                                                            => 'lycee',
+            str_contains($type, 'collège') => 'college',
+            default => 'lycee',
         };
     }
 
@@ -277,7 +277,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Géographie togolaise                                                */
+    /* Géographie togolaise */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -322,22 +322,22 @@ class DemoSeeder extends Seeder
         }
 
         if ($this->faker->boolean(65) && isset($regions['Maritime'])) {
-            $region     = 'Maritime';
+            $region = 'Maritime';
             $prefecture = $this->faker->randomElement(
                 array_values(array_intersect(['Golfe', 'Agoè-Nyivé'], array_keys($regions['Maritime'])))
                     ?: array_keys($regions['Maritime'])
             );
         } else {
-            $region     = $this->weighted(array_intersect_key(self::REGION_WEIGHTS, $regions));
+            $region = $this->weighted(array_intersect_key(self::REGION_WEIGHTS, $regions));
             $prefecture = $this->faker->randomElement(array_keys($regions[$region]));
         }
 
         $villes = $regions[$region][$prefecture] ?? [];
 
         return [
-            'region'     => $region,
+            'region' => $region,
             'prefecture' => $prefecture,
-            'ville'      => $villes === [] ? $prefecture : $this->faker->randomElement($villes),
+            'ville' => $villes === [] ? $prefecture : $this->faker->randomElement($villes),
         ];
     }
 
@@ -364,7 +364,7 @@ class DemoSeeder extends Seeder
     /** Adresse à la togolaise : quartier et repère, plutôt qu'un numéro de rue. */
     private function address(string $ville): string
     {
-        return 'Quartier ' . $ville . ', ' . $this->faker->randomElement([
+        return 'Quartier '.$ville.', '.$this->faker->randomElement([
             'face à l\'école primaire',
             'près du marché',
             'derrière la station',
@@ -376,7 +376,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Noms togolais                                                       */
+    /* Noms togolais */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -439,7 +439,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Socle pédagogique                                                   */
+    /* Socle pédagogique */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -481,14 +481,14 @@ class DemoSeeder extends Seeder
         GradingConfig::updateOrCreate(
             ['school_id' => $this->school->id, 'classroom_type_id' => null],
             [
-                'name'              => 'Barème par défaut',
-                'is_active'         => true,
-                'passing_score'     => 10,
+                'name' => 'Barème par défaut',
+                'is_active' => true,
+                'passing_score' => 10,
                 'default_max_score' => 20,
-                'class_weight'      => 1,
-                'comp_weight'       => 1,
-                'round_precision'   => 2,
-                'mentions'          => $mentions,
+                'class_weight' => 1,
+                'comp_weight' => 1,
+                'round_precision' => 2,
+                'mentions' => $mentions,
             ],
         );
 
@@ -510,19 +510,19 @@ class DemoSeeder extends Seeder
         for ($i = count($existing); $i < 14; $i++) {
             // Le sexe est tiré d'abord : le prénom en découle, sinon la liste des
             // enseignants affiche des « Pauline » déclarées masculines.
-            $gender    = $this->faker->randomElement(['male', 'female']);
+            $gender = $this->faker->randomElement(['male', 'female']);
             $firstname = $this->togoFirstName($gender);
-            $lastname  = Str::upper($this->togoSurname());
+            $lastname = Str::upper($this->togoSurname());
 
             $user = User::create([
-                'firstname'         => $firstname,
-                'lastname'          => $lastname,
-                'email'             => 'prof' . ($i + 1) . '@dalibi.tg',
-                'gender'            => $gender,
-                'telephone'         => '+228 9' . $this->faker->numerify('# ## ## ##'),
-                'address'           => $this->address($this->origin()['ville'] ?? 'Lomé'),
-                'password'          => Hash::make('password123'),
-                'is_demo'           => true,
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'email' => 'prof'.($i + 1).'@dalibi.tg',
+                'gender' => $gender,
+                'telephone' => '+228 9'.$this->faker->numerify('# ## ## ##'),
+                'address' => $this->address($this->origin()['ville'] ?? 'Lomé'),
+                'password' => Hash::make('password123'),
+                'is_demo' => true,
                 'email_verified_at' => now(),
             ]);
 
@@ -534,7 +534,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Élèves et inscriptions                                              */
+    /* Élèves et inscriptions */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -545,7 +545,7 @@ class DemoSeeder extends Seeder
     private function seedStudentsAndEnrollments(): void
     {
         $enrolledBy = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
-        $sequence   = Enrollment::query()->count();
+        $sequence = Enrollment::query()->count();
 
         $orphans = Student::query()
             ->whereNotIn('id', Enrollment::query()->select('student_id'))
@@ -553,7 +553,7 @@ class DemoSeeder extends Seeder
             ->all();
 
         foreach ($this->classes as $class) {
-            $target  = $this->targetSize($class);
+            $target = $this->targetSize($class);
             $current = Enrollment::query()
                 ->where('class_id', $class->id)
                 ->where('academic_year_id', $this->year->id)
@@ -563,15 +563,15 @@ class DemoSeeder extends Seeder
                 $student = array_pop($orphans) ?? $this->createStudent($class);
 
                 Enrollment::create([
-                    'school_id'        => $this->school->id,
-                    'student_id'       => $student->id,
-                    'class_id'         => $class->id,
+                    'school_id' => $this->school->id,
+                    'student_id' => $student->id,
+                    'class_id' => $class->id,
                     'academic_year_id' => $this->year->id,
-                    'enrollment_code'  => 'INS-' . $this->year->year . '-' . str_pad((string) (++$sequence), 4, '0', STR_PAD_LEFT),
-                    'enrolled_by'      => $enrolledBy,
-                    'enrollment_date'  => $this->year->start_date,
-                    'status'           => Enrollment::STATUS_ACTIVE,
-                    'academic_status'  => 'en_cours',
+                    'enrollment_code' => 'INS-'.$this->year->year.'-'.str_pad((string) (++$sequence), 4, '0', STR_PAD_LEFT),
+                    'enrolled_by' => $enrolledBy,
+                    'enrollment_date' => $this->year->start_date,
+                    'status' => Enrollment::STATUS_ACTIVE,
+                    'academic_status' => 'en_cours',
                 ]);
             }
         }
@@ -580,98 +580,98 @@ class DemoSeeder extends Seeder
     /** Élève complet : compte, dossier administratif, parents et fiche médicale. */
     private function createStudent(Classroom $class): Student
     {
-        $gender    = $this->faker->randomElement(['male', 'female']);
+        $gender = $this->faker->randomElement(['male', 'female']);
         $firstname = $this->togoFirstName($gender);
-        $lastname  = Str::upper($this->togoSurname());
+        $lastname = Str::upper($this->togoSurname());
 
         // L'âge suit le niveau : un CP1 de 17 ans décrédibiliserait toute la démo.
-        $age  = match ($this->cycleOf($class)) {
+        $age = match ($this->cycleOf($class)) {
             'primaire' => $this->faker->numberBetween(6, 11),
-            'college'  => $this->faker->numberBetween(12, 15),
-            default    => $this->faker->numberBetween(16, 19),
+            'college' => $this->faker->numberBetween(12, 15),
+            default => $this->faker->numberBetween(16, 19),
         };
         $seq = Student::query()->count() + 1;
 
         $origin = $this->origin();
-        $ville  = $origin['ville'] ?? 'Lomé';
+        $ville = $origin['ville'] ?? 'Lomé';
 
         // Beaucoup d'élèves scolarisés à Lomé sont nés à l'intérieur du pays :
         // un quart se voit attribuer une autre localité de naissance.
         $naissance = $this->faker->boolean(25) ? ($this->origin()['ville'] ?? $ville) : $ville;
 
         $user = User::create([
-            'firstname'         => $firstname,
-            'lastname'          => $lastname,
-            'email'             => 'eleve' . $seq . '@dalibi.tg',
-            'gender'            => $gender,
-            'birth_date'        => $this->today->subYears($age)->toDateString(),
-            'telephone'         => '+228 9' . $this->faker->numerify('# ## ## ##'),
-            'address'           => $this->address($ville),
-            'password'          => Hash::make('password123'),
-            'is_demo'           => true,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'email' => 'eleve'.$seq.'@dalibi.tg',
+            'gender' => $gender,
+            'birth_date' => $this->today->subYears($age)->toDateString(),
+            'telephone' => '+228 9'.$this->faker->numerify('# ## ## ##'),
+            'address' => $this->address($ville),
+            'password' => Hash::make('password123'),
+            'is_demo' => true,
             'email_verified_at' => now(),
         ]);
 
         $student = Student::create([
-            'user_id'        => $user->id,
-            'matricule'      => 'DEM' . str_pad((string) $seq, 4, '0', STR_PAD_LEFT),
-            'firstname'      => $firstname,
-            'lastname'       => $lastname,
-            'gender'         => $gender,
-            'birth_date'     => $this->today->subYears($age)->toDateString(),
+            'user_id' => $user->id,
+            'matricule' => 'DEM'.str_pad((string) $seq, 4, '0', STR_PAD_LEFT),
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'gender' => $gender,
+            'birth_date' => $this->today->subYears($age)->toDateString(),
             'place_of_birth' => $naissance,
-            'nationality'    => 'Togolaise',
-            'address'        => $this->address($ville),
-            'city'           => $ville,
-            'region'         => $origin['region'] ?? null,
-            'prefecture'     => $origin['prefecture'] ?? null,
-            'phone'          => '+228 9' . $this->faker->numerify('# ## ## ##'),
-            'email'          => 'eleve' . $seq . '@dalibi.tg',
-            'active'         => true,
+            'nationality' => 'Togolaise',
+            'address' => $this->address($ville),
+            'city' => $ville,
+            'region' => $origin['region'] ?? null,
+            'prefecture' => $origin['prefecture'] ?? null,
+            'phone' => '+228 9'.$this->faker->numerify('# ## ## ##'),
+            'email' => 'eleve'.$seq.'@dalibi.tg',
+            'active' => true,
         ]);
 
         StudentInformation::create([
-            'student_id'                    => $student->id,
-            'birth_certificate_number'      => 'ACT-' . $this->faker->unique()->numberBetween(100000, 999999),
-            'birth_certificate_issue_date'  => $this->today->subYears($age)->addMonths(2)->toDateString(),
+            'student_id' => $student->id,
+            'birth_certificate_number' => 'ACT-'.$this->faker->unique()->numberBetween(100000, 999999),
+            'birth_certificate_issue_date' => $this->today->subYears($age)->addMonths(2)->toDateString(),
             'birth_certificate_issue_place' => 'Lomé',
-            'admission_type'                => $this->faker->randomElement(['new', 'transfer', 're_admission']),
+            'admission_type' => $this->faker->randomElement(['new', 'transfer', 're_admission']),
         ]);
 
         StudentParent::create([
-            'student_id'        => $student->id,
-            'father_firstname'  => $this->togoFirstName('male'),
-            'father_lastname'   => $lastname,
+            'student_id' => $student->id,
+            'father_firstname' => $this->togoFirstName('male'),
+            'father_lastname' => $lastname,
             'father_profession' => $this->faker->randomElement(['Enseignant', 'Commerçant', 'Agriculteur', 'Fonctionnaire', 'Chauffeur', 'Menuisier', 'Infirmier']),
-            'father_phone'      => '+228 9' . $this->faker->numerify('# ## ## ##'),
-            'mother_firstname'  => $this->togoFirstName('female'),
-            'mother_lastname'   => Str::upper($this->togoSurname()),
+            'father_phone' => '+228 9'.$this->faker->numerify('# ## ## ##'),
+            'mother_firstname' => $this->togoFirstName('female'),
+            'mother_lastname' => Str::upper($this->togoSurname()),
             'mother_profession' => $this->faker->randomElement(['Commerçante', 'Couturière', 'Enseignante', 'Infirmière', 'Coiffeuse', 'Secrétaire']),
-            'mother_phone'      => '+228 9' . $this->faker->numerify('# ## ## ##'),
-            'email'             => 'parent' . $seq . '@dalibi.tg',
+            'mother_phone' => '+228 9'.$this->faker->numerify('# ## ## ##'),
+            'email' => 'parent'.$seq.'@dalibi.tg',
         ]);
 
         StudentMedicalInfo::create([
-            'student_id'              => $student->id,
-            'blood_group'             => $this->faker->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'O+', 'O-']),
-            'allergies'               => $this->faker->optional(0.2)->randomElement(['Arachides', 'Poussière', 'Pollen', 'Fruits de mer']),
-            'vaccinations'            => 'DTC-Polio-Hib-HepB',
-            'emergency_contact_name'  => Str::upper($this->togoSurname()) . ' ' . $this->togoFirstName($this->faker->randomElement(['male', 'female'])),
-            'emergency_contact_phone' => '+228 9' . $this->faker->numerify('# ## ## ##'),
+            'student_id' => $student->id,
+            'blood_group' => $this->faker->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'O+', 'O-']),
+            'allergies' => $this->faker->optional(0.2)->randomElement(['Arachides', 'Poussière', 'Pollen', 'Fruits de mer']),
+            'vaccinations' => 'DTC-Polio-Hib-HepB',
+            'emergency_contact_name' => Str::upper($this->togoSurname()).' '.$this->togoFirstName($this->faker->randomElement(['male', 'female'])),
+            'emergency_contact_phone' => '+228 9'.$this->faker->numerify('# ## ## ##'),
         ]);
 
         return $student;
     }
 
     /* ------------------------------------------------------------------ */
-    /* Programme                                                           */
+    /* Programme */
     /* ------------------------------------------------------------------ */
 
     /** Matières de chaque classe + professeur titulaire par matière. */
     private function seedCurriculum(): void
     {
         $subjects = Subject::query()->get()->keyBy('code');
-        $slot     = 0;
+        $slot = 0;
 
         foreach ($this->classes as $class) {
             foreach (self::CURRICULUM[$this->cycleOf($class)] as $code => $coefficient) {
@@ -683,8 +683,8 @@ class DemoSeeder extends Seeder
 
                 ClassSubject::firstOrCreate(
                     [
-                        'class_id'         => $class->id,
-                        'subject_id'       => $subject->id,
+                        'class_id' => $class->id,
+                        'subject_id' => $subject->id,
                         'academic_year_id' => $this->year->id,
                     ],
                     ['coefficient' => $coefficient, 'group' => 'obligatoire'],
@@ -692,13 +692,13 @@ class DemoSeeder extends Seeder
 
                 SubjectAssignment::firstOrCreate(
                     [
-                        'class_id'         => $class->id,
-                        'subject_id'       => $subject->id,
+                        'class_id' => $class->id,
+                        'subject_id' => $subject->id,
                         'academic_year_id' => $this->year->id,
                     ],
                     [
                         'teacher_id' => $this->teacherIds[$slot++ % max(count($this->teacherIds), 1)],
-                        'active'     => true,
+                        'active' => true,
                     ],
                 );
             }
@@ -706,7 +706,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Évaluations et notes                                                */
+    /* Évaluations et notes */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -731,7 +731,7 @@ class DemoSeeder extends Seeder
     {
         $this->ensureEvaluationTypeCategories();
 
-        $types         = EvaluationType::query()->get()->keyBy('name');
+        $types = EvaluationType::query()->get()->keyBy('name');
         $classSubjects = ClassSubject::query()
             ->whereIn('class_id', $this->classes->pluck('id'))
             ->where('academic_year_id', $this->year->id)
@@ -739,12 +739,12 @@ class DemoSeeder extends Seeder
 
         foreach ($this->periods as $period) {
             $start = CarbonImmutable::parse($period->start_date);
-            $end   = CarbonImmutable::parse($period->end_date);
+            $end = CarbonImmutable::parse($period->end_date);
 
             // Contrôle continu réparti sur la partie écoulée de la période, composition
             // en fin de période : dans le trimestre en cours celle-ci reste donc à venir.
             $horizon = $end->min($this->today);
-            $span    = max((int) $start->diffInDays($horizon), 1);
+            $span = max((int) $start->diffInDays($horizon), 1);
 
             foreach (self::EXAMS as $index => $exam) {
                 $type = $types->get($exam['type']);
@@ -759,14 +759,14 @@ class DemoSeeder extends Seeder
 
                 $template = EvaluationTemplate::firstOrCreate(
                     [
-                        'academic_period_id'  => $period->id,
-                        'evaluation_type_id'  => $type->id,
-                        'name'                => $exam['type'] . ' — ' . $period->name,
+                        'academic_period_id' => $period->id,
+                        'evaluation_type_id' => $type->id,
+                        'name' => $exam['type'].' — '.$period->name,
                     ],
                     [
                         'coefficient' => $exam['coefficient'],
-                        'max_score'   => 20,
-                        'date'        => $date->toDateString(),
+                        'max_score' => 20,
+                        'date' => $date->toDateString(),
                     ],
                 );
 
@@ -776,10 +776,10 @@ class DemoSeeder extends Seeder
                     Evaluation::firstOrCreate(
                         [
                             'evaluation_template_id' => $template->id,
-                            'class_subject_id'       => $classSubject->id,
+                            'class_subject_id' => $classSubject->id,
                         ],
                         [
-                            'date'   => $date->toDateString(),
+                            'date' => $date->toDateString(),
                             'status' => $isPast ? 'completed' : 'scheduled',
                         ],
                     );
@@ -827,31 +827,31 @@ class DemoSeeder extends Seeder
                 ->all();
 
             foreach (array_chunk($evaluations, 20) as $chunk) {
-                $rows  = [];
+                $rows = [];
                 $known = DB::table('marks')
                     ->whereIn('evaluation_id', $chunk)
                     ->get(['evaluation_id', 'student_id'])
-                    ->map(fn ($r) => $r->evaluation_id . '|' . $r->student_id)
+                    ->map(fn ($r) => $r->evaluation_id.'|'.$r->student_id)
                     ->flip();
 
                 foreach ($chunk as $evaluationId) {
                     foreach ($studentIds as $studentId) {
-                        if ($known->has($evaluationId . '|' . $studentId)) {
+                        if ($known->has($evaluationId.'|'.$studentId)) {
                             continue;
                         }
 
                         $absent = $this->faker->boolean(3);
-                        $score  = $absent ? null : round(min(20, max(0, $levels[$studentId] + $this->gaussian() * 2.2)), 2);
+                        $score = $absent ? null : round(min(20, max(0, $levels[$studentId] + $this->gaussian() * 2.2)), 2);
 
                         $rows[] = [
-                            'id'            => (string) Str::uuid7(),
+                            'id' => (string) Str::uuid7(),
                             'evaluation_id' => $evaluationId,
-                            'student_id'    => $studentId,
-                            'score'         => $score,
-                            'absent'        => $absent,
-                            'created_by'    => $enteredBy,
-                            'created_at'    => now(),
-                            'updated_at'    => now(),
+                            'student_id' => $studentId,
+                            'score' => $score,
+                            'absent' => $absent,
+                            'created_by' => $enteredBy,
+                            'created_at' => now(),
+                            'updated_at' => now(),
                         ];
                     }
                 }
@@ -894,25 +894,25 @@ class DemoSeeder extends Seeder
 
         $known = DB::table('grades')
             ->get(['student_id', 'class_subject_id', 'academic_period_id'])
-            ->map(fn ($g) => $g->student_id . '|' . $g->class_subject_id . '|' . $g->academic_period_id)
+            ->map(fn ($g) => $g->student_id.'|'.$g->class_subject_id.'|'.$g->academic_period_id)
             ->flip();
 
         $rows = [];
         foreach ($computed as $row) {
-            $key = $row->student_id . '|' . $row->class_subject_id . '|' . $row->academic_period_id;
+            $key = $row->student_id.'|'.$row->class_subject_id.'|'.$row->academic_period_id;
 
             if ($known->has($key) || $row->score === null) {
                 continue;
             }
 
             $rows[] = [
-                'id'                 => (string) Str::uuid7(),
-                'student_id'         => $row->student_id,
-                'class_subject_id'   => $row->class_subject_id,
+                'id' => (string) Str::uuid7(),
+                'student_id' => $row->student_id,
+                'class_subject_id' => $row->class_subject_id,
                 'academic_period_id' => $row->academic_period_id,
-                'score'              => $row->score,
-                'created_at'         => now(),
-                'updated_at'         => now(),
+                'score' => $row->score,
+                'created_at' => now(),
+                'updated_at' => now(),
             ];
         }
 
@@ -922,7 +922,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Dossiers courants                                                   */
+    /* Dossiers courants */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -952,15 +952,15 @@ class DemoSeeder extends Seeder
     private function seedFiledDocuments(): void
     {
         $archivist = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
-        $tags      = DocumentTag::query()->get();
+        $tags = DocumentTag::query()->get();
 
         $dossiers = [
             ['category' => 'juridique',   'title' => 'Arrêté d\'ouverture de l\'établissement',   'tag' => 'Juridique'],
             ['category' => 'juridique',   'title' => 'Statuts de l\'établissement',               'tag' => 'Juridique'],
             ['category' => 'rh',          'title' => 'Convention collective du personnel',        'tag' => 'Ressources humaines'],
             ['category' => 'rh',          'title' => 'Règlement intérieur du personnel',          'tag' => 'Contrat'],
-            ['category' => 'comptable',   'title' => 'Rapport financier ' . $this->year->year,    'tag' => 'Comptable'],
-            ['category' => 'comptable',   'title' => 'Budget prévisionnel ' . $this->year->year,  'tag' => 'Comptable'],
+            ['category' => 'comptable',   'title' => 'Rapport financier '.$this->year->year,    'tag' => 'Comptable'],
+            ['category' => 'comptable',   'title' => 'Budget prévisionnel '.$this->year->year,  'tag' => 'Comptable'],
             ['category' => 'pedagogique', 'title' => 'Programmes officiels — cycle primaire',     'tag' => 'Pédagogique'],
             ['category' => 'pedagogique', 'title' => 'Projet d\'établissement',                   'tag' => 'Pédagogique'],
             ['category' => 'courrier',    'title' => 'Correspondance — Inspection de Lomé Golfe', 'tag' => 'Courrier'],
@@ -973,22 +973,22 @@ class DemoSeeder extends Seeder
             }
 
             $archivedAt = $this->today->subDays($this->faker->numberBetween(10, 300));
-            $path       = 'archives/demo-' . Str::slug($dossier['title']) . '.pdf';
-            $size       = $this->writePdf($path, $dossier['title'], $this->school->name);
+            $path = 'archives/demo-'.Str::slug($dossier['title']).'.pdf';
+            $size = $this->writePdf($path, $dossier['title'], $this->school->name);
 
             $document = ArchivedDocument::create([
-                'reference'       => 'ARC-' . $archivedAt->format('Y') . '-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
-                'title'           => $dossier['title'],
-                'description'     => 'Document de référence classé aux archives de l\'établissement.',
-                'category'        => $dossier['category'],
-                'path'            => $path,
-                'disk'            => 'secure',
-                'original_name'   => Str::slug($dossier['title']) . '.pdf',
-                'mime'            => 'application/pdf',
-                'size'            => $size,
+                'reference' => 'ARC-'.$archivedAt->format('Y').'-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                'title' => $dossier['title'],
+                'description' => 'Document de référence classé aux archives de l\'établissement.',
+                'category' => $dossier['category'],
+                'path' => $path,
+                'disk' => 'secure',
+                'original_name' => Str::slug($dossier['title']).'.pdf',
+                'mime' => 'application/pdf',
+                'size' => $size,
                 'retention_until' => $archivedAt->addYears(10)->toDateString(),
-                'archived_by'     => $archivist,
-                'archived_at'     => $archivedAt,
+                'archived_by' => $archivist,
+                'archived_at' => $archivedAt,
             ]);
 
             if ($tag = $tags->firstWhere('name', $dossier['tag'])) {
@@ -1000,7 +1000,7 @@ class DemoSeeder extends Seeder
             return;
         }
 
-        $pieces  = ['Acte de naissance', 'Certificat de scolarité antérieure', 'Photo d\'identité', 'Carnet de vaccination'];
+        $pieces = ['Acte de naissance', 'Certificat de scolarité antérieure', 'Photo d\'identité', 'Carnet de vaccination'];
         $students = Student::query()
             ->whereIn('id', Enrollment::query()->where('academic_year_id', $this->year->id)->active()->select('student_id'))
             ->inRandomOrder()
@@ -1009,17 +1009,17 @@ class DemoSeeder extends Seeder
 
         foreach ($students as $student) {
             foreach ($this->faker->randomElements($pieces, $this->faker->numberBetween(1, 3)) as $piece) {
-                $path = $student->storageFolder() . '/documents/' . Str::slug($piece) . '.pdf';
-                $size = $this->writePdf($path, $piece, $student->lastname . ' ' . $student->firstname);
+                $path = $student->storageFolder().'/documents/'.Str::slug($piece).'.pdf';
+                $size = $this->writePdf($path, $piece, $student->lastname.' '.$student->firstname);
 
                 StudentDocument::create([
-                    'student_id'    => $student->id,
-                    'name'          => $piece,
-                    'path'          => $path,
-                    'original_name' => Str::slug($piece) . '.pdf',
-                    'mime'          => 'application/pdf',
-                    'size'          => $size,
-                    'uploaded_by'   => $archivist,
+                    'student_id' => $student->id,
+                    'name' => $piece,
+                    'path' => $path,
+                    'original_name' => Str::slug($piece).'.pdf',
+                    'mime' => 'application/pdf',
+                    'size' => $size,
+                    'uploaded_by' => $archivist,
                 ]);
             }
         }
@@ -1032,13 +1032,13 @@ class DemoSeeder extends Seeder
         // embarquée dans chaque fichier et ferait passer une page de 6 Ko à 850 Ko,
         // soit ~38 Mo de pièces de démonstration à sauvegarder pour rien.
         $html = '<html><head><meta charset="utf-8"></head><body style="font-family: helvetica, sans-serif; padding: 60px">'
-            . '<p style="color:#6b7280; font-size:11px; letter-spacing:2px">DOCUMENT DE DÉMONSTRATION</p>'
-            . '<h1 style="font-size:22px; margin:8px 0">' . e($title) . '</h1>'
-            . '<p style="color:#374151">' . e($subtitle) . '</p>'
-            . '<hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0">'
-            . '<p style="color:#6b7280; font-size:12px">Contenu fictif généré par DemoSeeder. '
-            . 'Ce fichier existe pour que le téléchargement fonctionne pendant la démonstration.</p>'
-            . '</body></html>';
+            .'<p style="color:#6b7280; font-size:11px; letter-spacing:2px">DOCUMENT DE DÉMONSTRATION</p>'
+            .'<h1 style="font-size:22px; margin:8px 0">'.e($title).'</h1>'
+            .'<p style="color:#374151">'.e($subtitle).'</p>'
+            .'<hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0">'
+            .'<p style="color:#6b7280; font-size:12px">Contenu fictif généré par DemoSeeder. '
+            .'Ce fichier existe pour que le téléchargement fonctionne pendant la démonstration.</p>'
+            .'</body></html>';
 
         $content = Pdf::loadHTML($html)->output();
         Storage::disk('secure')->put($path, $content);
@@ -1054,7 +1054,7 @@ class DemoSeeder extends Seeder
         }
 
         $reviewer = User::query()->role('directeur')->value('id') ?? User::query()->value('id');
-        $parent   = User::query()->role('secrétariat')->value('id') ?? $reviewer;
+        $parent = User::query()->role('secrétariat')->value('id') ?? $reviewer;
 
         // On part des élèves réellement absents : un justificatif sans absence
         // correspondante serait incohérent au moindre recoupement.
@@ -1066,30 +1066,30 @@ class DemoSeeder extends Seeder
             ->get(['ar.student_id', 'a.date']);
 
         foreach ($absences as $index => $absence) {
-            $start  = CarbonImmutable::parse($absence->date);
+            $start = CarbonImmutable::parse($absence->date);
             $status = match ($index % 5) {
                 0, 1, 2 => 'approved',
-                3       => 'pending',
+                3 => 'pending',
                 default => 'rejected',
             };
 
             $reason = $this->faker->randomElement(['medical', 'medical', 'familial', 'autre']);
 
             AbsencePermission::create([
-                'student_id'     => $absence->student_id,
-                'requested_by'   => $parent,
-                'reviewed_by'    => $status === 'pending' ? null : $reviewer,
-                'start_date'     => $start->toDateString(),
-                'end_date'       => $start->addDays($this->faker->numberBetween(0, 3))->toDateString(),
-                'reason'         => $reason,
-                'description'    => match ($reason) {
-                    'medical'  => 'Consultation médicale, certificat fourni.',
+                'student_id' => $absence->student_id,
+                'requested_by' => $parent,
+                'reviewed_by' => $status === 'pending' ? null : $reviewer,
+                'start_date' => $start->toDateString(),
+                'end_date' => $start->addDays($this->faker->numberBetween(0, 3))->toDateString(),
+                'reason' => $reason,
+                'description' => match ($reason) {
+                    'medical' => 'Consultation médicale, certificat fourni.',
                     'familial' => 'Événement familial hors de Lomé.',
-                    default    => 'Motif communiqué par la famille.',
+                    default => 'Motif communiqué par la famille.',
                 },
-                'status'         => $status,
+                'status' => $status,
                 'review_comment' => $status === 'rejected' ? 'Justificatif non transmis dans les délais.' : null,
-                'reviewed_at'    => $status === 'pending' ? null : $start->addDays(2),
+                'reviewed_at' => $status === 'pending' ? null : $start->addDays(2),
             ]);
         }
     }
@@ -1112,32 +1112,32 @@ class DemoSeeder extends Seeder
 
         foreach ($marks as $index => $mark) {
             $status = match ($index % 4) {
-                0, 1    => 'pending',
-                2       => 'approved',
+                0, 1 => 'pending',
+                2 => 'approved',
                 default => 'rejected',
             };
 
             $requested = min(20, (float) $mark->score + $this->faker->randomFloat(1, 1, 4));
 
             NoteReclamation::create([
-                'evaluation_id'   => $mark->evaluation_id,
-                'student_id'      => $mark->student_id,
-                'requested_by'    => $reviewer,
-                'reason'          => $this->faker->randomElement([
+                'evaluation_id' => $mark->evaluation_id,
+                'student_id' => $mark->student_id,
+                'requested_by' => $reviewer,
+                'reason' => $this->faker->randomElement([
                     'Une question corrigée comme fausse alors que la réponse est juste.',
                     'Total des points erroné sur la copie.',
                     'Une page de la copie n\'a pas été corrigée.',
                 ]),
-                'original_score'  => $mark->score,
+                'original_score' => $mark->score,
                 'requested_score' => $requested,
-                'status'          => $status,
-                'reviewed_by'     => $status === 'pending' ? null : $reviewer,
-                'reviewed_at'     => $status === 'pending' ? null : now()->subDays($this->faker->numberBetween(1, 20)),
+                'status' => $status,
+                'reviewed_by' => $status === 'pending' ? null : $reviewer,
+                'reviewed_at' => $status === 'pending' ? null : now()->subDays($this->faker->numberBetween(1, 20)),
                 'corrected_score' => $status === 'approved' ? $requested : null,
                 'correction_note' => match ($status) {
                     'approved' => 'Erreur de report confirmée, note rectifiée.',
                     'rejected' => 'Correction vérifiée, barème correctement appliqué.',
-                    default    => null,
+                    default => null,
                 },
             ]);
         }
@@ -1177,12 +1177,12 @@ class DemoSeeder extends Seeder
                 ['type' => $b['type'], 'year' => $examYear, 'academic_year_id' => $this->year->id],
                 [
                     'school_id' => $this->school->id,
-                    'name'      => $b['name'],
-                    'session'   => 'normale',
-                    'exam_date' => $examYear . '-06-15',
-                    'center'    => $b['center'],
-                    'status'    => 'termine',
-                    'class_id'  => $class->id,
+                    'name' => $b['name'],
+                    'session' => 'normale',
+                    'exam_date' => $examYear.'-06-15',
+                    'center' => $b['center'],
+                    'status' => 'termine',
+                    'class_id' => $class->id,
                 ],
             );
 
@@ -1196,22 +1196,22 @@ class DemoSeeder extends Seeder
             foreach ($studentIds as $index => $studentId) {
                 $draw = $this->faker->numberBetween(1, 100);
                 [$status, $average, $mention] = match (true) {
-                    $draw <= 3              => ['absent', null, null],
+                    $draw <= 3 => ['absent', null, null],
                     $draw <= $b['admis'] + 3 => ['admis', $avg = round($this->faker->randomFloat(2, 10, 17), 2), $this->historyMention($avg)],
-                    default                 => ['echoue', round($this->faker->randomFloat(2, 6, 9.75), 2), null],
+                    default => ['echoue', round($this->faker->randomFloat(2, 6, 9.75), 2), null],
                 };
 
                 $rows[] = [
-                    'id'                  => (string) Str::uuid7(),
-                    'official_exam_id'    => $exam->id,
-                    'student_id'          => $studentId,
-                    'registration_number' => Str::upper($b['type']) . '-' . $examYear . '-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
-                    'serie'               => $b['serie'],
-                    'status'              => $status,
-                    'average'             => $average,
-                    'mention'             => $mention,
-                    'created_at'          => now(),
-                    'updated_at'          => now(),
+                    'id' => (string) Str::uuid7(),
+                    'official_exam_id' => $exam->id,
+                    'student_id' => $studentId,
+                    'registration_number' => Str::upper($b['type']).'-'.$examYear.'-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                    'serie' => $b['serie'],
+                    'status' => $status,
+                    'average' => $average,
+                    'mention' => $mention,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
 
@@ -1228,7 +1228,7 @@ class DemoSeeder extends Seeder
             return;
         }
 
-        $author    = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
+        $author = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
         $employees = EmployeeProfile::query()->inRandomOrder()->limit(8)->get();
 
         $catalogue = [
@@ -1243,14 +1243,14 @@ class DemoSeeder extends Seeder
 
             EmployeeAllowance::create([
                 'employee_profile_id' => $employee->id,
-                'type'                => $line['type'],
-                'label'               => $line['label'],
-                'mode'                => $line['mode'],
-                'amount'              => $line['amount'],
-                'reason'              => $line['type'] === 'deduction' ? 'Remboursement échelonné sur trois mois.' : null,
-                'starts_on'           => $this->today->startOfMonth()->subMonths(3)->toDateString(),
-                'active'              => true,
-                'created_by'          => $author,
+                'type' => $line['type'],
+                'label' => $line['label'],
+                'mode' => $line['mode'],
+                'amount' => $line['amount'],
+                'reason' => $line['type'] === 'deduction' ? 'Remboursement échelonné sur trois mois.' : null,
+                'starts_on' => $this->today->startOfMonth()->subMonths(3)->toDateString(),
+                'active' => true,
+                'created_by' => $author,
             ]);
         }
     }
@@ -1263,7 +1263,7 @@ class DemoSeeder extends Seeder
         }
 
         $templates = DocumentTemplate::query()->get();
-        $issuedBy  = User::query()->role('secrétariat')->value('id') ?? User::query()->value('id');
+        $issuedBy = User::query()->role('secrétariat')->value('id') ?? User::query()->value('id');
 
         if ($templates->isEmpty()) {
             return;
@@ -1280,21 +1280,21 @@ class DemoSeeder extends Seeder
             $issuedAt = $this->today->subDays($this->faker->numberBetween(1, 120));
 
             DocumentIssuance::create([
-                'template_id'      => $template->id,
-                'student_id'       => $student->id,
-                'reference_number' => 'DOC-' . $issuedAt->format('Y') . '-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
-                'issued_by'        => $issuedBy,
-                'payload'          => [
-                    'eleve'     => $student->lastname . ' ' . $student->firstname,
+                'template_id' => $template->id,
+                'student_id' => $student->id,
+                'reference_number' => 'DOC-'.$issuedAt->format('Y').'-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                'issued_by' => $issuedBy,
+                'payload' => [
+                    'eleve' => $student->lastname.' '.$student->firstname,
                     'matricule' => $student->matricule,
                 ],
-                'issued_at'        => $issuedAt,
+                'issued_at' => $issuedAt,
             ]);
         }
     }
 
     /* ------------------------------------------------------------------ */
-    /* Bourses et facturation                                              */
+    /* Bourses et facturation */
     /* ------------------------------------------------------------------ */
 
     /** Quelques boursiers : la remise alimente la ligne DISCOUNT des factures. */
@@ -1316,12 +1316,12 @@ class DemoSeeder extends Seeder
         foreach ($candidates as $studentId) {
             StudentScholarship::firstOrCreate(
                 [
-                    'student_id'       => $studentId,
+                    'student_id' => $studentId,
                     'academic_year_id' => $this->year->id,
                 ],
                 [
                     'scholarship_id' => $this->faker->randomElement($scholarships),
-                    'start_date'     => $this->year->start_date,
+                    'start_date' => $this->year->start_date,
                     'number_of_year' => 1,
                 ],
             );
@@ -1340,7 +1340,7 @@ class DemoSeeder extends Seeder
         $this->seedFeeStructures();
 
         $invoices = app(InvoiceService::class);
-        $cashier  = User::query()->role('comptabilité')->value('id') ?? User::query()->value('id');
+        $cashier = User::query()->role('comptabilité')->value('id') ?? User::query()->value('id');
 
         $enrollments = Enrollment::query()
             ->with('student')
@@ -1357,11 +1357,11 @@ class DemoSeeder extends Seeder
             }
 
             // 55 % soldé, 30 % partiel, 15 % impayé : un recouvrement crédible.
-            $draw  = $this->faker->numberBetween(1, 100);
+            $draw = $this->faker->numberBetween(1, 100);
             $share = match (true) {
                 $draw <= 55 => 1.0,
                 $draw <= 85 => $this->faker->randomFloat(2, 0.25, 0.8),
-                default     => 0.0,
+                default => 0.0,
             };
 
             if ($share === 0.0) {
@@ -1373,11 +1373,11 @@ class DemoSeeder extends Seeder
                 ->addDays($this->faker->numberBetween(0, max(1, (int) CarbonImmutable::parse($this->year->start_date)->diffInDays($this->today))));
 
             $invoices->recordPayment($invoice, [
-                'amount'         => round((float) $invoice->total * $share, 2),
+                'amount' => round((float) $invoice->total * $share, 2),
                 'payment_method' => $method,
-                'paid_by'        => $enrollment->student?->lastname . ' ' . $enrollment->student?->firstname,
-                'paid_at'        => $paidAt->toDateString(),
-                'created_by'     => $cashier,
+                'paid_by' => $enrollment->student?->lastname.' '.$enrollment->student?->firstname,
+                'paid_at' => $paidAt->toDateString(),
+                'created_by' => $cashier,
                 'reference_number' => $method === 'CASH' ? null : Str::upper(Str::random(10)),
             ]);
         }
@@ -1391,14 +1391,14 @@ class DemoSeeder extends Seeder
         foreach ($this->classes as $class) {
             $ecolage = match ($this->cycleOf($class)) {
                 'primaire' => 90000,
-                'college'  => 135000,
-                default    => 180000,
+                'college' => 135000,
+                default => 180000,
             };
 
             $amounts = [
                 'Inscription' => 15000,
-                'Écolage'     => $ecolage,
-                'Cantine'     => 45000,
+                'Écolage' => $ecolage,
+                'Cantine' => 45000,
             ];
 
             foreach ($amounts as $name => $amount) {
@@ -1411,8 +1411,8 @@ class DemoSeeder extends Seeder
                 FeeStructure::firstOrCreate(
                     [
                         'academic_year_id' => $this->year->id,
-                        'fee_category_id'  => $category->id,
-                        'class_id'         => $class->id,
+                        'fee_category_id' => $category->id,
+                        'class_id' => $class->id,
                     ],
                     ['amount' => $amount],
                 );
@@ -1421,7 +1421,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Présences                                                           */
+    /* Présences */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1435,7 +1435,7 @@ class DemoSeeder extends Seeder
         $author = User::query()->role('secrétariat')->value('id') ?? User::query()->value('id');
 
         $start = CarbonImmutable::parse($period->start_date)->max($this->today->subWeeks(8));
-        $end   = $this->today->min(CarbonImmutable::parse($period->end_date));
+        $end = $this->today->min(CarbonImmutable::parse($period->end_date));
 
         foreach ($this->classes as $class) {
             $studentIds = Enrollment::query()
@@ -1456,10 +1456,10 @@ class DemoSeeder extends Seeder
 
                 $attendance = Attendance::firstOrCreate(
                     [
-                        'class_id'           => $class->id,
+                        'class_id' => $class->id,
                         'academic_period_id' => $period->id,
-                        'date'               => $day->toDateString(),
-                        'session'            => 'matin',
+                        'date' => $day->toDateString(),
+                        'session' => 'matin',
                     ],
                     ['recorded_by' => $author],
                 );
@@ -1475,17 +1475,17 @@ class DemoSeeder extends Seeder
                         $draw <= 92 => ['present', null],
                         $draw <= 96 => ['late', $this->faker->numberBetween(5, 40)],
                         $draw <= 98 => ['excused', null],
-                        default     => ['absent', null],
+                        default => ['absent', null],
                     };
 
                     $rows[] = [
-                        'id'            => (string) Str::uuid7(),
+                        'id' => (string) Str::uuid7(),
                         'attendance_id' => $attendance->id,
-                        'student_id'    => $studentId,
-                        'status'        => $status,
-                        'minutes_late'  => $late,
-                        'created_at'    => now(),
-                        'updated_at'    => now(),
+                        'student_id' => $studentId,
+                        'status' => $status,
+                        'minutes_late' => $late,
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ];
                 }
 
@@ -1495,7 +1495,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Emploi du temps                                                     */
+    /* Emploi du temps */
     /* ------------------------------------------------------------------ */
 
     /** Grille hebdomadaire : les matières de la classe réparties du lundi au vendredi. */
@@ -1525,17 +1525,17 @@ class DemoSeeder extends Seeder
 
                     TimetableSlot::firstOrCreate(
                         [
-                            'class_id'    => $class->id,
+                            'class_id' => $class->id,
                             'day_of_week' => $day,
-                            'start_time'  => $from,
+                            'start_time' => $from,
                         ],
                         [
-                            'school_id'        => $this->school->id,
+                            'school_id' => $this->school->id,
                             'academic_year_id' => $this->year->id,
-                            'end_time'         => $to,
-                            'subject_id'       => $assignment->subject_id,
-                            'teacher_id'       => $assignment->teacher_id,
-                            'room'             => 'Salle ' . $class->code,
+                            'end_time' => $to,
+                            'subject_id' => $assignment->subject_id,
+                            'teacher_id' => $assignment->teacher_id,
+                            'room' => 'Salle '.$class->code,
                         ],
                     );
                 }
@@ -1544,7 +1544,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Calendrier scolaire                                                 */
+    /* Calendrier scolaire */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1558,28 +1558,28 @@ class DemoSeeder extends Seeder
     private function seedCalendar(): void
     {
         $author = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
-        $first  = $this->periods->first();
-        $last   = $this->periods->last();
+        $first = $this->periods->first();
+        $last = $this->periods->last();
 
         $events = [[
-            'title'       => 'Rentrée scolaire ' . $this->year->year,
+            'title' => 'Rentrée scolaire '.$this->year->year,
             'description' => 'Accueil des élèves et reprise des cours.',
-            'type'        => 'event',
-            'start_date'  => $first->start_date,
-            'color'       => '#2a78d6',
+            'type' => 'event',
+            'start_date' => $first->start_date,
+            'color' => '#2a78d6',
         ], [
-            'title'       => 'Réunion de rentrée des parents',
+            'title' => 'Réunion de rentrée des parents',
             'description' => 'Présentation de l\'équipe pédagogique et du règlement intérieur.',
-            'type'        => 'meeting',
-            'start_date'  => CarbonImmutable::parse($first->start_date)->addWeek(),
-            'start_time'  => '15:00',
-            'end_time'    => '17:00',
-            'all_day'     => false,
+            'type' => 'meeting',
+            'start_date' => CarbonImmutable::parse($first->start_date)->addWeek(),
+            'start_time' => '15:00',
+            'end_time' => '17:00',
+            'all_day' => false,
         ], [
-            'title'       => 'Journée portes ouvertes',
+            'title' => 'Journée portes ouvertes',
             'description' => 'Visite de l\'établissement et rencontre avec les enseignants.',
-            'type'        => 'event',
-            'start_date'  => CarbonImmutable::parse($first->start_date)->addMonths(2),
+            'type' => 'event',
+            'start_date' => CarbonImmutable::parse($first->start_date)->addMonths(2),
         ]];
 
         // Événements du mois courant : le calendrier s'ouvre sur le mois d'aujourd'hui.
@@ -1588,46 +1588,46 @@ class DemoSeeder extends Seeder
         $now = $this->today;
         $events = array_merge($events, [
             [
-                'title'       => 'Réunion de coordination pédagogique',
+                'title' => 'Réunion de coordination pédagogique',
                 'description' => 'Point d\'étape du trimestre avec les enseignants.',
-                'type'        => 'meeting',
-                'start_date'  => $now->subDays(2),
-                'start_time'  => '16:00',
-                'end_time'    => '18:00',
-                'all_day'     => false,
-                'color'       => '#7c3aed',
+                'type' => 'meeting',
+                'start_date' => $now->subDays(2),
+                'start_time' => '16:00',
+                'end_time' => '18:00',
+                'all_day' => false,
+                'color' => '#7c3aed',
             ],
             [
-                'title'       => 'Journée sportive inter-classes',
+                'title' => 'Journée sportive inter-classes',
                 'description' => 'Compétitions sportives entre les classes.',
-                'type'        => 'event',
-                'start_date'  => $now->addDays(4),
-                'color'       => '#2a78d6',
+                'type' => 'event',
+                'start_date' => $now->addDays(4),
+                'color' => '#2a78d6',
             ],
             [
-                'title'       => 'Devoirs surveillés du mois',
+                'title' => 'Devoirs surveillés du mois',
                 'description' => 'Série de devoirs surveillés dans toutes les classes.',
-                'type'        => 'exam',
-                'start_date'  => $now->addDays(8),
-                'end_date'    => $now->addDays(11),
-                'color'       => '#eb6834',
+                'type' => 'exam',
+                'start_date' => $now->addDays(8),
+                'end_date' => $now->addDays(11),
+                'color' => '#eb6834',
             ],
             [
-                'title'       => 'Sortie pédagogique',
+                'title' => 'Sortie pédagogique',
                 'description' => 'Visite éducative encadrée par les enseignants.',
-                'type'        => 'event',
-                'start_date'  => $now->addDays(14),
-                'color'       => '#2a78d6',
+                'type' => 'event',
+                'start_date' => $now->addDays(14),
+                'color' => '#2a78d6',
             ],
             [
-                'title'       => 'Réunion parents-professeurs',
+                'title' => 'Réunion parents-professeurs',
                 'description' => 'Rencontre individuelle des familles et des enseignants.',
-                'type'        => 'meeting',
-                'start_date'  => $now->addDays(18),
-                'start_time'  => '15:00',
-                'end_time'    => '18:00',
-                'all_day'     => false,
-                'color'       => '#7c3aed',
+                'type' => 'meeting',
+                'start_date' => $now->addDays(18),
+                'start_time' => '15:00',
+                'end_time' => '18:00',
+                'all_day' => false,
+                'color' => '#7c3aed',
             ],
         ]);
 
@@ -1636,57 +1636,57 @@ class DemoSeeder extends Seeder
             $end = CarbonImmutable::parse($period->end_date);
 
             $events[] = [
-                'title'       => 'Compositions — ' . $period->name,
+                'title' => 'Compositions — '.$period->name,
                 'description' => 'Épreuves de synthèse de fin de période.',
-                'type'        => 'exam',
-                'start_date'  => $end->subWeek(),
-                'end_date'    => $end->subDays(3),
-                'color'       => '#eb6834',
+                'type' => 'exam',
+                'start_date' => $end->subWeek(),
+                'end_date' => $end->subDays(3),
+                'color' => '#eb6834',
             ];
 
             $events[] = [
-                'title'       => 'Conseils de classe — ' . $period->name,
+                'title' => 'Conseils de classe — '.$period->name,
                 'description' => 'Délibérations et appréciations par classe.',
-                'type'        => 'meeting',
-                'start_date'  => $end->addDays(3),
-                'start_time'  => '08:00',
-                'end_time'    => '13:00',
-                'all_day'     => false,
+                'type' => 'meeting',
+                'start_date' => $end->addDays(3),
+                'start_time' => '08:00',
+                'end_time' => '13:00',
+                'all_day' => false,
             ];
 
             $events[] = [
-                'title'       => 'Remise des bulletins — ' . $period->name,
+                'title' => 'Remise des bulletins — '.$period->name,
                 'description' => 'Réception des parents et remise des bulletins.',
-                'type'        => 'meeting',
-                'start_date'  => $end->addDays(7),
+                'type' => 'meeting',
+                'start_date' => $end->addDays(7),
             ];
 
             $events[] = [
-                'title'       => 'Congés de fin de ' . Str::lower($period->name),
-                'type'        => 'holiday',
-                'start_date'  => $end->addDays(8),
-                'end_date'    => $end->addDays(20),
-                'color'       => '#1baf7a',
+                'title' => 'Congés de fin de '.Str::lower($period->name),
+                'type' => 'holiday',
+                'start_date' => $end->addDays(8),
+                'end_date' => $end->addDays(20),
+                'color' => '#1baf7a',
             ];
         }
 
         foreach ($this->nationalHolidays($first->start_date, $last->end_date) as $date => $title) {
             $events[] = [
-                'title'      => $title,
-                'type'       => 'holiday',
+                'title' => $title,
+                'type' => 'holiday',
                 'start_date' => $date,
-                'color'      => '#1baf7a',
+                'color' => '#1baf7a',
             ];
         }
 
         // Sessions officielles déjà saisies dans le module Examens.
         foreach (DB::table('official_exams')->where('academic_year_id', $this->year->id)->get() as $exam) {
             $events[] = [
-                'title'       => 'Examen officiel — ' . $exam->name . ' (session ' . $exam->session . ')',
-                'description' => 'Centre : ' . $exam->center,
-                'type'        => 'exam',
-                'start_date'  => $exam->exam_date,
-                'color'       => '#eb6834',
+                'title' => 'Examen officiel — '.$exam->name.' (session '.$exam->session.')',
+                'description' => 'Centre : '.$exam->center,
+                'type' => 'exam',
+                'start_date' => $exam->exam_date,
+                'color' => '#eb6834',
             ];
         }
 
@@ -1695,19 +1695,19 @@ class DemoSeeder extends Seeder
                 [
                     // La date fait partie de la clé : une fête légale revient d'une
                     // année civile à l'autre sous le même intitulé.
-                    'title'            => $event['title'],
-                    'start_date'       => CarbonImmutable::parse($event['start_date'])->toDateString(),
+                    'title' => $event['title'],
+                    'start_date' => CarbonImmutable::parse($event['start_date'])->toDateString(),
                     'academic_year_id' => $this->year->id,
                 ],
                 [
                     'description' => $event['description'] ?? null,
-                    'type'        => $event['type'],
-                    'end_date'    => isset($event['end_date']) ? CarbonImmutable::parse($event['end_date'])->toDateString() : null,
-                    'all_day'     => $event['all_day'] ?? true,
-                    'start_time'  => $event['start_time'] ?? null,
-                    'end_time'    => $event['end_time'] ?? null,
-                    'color'       => $event['color'] ?? null,
-                    'created_by'  => $author,
+                    'type' => $event['type'],
+                    'end_date' => isset($event['end_date']) ? CarbonImmutable::parse($event['end_date'])->toDateString() : null,
+                    'all_day' => $event['all_day'] ?? true,
+                    'start_time' => $event['start_time'] ?? null,
+                    'end_time' => $event['end_time'] ?? null,
+                    'color' => $event['color'] ?? null,
+                    'created_by' => $author,
                 ],
             );
         }
@@ -1721,7 +1721,7 @@ class DemoSeeder extends Seeder
     private function nationalHolidays(string $from, string $to): array
     {
         $start = CarbonImmutable::parse($from);
-        $end   = CarbonImmutable::parse($to);
+        $end = CarbonImmutable::parse($to);
 
         $fixed = [
             '01-01' => 'Jour de l\'An',
@@ -1738,7 +1738,7 @@ class DemoSeeder extends Seeder
 
         foreach (range($start->year, $end->year) as $year) {
             foreach ($fixed as $dayMonth => $title) {
-                $date = CarbonImmutable::parse($year . '-' . $dayMonth);
+                $date = CarbonImmutable::parse($year.'-'.$dayMonth);
 
                 if ($date->between($start, $end)) {
                     $holidays[$date->toDateString()] = $title;
@@ -1750,7 +1750,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Personnel et paie                                                   */
+    /* Personnel et paie */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1794,24 +1794,23 @@ class DemoSeeder extends Seeder
             $isTeacher = $user->hasRole('enseignant');
 
             EmployeeProfile::create([
-                'user_id'         => $user->id,
-                'employee_number' => 'EMP' . str_pad((string) (++$number), 3, '0', STR_PAD_LEFT),
-                'job_title'       => $isTeacher ? 'Enseignant' : ($user->getRoleNames()->first() ?? 'Personnel'),
-                'department'      => $isTeacher ? 'Pédagogie' : 'Administration',
-                'contract_type'   => $this->faker->randomElement(['CDI', 'CDI', 'CDD']),
-                'hire_date'       => $this->today->subYears($this->faker->numberBetween(1, 12))->toDateString(),
-                'base_salary'     => $isTeacher ? $this->faker->numberBetween(130, 190) * 1000 : $this->faker->numberBetween(150, 260) * 1000,
-                'payment_method'  => $this->faker->randomElement(['MOBILE_MONEY', 'BANK_TRANSFER']),
-                'momo_number'     => '+228 9' . $this->faker->numerify('# ## ## ##'),
-                'cnss_number'     => 'CNSS' . $this->faker->numerify('#######'),
-                'status'          => 'active',
+                'user_id' => $user->id,
+                'employee_number' => 'EMP'.str_pad((string) (++$number), 3, '0', STR_PAD_LEFT),
+                'job_title' => $isTeacher ? 'Enseignant' : ($user->getRoleNames()->first() ?? 'Personnel'),
+                'department' => $isTeacher ? 'Pédagogie' : 'Administration',
+                'contract_type' => $this->faker->randomElement(['CDI', 'CDI', 'CDD']),
+                'hire_date' => $this->today->subYears($this->faker->numberBetween(1, 12))->toDateString(),
+                'base_salary' => $isTeacher ? $this->faker->numberBetween(130, 190) * 1000 : $this->faker->numberBetween(150, 260) * 1000,
+                'payment_method' => $this->faker->randomElement(['MOBILE_MONEY', 'BANK_TRANSFER']),
+                'momo_number' => '+228 9'.$this->faker->numerify('# ## ## ##'),
+                'cnss_number' => 'CNSS'.$this->faker->numerify('#######'),
+                'status' => 'active',
                 'salary_grade_id' => $isTeacher ? $grade->id : null,
             ]);
         }
 
         $payroll = app(PayrollService::class);
-        $cash    = DB::table('cash_accounts')->where('type', 'BANK')->value('id');
-
+        $cash = DB::table('cash_accounts')->where('type', 'BANK')->value('id');
 
         foreach ([3, 2, 1] as $offset) {
             $month = $this->today->subMonths($offset);
@@ -1826,7 +1825,7 @@ class DemoSeeder extends Seeder
                 continue;
             }
 
-            $run = $payroll->generate($month->month, $month->year, 'Paie ' . $month->translatedFormat('F Y'));
+            $run = $payroll->generate($month->month, $month->year, 'Paie '.$month->translatedFormat('F Y'));
 
             if ($offset >= 2) {
                 $payroll->validate($run);
@@ -1852,11 +1851,11 @@ class DemoSeeder extends Seeder
         }
 
         $settings->update([
-            'cnss_enabled'       => true,
+            'cnss_enabled' => true,
             'cnss_employee_rate' => 4,
             'cnss_employer_rate' => 17.5,
-            'its_enabled'        => true,
-            'its_brackets'       => [
+            'its_enabled' => true,
+            'its_brackets' => [
                 ['up_to' => 60000,  'rate' => 0.5],
                 ['up_to' => 150000, 'rate' => 7],
                 ['up_to' => 300000, 'rate' => 15],
@@ -1873,7 +1872,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Bulletins                                                           */
+    /* Bulletins */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1898,7 +1897,7 @@ class DemoSeeder extends Seeder
     }
 
     /* ------------------------------------------------------------------ */
-    /* Années passées (onglet Comparaisons)                                */
+    /* Années passées (onglet Comparaisons) */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1912,10 +1911,10 @@ class DemoSeeder extends Seeder
     private function seedHistory(): void
     {
         $studentIds = Student::query()->pluck('id')->all();
-        $students   = Student::query()->get(['id', 'lastname', 'firstname'])->keyBy('id');
-        $classIds   = $this->classes->pluck('id')->all();
-        $classe3e   = $this->classes->firstWhere('code', '3ème') ?? $this->classes->first();
-        $author     = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
+        $students = Student::query()->get(['id', 'lastname', 'firstname'])->keyBy('id');
+        $classIds = $this->classes->pluck('id')->all();
+        $classe3e = $this->classes->firstWhere('code', '3ème') ?? $this->classes->first();
+        $author = User::query()->role('administrateur')->value('id') ?? User::query()->value('id');
 
         if ($studentIds === [] || $classIds === []) {
             return;
@@ -1929,86 +1928,86 @@ class DemoSeeder extends Seeder
             $start = (int) substr($h['year'], 0, 4);
 
             $year = AcademicYear::create([
-                'year'       => $h['year'],
-                'start_date' => $start . '-09-15',
-                'end_date'   => ($start + 1) . '-07-10',
-                'active'     => false,
+                'year' => $h['year'],
+                'start_date' => $start.'-09-15',
+                'end_date' => ($start + 1).'-07-10',
+                'active' => false,
             ]);
 
             $period = AcademicPeriod::create([
-                'name'             => 'Bilan annuel',
-                'type'             => 'trimestre',
-                'weight'           => 1,
-                'start_date'       => $start . '-09-15',
-                'end_date'         => ($start + 1) . '-07-10',
-                'is_current'       => false,
+                'name' => 'Bilan annuel',
+                'type' => 'trimestre',
+                'weight' => 1,
+                'start_date' => $start.'-09-15',
+                'end_date' => ($start + 1).'-07-10',
+                'is_current' => false,
                 'academic_year_id' => $year->id,
             ]);
 
             $cohort = collect($studentIds)->shuffle()->take(min($h['effectif'], count($studentIds)))->values();
 
             $enrollRows = [];
-            $invRows    = [];
-            $rcRows     = [];
+            $invRows = [];
+            $rcRows = [];
 
             foreach ($cohort as $i => $sid) {
-                $n         = $i + 1;
-                $classId   = $classIds[$n % count($classIds)];
-                $enrollId  = (string) Str::uuid7();
-                $invId     = (string) Str::uuid7();
+                $n = $i + 1;
+                $classId = $classIds[$n % count($classIds)];
+                $enrollId = (string) Str::uuid7();
+                $invId = (string) Str::uuid7();
                 [$total, $paid, $invStatus] = $this->historyInvoice($h);
-                $average   = $this->historyAverage($h);
-                $st        = $students->get($sid);
+                $average = $this->historyAverage($h);
+                $st = $students->get($sid);
 
                 $enrollRows[] = [
-                    'id'               => $enrollId,
-                    'school_id'        => $this->school->id,
-                    'student_id'       => $sid,
-                    'class_id'         => $classId,
+                    'id' => $enrollId,
+                    'school_id' => $this->school->id,
+                    'student_id' => $sid,
+                    'class_id' => $classId,
                     'academic_year_id' => $year->id,
-                    'enrollment_code'  => 'HINS-' . $start . '-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT),
-                    'enrolled_by'      => $author,
-                    'enrollment_date'  => $start . '-09-15',
-                    'status'           => Enrollment::STATUS_ACTIVE,
-                    'academic_status'  => $this->historyStatus($h),
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
+                    'enrollment_code' => 'HINS-'.$start.'-'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+                    'enrolled_by' => $author,
+                    'enrollment_date' => $start.'-09-15',
+                    'status' => Enrollment::STATUS_ACTIVE,
+                    'academic_status' => $this->historyStatus($h),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
 
                 $invRows[] = [
-                    'id'               => $invId,
-                    'enrollment_id'    => $enrollId,
-                    'invoice_number'   => 'HINV-' . $start . '-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT),
-                    'subtotal'         => $total,
-                    'discount_amount'  => 0,
-                    'total'            => $total,
-                    'amount_paid'      => $paid,
+                    'id' => $invId,
+                    'enrollment_id' => $enrollId,
+                    'invoice_number' => 'HINV-'.$start.'-'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+                    'subtotal' => $total,
+                    'discount_amount' => 0,
+                    'total' => $total,
+                    'amount_paid' => $paid,
                     'amount_remaining' => $total - $paid,
-                    'status'           => $invStatus,
-                    'issued_at'        => $start . '-10-01',
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
+                    'status' => $invStatus,
+                    'issued_at' => $start.'-10-01',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
 
                 $rcRows[] = [
-                    'id'                 => (string) Str::uuid7(),
-                    'student_id'         => $sid,
+                    'id' => (string) Str::uuid7(),
+                    'student_id' => $sid,
                     'academic_period_id' => $period->id,
-                    'class_id'           => $classId,
-                    'academic_year_id'   => $year->id,
-                    'reference'          => 'HRC-' . $start . '-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT),
-                    'average'            => $average,
-                    'rank'               => null,
-                    'mention'            => $this->historyMention($average),
-                    'payload'            => json_encode([
+                    'class_id' => $classId,
+                    'academic_year_id' => $year->id,
+                    'reference' => 'HRC-'.$start.'-'.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+                    'average' => $average,
+                    'rank' => null,
+                    'mention' => $this->historyMention($average),
+                    'payload' => json_encode([
                         'historique' => true,
-                        'student'    => ['name' => trim(($st->lastname ?? '') . ' ' . ($st->firstname ?? ''))],
-                        'average'    => $average,
+                        'student' => ['name' => trim(($st->lastname ?? '').' '.($st->firstname ?? ''))],
+                        'average' => $average,
                     ], JSON_UNESCAPED_UNICODE),
-                    'locked_at'          => now(),
-                    'generated_by'       => $author,
-                    'created_at'         => now(),
-                    'updated_at'         => now(),
+                    'locked_at' => now(),
+                    'generated_by' => $author,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
 
@@ -2024,29 +2023,29 @@ class DemoSeeder extends Seeder
 
             // Examen officiel de fin d'année + admissions (taux cible).
             $exam = OfficialExam::create([
-                'school_id'        => $this->school->id,
-                'type'             => 'bepc',
-                'name'             => 'BEPC ' . ($start + 1),
-                'year'             => $start + 1,
-                'session'          => 'normale',
-                'exam_date'        => ($start + 1) . '-06-15',
-                'center'           => 'Lycée de Tokoin',
-                'status'           => 'termine',
+                'school_id' => $this->school->id,
+                'type' => 'bepc',
+                'name' => 'BEPC '.($start + 1),
+                'year' => $start + 1,
+                'session' => 'normale',
+                'exam_date' => ($start + 1).'-06-15',
+                'center' => 'Lycée de Tokoin',
+                'status' => 'termine',
                 'academic_year_id' => $year->id,
-                'class_id'         => $classe3e->id,
+                'class_id' => $classe3e->id,
             ]);
 
             $regRows = [];
             foreach ($cohort->take(60) as $j => $sid) {
                 $admis = $this->faker->numberBetween(1, 100) <= $h['admission'];
                 $regRows[] = [
-                    'id'                  => (string) Str::uuid7(),
-                    'official_exam_id'    => $exam->id,
-                    'student_id'          => $sid,
-                    'registration_number' => 'BEPC-' . ($start + 1) . '-' . str_pad((string) ($j + 1), 4, '0', STR_PAD_LEFT),
-                    'status'              => $admis ? 'admis' : 'echoue',
-                    'created_at'          => now(),
-                    'updated_at'          => now(),
+                    'id' => (string) Str::uuid7(),
+                    'official_exam_id' => $exam->id,
+                    'student_id' => $sid,
+                    'registration_number' => 'BEPC-'.($start + 1).'-'.str_pad((string) ($j + 1), 4, '0', STR_PAD_LEFT),
+                    'status' => $admis ? 'admis' : 'echoue',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
             DB::table('official_exam_registrations')->insert($regRows);
@@ -2059,10 +2058,10 @@ class DemoSeeder extends Seeder
         $roll = $this->faker->numberBetween(1, 100);
 
         return match (true) {
-            $roll <= $h['abandon']                        => 'abandon',
-            $roll <= $h['abandon'] + 3                     => 'transfere',
+            $roll <= $h['abandon'] => 'abandon',
+            $roll <= $h['abandon'] + 3 => 'transfere',
             $roll <= $h['abandon'] + 3 + $h['redoublement'] => 'non_valide',
-            default                                        => 'valide',
+            default => 'valide',
         };
     }
 
@@ -2076,7 +2075,7 @@ class DemoSeeder extends Seeder
     {
         $total = 150000;
         $share = min(1.0, max(0.0, $h['recovery'] / 100 + $this->gaussian() * 0.18));
-        $paid  = (int) round($total * $share);
+        $paid = (int) round($total * $share);
 
         $status = $paid >= $total ? 'PAID' : ($paid > 0 ? 'PARTIALLY_PAID' : 'ISSUED');
 
@@ -2099,7 +2098,7 @@ class DemoSeeder extends Seeder
             $average >= 14 => 'bien',
             $average >= 12 => 'assez_bien',
             $average >= 10 => 'passable',
-            default        => '',
+            default => '',
         };
     }
 }

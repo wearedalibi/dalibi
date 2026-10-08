@@ -25,13 +25,13 @@ class BulletinTemplateController extends Controller
         $options = $template?->options ?? BulletinTemplate::defaultOptions();
 
         return Inertia::render('Parametres/BulletinTemplates/Edit', [
-            'columns'         => $columns,
-            'options'         => $options,
-            'columnTypes'     => BulletinTemplate::COLUMN_TYPES,
-            'noteSources'     => BulletinTemplate::NOTE_SOURCES,
+            'columns' => $columns,
+            'options' => $options,
+            'columnTypes' => BulletinTemplate::COLUMN_TYPES,
+            'noteSources' => BulletinTemplate::NOTE_SOURCES,
             'evaluationTypes' => EvaluationType::orderBy('name')->get(['id', 'name', 'category']),
-            'presets'         => $this->presets(),
-            'school'          => ['name' => $school->name],
+            'presets' => $this->presets(),
+            'school' => ['name' => $school->name],
         ]);
     }
 
@@ -40,14 +40,14 @@ class BulletinTemplateController extends Controller
         abort_unless($request->user()->can('edit_bulletin_templates'), 403);
 
         $validated = $request->validate([
-            'columns'           => ['required', 'array', 'min:1'],
-            'columns.*.key'     => ['required', 'string', 'max:40'],
-            'columns.*.label'   => ['required', 'string', 'max:60'],
-            'columns.*.width'   => ['nullable', 'numeric', 'min:1', 'max:100'],
-            'columns.*.type'    => ['required', 'in:subject,note,coefficient,definitive,rang,appreciation,teacher,signature,text'],
-            'columns.*.source'  => ['nullable', 'string', 'max:60'],
-            'options'           => ['nullable', 'array'],
-            'options.nb_text'   => ['nullable', 'string', 'max:255'],
+            'columns' => ['required', 'array', 'min:1'],
+            'columns.*.key' => ['required', 'string', 'max:40'],
+            'columns.*.label' => ['required', 'string', 'max:60'],
+            'columns.*.width' => ['nullable', 'numeric', 'min:1', 'max:100'],
+            'columns.*.type' => ['required', 'in:subject,note,coefficient,definitive,rang,appreciation,teacher,signature,text'],
+            'columns.*.source' => ['nullable', 'string', 'max:60'],
+            'options' => ['nullable', 'array'],
+            'options.nb_text' => ['nullable', 'string', 'max:255'],
         ]);
 
         $school = $this->activeSchool();
@@ -55,10 +55,10 @@ class BulletinTemplateController extends Controller
         BulletinTemplate::updateOrCreate(
             ['school_id' => $school->id, 'classroom_type_id' => null],
             [
-                'name'      => 'Modèle par défaut',
+                'name' => 'Modèle par défaut',
                 'is_active' => true,
-                'columns'   => $validated['columns'],
-                'options'   => array_merge(BulletinTemplate::defaultOptions(), $validated['options'] ?? []),
+                'columns' => $validated['columns'],
+                'options' => array_merge(BulletinTemplate::defaultOptions(), $validated['options'] ?? []),
             ],
         );
 
@@ -76,7 +76,7 @@ class BulletinTemplateController extends Controller
         if ($interro) {
             $columns = BulletinTemplate::defaultColumns();
             array_splice($columns, 1, 0, [[
-                'key' => 'interro', 'label' => 'Interro', 'width' => 9, 'type' => 'note', 'source' => 'type:' . $interro->id,
+                'key' => 'interro', 'label' => 'Interro', 'width' => 9, 'type' => 'note', 'source' => 'type:'.$interro->id,
             ]]);
             $presets[] = ['name' => 'Avec Interrogation', 'columns' => $columns, 'options' => BulletinTemplate::defaultOptions()];
         }

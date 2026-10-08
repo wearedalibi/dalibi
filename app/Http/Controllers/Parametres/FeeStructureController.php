@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFeeStructureRequest;
 use App\Http\Requests\UpdateFeeStructureRequest;
 use App\Models\AcademicYear;
@@ -39,13 +38,13 @@ class FeeStructureController extends Controller
                 $q->whereHas('feeCategory', function ($query) use ($s): void {
                     $query->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"]);
                 })
-                ->orWhereHas('classroom', function ($query) use ($s): void {
-                    $query->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
-                          ->orWhereRaw('LOWER(code) LIKE ?', ["%{$s}%"]);
-                })
-                ->orWhereHas('academicYear', function ($query) use ($s): void {
-                    $query->whereRaw('LOWER(year) LIKE ?', ["%{$s}%"]);
-                });
+                    ->orWhereHas('classroom', function ($query) use ($s): void {
+                        $query->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
+                            ->orWhereRaw('LOWER(code) LIKE ?', ["%{$s}%"]);
+                    })
+                    ->orWhereHas('academicYear', function ($query) use ($s): void {
+                        $query->whereRaw('LOWER(year) LIKE ?', ["%{$s}%"]);
+                    });
             });
         }
 
@@ -148,7 +147,7 @@ class FeeStructureController extends Controller
         $validated = $request->validate([
             'source_year_id' => ['required', 'uuid', 'exists:academic_years,id', 'different:'.$target->id],
         ], [
-            'source_year_id.required'  => 'L\'année source est requise.',
+            'source_year_id.required' => 'L\'année source est requise.',
             'source_year_id.different' => 'L\'année source doit être différente de l\'année active.',
         ]);
 
@@ -172,19 +171,19 @@ class FeeStructureController extends Controller
 
                 $new = FeeStructure::create([
                     'academic_year_id' => $target->id,
-                    'fee_category_id'  => $src->fee_category_id,
-                    'class_id'         => $src->class_id,
-                    'amount'           => $src->amount,
+                    'fee_category_id' => $src->fee_category_id,
+                    'class_id' => $src->class_id,
+                    'amount' => $src->amount,
                 ]);
 
                 foreach ($src->installments as $inst) {
                     Installment::create([
-                        'fee_structure_id'   => $new->id,
-                        'name'               => $inst->name,
+                        'fee_structure_id' => $new->id,
+                        'name' => $inst->name,
                         'installment_number' => $inst->installment_number,
-                        'amount'             => $inst->amount,
+                        'amount' => $inst->amount,
                         // Les dates et périodes sont propres à l'année : on les réinitialise
-                        'due_date'           => null,
+                        'due_date' => null,
                         'academic_period_id' => null,
                     ]);
                 }

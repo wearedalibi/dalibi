@@ -27,8 +27,11 @@ class AccountingIntegrityTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private Classroom $class;
+
     private CashAccount $cash;
 
     protected function setUp(): void
@@ -37,7 +40,7 @@ class AccountingIntegrityTest extends TestCase
         $this->seed(RolesAndPermissionsSeeder::class);
 
         $this->school = School::factory()->create();
-        $this->year   = AcademicYear::create([
+        $this->year = AcademicYear::create([
             'year' => '2025-2026', 'start_date' => '2025-09-01',
             'end_date' => '2026-07-31', 'active' => true,
         ]);
@@ -54,10 +57,10 @@ class AccountingIntegrityTest extends TestCase
     private function payload(float $amount, string $paidAt = '2025-09-10'): array
     {
         return [
-            'amount'          => $amount,
-            'payment_method'  => 'CASH',
+            'amount' => $amount,
+            'payment_method' => 'CASH',
             'cash_account_id' => $this->cash->id,
-            'paid_at'         => $paidAt,
+            'paid_at' => $paidAt,
         ];
     }
 
@@ -84,14 +87,14 @@ class AccountingIntegrityTest extends TestCase
         ]);
 
         Invoice::create([
-            'enrollment_id'    => $enrollment->id,
-            'invoice_number'   => 'FAC-0001',
-            'subtotal'         => $total,
-            'discount_amount'  => 0,
-            'total'            => $total,
-            'amount_paid'      => 0,
+            'enrollment_id' => $enrollment->id,
+            'invoice_number' => 'FAC-0001',
+            'subtotal' => $total,
+            'discount_amount' => 0,
+            'total' => $total,
+            'amount_paid' => 0,
             'amount_remaining' => $total,
-            'status'           => 'UNPAID',
+            'status' => 'UNPAID',
         ]);
 
         return $enrollment->fresh();
@@ -113,7 +116,7 @@ class AccountingIntegrityTest extends TestCase
     public function test_two_successive_payments_cannot_exceed_the_total(): void
     {
         $enrollment = $this->enrollmentWithInvoice(100000);
-        $admin      = $this->admin();
+        $admin = $this->admin();
 
         // Premier paiement : la totalité.
         $this->actingAs($admin)
@@ -135,7 +138,7 @@ class AccountingIntegrityTest extends TestCase
     public function test_enrollment_with_payments_cannot_be_deleted(): void
     {
         $enrollment = $this->enrollmentWithInvoice(100000);
-        $admin      = $this->admin();
+        $admin = $this->admin();
 
         $this->actingAs($admin)
             ->post(route('enrollments.payments.store', $enrollment), $this->payload(50000))

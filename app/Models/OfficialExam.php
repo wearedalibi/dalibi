@@ -17,23 +17,23 @@ class OfficialExam extends Model
 
     protected $casts = [
         'exam_date' => 'date',
-        'year'      => 'integer',
+        'year' => 'integer',
     ];
 
     public const TYPES = [
         'cepd' => 'CEPD (Certificat d\'Études du Premier Degré)',
         'bepc' => 'BEPC (Brevet d\'Études du Premier Cycle)',
-        'bac'  => 'Baccalauréat',
+        'bac' => 'Baccalauréat',
     ];
 
     public const SESSIONS = [
-        'normale'    => 'Session normale',
+        'normale' => 'Session normale',
         'rattrapage' => 'Session de rattrapage',
     ];
 
     public const STATUSES = [
-        'ouvert'  => 'Inscriptions ouvertes',
-        'clos'    => 'Inscriptions closes',
+        'ouvert' => 'Inscriptions ouvertes',
+        'clos' => 'Inscriptions closes',
         'termine' => 'Terminé',
     ];
 

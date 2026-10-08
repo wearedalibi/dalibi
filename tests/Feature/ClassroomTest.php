@@ -33,7 +33,7 @@ class ClassroomTest extends TestCase
     private function classroomType(): ClassroomType
     {
         return ClassroomType::create([
-            'name'   => 'Primaire',
+            'name' => 'Primaire',
             'active' => true,
         ]);
     }
@@ -41,10 +41,10 @@ class ClassroomTest extends TestCase
     private function validPayload(array $overrides = []): array
     {
         return array_merge([
-            'name'     => 'CM2-A',
-            'code'     => 'CM2A',
+            'name' => 'CM2-A',
+            'code' => 'CM2A',
             'capacity' => 35,
-            'active'   => true,
+            'active' => true,
         ], $overrides);
     }
 
@@ -120,8 +120,8 @@ class ClassroomTest extends TestCase
             ->assertRedirect(route('classrooms.index'));
 
         $this->assertDatabaseHas('classes', [
-            'name'     => 'CM2-A',
-            'code'     => 'CM2A',
+            'name' => 'CM2-A',
+            'code' => 'CM2A',
             'capacity' => 35,
         ]);
     }
@@ -220,16 +220,16 @@ class ClassroomTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('classrooms.update', $classroom), [
-                'name'               => 'CM2-B',
-                'code'               => 'CM2B',
-                'capacity'           => 40,
-                'classroom_type_id'  => $type->id,
+                'name' => 'CM2-B',
+                'code' => 'CM2B',
+                'capacity' => 40,
+                'classroom_type_id' => $type->id,
             ])
             ->assertRedirect(route('classrooms.index'));
 
         $this->assertDatabaseHas('classes', [
-            'id'       => $classroom->id,
-            'name'     => 'CM2-B',
+            'id' => $classroom->id,
+            'name' => 'CM2-B',
             'capacity' => 40,
         ]);
     }
@@ -240,8 +240,8 @@ class ClassroomTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('classrooms.update', $classroom), [
-                'name'     => 'CM2-A',
-                'code'     => 'CM2A',
+                'name' => 'CM2-A',
+                'code' => 'CM2A',
                 'capacity' => 32,
             ])
             ->assertRedirect(route('classrooms.index'));
@@ -256,8 +256,8 @@ class ClassroomTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('classrooms.update', $classroom), [
-                'name'     => 'CM1-A',
-                'code'     => 'CM2A',
+                'name' => 'CM1-A',
+                'code' => 'CM2A',
                 'capacity' => 30,
             ])
             ->assertSessionHasErrors('name');

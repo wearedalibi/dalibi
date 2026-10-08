@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class UpdateCountryRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -27,9 +28,9 @@ class UpdateCountryRequest extends FormRequest
     {
         return [
             'name.required' => 'Le nom du pays est requis.',
-            'name.unique'   => 'Ce pays existe déjà.',
+            'name.unique' => 'Ce pays existe déjà.',
             'code.required' => 'Le code du pays est requis.',
-            'code.unique'   => 'Ce code est déjà utilisé.',
+            'code.unique' => 'Ce code est déjà utilisé.',
         ];
     }
 }

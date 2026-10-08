@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\User;
 use Database\Seeders\ClassroomSeeder;
 use Database\Seeders\ClassTypeSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\DefaultUsersSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\StudentTestSeeder;
@@ -30,14 +31,14 @@ class SeederHardeningTest extends TestCase
     private function makeSchool(): School
     {
         return School::create([
-            'name'      => 'École Test',
-            'level'     => 'primaire',
-            'code'      => 'TEST001',
-            'address'   => 'Lomé',
-            'phone'     => '+228 00 00 00 00',
-            'email'     => 'test@ecole.tg',
+            'name' => 'École Test',
+            'level' => 'primaire',
+            'code' => 'TEST001',
+            'address' => 'Lomé',
+            'phone' => '+228 00 00 00 00',
+            'email' => 'test@ecole.tg',
             'principal' => 'Directeur Test',
-            'active'    => true,
+            'active' => true,
         ]);
     }
 
@@ -68,7 +69,7 @@ class SeederHardeningTest extends TestCase
     {
         $this->asProduction();
 
-        $this->app->make(\Database\Seeders\DatabaseSeeder::class)->run();
+        $this->app->make(DatabaseSeeder::class)->run();
 
         // Les données de référence sont bien installées…
         $this->assertTrue(Role::where('name', Roles::ADMINISTRATOR)->exists());
@@ -110,8 +111,8 @@ class SeederHardeningTest extends TestCase
         $this->actingAs($user)
             ->from(route('user-password.edit'))
             ->put(route('user-password.update'), [
-                'current_password'      => 'password',
-                'password'              => 'Nouveau-MotDePasse-2026',
+                'current_password' => 'password',
+                'password' => 'Nouveau-MotDePasse-2026',
                 'password_confirmation' => 'Nouveau-MotDePasse-2026',
             ])
             ->assertSessionHasNoErrors();
@@ -137,7 +138,7 @@ class SeederHardeningTest extends TestCase
 
         $this->assertDatabaseHas('document_headers', ['school_id' => $school->id]);
         $this->assertDatabaseHas('bulletin_templates', [
-            'school_id'         => $school->id,
+            'school_id' => $school->id,
             'classroom_type_id' => null,
         ]);
     }

@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Examens;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Evaluation;
+use App\Models\EvaluationType;
 use App\Models\School;
+use App\Models\Subject;
+use App\Services\DocumentRenderer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -18,15 +20,15 @@ class EvaluationController extends Controller
 {
     public function index(Request $request): Response
     {
-        $search       = $request->string('search')->toString();
-        $status       = $request->string('status')->toString();
-        $periodId     = $request->string('period_id')->toString();
-        $templateId   = $request->string('template_id')->toString();
-        $classId      = $request->string('class_id')->toString();
-        $subjectId    = $request->string('subject_id')->toString();
-        $evalTypeId   = $request->string('evaluation_type_id')->toString();
-        $scheduling   = $request->string('scheduling')->toString(); // with | without
-        $user         = $request->user();
+        $search = $request->string('search')->toString();
+        $status = $request->string('status')->toString();
+        $periodId = $request->string('period_id')->toString();
+        $templateId = $request->string('template_id')->toString();
+        $classId = $request->string('class_id')->toString();
+        $subjectId = $request->string('subject_id')->toString();
+        $evalTypeId = $request->string('evaluation_type_id')->toString();
+        $scheduling = $request->string('scheduling')->toString(); // with | without
+        $user = $request->user();
 
         $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
 
@@ -52,32 +54,32 @@ class EvaluationController extends Controller
                 $like = ['%'.strtolower($search).'%'];
                 $expr = 'LOWER(name) LIKE ?';
                 $q->whereHas('template', fn ($tq) => $tq->whereRaw($expr, $like))
-                  ->orWhereHas('classSubject.class', fn ($cq) => $cq->whereRaw($expr, $like))
-                  ->orWhereHas('classSubject.subject', fn ($sq) => $sq->whereRaw($expr, $like));
+                    ->orWhereHas('classSubject.class', fn ($cq) => $cq->whereRaw($expr, $like))
+                    ->orWhereHas('classSubject.subject', fn ($sq) => $sq->whereRaw($expr, $like));
             });
 
         $evaluations = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
 
         return Inertia::render('Examens/Evaluations/Index', [
             'evaluations' => $evaluations,
-            'filters'     => [
-                'search'             => $search,
-                'status'             => $status,
-                'period_id'          => $periodId,
-                'template_id'        => $templateId,
-                'class_id'           => $classId,
-                'subject_id'         => $subjectId,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+                'period_id' => $periodId,
+                'template_id' => $templateId,
+                'class_id' => $classId,
+                'subject_id' => $subjectId,
                 'evaluation_type_id' => $evalTypeId,
-                'scheduling'         => $scheduling,
+                'scheduling' => $scheduling,
             ],
             'options' => [
-                'classrooms'      => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
-                'subjects'        => \App\Models\Subject::orderBy('name')->get(['id', 'name']),
-                'evaluationTypes' => \App\Models\EvaluationType::orderBy('name')->get(['id', 'name']),
-                'periods'         => AcademicPeriod::when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+                'subjects' => Subject::orderBy('name')->get(['id', 'name']),
+                'evaluationTypes' => EvaluationType::orderBy('name')->get(['id', 'name']),
+                'periods' => AcademicPeriod::when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear->id))
                     ->orderBy('start_date')->get(['id', 'name']),
             ],
-            'canLock'     => $user->can('edit_evaluations'),
+            'canLock' => $user->can('edit_evaluations'),
         ]);
     }
 
@@ -139,7 +141,7 @@ class EvaluationController extends Controller
     public function planning(Request $request): Response
     {
         $classroomId = $request->string('classroom_id')->toString();
-        $periodId    = $request->string('period_id')->toString();
+        $periodId = $request->string('period_id')->toString();
 
         $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
 
@@ -149,7 +151,7 @@ class EvaluationController extends Controller
         })->orderBy('name')->get(['id', 'name', 'code']);
 
         $evaluations = collect();
-        $periods     = collect();
+        $periods = collect();
 
         if ($classroomId) {
             $evaluations = Evaluation::query()
@@ -173,11 +175,11 @@ class EvaluationController extends Controller
         }
 
         return Inertia::render('Examens/Planning/Index', [
-            'classrooms'  => $classrooms,
+            'classrooms' => $classrooms,
             'evaluations' => $evaluations,
-            'periods'     => $periods,
-            'filters'     => ['classroomId' => $classroomId, 'periodId' => $periodId],
-            'activeYear'  => $activeYear,
+            'periods' => $periods,
+            'filters' => ['classroomId' => $classroomId, 'periodId' => $periodId],
+            'activeYear' => $activeYear,
         ]);
     }
 
@@ -186,12 +188,12 @@ class EvaluationController extends Controller
         abort_unless($request->user()->can('edit_evaluations'), 403);
 
         $validated = $request->validate([
-            'date'       => ['nullable', 'date'],
+            'date' => ['nullable', 'date'],
             'start_time' => ['nullable', 'date_format:H:i'],
         ]);
 
         $evaluation->update([
-            'date'       => $validated['date'] ?? null,
+            'date' => $validated['date'] ?? null,
             // L'heure n'a de sens qu'avec une date
             'start_time' => ($validated['date'] ?? null) ? ($validated['start_time'] ?? null) : null,
         ]);
@@ -201,8 +203,8 @@ class EvaluationController extends Controller
 
     public function exportPlanning(Request $request, string $classroomId): \Illuminate\Http\Response
     {
-        $classroom  = Classroom::findOrFail($classroomId);
-        $periodId   = $request->string('period_id')->toString();
+        $classroom = Classroom::findOrFail($classroomId);
+        $periodId = $request->string('period_id')->toString();
         $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
 
         $evaluations = Evaluation::query()
@@ -220,9 +222,9 @@ class EvaluationController extends Controller
 
         $school = School::where('active', true)->first();
 
-        $renderer   = app(\App\Services\DocumentRenderer::class);
+        $renderer = app(DocumentRenderer::class);
         $headerHtml = $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '';
-        $headerCss  = $renderer->headerCss();
+        $headerCss = $renderer->headerCss();
 
         $html = view('exports.planning', compact('classroom', 'evaluations', 'school', 'activeYear', 'headerHtml', 'headerCss'))->render();
 

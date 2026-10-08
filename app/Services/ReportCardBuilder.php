@@ -27,9 +27,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ReportCardBuilder
 {
-    public function __construct(private readonly GradingService $grading)
-    {
-    }
+    public function __construct(private readonly GradingService $grading) {}
 
     /**
      * Valide (fige) les bulletins de toute la classe pour une période.
@@ -44,14 +42,14 @@ class ReportCardBuilder
         bool $regenerate,
         string $generatedBy,
     ): array {
-        $school   = School::query()->first();
-        $config   = GradingConfig::resolveOrDefault($school, $class->classroomType);
+        $school = School::query()->first();
+        $config = GradingConfig::resolveOrDefault($school, $class->classroomType);
         $template = BulletinTemplate::resolveOrDefault($school, $class->classroomType);
-        $typeIds  = $template->referencedEvaluationTypeIds();
+        $typeIds = $template->referencedEvaluationTypeIds();
 
         $classSubjects = $this->classSubjects($class, $year?->id);
-        $students      = $this->activeStudents($class->id, $year?->id);
-        $effectif      = $students->count();
+        $students = $this->activeStudents($class->id, $year?->id);
+        $effectif = $students->count();
 
         // Toutes les périodes du type de classe (récap inter-périodes + moyenne annuelle).
         $allPeriods = AcademicPeriod::forClassType($year?->id, $class->classroom_type_id);
@@ -73,7 +71,7 @@ class ReportCardBuilder
         $matrix = [];
         foreach ($classSubjects as $cs) {
             foreach ($students as $s) {
-                $cc  = $this->grading->subjectClasseCompoFromIndex($index, $cs->id, $s->id, $period->id);
+                $cc = $this->grading->subjectClasseCompoFromIndex($index, $cs->id, $s->id, $period->id);
                 $moy = $this->grading->combineClasseCompo($cc['classe'], $cc['compo'], $config);
 
                 $byType = [];
@@ -88,32 +86,32 @@ class ReportCardBuilder
         // Classements (global + par matière).
         $averages = $students->map(fn ($s) => [
             'student_id' => $s->id,
-            'average'    => $this->grading->periodAverageFromIndex($index, $s->id, $period->id, $classSubjects, $config),
+            'average' => $this->grading->periodAverageFromIndex($index, $s->id, $period->id, $classSubjects, $config),
         ]);
         $ranking = $this->grading->rank($averages);
 
         // Statistiques de la classe.
-        $values     = $averages->pluck('average')->filter(fn ($v) => $v !== null);
+        $values = $averages->pluck('average')->filter(fn ($v) => $v !== null);
         $classStats = [
             'highest' => $values->isNotEmpty() ? $values->max() : null,
-            'lowest'  => $values->isNotEmpty() ? $values->min() : null,
+            'lowest' => $values->isNotEmpty() ? $values->min() : null,
             'average' => $values->isNotEmpty() ? round($values->avg(), 2) : null,
         ];
         $periodSystem = $class->classroomType?->period_system ?? 'trimestre';
-        $retards      = $this->retardsByStudent($class->id, $period);
+        $retards = $this->retardsByStudent($class->id, $period);
 
         // Récapitulatif inter-périodes + annuel (classements précalculés une fois, depuis l'index).
         $periodRankings = [];
         foreach ($allPeriods as $pp) {
             $rows = $students->map(fn ($s) => [
                 'student_id' => $s->id,
-                'average'    => $this->grading->periodAverageFromIndex($index, $s->id, $pp->id, $classSubjects, $config),
+                'average' => $this->grading->periodAverageFromIndex($index, $s->id, $pp->id, $classSubjects, $config),
             ]);
             $periodRankings[$pp->id] = $this->grading->rank($rows);
         }
         $annualRanking = $this->grading->rank($students->map(fn ($s) => [
             'student_id' => $s->id,
-            'average'    => $this->grading->annualAverageFromIndex($index, $s->id, $allPeriods, $classSubjects, $config),
+            'average' => $this->grading->annualAverageFromIndex($index, $s->id, $allPeriods, $classSubjects, $config),
         ]));
 
         $subjectRanks = [];
@@ -129,9 +127,9 @@ class ReportCardBuilder
                 ->whereIn('student_id', $students->pluck('id'))
                 ->get()
                 ->keyBy('student_id');
-        $refPrefix      = $this->referencePrefix($year?->year);
+        $refPrefix = $this->referencePrefix($year?->year);
         $preservedCount = 0;
-        $attempts       = 0;
+        $attempts = 0;
 
         // Filet de sécurité concurrence : deux validations simultanées pourraient calculer la
         // même séquence de référence (colonne unique) ; on réessaie avec une séquence recalculée.
@@ -152,33 +150,33 @@ class ReportCardBuilder
                         $totalPoints = 0.0;
 
                         foreach ($classSubjects as $cs) {
-                            $cell   = $matrix[$cs->id][$student->id];
-                            $coeff  = (float) $cs->coefficient;
+                            $cell = $matrix[$cs->id][$student->id];
+                            $coeff = (float) $cs->coefficient;
                             $points = $cell['moy'] !== null ? round($cell['moy'] * $coeff, 2) : null;
 
                             if ($cell['moy'] !== null) {
-                                $totalCoeff  += $coeff;
+                                $totalCoeff += $coeff;
                                 $totalPoints += $points;
                             }
 
                             $lines[] = [
-                                'subject'      => $cs->subject?->name ?? '',
-                                'parent'       => $cs->subject?->parent?->name,
-                                'group'        => $cs->group ?? 'obligatoire',
-                                'coefficient'  => $coeff,
-                                'classe'       => $cell['classe'],
-                                'compo'        => $cell['compo'],
-                                'moyenne'      => $cell['moy'],
-                                'points'       => $points,
-                                'definitive'   => $points,
-                                'by_type'      => $cell['by_type'] ?? [],
-                                'rang'         => $subjectRanks[$cs->id]->get($student->id)['rank'] ?? null,
-                                'appreciation' => $comments[$student->id . '|' . $cs->id] ?? '',
-                                'teacher'      => $teachers[$cs->subject_id] ?? '',
+                                'subject' => $cs->subject?->name ?? '',
+                                'parent' => $cs->subject?->parent?->name,
+                                'group' => $cs->group ?? 'obligatoire',
+                                'coefficient' => $coeff,
+                                'classe' => $cell['classe'],
+                                'compo' => $cell['compo'],
+                                'moyenne' => $cell['moy'],
+                                'points' => $points,
+                                'definitive' => $points,
+                                'by_type' => $cell['by_type'] ?? [],
+                                'rang' => $subjectRanks[$cs->id]->get($student->id)['rank'] ?? null,
+                                'appreciation' => $comments[$student->id.'|'.$cs->id] ?? '',
+                                'teacher' => $teachers[$cs->subject_id] ?? '',
                             ];
                         }
 
-                        $info    = $ranking->get($student->id, ['average' => null, 'rank' => null]);
+                        $info = $ranking->get($student->id, ['average' => null, 'rank' => null]);
                         $average = $info['average'];
 
                         $recap = ['periods' => [], 'annual' => $annualRanking->get($student->id, ['average' => null, 'rank' => null])];
@@ -188,26 +186,26 @@ class ReportCardBuilder
                         }
 
                         $payload = [
-                            'student'      => ['name' => $student->lastname . ' ' . $student->firstname, 'matricule' => $student->matricule],
-                            'class'        => ['name' => $class->name],
-                            'period'       => ['name' => $period->name, 'system' => $periodSystem],
-                            'year'         => $year?->year,
-                            'effectif'     => $effectif,
-                            'absences'     => $absences[$student->id] ?? 0,
-                            'retards'      => $retards[$student->id] ?? 0,
-                            'punitions'    => 0,
-                            'exclusions'   => 0,
-                            'decision'     => $this->grading->mention($average, $config) ?? '',
-                            'recap'        => $recap,
-                            'lines'        => $lines,
-                            'total_coeff'  => $totalCoeff,
+                            'student' => ['name' => $student->lastname.' '.$student->firstname, 'matricule' => $student->matricule],
+                            'class' => ['name' => $class->name],
+                            'period' => ['name' => $period->name, 'system' => $periodSystem],
+                            'year' => $year?->year,
+                            'effectif' => $effectif,
+                            'absences' => $absences[$student->id] ?? 0,
+                            'retards' => $retards[$student->id] ?? 0,
+                            'punitions' => 0,
+                            'exclusions' => 0,
+                            'decision' => $this->grading->mention($average, $config) ?? '',
+                            'recap' => $recap,
+                            'lines' => $lines,
+                            'total_coeff' => $totalCoeff,
                             'total_points' => round($totalPoints, 2),
-                            'average'      => $average,
-                            'rank'         => $info['rank'],
-                            'mention'      => $this->grading->mention($average, $config),
+                            'average' => $average,
+                            'rank' => $info['rank'],
+                            'mention' => $this->grading->mention($average, $config),
                             'observations' => $observations ?? '',
-                            'class_stats'  => $classStats,
-                            'template'     => ['columns' => $template->columns, 'options' => $template->options],
+                            'class_stats' => $classStats,
+                            'template' => ['columns' => $template->columns, 'options' => $template->options],
                         ];
 
                         // Conserve les champs saisis à la main lors d'une re-validation.
@@ -217,7 +215,7 @@ class ReportCardBuilder
                         }
 
                         $card = ReportCard::firstOrNew([
-                            'student_id'         => $student->id,
+                            'student_id' => $student->id,
                             'academic_period_id' => $period->id,
                         ]);
 
@@ -226,14 +224,14 @@ class ReportCardBuilder
                         }
 
                         $card->fill([
-                            'class_id'         => $class->id,
+                            'class_id' => $class->id,
                             'academic_year_id' => $year?->id,
-                            'average'          => $average,
-                            'rank'             => $info['rank'],
-                            'mention'          => $payload['mention'],
-                            'payload'          => $payload,
-                            'locked_at'        => now(),
-                            'generated_by'     => $generatedBy,
+                            'average' => $average,
+                            'rank' => $info['rank'],
+                            'mention' => $payload['mention'],
+                            'payload' => $payload,
+                            'locked_at' => now(),
+                            'generated_by' => $generatedBy,
                         ])->save();
                     }
                 });
@@ -257,7 +255,7 @@ class ReportCardBuilder
             ->with(['subject:id,name,code,parent_id', 'subject.parent:id,name'])
             ->get()
             // Regroupe les sous-matières sous leur matière parente.
-            ->sortBy(fn ($cs) => ($cs->subject?->parent?->name ?? $cs->subject?->name) . '~' . ($cs->subject?->name))
+            ->sortBy(fn ($cs) => ($cs->subject?->parent?->name ?? $cs->subject?->name).'~'.($cs->subject?->name))
             ->values();
     }
 
@@ -282,7 +280,7 @@ class ReportCardBuilder
             ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
             ->with('teacher:id,firstname,lastname')
             ->get()
-            ->mapWithKeys(fn ($a) => [$a->subject_id => trim(($a->teacher?->firstname ?? '') . ' ' . ($a->teacher?->lastname ?? ''))])
+            ->mapWithKeys(fn ($a) => [$a->subject_id => trim(($a->teacher?->firstname ?? '').' '.($a->teacher?->lastname ?? ''))])
             ->toArray();
     }
 
@@ -296,7 +294,7 @@ class ReportCardBuilder
             ->where('academic_period_id', $periodId)
             ->whereNotNull('comments')
             ->get(['student_id', 'class_subject_id', 'comments'])
-            ->mapWithKeys(fn ($g) => [$g->student_id . '|' . $g->class_subject_id => $g->comments])
+            ->mapWithKeys(fn ($g) => [$g->student_id.'|'.$g->class_subject_id => $g->comments])
             ->toArray();
     }
 
@@ -334,7 +332,7 @@ class ReportCardBuilder
     /** Prochain numéro de séquence disponible pour ce préfixe. */
     private function nextReferenceSequence(string $prefix): int
     {
-        return ReportCard::where('reference', 'like', $prefix . '%')->count() + 1;
+        return ReportCard::where('reference', 'like', $prefix.'%')->count() + 1;
     }
 
     /**
@@ -343,7 +341,7 @@ class ReportCardBuilder
      * re-validation ne les efface pas.
      *
      * @param  array<string, mixed>  $payload  payload recalculé
-     * @param  array<string, mixed>  $old      payload existant (potentiellement édité)
+     * @param  array<string, mixed>  $old  payload existant (potentiellement édité)
      * @return array<string, mixed>
      */
     private function preserveManualEdits(array $payload, array $old): array
@@ -354,7 +352,7 @@ class ReportCardBuilder
         if (($old['decision'] ?? '') !== '') {
             $payload['decision'] = $old['decision'];
         }
-        $payload['punitions']  = (int) ($old['punitions'] ?? $payload['punitions']);
+        $payload['punitions'] = (int) ($old['punitions'] ?? $payload['punitions']);
         $payload['exclusions'] = (int) ($old['exclusions'] ?? $payload['exclusions']);
 
         // Appréciations éditées, réappliquées par matière (les autres restent recalculées).

@@ -22,13 +22,13 @@ class Installment extends Model
     ];
 
     protected $casts = [
-        'amount'             => 'float',
+        'amount' => 'float',
         'installment_number' => 'integer',
-        'due_date'           => 'date',
+        'due_date' => 'date',
     ];
 
     /* ------------------------------------------------------------------ */
-    /* Relations                                                            */
+    /* Relations */
     /* ------------------------------------------------------------------ */
 
     public function feeStructure(): BelongsTo
@@ -47,7 +47,7 @@ class Installment extends Model
     }
 
     /* ------------------------------------------------------------------ */
-    /* Computed helpers                                                     */
+    /* Computed helpers */
     /* ------------------------------------------------------------------ */
 
     public function amountPaid(): float

@@ -49,10 +49,10 @@ class SubjectAssignmentTest extends TestCase
             ?? $this->year('2025-2026', true))->id;
 
         return SubjectAssignment::create(array_merge([
-            'subject_id'       => Subject::create(['name' => 'Maths ' . fake()->unique()->word(), 'code' => strtoupper(fake()->unique()->bothify('SUB##'))])->id,
-            'teacher_id'       => User::factory()->create()->id,
-            'class_id'         => Classroom::factory()->create()->id,
-            'active'           => true,
+            'subject_id' => Subject::create(['name' => 'Maths '.fake()->unique()->word(), 'code' => strtoupper(fake()->unique()->bothify('SUB##'))])->id,
+            'teacher_id' => User::factory()->create()->id,
+            'class_id' => Classroom::factory()->create()->id,
+            'active' => true,
         ], $overrides));
     }
 
@@ -77,7 +77,7 @@ class SubjectAssignmentTest extends TestCase
 
     public function test_index_defaults_to_active_year(): void
     {
-        $active   = $this->year('2025-2026', true);
+        $active = $this->year('2025-2026', true);
         $previous = $this->year('2024-2025', false);
 
         $a1 = $this->assignment(['academic_year_id' => $active->id]);
@@ -94,7 +94,7 @@ class SubjectAssignmentTest extends TestCase
 
     public function test_empty_year_param_shows_all_years(): void
     {
-        $active   = $this->year('2025-2026', true);
+        $active = $this->year('2025-2026', true);
         $previous = $this->year('2024-2025', false);
         $this->assignment(['academic_year_id' => $active->id]);
         $this->assignment(['academic_year_id' => $previous->id]);
@@ -139,9 +139,9 @@ class SubjectAssignmentTest extends TestCase
 
     public function test_admin_can_store_assignment(): void
     {
-        $year    = $this->year('2025-2026', true);
+        $year = $this->year('2025-2026', true);
         $subject = Subject::create(['name' => 'Maths', 'code' => 'MATH']);
-        $class   = Classroom::factory()->create();
+        $class = Classroom::factory()->create();
         $teacher = User::factory()->create();
 
         $this->actingAs($this->admin())

@@ -18,7 +18,9 @@ class RosterTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private Classroom $class;
 
     protected function setUp(): void
@@ -52,7 +54,7 @@ class RosterTest extends TestCase
         return Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $student->id,
             'class_id' => $this->class->id, 'academic_year_id' => $this->year->id,
-            'enrollment_code' => 'ENR-' . $matricule, 'enrollment_date' => '2025-09-02',
+            'enrollment_code' => 'ENR-'.$matricule, 'enrollment_date' => '2025-09-02',
             'status' => 'ACTIVE', 'academic_status' => $academicStatus,
         ]);
     }
@@ -72,7 +74,7 @@ class RosterTest extends TestCase
         $this->actingAs($this->admin())
             ->patch(route('roster.update-status', $enr), [
                 'academic_status' => 'abandon',
-                'status_reason'   => 'Déménagement',
+                'status_reason' => 'Déménagement',
             ])
             ->assertRedirect();
 
@@ -120,7 +122,7 @@ class RosterTest extends TestCase
         $response = $this->actingAs($this->admin())
             ->get(route('roster.export', [
                 'academic_year_id' => $this->year->id,
-                'class_id'         => $this->class->id,
+                'class_id' => $this->class->id,
             ]));
 
         $response->assertOk();

@@ -20,12 +20,12 @@ class DocumentHeader extends Model
 
     /** Préréglages d'en-tête disponibles. */
     public const PRESETS = [
-        'ministeriel'  => 'Ministériel (officiel)',
+        'ministeriel' => 'Ministériel (officiel)',
         'personnalise' => 'Personnalisé (glisser-déposer)',
     ];
 
     protected $casts = [
-        'layout'    => 'array',
+        'layout' => 'array',
         'watermark' => 'array',
     ];
 
@@ -60,19 +60,19 @@ class DocumentHeader extends Model
 
         return [
             'layout' => [
-                'width'    => $w,
-                'height'   => 130,
+                'width' => $w,
+                'height' => 130,
                 'elements' => $elements,
             ],
             'watermark' => [
-                'enabled'    => false,
-                'type'       => 'text',
-                'text'       => $school->name ?? '',
+                'enabled' => false,
+                'type' => 'text',
+                'text' => $school->name ?? '',
                 'image_path' => null,
-                'opacity'    => 8,
-                'size'       => 60,
-                'rotation'   => -30,
-                'color'      => '#1a1a1a',
+                'opacity' => 8,
+                'size' => 60,
+                'rotation' => -30,
+                'color' => '#1a1a1a',
             ],
         ];
     }
@@ -106,17 +106,17 @@ class DocumentHeader extends Model
         bool $italic = false,
     ): array {
         return [
-            'id'       => (string) Str::uuid(),
-            'type'     => $type,
-            'x'        => $x,
-            'y'        => $y,
-            'w'        => $w,
-            'content'  => $content,
+            'id' => (string) Str::uuid(),
+            'type' => $type,
+            'x' => $x,
+            'y' => $y,
+            'w' => $w,
+            'content' => $content,
             'fontSize' => $fontSize,
-            'bold'     => $bold,
-            'italic'   => $italic,
-            'align'    => $align,
-            'color'    => $color,
+            'bold' => $bold,
+            'italic' => $italic,
+            'align' => $align,
+            'color' => $color,
         ];
     }
 }

@@ -25,10 +25,10 @@ class NoteReclamation extends Model
     ];
 
     protected $casts = [
-        'original_score'  => 'float',
+        'original_score' => 'float',
         'requested_score' => 'float',
         'corrected_score' => 'float',
-        'reviewed_at'     => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
     public function evaluation(): BelongsTo

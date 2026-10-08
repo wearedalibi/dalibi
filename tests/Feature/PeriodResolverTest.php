@@ -18,25 +18,25 @@ class PeriodResolverTest extends TestCase
         $school = School::factory()->create();
 
         return AcademicYear::create([
-            'school_id'  => $school->id,
-            'year'       => '2025-2026',
+            'school_id' => $school->id,
+            'year' => '2025-2026',
             'start_date' => '2025-09-01',
-            'end_date'   => '2026-07-31',
-            'active'     => true,
+            'end_date' => '2026-07-31',
+            'active' => true,
         ]);
     }
 
     private function period(string $yearId, string $name, int $order, ?string $classTypeId = null): AcademicPeriod
     {
         return AcademicPeriod::create([
-            'name'             => $name,
-            'start_date'       => '2025-09-01',
-            'end_date'         => '2025-12-31',
-            'type'             => 'trimestre',
-            'order'            => $order,
-            'weight'           => 1,
+            'name' => $name,
+            'start_date' => '2025-09-01',
+            'end_date' => '2025-12-31',
+            'type' => 'trimestre',
+            'order' => $order,
+            'weight' => 1,
             'academic_year_id' => $yearId,
-            'class_type_id'    => $classTypeId,
+            'class_type_id' => $classTypeId,
         ]);
     }
 

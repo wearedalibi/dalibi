@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAcademicPeriodRequest;
 use App\Http\Requests\UpdateAcademicPeriodRequest;
 use App\Models\AcademicPeriod;
@@ -62,7 +62,7 @@ class AcademicPeriodController extends Controller
         $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
 
         return Inertia::render('Parametres/AcademicPeriods/Create', [
-            'academicYears'  => $academicYears,
+            'academicYears' => $academicYears,
             'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
         ]);
     }
@@ -74,7 +74,7 @@ class AcademicPeriodController extends Controller
     {
         $validated = $request->validated();
 
-        if (!empty($validated['is_current'])) {
+        if (! empty($validated['is_current'])) {
             AcademicPeriod::where('academic_year_id', $validated['academic_year_id'])
                 ->where('is_current', true)
                 ->update(['is_current' => false]);
@@ -120,7 +120,7 @@ class AcademicPeriodController extends Controller
     {
         $validated = $request->validated();
 
-        if (!empty($validated['is_current'])) {
+        if (! empty($validated['is_current'])) {
             AcademicPeriod::where('academic_year_id', $validated['academic_year_id'])
                 ->where('id', '!=', $academicPeriod->id)
                 ->where('is_current', true)

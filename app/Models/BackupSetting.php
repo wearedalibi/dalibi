@@ -8,18 +8,20 @@ use Illuminate\Support\Facades\Cache;
 class BackupSetting extends Model
 {
     protected $primaryKey = 'key';
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = ['key', 'value'];
 
     /** Clés gérées + valeurs par défaut. */
     public const DEFAULTS = [
-        'frequency'   => 'none',        // none | daily | weekly
-        'time'        => '02:00',       // heure d'exécution (HH:MM)
+        'frequency' => 'none',        // none | daily | weekly
+        'time' => '02:00',       // heure d'exécution (HH:MM)
         'day_of_week' => '1',           // 1 = lundi … 7 = dimanche (hebdomadaire)
-        'formats'     => 'json,sql',    // formats générés par le planificateur
-        'retention'   => '10',          // nombre de sauvegardes conservées (0 = illimité)
+        'formats' => 'json,sql',    // formats générés par le planificateur
+        'retention' => '10',          // nombre de sauvegardes conservées (0 = illimité)
     ];
 
     public static function get(string $key, mixed $default = null): mixed

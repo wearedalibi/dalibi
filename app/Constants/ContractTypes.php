@@ -9,10 +9,10 @@ class ContractTypes
 {
     /** @var array<string, string> */
     public const ALL = [
-        'CDI'        => 'CDI (permanent)',
-        'CDD'        => 'CDD (durée déterminée)',
-        'VACATAIRE'  => 'Vacataire (payé à l\'heure)',
-        'STAGIAIRE'  => 'Stagiaire',
+        'CDI' => 'CDI (permanent)',
+        'CDD' => 'CDD (durée déterminée)',
+        'VACATAIRE' => 'Vacataire (payé à l\'heure)',
+        'STAGIAIRE' => 'Stagiaire',
     ];
 
     public static function keys(): array

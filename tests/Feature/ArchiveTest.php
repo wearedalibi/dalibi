@@ -6,8 +6,8 @@ use App\Constants\Roles;
 use App\Models\ArchivedDocument;
 use App\Models\Classroom;
 use App\Models\DocumentTag;
-use App\Models\Student;
 use App\Models\User;
+use Database\Seeders\DocumentTagSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -35,10 +35,10 @@ class ArchiveTest extends TestCase
 
     public function test_default_tags_seeder_is_idempotent(): void
     {
-        $this->seed(\Database\Seeders\DocumentTagSeeder::class);
-        $this->seed(\Database\Seeders\DocumentTagSeeder::class);
+        $this->seed(DocumentTagSeeder::class);
+        $this->seed(DocumentTagSeeder::class);
 
-        $this->assertSame(9, \App\Models\DocumentTag::count());
+        $this->assertSame(9, DocumentTag::count());
         $this->assertDatabaseHas('document_tags', ['slug' => 'administratif']);
         $this->assertDatabaseHas('document_tags', ['slug' => 'juridique']);
     }
@@ -47,10 +47,10 @@ class ArchiveTest extends TestCase
     {
         $this->actingAs($this->manager())
             ->post(route('archives.store'), [
-                'title'    => 'Règlement intérieur',
+                'title' => 'Règlement intérieur',
                 'category' => 'administratif',
-                'file'     => UploadedFile::fake()->create('reglement.pdf', 120, 'application/pdf'),
-                'tags'     => ['Officiel', 'Règlement'],
+                'file' => UploadedFile::fake()->create('reglement.pdf', 120, 'application/pdf'),
+                'tags' => ['Officiel', 'Règlement'],
             ])
             ->assertRedirect();
 

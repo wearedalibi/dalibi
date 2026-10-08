@@ -76,7 +76,7 @@ class StudentModuleTest extends TestCase
         $now = now();
         foreach (range(1, 30) as $i) {
             Student::create([
-                'firstname' => 'E' . $i, 'lastname' => 'Test', 'gender' => 'male', 'birth_date' => '2012-01-01',
+                'firstname' => 'E'.$i, 'lastname' => 'Test', 'gender' => 'male', 'birth_date' => '2012-01-01',
                 'user_id' => User::factory()->create()->id, 'active' => true,
                 'matricule' => sprintf('STP%03d', $i),
                 'created_at' => $now, 'updated_at' => $now,
@@ -117,12 +117,12 @@ class StudentModuleTest extends TestCase
             ]);
         };
         $inClass = $make('Zoulou', 'STC001');
-        $other   = $make('Abalo', 'STC002');
+        $other = $make('Abalo', 'STC002');
 
         foreach ([[$inClass, $c1], [$other, $c2]] as [$s, $c]) {
             Enrollment::create([
                 'school_id' => $school->id, 'student_id' => $s->id, 'class_id' => $c->id,
-                'academic_year_id' => $year->id, 'enrollment_code' => 'INS-' . $s->matricule,
+                'academic_year_id' => $year->id, 'enrollment_code' => 'INS-'.$s->matricule,
                 'enrollment_date' => '2025-09-02', 'status' => 'ACTIVE', 'academic_status' => 'en_cours',
             ]);
         }

@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use App\Constants\Roles;
 use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
-use App\Models\ClassSubject;
 use App\Models\Classroom;
 use App\Models\ClassroomType;
+use App\Models\ClassSubject;
 use App\Models\Enrollment;
 use App\Models\Evaluation;
 use App\Models\EvaluationTemplate;
@@ -34,11 +34,17 @@ class MarkEntryScopeTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private ClassroomType $type;
+
     private Classroom $class;
+
     private Subject $subject;
+
     private ClassSubject $cs;
+
     private Evaluation $evaluation;
 
     protected function setUp(): void
@@ -46,15 +52,15 @@ class MarkEntryScopeTest extends TestCase
         parent::setUp();
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->school  = School::factory()->create();
-        $this->year    = AcademicYear::create([
+        $this->school = School::factory()->create();
+        $this->year = AcademicYear::create([
             'year' => '2025-2026', 'start_date' => '2025-09-01',
             'end_date' => '2026-07-31', 'active' => true,
         ]);
-        $this->type    = ClassroomType::factory()->create(['period_system' => 'trimestre']);
-        $this->class   = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
+        $this->type = ClassroomType::factory()->create(['period_system' => 'trimestre']);
+        $this->class = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
         $this->subject = Subject::create(['name' => 'Maths', 'code' => 'MATH']);
-        $this->cs      = ClassSubject::create([
+        $this->cs = ClassSubject::create([
             'class_id' => $this->class->id, 'subject_id' => $this->subject->id,
             'coefficient' => 2, 'academic_year_id' => $this->year->id,
         ]);
@@ -68,13 +74,13 @@ class MarkEntryScopeTest extends TestCase
         $template = EvaluationTemplate::create([
             'academic_period_id' => $period->id,
             'evaluation_type_id' => EvaluationType::create(['name' => 'Devoir', 'category' => 'continu'])->id,
-            'class_type_id'      => $this->type->id,
+            'class_type_id' => $this->type->id,
             'name' => 'D1', 'coefficient' => 1, 'max_score' => 20, 'date' => '2025-10-01',
         ]);
 
         $this->evaluation = Evaluation::create([
             'evaluation_template_id' => $template->id,
-            'class_subject_id'       => $this->cs->id,
+            'class_subject_id' => $this->cs->id,
             'date' => '2025-10-01', 'status' => 'published',
         ]);
     }
@@ -90,11 +96,11 @@ class MarkEntryScopeTest extends TestCase
     private function assign(User $teacher, ?string $subjectId = null): void
     {
         SubjectAssignment::create([
-            'teacher_id'       => $teacher->id,
-            'class_id'         => $this->class->id,
-            'subject_id'       => $subjectId ?? $this->subject->id,
+            'teacher_id' => $teacher->id,
+            'class_id' => $this->class->id,
+            'subject_id' => $subjectId ?? $this->subject->id,
             'academic_year_id' => $this->year->id,
-            'active'           => true,
+            'active' => true,
         ]);
     }
 
@@ -102,14 +108,14 @@ class MarkEntryScopeTest extends TestCase
     private function enrolledStudent(): Student
     {
         $student = Student::create([
-            'user_id' => User::factory()->create()->id, 'matricule' => 'M' . Str::random(6),
+            'user_id' => User::factory()->create()->id, 'matricule' => 'M'.Str::random(6),
             'firstname' => 'P', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2012-01-01',
         ]);
 
         Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $student->id,
             'class_id' => $this->class->id, 'academic_year_id' => $this->year->id,
-            'enrollment_code' => 'E' . Str::random(8), 'enrollment_date' => now(),
+            'enrollment_code' => 'E'.Str::random(8), 'enrollment_date' => now(),
             'status' => Enrollment::STATUS_ACTIVE,
         ]);
 
@@ -135,13 +141,13 @@ class MarkEntryScopeTest extends TestCase
 
         $this->assertDatabaseHas('marks', [
             'evaluation_id' => $this->evaluation->id,
-            'student_id'    => $student->id,
+            'student_id' => $student->id,
         ]);
     }
 
     public function test_teacher_assigned_elsewhere_cannot_enter_marks(): void
     {
-        $other   = Subject::create(['name' => 'Anglais', 'code' => 'ANG']);
+        $other = Subject::create(['name' => 'Anglais', 'code' => 'ANG']);
         $teacher = $this->teacher();
         $this->assign($teacher, $other->id); // affecté à une autre matière
         $student = $this->enrolledStudent();
@@ -171,7 +177,7 @@ class MarkEntryScopeTest extends TestCase
 
         // Élève sans inscription dans la classe de l'évaluation.
         $outsider = Student::create([
-            'user_id' => User::factory()->create()->id, 'matricule' => 'M' . Str::random(6),
+            'user_id' => User::factory()->create()->id, 'matricule' => 'M'.Str::random(6),
             'firstname' => 'X', 'lastname' => 'Y', 'gender' => 'male', 'birth_date' => '2012-01-01',
         ]);
 

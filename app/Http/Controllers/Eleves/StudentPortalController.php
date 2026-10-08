@@ -20,7 +20,7 @@ class StudentPortalController extends Controller
 
         $student->forceFill([
             'portal_active' => true,
-            'password'      => $data['password'],
+            'password' => $data['password'],
         ])->save();
 
         return back()->with('message', "Accès portail activé pour l'élève.");

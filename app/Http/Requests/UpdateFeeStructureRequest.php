@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Constants\Roles;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +16,7 @@ class UpdateFeeStructureRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -29,7 +29,7 @@ class UpdateFeeStructureRequest extends FormRequest
                 'exists:academic_years,id',
                 Rule::unique('fee_structures', 'academic_year_id')
                     ->where(
-                        fn($q) => $q
+                        fn ($q) => $q
                             ->where('fee_category_id', $this->fee_category_id)
                             ->where('class_id', $this->class_id)
                     )

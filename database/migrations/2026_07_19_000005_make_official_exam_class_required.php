@@ -16,7 +16,7 @@ return new class extends Migration
             $patterns = [
                 'cepd' => '/cm\s*2/i',
                 'bepc' => '/3\s*(e|è)|troisi/i',
-                'bac'  => '/t(le|erminale)|term/i',
+                'bac' => '/t(le|erminale)|term/i',
             ];
             OfficialExam::whereNull('class_id')->get()->each(function (OfficialExam $exam) use ($classes, $patterns): void {
                 $match = isset($patterns[$exam->type])

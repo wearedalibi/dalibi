@@ -28,12 +28,12 @@ class PersonnelHubTest extends TestCase
     private function employee(array $override = []): EmployeeProfile
     {
         return EmployeeProfile::create(array_merge([
-            'user_id'        => User::factory()->create()->id,
-            'job_title'      => 'Enseignant',
-            'contract_type'  => 'CDI',
-            'base_salary'    => 0,
+            'user_id' => User::factory()->create()->id,
+            'job_title' => 'Enseignant',
+            'contract_type' => 'CDI',
+            'base_salary' => 0,
             'payment_method' => 'CASH',
-            'status'         => 'active',
+            'status' => 'active',
         ], $override));
     }
 
@@ -51,7 +51,7 @@ class PersonnelHubTest extends TestCase
     {
         $this->actingAs($this->admin());
         $grade = SalaryGrade::create(['name' => 'B2', 'base_amount' => 145000, 'active' => true]);
-        $emp   = $this->employee();
+        $emp = $this->employee();
 
         $this->put(route('personnel.grade', $emp->id), ['salary_grade_id' => $grade->id])->assertRedirect();
         $this->assertSame($grade->id, $emp->fresh()->salary_grade_id);
@@ -63,7 +63,7 @@ class PersonnelHubTest extends TestCase
     public function test_add_to_personnel_creates_profile(): void
     {
         $this->actingAs($this->admin());
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $grade = SalaryGrade::create(['name' => 'A1', 'base_amount' => 180000, 'active' => true]);
 
         $this->post(route('personnel.store'), [

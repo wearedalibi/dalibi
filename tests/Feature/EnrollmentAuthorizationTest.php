@@ -6,8 +6,8 @@ use App\Constants\Roles;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
-use App\Models\School;
 use App\Models\Scholarship;
+use App\Models\School;
 use App\Models\Student;
 use App\Models\StudentScholarship;
 use App\Models\User;
@@ -27,7 +27,9 @@ class EnrollmentAuthorizationTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private Classroom $class;
 
     protected function setUp(): void
@@ -36,7 +38,7 @@ class EnrollmentAuthorizationTest extends TestCase
         $this->seed(RolesAndPermissionsSeeder::class);
 
         $this->school = School::factory()->create();
-        $this->year   = AcademicYear::create([
+        $this->year = AcademicYear::create([
             'year' => '2025-2026', 'start_date' => '2025-09-01',
             'end_date' => '2026-07-31', 'active' => true,
         ]);
@@ -72,7 +74,7 @@ class EnrollmentAuthorizationTest extends TestCase
         return Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $student->id,
             'class_id' => $this->class->id, 'academic_year_id' => $this->year->id,
-            'enrollment_code' => 'ENR-' . $matricule, 'enrollment_date' => '2025-09-02',
+            'enrollment_code' => 'ENR-'.$matricule, 'enrollment_date' => '2025-09-02',
             'status' => 'ACTIVE',
         ]);
     }
@@ -145,8 +147,8 @@ class EnrollmentAuthorizationTest extends TestCase
         $enrollment = $this->enroll('E002');
 
         $link = StudentScholarship::create([
-            'student_id'       => $enrollment->student_id,
-            'scholarship_id'   => $scholarship->id,
+            'student_id' => $enrollment->student_id,
+            'scholarship_id' => $scholarship->id,
             'academic_year_id' => $this->year->id,
         ]);
 

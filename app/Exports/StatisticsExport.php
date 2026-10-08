@@ -9,28 +9,27 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class StatisticsExport implements WithMultipleSheets
 {
     private const METHOD_LABELS = [
-        'CASH'          => 'Espèces',
-        'MOBILE_MONEY'  => 'Mobile Money',
+        'CASH' => 'Espèces',
+        'MOBILE_MONEY' => 'Mobile Money',
         'BANK_TRANSFER' => 'Virement',
-        'CHEQUE'        => 'Chèque',
+        'CHEQUE' => 'Chèque',
     ];
 
     public function __construct(
         private readonly string $section,
         private readonly array $data,
-    ) {
-    }
+    ) {}
 
     public function sheets(): array
     {
         return match ($this->section) {
-            'finances'    => $this->finance(),
-            'reussite'    => $this->success(),
-            'encadrement'  => $this->resources(),
-            'assiduite'    => $this->attendance(),
+            'finances' => $this->finance(),
+            'reussite' => $this->success(),
+            'encadrement' => $this->resources(),
+            'assiduite' => $this->attendance(),
             'comparaisons' => $this->trends(),
-            'geographie'   => $this->geography(),
-            default        => $this->enrollment(),
+            'geographie' => $this->geography(),
+            default => $this->enrollment(),
         };
     }
 

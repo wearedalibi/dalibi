@@ -29,7 +29,7 @@ class PayRunController extends Controller
             ->when($request->period_year, fn ($q) => $q->where('period_year', $request->period_year))
             ->when($request->period_month, fn ($q) => $q->where('period_month', $request->period_month))
             ->when($request->search, function ($q) use ($request) {
-                $term = '%' . $request->search . '%';
+                $term = '%'.$request->search.'%';
                 $q->where(fn ($s) => $s->where('reference', 'like', $term)->orWhere('label', 'like', $term));
             })
             ->orderByDesc('period_year')
@@ -39,10 +39,10 @@ class PayRunController extends Controller
 
         return Inertia::render('Paie/PayRuns/Index', [
             'payRuns' => $payRuns,
-            'years'    => PayRun::query()->select('period_year')->distinct()->orderByDesc('period_year')->pluck('period_year'),
-            'perPage'  => $perPage,
+            'years' => PayRun::query()->select('period_year')->distinct()->orderByDesc('period_year')->pluck('period_year'),
+            'perPage' => $perPage,
             'canDelete' => $request->user()->can('delete_payroll'),
-            'filters'  => $request->only(['status', 'period_year', 'period_month', 'search']),
+            'filters' => $request->only(['status', 'period_year', 'period_month', 'search']),
         ]);
     }
 
@@ -58,8 +58,8 @@ class PayRunController extends Controller
     {
         $data = $request->validate([
             'period_month' => ['required', 'integer', 'between:1,12'],
-            'period_year'  => ['required', 'integer', 'between:2000,2100'],
-            'label'        => ['nullable', 'string', 'max:255'],
+            'period_year' => ['required', 'integer', 'between:2000,2100'],
+            'label' => ['nullable', 'string', 'max:255'],
         ]);
 
         $run = $this->payroll->generate((int) $data['period_month'], (int) $data['period_year'], $data['label'] ?? null);
@@ -76,7 +76,7 @@ class PayRunController extends Controller
             ->join('employee_profiles', 'employee_profiles.id', '=', 'payslips.employee_profile_id')
             ->join('users', 'users.id', '=', 'employee_profiles.user_id')
             ->when($request->search, function ($q) use ($request) {
-                $term = '%' . $request->search . '%';
+                $term = '%'.$request->search.'%';
                 $q->where(fn ($s) => $s->where('users.firstname', 'like', $term)
                     ->orWhere('users.lastname', 'like', $term)
                     ->orWhere('payslips.reference', 'like', $term));
@@ -87,12 +87,12 @@ class PayRunController extends Controller
             ->withQueryString();
 
         return Inertia::render('Paie/PayRuns/Show', [
-            'payRun'       => $payRun,
-            'payslips'     => $payslips,
-            'filters'      => $request->only('search'),
-            'canDelete'    => $request->user()->can('delete_payroll'),
+            'payRun' => $payRun,
+            'payslips' => $payslips,
+            'filters' => $request->only('search'),
+            'canDelete' => $request->user()->can('delete_payroll'),
             'cashAccounts' => CashAccount::where('active', true)->orderBy('type')->orderBy('name')->get(['id', 'name', 'type', 'balance']),
-            'components'   => SalaryComponent::where('active', true)->orderBy('type')->orderBy('sort_order')->get(['id', 'name', 'code', 'type', 'default_amount']),
+            'components' => SalaryComponent::where('active', true)->orderBy('type')->orderBy('sort_order')->get(['id', 'name', 'code', 'type', 'default_amount']),
         ]);
     }
 
@@ -100,11 +100,11 @@ class PayRunController extends Controller
     public function updatePayslip(Request $request, Payslip $payslip): RedirectResponse
     {
         $data = $request->validate([
-            'lines'          => ['required', 'array', 'min:1'],
-            'lines.*.label'  => ['required', 'string', 'max:255'],
-            'lines.*.type'   => ['required', Rule::in([SalaryComponent::EARNING, SalaryComponent::DEDUCTION])],
+            'lines' => ['required', 'array', 'min:1'],
+            'lines.*.label' => ['required', 'string', 'max:255'],
+            'lines.*.type' => ['required', Rule::in([SalaryComponent::EARNING, SalaryComponent::DEDUCTION])],
             'lines.*.amount' => ['required', 'numeric', 'min:0', 'max:999999999'],
-            'lines.*.code'   => ['nullable', 'string', 'max:50'],
+            'lines.*.code' => ['nullable', 'string', 'max:50'],
         ]);
 
         $this->payroll->updatePayslipLines($payslip, $data['lines']);

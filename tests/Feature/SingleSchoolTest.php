@@ -7,6 +7,7 @@ use App\Models\School;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class SingleSchoolTest extends TestCase
@@ -58,10 +59,10 @@ class SingleSchoolTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('schools.store'), [
-                'name'     => 'Deuxième école',
-                'code'     => 'ECOLE-2',
+                'name' => 'Deuxième école',
+                'code' => 'ECOLE-2',
                 'currency' => 'XOF',
-                'terme'    => 'République Togolaise',
+                'terme' => 'République Togolaise',
             ])
             ->assertRedirect(route('schools.edit', $school));
 
@@ -72,7 +73,7 @@ class SingleSchoolTest extends TestCase
     {
         foreach (['schools.bulk-activate', 'schools.bulk-deactivate', 'schools.toggle-active', 'schools.destroy'] as $name) {
             $this->assertFalse(
-                \Illuminate\Support\Facades\Route::has($name),
+                Route::has($name),
                 "La route {$name} ne devrait plus exister.",
             );
         }

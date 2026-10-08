@@ -13,10 +13,10 @@ use App\Models\Grade;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\Subject;
-use Inertia\Testing\AssertableInertia as Assert;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class GradeTest extends TestCase
@@ -24,10 +24,15 @@ class GradeTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private Classroom $class;
+
     private ClassSubject $classSubject;
+
     private AcademicPeriod $period;
+
     private Student $student;
 
     protected function setUp(): void
@@ -88,8 +93,8 @@ class GradeTest extends TestCase
         // `academic_status`, renvoyant zéro élève malgré des inscriptions.
         $this->actingAs($this->admin())
             ->get(route('grades.index', [
-                'class_id'           => $this->class->id,
-                'class_subject_id'   => $this->classSubject->id,
+                'class_id' => $this->class->id,
+                'class_subject_id' => $this->classSubject->id,
                 'academic_period_id' => $this->period->id,
             ]))
             ->assertInertia(fn (Assert $p) => $p
@@ -102,28 +107,28 @@ class GradeTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->post(route('grades.store'), [
-                'class_subject_id'   => $this->classSubject->id,
+                'class_subject_id' => $this->classSubject->id,
                 'academic_period_id' => $this->period->id,
-                'grades'             => [
+                'grades' => [
                     ['student_id' => $this->student->id, 'score' => 15.5, 'comments' => 'Bon travail'],
                 ],
             ])
             ->assertRedirect();
 
         $this->assertDatabaseHas('grades', [
-            'student_id'         => $this->student->id,
-            'class_subject_id'   => $this->classSubject->id,
+            'student_id' => $this->student->id,
+            'class_subject_id' => $this->classSubject->id,
             'academic_period_id' => $this->period->id,
-            'score'              => 15.5,
+            'score' => 15.5,
         ]);
     }
 
     public function test_store_is_idempotent_per_period(): void
     {
         $payload = [
-            'class_subject_id'   => $this->classSubject->id,
+            'class_subject_id' => $this->classSubject->id,
             'academic_period_id' => $this->period->id,
-            'grades'             => [['student_id' => $this->student->id, 'score' => 12]],
+            'grades' => [['student_id' => $this->student->id, 'score' => 12]],
         ];
 
         $this->actingAs($this->admin())->post(route('grades.store'), $payload);
@@ -141,7 +146,7 @@ class GradeTest extends TestCase
         $this->actingAs($this->admin())
             ->post(route('grades.store'), [
                 'class_subject_id' => $this->classSubject->id,
-                'grades'           => [['student_id' => $this->student->id, 'score' => 10]],
+                'grades' => [['student_id' => $this->student->id, 'score' => 10]],
             ])
             ->assertSessionHasErrors('academic_period_id');
     }

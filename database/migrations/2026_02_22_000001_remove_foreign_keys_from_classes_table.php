@@ -15,7 +15,7 @@ return new class extends Migration
             $table->dropForeign(['school_id']);
             $table->dropForeign(['academic_year_id']);
             $table->dropForeign(['teacher_id']);
-            
+
             $table->dropColumn(['school_id', 'academic_year_id', 'teacher_id']);
         });
     }
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->uuid('school_id')->after('id');
             $table->uuid('academic_year_id')->after('school_id');
             $table->uuid('teacher_id')->nullable()->after('capacity');
-            
+
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->foreign('teacher_id')->references('id')->on('users')->onDelete('set null');
