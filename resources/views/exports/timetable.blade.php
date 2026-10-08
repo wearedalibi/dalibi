@@ -2,16 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Emploi du temps - {{ $classroom->name }}</title>
+    <title>{{ $title }}</title>
     <style>
         @page { margin: 18px 22px; }
         * { box-sizing: border-box; }
         body { font-family: 'DejaVu Sans', sans-serif; color: #1a1a1a; font-size: 11px; margin: 0; }
 
         .header { text-align: center; margin-bottom: 14px; }
-        .terme { font-weight: bold; text-transform: uppercase; font-size: 12px; }
-        .devise { font-style: italic; font-size: 10px; color: #555; }
-        .school { font-weight: bold; font-size: 13px; text-transform: uppercase; margin-top: 4px; }
         .title { margin-top: 8px; font-size: 15px; font-weight: bold; }
         .subtitle { font-size: 11px; color: #444; }
 
@@ -30,8 +27,8 @@
 <body>
     {!! $headerHtml !!}
     <div class="header">
-        <div class="title">EMPLOI DU TEMPS</div>
-        <div class="subtitle">Classe : {{ $classroom->name }}</div>
+        <div class="title">{{ $title }}</div>
+        <div class="subtitle">{{ $subtitle }}</div>
     </div>
 
     <table>
@@ -52,7 +49,11 @@
                         <td>
                             @if($slot)
                                 <div class="slot-subject">{{ $slot->subject?->name ?? '—' }}</div>
-                                @if($slot->teacher)<div class="slot-meta">{{ $slot->teacher->name }}</div>@endif
+                                {{-- Méta affichée selon le contexte (relation réellement chargée) :
+                                     enseignant pour l'emploi du temps d'une classe, classe pour
+                                     celui d'un enseignant — sans déclencher de requête supplémentaire. --}}
+                                @if($slot->relationLoaded('teacher') && $slot->teacher)<div class="slot-meta">{{ $slot->teacher->name }}</div>@endif
+                                @if($slot->relationLoaded('classroom') && $slot->classroom)<div class="slot-meta">{{ $slot->classroom->name }}</div>@endif
                                 @if($slot->room)<div class="slot-meta">Salle : {{ $slot->room }}</div>@endif
                             @else
                                 <div class="empty">—</div>
@@ -63,7 +64,7 @@
             @empty
                 <tr>
                     <td colspan="{{ count($days) + 1 }}" style="text-align:center; padding: 20px; color:#999;">
-                        Aucun créneau enregistré pour cette classe.
+                        Aucun créneau enregistré.
                     </td>
                 </tr>
             @endforelse

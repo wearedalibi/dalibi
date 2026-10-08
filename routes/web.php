@@ -417,6 +417,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Timetable (emploi du temps)
     Route::get('timetable', [TimetableController::class, 'index'])->middleware('can:view_timetable')->name('timetable.index');
+    // Routes « enseignant » avant {classId}/export pour ne pas être captées par le paramètre.
+    Route::get('timetable/teacher', [TimetableController::class, 'teacher'])->middleware('can:view_timetable')->name('timetable.teacher');
+    Route::get('timetable/teacher/export', [TimetableController::class, 'teacherExport'])->middleware('can:view_timetable')->name('timetable.teacher.export');
     Route::get('timetable/{classId}/export', [TimetableController::class, 'export'])->name('timetable.export');
     Route::post('timetable', [TimetableController::class, 'store'])->middleware('can:create_timetable')->name('timetable.store');
     Route::put('timetable/{timetableSlot}', [TimetableController::class, 'update'])->middleware('can:edit_timetable')->name('timetable.update');

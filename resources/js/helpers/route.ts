@@ -353,6 +353,8 @@ export function route(name: string, params?: any): string {
 
         // Timetable
         'timetable.index':   '/timetable',
+        'timetable.teacher': '/timetable/teacher',
+        'timetable.teacher.export': '/timetable/teacher/export',
         'timetable.export':  `/timetable/${params}/export`,
         'timetable.store':   '/timetable',
         'timetable.update':  `/timetable/${params}`,
