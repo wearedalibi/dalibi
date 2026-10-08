@@ -50,7 +50,6 @@
                 <th>Matière</th>
                 <th>Classe</th>
                 <th class="center">Statut</th>
-                <th>Notes</th>
             </tr>
         </thead>
         <tbody>
@@ -60,10 +59,9 @@
                 <td><strong>{{ $a->subject?->name ?? '—' }}</strong></td>
                 <td>{{ $a->classroom?->name ?? '—' }}</td>
                 <td class="center badge">{{ $a->active ? 'Active' : 'Inactive' }}</td>
-                <td>{{ $a->notes ?: '—' }}</td>
             </tr>
             @empty
-            <tr><td colspan="5" style="text-align:center; padding:20px; color:#999;">Aucune affectation pour cet enseignant sur cette année.</td></tr>
+            <tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Aucune affectation pour cet enseignant sur cette année.</td></tr>
             @endforelse
         </tbody>
     </table>

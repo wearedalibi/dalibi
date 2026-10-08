@@ -184,13 +184,12 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                                             <TableHead className="font-semibold text-gray-900">Matière</TableHead>
                                             <TableHead className="font-semibold text-gray-900">Classe</TableHead>
                                             <TableHead className="font-semibold text-gray-900">Statut</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Notes</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {assignments.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={4} className="text-center py-12">
+                                                <TableCell colSpan={3} className="text-center py-12">
                                                     <div className="flex flex-col items-center gap-2">
                                                         <BookOpen className="w-12 h-12 text-gray-300" />
                                                         <p className="text-gray-500 font-medium">Aucune affectation pour cet enseignant sur cette année.</p>
@@ -214,7 +213,6 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                                                             </span>
                                                         )}
                                                     </TableCell>
-                                                    <TableCell className="text-gray-600">{a.notes || '—'}</TableCell>
                                                 </TableRow>
                                             ))
                                         )}
