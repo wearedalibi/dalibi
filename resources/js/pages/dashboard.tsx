@@ -358,7 +358,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                 {/* ── KPIs inscriptions ─────────────────────────────────── */}
                 {isEnrollment && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))' }}>
                         <KpiCard
                             title="Élèves inscrits"
                             value={enrollments.enrollments_year}
@@ -395,7 +395,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                 {/* ── Effectifs par sexe + classes + utilisateurs ───────── */}
                 {isEnrollment && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))' }}>
                         <KpiCard
                             title="Garçons"
                             value={enrollments.students_by_gender.male}
@@ -443,7 +443,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                 {/* ── KPIs vie scolaire & pédagogie ─────────────────────── */}
                 {isAcademic && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))' }}>
                         <KpiCard
                             title="Présences du jour"
                             value={academic.present_today}
@@ -484,7 +484,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                 {/* ── KPIs bulletins (validés + moyenne de la période) ────── */}
                 {isBulletins && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))' }}>
                         <KpiCard
                             title="Bulletins validés"
                             value={bulletins.validated}
@@ -504,7 +504,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                 {/* ── KPIs financiers (facturation + synthèse du mois) ─────── */}
                 {isFinancial && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))' }}>
                         <KpiCard
                             title="Total facturé"
                             value={fmt(Number(stats?.total_amount ?? 0))}
