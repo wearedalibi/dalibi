@@ -204,13 +204,14 @@ function KpiCard({ title, value, sub, icon: Icon, color }: {
     };
     const { bg, text } = styles[color];
     return (
-        <div className={`${bg} rounded-xl p-5 shadow-sm min-h-28 flex flex-col justify-center`}>
+        <div className="bg-white dark:bg-card rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 min-h-28 flex flex-col justify-center">
             <div className="flex items-start justify-between">
                 <div className="min-w-0">
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{title}</p>
                     <p className={`text-2xl font-bold ${text} mt-1.5 truncate`}>{value}</p>
                     {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{sub}</p>}
                 </div>
+                {/* Chip d'icône : seul accent coloré restant, le fond de la card reste blanc. */}
                 <div className={`${bg} rounded-lg p-2 shrink-0 ml-3`}>
                     <Icon className={`w-6 h-6 ${text}`} />
                 </div>
@@ -890,7 +891,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             ) : (
                                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 p-5">
                                     {teaching.assignments.map(a => (
-                                        <div key={a.id} className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                                        <div key={a.id} className="bg-white dark:bg-card rounded-lg p-4 border border-gray-100 dark:border-gray-700">
                                             <p className="font-semibold text-blue-700 dark:text-blue-300 text-sm">{a.subject}</p>
                                             <p className="text-xs text-blue-500 dark:text-blue-400 mt-1">
                                                 {a.class_name} <span className="opacity-60">({a.class_code})</span>
