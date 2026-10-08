@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Constants\Roles;
@@ -35,7 +37,7 @@ final class MatriculeService
         $year = date('y');
         $sequence = $this->getNextUserSequence($prefix, $year);
 
-        return "{$prefix}{$year}".str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        return "{$prefix}{$year}".str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
     }
 
     public function generateStudentMatricule(?string $schoolCode = null): string
@@ -44,7 +46,7 @@ final class MatriculeService
         $schoolCode = $schoolCode ? substr(strtoupper($schoolCode), 0, 3) : 'ECO';
         $sequence = $this->getNextStudentSequence($schoolCode, $year);
 
-        return "{$schoolCode}STU{$year}".str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        return "{$schoolCode}STU{$year}".str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
     }
 
     protected function getNextUserSequence(string $prefix, string $year): int
