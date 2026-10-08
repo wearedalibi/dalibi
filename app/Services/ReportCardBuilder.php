@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
  * agrégation des notes (via {@see GradingService}), classements, snapshot du payload
  * et persistance. Sorti du contrôleur pour rester testable et lisible.
  */
-class ReportCardBuilder
+final class ReportCardBuilder
 {
     public function __construct(private readonly GradingService $grading) {}
 

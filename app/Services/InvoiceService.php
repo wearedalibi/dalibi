@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class InvoiceService
+final class InvoiceService
 {
     public function __construct(private readonly AccountingService $accountingService) {}
 

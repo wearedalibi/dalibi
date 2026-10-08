@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
  * Indicateurs 🇹🇬 : IPS (parité), taux de redoublement / abandon / promotion,
  * taux de recouvrement (dont Mobile Money), taux d'admission aux examens officiels.
  */
-class StatisticsService
+final class StatisticsService
 {
     /** Filtres normalisés. */
     private function filters(array $f): array

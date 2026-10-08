@@ -7,7 +7,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Str;
 
-class MatriculeService
+final class MatriculeService
 {
     /** Préfixes par défaut (surchargés/étendus par config('matricule.role_prefixes')). */
     protected const ROLE_PREFIXES = [

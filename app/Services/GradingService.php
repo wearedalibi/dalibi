@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
  * Phase 1 : s'appuie sur la note consolidée de période ({@see Grade}), source actuelle du bulletin.
  * Phase 2 : la note matière sera dérivée du couple Classe/Composition selon la configuration.
  */
-class GradingService
+final class GradingService
 {
     public function round(?float $value, GradingConfig $config): ?float
     {

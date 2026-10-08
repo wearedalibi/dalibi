@@ -27,7 +27,7 @@ use Symfony\Component\Process\Process;
  *  - sur PostgreSQL, délégation à `pg_dump` (format custom, schéma inclus),
  *    avec repli automatique sur l'export SQL portable si l'outil est absent.
  */
-class BackupService
+final class BackupService
 {
     /** Tables transitoires exclues des sauvegardes. */
     private const EXCLUDED = [

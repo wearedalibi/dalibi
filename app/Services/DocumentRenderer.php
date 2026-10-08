@@ -9,7 +9,7 @@ use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-class DocumentRenderer
+final class DocumentRenderer
 {
     /**
      * Catalogue des variables disponibles, pour l'éditeur (UI).

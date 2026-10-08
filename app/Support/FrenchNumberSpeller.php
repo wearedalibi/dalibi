@@ -15,7 +15,7 @@ use App\Constants\Currencies;
  * Aucune dépendance (n'utilise pas ext-intl) afin de rester déterministe et
  * disponible quel que soit l'environnement.
  */
-class FrenchNumberSpeller
+final class FrenchNumberSpeller
 {
     /** 0 à 19 en toutes lettres. */
     private const UNITS = [

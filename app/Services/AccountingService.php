@@ -8,7 +8,7 @@ use App\Models\Payment;
 use App\Models\Payslip;
 use App\Models\StudentScholarship;
 
-class AccountingService
+final class AccountingService
 {
     /**
      * Enregistre la dépense de salaire d'un bulletin (net payé) et débite la

@@ -11,7 +11,7 @@ use App\Models\School;
  * Rend un bulletin scolaire à partir d'un modèle de colonnes configurable
  * (figé dans le snapshot {@see ReportCard}), coiffé de l'en-tête et du filigrane configurables.
  */
-class BulletinRenderer
+final class BulletinRenderer
 {
     public function __construct(private readonly DocumentRenderer $documents) {}
 

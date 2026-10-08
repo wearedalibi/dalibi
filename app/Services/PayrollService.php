@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class PayrollService
+final class PayrollService
 {
     public function __construct(private readonly AccountingService $accountingService) {}
 
