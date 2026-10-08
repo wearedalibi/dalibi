@@ -7,11 +7,15 @@ use App\Http\Requests\StoreSubjectAssignmentRequest;
 use App\Http\Requests\UpdateSubjectAssignmentRequest;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\School;
 use App\Models\Subject;
 use App\Models\SubjectAssignment;
 use App\Models\User;
+use App\Services\DocumentRenderer;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -70,6 +74,101 @@ class SubjectAssignmentController extends Controller
                 'class_id'         => $request->input('class_id', ''),
             ],
         ]);
+    }
+
+    /**
+     * Statistiques des affectations : pour une année (active par défaut) et un
+     * enseignant sélectionné, liste ses affectations avec un récapitulatif.
+     */
+    public function statistics(Request $request): Response
+    {
+        $activeYearId = AcademicYear::where('active', true)->orderBy('year', 'desc')->value('id');
+        $yearFilter = $request->has('academic_year_id')
+            ? $request->input('academic_year_id')
+            : $activeYearId;
+
+        $teacherId = (string) $request->input('teacher_id', '');
+
+        $assignments = collect();
+        $teacher = null;
+
+        if ($teacherId !== '' && ! empty($yearFilter)) {
+            $teacher = User::find($teacherId);
+
+            $assignments = SubjectAssignment::with(['subject:id,name', 'classroom:id,name,code'])
+                ->where('teacher_id', $teacherId)
+                ->where('academic_year_id', $yearFilter)
+                ->get()
+                ->map(fn ($a) => [
+                    'id'             => $a->id,
+                    'subject'        => $a->subject?->name ?? '—',
+                    'classroom'      => $a->classroom?->name ?? '—',
+                    'classroom_code' => $a->classroom?->code,
+                    'active'         => (bool) $a->active,
+                    'notes'          => $a->notes,
+                ])
+                ->sortBy(fn ($a) => $a['subject'] . ' ' . $a['classroom'])
+                ->values();
+        }
+
+        return Inertia::render('Administration/SubjectAssignments/Statistics', [
+            'teachers'      => User::permission('create_marks')
+                ->orderBy('firstname')->orderBy('lastname')
+                ->get(['id', 'firstname', 'lastname']),
+            'academicYears' => AcademicYear::orderBy('year', 'desc')->get(['id', 'year']),
+            'filters'       => [
+                'academic_year_id' => (string) ($yearFilter ?? ''),
+                'teacher_id'       => $teacherId,
+            ],
+            'teacher'       => $teacher
+                ? ['id' => $teacher->id, 'name' => trim($teacher->firstname . ' ' . $teacher->lastname)]
+                : null,
+            'assignments'   => $assignments,
+            'summary'       => [
+                'total'    => $assignments->count(),
+                'active'   => $assignments->where('active', true)->count(),
+                'subjects' => $assignments->pluck('subject')->unique()->count(),
+                'classes'  => $assignments->pluck('classroom')->unique()->count(),
+            ],
+        ]);
+    }
+
+    /**
+     * Export PDF de la fiche d'affectations d'un enseignant (en-tête officielle).
+     */
+    public function exportStatistics(Request $request)
+    {
+        $validated = $request->validate([
+            'teacher_id'       => ['required', 'uuid', 'exists:users,id'],
+            'academic_year_id' => ['nullable', 'uuid', 'exists:academic_years,id'],
+        ]);
+
+        $activeYearId = AcademicYear::where('active', true)->orderBy('year', 'desc')->value('id');
+        $yearId = $validated['academic_year_id'] ?? $activeYearId;
+
+        $year    = AcademicYear::find($yearId);
+        $teacher = User::findOrFail($validated['teacher_id']);
+
+        $assignments = SubjectAssignment::with(['subject:id,name', 'classroom:id,name,code'])
+            ->where('teacher_id', $teacher->id)
+            ->where('academic_year_id', $yearId)
+            ->get()
+            ->sortBy(fn ($a) => ($a->subject?->name ?? '') . ' ' . ($a->classroom?->name ?? ''))
+            ->values();
+
+        $school   = School::where('active', true)->first() ?? School::query()->first();
+        $renderer = app(DocumentRenderer::class);
+
+        $pdf = Pdf::loadView('exports.subject-assignments', [
+            'school'      => $school,
+            'headerHtml'  => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
+            'headerCss'   => $renderer->headerCss(),
+            'teacher'     => $teacher,
+            'year'        => $year,
+            'assignments' => $assignments,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('affectations-' . Str::slug(trim($teacher->firstname . ' ' . $teacher->lastname) . '-' . ($year?->year ?? '')) . '.pdf');
     }
 
     public function create(): Response
