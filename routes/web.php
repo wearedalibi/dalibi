@@ -303,6 +303,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('receipts/verify', [InvoiceController::class, 'verifyReceipt'])
         ->middleware('throttle:30,1')
         ->name('receipts.verify');
+    // Routes statiques AVANT la resource pour ne pas être captées par {subject_assignment}.
+    Route::get('subject-assignments/statistics', [SubjectAssignmentController::class, 'statistics'])
+        ->middleware('can:view_subject_assignments')->name('subject-assignments.statistics');
+    Route::get('subject-assignments/statistics/export', [SubjectAssignmentController::class, 'exportStatistics'])
+        ->middleware('can:view_subject_assignments')->name('subject-assignments.statistics.export');
     Route::resource('subject-assignments', SubjectAssignmentController::class)
         ->middleware('can:view_subject_assignments')
         ->middlewareFor(['create', 'store'], 'can:create_subject_assignments')

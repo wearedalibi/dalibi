@@ -122,6 +122,8 @@ export function route(name: string, params?: any): string {
 
         // Subject Assignments routes
         'subject-assignments.index': '/subject-assignments',
+        'subject-assignments.statistics': '/subject-assignments/statistics',
+        'subject-assignments.statistics.export': '/subject-assignments/statistics/export',
         'subject-assignments.create': '/subject-assignments/create',
         'subject-assignments.store': '/subject-assignments',
         'subject-assignments.show': `/subject-assignments/${params}`,
