@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Comptabilite;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\CashAccount;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,8 +28,8 @@ class CashAccountController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'name'        => ['required', 'string', 'max:100'],
-            'type'        => ['required', Rule::in(['CASH', 'MOBILE_MONEY', 'BANK'])],
+            'name' => ['required', 'string', 'max:100'],
+            'type' => ['required', Rule::in(['CASH', 'MOBILE_MONEY', 'BANK'])],
             'description' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -41,10 +41,10 @@ class CashAccountController extends Controller
     public function update(Request $request, CashAccount $cashAccount): RedirectResponse
     {
         $data = $request->validate([
-            'name'        => ['required', 'string', 'max:100'],
-            'type'        => ['required', Rule::in(['CASH', 'MOBILE_MONEY', 'BANK'])],
+            'name' => ['required', 'string', 'max:100'],
+            'type' => ['required', Rule::in(['CASH', 'MOBILE_MONEY', 'BANK'])],
             'description' => ['nullable', 'string', 'max:255'],
-            'active'      => ['sometimes', 'boolean'],
+            'active' => ['sometimes', 'boolean'],
         ]);
 
         $cashAccount->update($data);
@@ -62,8 +62,8 @@ class CashAccountController extends Controller
 
         if ((float) $cashAccount->balance !== 0.0) {
             return back()->withErrors([
-                'delete' => "Impossible de supprimer une caisse dont le solde n'est pas nul (" .
-                            number_format((float) $cashAccount->balance, 0, ',', ' ') . ' F).',
+                'delete' => "Impossible de supprimer une caisse dont le solde n'est pas nul (".
+                            number_format((float) $cashAccount->balance, 0, ',', ' ').' F).',
             ]);
         }
 

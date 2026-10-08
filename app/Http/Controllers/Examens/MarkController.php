@@ -6,8 +6,8 @@
  */
 
 namespace App\Http\Controllers\Examens;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Enrollment;
 use App\Models\Evaluation;
@@ -58,32 +58,32 @@ class MarkController extends Controller
 
             return [
                 'student_id' => $enrollment->student_id,
-                'student'    => $enrollment->student,
-                'mark_id'    => $mark?->id,
-                'score'      => $mark?->score !== null ? (float) $mark->score : null,
-                'absent'     => $mark?->absent ?? false,
-                'comments'   => $mark?->comments,
+                'student' => $enrollment->student,
+                'mark_id' => $mark?->id,
+                'score' => $mark?->score !== null ? (float) $mark->score : null,
+                'absent' => $mark?->absent ?? false,
+                'comments' => $mark?->comments,
             ];
         })->values();
 
         // Stats
         $gradedMarks = $existingMarks->filter(fn ($m) => ! $m->absent && $m->score !== null);
         $absentCount = $existingMarks->filter(fn ($m) => $m->absent)->count();
-        $scores      = $gradedMarks->pluck('score')->map(fn ($s) => (float) $s);
+        $scores = $gradedMarks->pluck('score')->map(fn ($s) => (float) $s);
 
         $stats = [
-            'total'   => $enrollments->count(),
-            'graded'  => $gradedMarks->count(),
-            'absent'  => $absentCount,
+            'total' => $enrollments->count(),
+            'graded' => $gradedMarks->count(),
+            'absent' => $absentCount,
             'average' => $scores->count() > 0 ? round($scores->avg(), 2) : null,
-            'min'     => $scores->count() > 0 ? $scores->min() : null,
-            'max'     => $scores->count() > 0 ? $scores->max() : null,
+            'min' => $scores->count() > 0 ? $scores->min() : null,
+            'max' => $scores->count() > 0 ? $scores->max() : null,
         ];
 
         return Inertia::render('Examens/Marks/Index', [
-            'evaluation'       => $evaluation,
+            'evaluation' => $evaluation,
             'studentsWithMarks' => $studentsWithMarks,
-            'stats'            => $stats,
+            'stats' => $stats,
         ]);
     }
 
@@ -107,14 +107,14 @@ class MarkController extends Controller
             ->all();
 
         $validated = $request->validate([
-            'marks'              => ['required', 'array', 'min:1'],
+            'marks' => ['required', 'array', 'min:1'],
             'marks.*.student_id' => ['required', 'uuid', Rule::in($enrolledIds)],
-            'marks.*.score'      => ['nullable', 'numeric', 'min:0', "max:{$maxScore}"],
-            'marks.*.absent'     => ['boolean'],
-            'marks.*.comments'   => ['nullable', 'string', 'max:500'],
+            'marks.*.score' => ['nullable', 'numeric', 'min:0', "max:{$maxScore}"],
+            'marks.*.absent' => ['boolean'],
+            'marks.*.comments' => ['nullable', 'string', 'max:500'],
         ], [
-            'marks.*.score.max'  => "La note maximale est {$maxScore}.",
-            'marks.*.score.min'  => 'La note minimale est 0.',
+            'marks.*.score.max' => "La note maximale est {$maxScore}.",
+            'marks.*.score.min' => 'La note minimale est 0.',
             'marks.*.student_id.in' => "Cet élève n'est pas inscrit dans la classe de cette évaluation.",
         ]);
 
@@ -125,12 +125,12 @@ class MarkController extends Controller
                 Mark::updateOrCreate(
                     [
                         'evaluation_id' => $evaluation->id,
-                        'student_id'    => $markData['student_id'],
+                        'student_id' => $markData['student_id'],
                     ],
                     [
-                        'score'      => $isAbsent ? null : ($markData['score'] ?? null),
-                        'absent'     => $isAbsent,
-                        'comments'   => $markData['comments'] ?? null,
+                        'score' => $isAbsent ? null : ($markData['score'] ?? null),
+                        'absent' => $isAbsent,
+                        'comments' => $markData['comments'] ?? null,
                         'created_by' => auth()->id(),
                     ]
                 );

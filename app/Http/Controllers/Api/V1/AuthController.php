@@ -17,7 +17,7 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        $login    = $request->string('login')->toString();
+        $login = $request->string('login')->toString();
         $password = $request->string('password')->toString();
 
         // 1) Tuteur (par e-mail)
@@ -69,8 +69,8 @@ class AuthController extends Controller
     public function resetPassword(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'email'    => ['required', 'email'],
-            'token'    => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'token' => ['required', 'string'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -91,7 +91,7 @@ class AuthController extends Controller
     public function sendResetLink(Guardian $guardian, bool $isReset): void
     {
         $token = $guardian->issueResetToken();
-        $url   = rtrim(config('app.url'), '/') . '/portal/reset?email=' . urlencode($guardian->email) . '&token=' . $token;
+        $url = rtrim(config('app.url'), '/').'/portal/reset?email='.urlencode($guardian->email).'&token='.$token;
 
         Mail::to($guardian->email)->send(new GuardianInvitation($guardian, $url, $isReset));
     }
@@ -102,8 +102,8 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'type'  => $type,
-            'user'  => $this->profile($user, $type),
+            'type' => $type,
+            'user' => $this->profile($user, $type),
         ]);
     }
 
@@ -111,16 +111,16 @@ class AuthController extends Controller
     {
         if ($type === 'guardian') {
             return [
-                'id'    => $user->id,
-                'name'  => $user->fullName(),
+                'id' => $user->id,
+                'name' => $user->fullName(),
                 'email' => $user->email,
                 'phone' => $user->phone,
             ];
         }
 
         return [
-            'id'        => $user->id,
-            'name'      => trim($user->firstname . ' ' . $user->lastname),
+            'id' => $user->id,
+            'name' => trim($user->firstname.' '.$user->lastname),
             'matricule' => $user->matricule,
         ];
     }

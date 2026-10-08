@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 
 class FileStorageSetting extends Model
 {
     protected $primaryKey = 'key';
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = ['key', 'value'];
 
@@ -72,22 +74,23 @@ class FileStorageSetting extends Model
         foreach (self::KEYS as $key) {
             $settings[$key] = static::get($key);
         }
+
         return $settings;
     }
 
     public static function s3Config(): array
     {
         return [
-            'driver'                  => 's3',
-            'key'                     => static::get('s3_key'),
-            'secret'                  => static::get('s3_secret'),
-            'region'                  => static::get('s3_region', 'auto'),
-            'bucket'                  => static::get('s3_bucket'),
-            'url'                     => static::get('s3_url'),
-            'endpoint'                => static::get('s3_endpoint'),
+            'driver' => 's3',
+            'key' => static::get('s3_key'),
+            'secret' => static::get('s3_secret'),
+            'region' => static::get('s3_region', 'auto'),
+            'bucket' => static::get('s3_bucket'),
+            'url' => static::get('s3_url'),
+            'endpoint' => static::get('s3_endpoint'),
             'use_path_style_endpoint' => true,
-            'visibility'              => 'public',
-            'throw'                   => true,
+            'visibility' => 'public',
+            'throw' => true,
         ];
     }
 }

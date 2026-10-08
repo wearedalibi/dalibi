@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,8 @@ class EmployeeAllowance extends Model
 {
     use HasFactory, HasUuids;
 
-    public const MODE_FIXED        = 'fixed';
+    public const MODE_FIXED = 'fixed';
+
     public const MODE_PERCENT_BASE = 'percent_base';
 
     protected $fillable = [
@@ -28,10 +30,10 @@ class EmployeeAllowance extends Model
     ];
 
     protected $casts = [
-        'amount'    => 'float',
+        'amount' => 'float',
         'starts_on' => 'date',
-        'ends_on'   => 'date',
-        'active'    => 'boolean',
+        'ends_on' => 'date',
+        'active' => 'boolean',
     ];
 
     public function employeeProfile(): BelongsTo
@@ -52,7 +54,7 @@ class EmployeeAllowance extends Model
         }
 
         // Dernier jour du mois de la période.
-        $periodEnd   = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+        $periodEnd = Carbon::create($year, $month, 1)->endOfMonth();
         $periodStart = $periodEnd->copy()->startOfMonth();
 
         if ($this->starts_on && $this->starts_on->gt($periodEnd)) {

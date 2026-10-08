@@ -22,15 +22,15 @@ class PayrollSetting extends Model
     ];
 
     protected $casts = [
-        'seniority_enabled'       => 'boolean',
+        'seniority_enabled' => 'boolean',
         'seniority_rate_per_year' => 'float',
-        'seniority_cap_percent'   => 'float',
-        'cnss_enabled'            => 'boolean',
-        'cnss_employee_rate'      => 'float',
-        'cnss_employer_rate'      => 'float',
-        'cnss_ceiling'            => 'float',
-        'its_enabled'             => 'boolean',
-        'its_brackets'            => 'array',
+        'seniority_cap_percent' => 'float',
+        'cnss_enabled' => 'boolean',
+        'cnss_employee_rate' => 'float',
+        'cnss_employer_rate' => 'float',
+        'cnss_ceiling' => 'float',
+        'its_enabled' => 'boolean',
+        'its_brackets' => 'array',
     ];
 
     /** Réglages courants (singleton) — créés avec les valeurs par défaut si absents. */

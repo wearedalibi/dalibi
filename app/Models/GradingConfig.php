@@ -24,13 +24,13 @@ class GradingConfig extends Model
     ];
 
     protected $casts = [
-        'is_active'         => 'boolean',
-        'passing_score'     => 'float',
+        'is_active' => 'boolean',
+        'passing_score' => 'float',
         'default_max_score' => 'float',
-        'class_weight'      => 'float',
-        'comp_weight'       => 'float',
-        'round_precision'   => 'integer',
-        'mentions'          => 'array',
+        'class_weight' => 'float',
+        'comp_weight' => 'float',
+        'round_precision' => 'integer',
+        'mentions' => 'array',
     ];
 
     public function school(): BelongsTo
@@ -86,13 +86,13 @@ class GradingConfig extends Model
     public static function resolveOrDefault(?School $school, ?ClassroomType $type): self
     {
         return static::resolveFor($school, $type) ?? new self([
-            'name'              => 'Par défaut',
-            'passing_score'     => 10,
+            'name' => 'Par défaut',
+            'passing_score' => 10,
             'default_max_score' => 20,
-            'class_weight'      => 1,
-            'comp_weight'       => 1,
-            'round_precision'   => 2,
-            'mentions'          => static::defaultMentions(),
+            'class_weight' => 1,
+            'comp_weight' => 1,
+            'round_precision' => 2,
+            'mentions' => static::defaultMentions(),
         ]);
     }
 

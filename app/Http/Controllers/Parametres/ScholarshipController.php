@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreScholarshipRequest;
 use App\Http\Requests\UpdateScholarshipRequest;
 use App\Models\Scholarship;
@@ -16,7 +16,7 @@ class ScholarshipController extends Controller
      */
     public function index(): Response
     {
-        $query  = Scholarship::query();
+        $query = Scholarship::query();
         $search = request('search');
 
         if ($search) {
@@ -35,7 +35,7 @@ class ScholarshipController extends Controller
 
         return Inertia::render('Parametres/Scholarships/Index', [
             'scholarships' => $scholarships,
-            'filters'      => ['search' => $search],
+            'filters' => ['search' => $search],
         ]);
     }
 

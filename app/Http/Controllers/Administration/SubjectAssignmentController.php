@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Administration;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubjectAssignmentRequest;
 use App\Http\Requests\UpdateSubjectAssignmentRequest;
 use App\Models\AcademicYear;
@@ -29,16 +29,13 @@ class SubjectAssignmentController extends Controller
         if ($request->filled('search')) {
             $searchTerm = strtolower($request->search);
             $query->where(function ($q) use ($searchTerm): void {
-                $q->whereHas('subject', fn ($q) =>
-                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
+                $q->whereHas('subject', fn ($q) => $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
                 )
-                ->orWhereHas('teacher', fn ($q) =>
-                    $q->whereRaw('LOWER(firstname) LIKE ?', ["%{$searchTerm}%"])
-                      ->orWhereRaw('LOWER(lastname)  LIKE ?', ["%{$searchTerm}%"])
-                )
-                ->orWhereHas('classroom', fn ($q) =>
-                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
-                );
+                    ->orWhereHas('teacher', fn ($q) => $q->whereRaw('LOWER(firstname) LIKE ?', ["%{$searchTerm}%"])
+                        ->orWhereRaw('LOWER(lastname)  LIKE ?', ["%{$searchTerm}%"])
+                    )
+                    ->orWhereHas('classroom', fn ($q) => $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
+                    );
             });
         }
 
@@ -65,14 +62,14 @@ class SubjectAssignmentController extends Controller
             ->withQueryString();
 
         return Inertia::render('Administration/SubjectAssignments/Index', [
-            'assignments'   => $assignments,
+            'assignments' => $assignments,
             'academicYears' => AcademicYear::orderBy('year', 'desc')->get(['id', 'year']),
-            'classrooms'    => Classroom::where('active', true)->orderBy('name')->get(['id', 'name']),
-            'filters'       => [
-                'search'           => $request->input('search', ''),
-                'active'           => $request->input('active'),
+            'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name']),
+            'filters' => [
+                'search' => $request->input('search', ''),
+                'active' => $request->input('active'),
                 'academic_year_id' => (string) ($yearFilter ?? ''),
-                'class_id'         => $request->input('class_id', ''),
+                'class_id' => $request->input('class_id', ''),
             ],
         ]);
     }
@@ -88,34 +85,34 @@ class SubjectAssignmentController extends Controller
             : (string) $this->activeYearId();
 
         $teacherId = (string) $request->input('teacher_id', '');
-        $selected  = $teacherId !== '' && $yearFilter !== '';
+        $selected = $teacherId !== '' && $yearFilter !== '';
 
-        $teacher   = $selected ? User::find($teacherId) : null;
+        $teacher = $selected ? User::find($teacherId) : null;
         $assignments = $selected
             ? $this->teacherAssignments($teacherId, $yearFilter)->map(fn ($a) => [
-                'id'        => $a->id,
-                'subject'   => $a->subject?->name ?? '—',
+                'id' => $a->id,
+                'subject' => $a->subject?->name ?? '—',
                 'classroom' => $a->classroom?->name ?? '—',
-                'active'    => (bool) $a->active,
+                'active' => (bool) $a->active,
             ])
             : collect();
 
         return Inertia::render('Administration/SubjectAssignments/Statistics', [
-            'teachers'      => $this->markTeachers(),
+            'teachers' => $this->markTeachers(),
             'academicYears' => AcademicYear::orderBy('year', 'desc')->get(['id', 'year']),
-            'filters'       => [
+            'filters' => [
                 'academic_year_id' => $yearFilter,
-                'teacher_id'       => $teacherId,
+                'teacher_id' => $teacherId,
             ],
-            'teacher'       => $teacher
-                ? ['id' => $teacher->id, 'name' => trim($teacher->firstname . ' ' . $teacher->lastname)]
+            'teacher' => $teacher
+                ? ['id' => $teacher->id, 'name' => trim($teacher->firstname.' '.$teacher->lastname)]
                 : null,
-            'assignments'   => $assignments->values(),
-            'summary'       => [
-                'total'    => $assignments->count(),
-                'active'   => $assignments->where('active', true)->count(),
+            'assignments' => $assignments->values(),
+            'summary' => [
+                'total' => $assignments->count(),
+                'active' => $assignments->where('active', true)->count(),
                 'subjects' => $assignments->pluck('subject')->unique()->count(),
-                'classes'  => $assignments->pluck('classroom')->unique()->count(),
+                'classes' => $assignments->pluck('classroom')->unique()->count(),
             ],
         ]);
     }
@@ -126,27 +123,27 @@ class SubjectAssignmentController extends Controller
     public function exportStatistics(Request $request)
     {
         $validated = $request->validate([
-            'teacher_id'       => ['required', 'uuid', 'exists:users,id'],
+            'teacher_id' => ['required', 'uuid', 'exists:users,id'],
             'academic_year_id' => ['nullable', 'uuid', 'exists:academic_years,id'],
         ]);
 
-        $yearId  = (string) ($validated['academic_year_id'] ?? $this->activeYearId());
-        $year    = AcademicYear::find($yearId);
+        $yearId = (string) ($validated['academic_year_id'] ?? $this->activeYearId());
+        $year = AcademicYear::find($yearId);
         $teacher = User::findOrFail($validated['teacher_id']);
 
-        $school   = School::where('active', true)->first() ?? School::query()->first();
+        $school = School::where('active', true)->first() ?? School::query()->first();
         $renderer = app(DocumentRenderer::class);
 
         $pdf = Pdf::loadView('exports.subject-assignments', [
-            'school'      => $school,
-            'headerHtml'  => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
-            'headerCss'   => $renderer->headerCss(),
-            'teacher'     => $teacher,
-            'year'        => $year,
+            'school' => $school,
+            'headerHtml' => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
+            'headerCss' => $renderer->headerCss(),
+            'teacher' => $teacher,
+            'year' => $year,
             'assignments' => $this->teacherAssignments($teacher->id, $yearId),
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->stream('affectations-' . Str::slug(trim($teacher->firstname . ' ' . $teacher->lastname) . '-' . ($year?->year ?? '')) . '.pdf');
+        return $pdf->stream('affectations-'.Str::slug(trim($teacher->firstname.' '.$teacher->lastname).'-'.($year?->year ?? '')).'.pdf');
     }
 
     /** Identifiant de l'année académique active (la plus récente marquée active). */
@@ -173,22 +170,22 @@ class SubjectAssignmentController extends Controller
             ->where('teacher_id', $teacherId)
             ->where('academic_year_id', $yearId)
             ->get()
-            ->sortBy(fn ($a) => ($a->subject?->name ?? '') . ' ' . ($a->classroom?->name ?? ''))
+            ->sortBy(fn ($a) => ($a->subject?->name ?? '').' '.($a->classroom?->name ?? ''))
             ->values();
     }
 
     public function create(): Response
     {
-        $subjects      = Subject::orderBy('name')->get();
-        $teachers      = User::permission('create_marks')->orderBy('firstname')->orderBy('lastname')->get();
+        $subjects = Subject::orderBy('name')->get();
+        $teachers = User::permission('create_marks')->orderBy('firstname')->orderBy('lastname')->get();
         $academicYears = AcademicYear::where('active', true)->orderBy('year', 'desc')->get();
-        $classrooms    = Classroom::where('active', true)->orderBy('name')->get();
+        $classrooms = Classroom::where('active', true)->orderBy('name')->get();
 
         return Inertia::render('Administration/SubjectAssignments/Create', [
-            'subjects'      => $subjects,
-            'teachers'      => $teachers,
+            'subjects' => $subjects,
+            'teachers' => $teachers,
             'academicYears' => $academicYears,
-            'classrooms'    => $classrooms,
+            'classrooms' => $classrooms,
         ]);
     }
 
@@ -213,17 +210,17 @@ class SubjectAssignmentController extends Controller
     {
         $subjectAssignment->load(['subject', 'teacher', 'academicYear', 'classroom']);
 
-        $subjects      = Subject::orderBy('name')->get();
-        $teachers      = User::permission('create_marks')->orderBy('firstname')->orderBy('lastname')->get();
+        $subjects = Subject::orderBy('name')->get();
+        $teachers = User::permission('create_marks')->orderBy('firstname')->orderBy('lastname')->get();
         $academicYears = AcademicYear::where('active', true)->orderBy('year', 'desc')->get();
-        $classrooms    = Classroom::where('active', true)->orderBy('name')->get();
+        $classrooms = Classroom::where('active', true)->orderBy('name')->get();
 
         return Inertia::render('Administration/SubjectAssignments/Edit', [
-            'assignment'    => $subjectAssignment,
-            'subjects'      => $subjects,
-            'teachers'      => $teachers,
+            'assignment' => $subjectAssignment,
+            'subjects' => $subjects,
+            'teachers' => $teachers,
             'academicYears' => $academicYears,
-            'classrooms'    => $classrooms,
+            'classrooms' => $classrooms,
         ]);
     }
 

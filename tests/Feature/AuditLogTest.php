@@ -26,7 +26,7 @@ class AuditLogTest extends TestCase
         $user = User::factory()->create();
 
         return Student::create([
-            'user_id' => $user->id, 'matricule' => 'M' . Str::random(6),
+            'user_id' => $user->id, 'matricule' => 'M'.Str::random(6),
             'firstname' => 'Koffi', 'lastname' => 'Mensah', 'gender' => 'male', 'birth_date' => '2010-01-01',
         ]);
     }

@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Constants\Roles;
 use App\Models\Student;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class MatriculeService
+final class MatriculeService
 {
     /** Préfixes par défaut (surchargés/étendus par config('matricule.role_prefixes')). */
     protected const ROLE_PREFIXES = [
         Roles::ADMINISTRATOR => 'ADM',
-        Roles::DIRECTOR      => 'DIR',
-        Roles::TEACHER       => 'PROF',
-        Roles::ACCOUNTING    => 'COMPT',
-        Roles::SECRETARIAT   => 'SEC',
+        Roles::DIRECTOR => 'DIR',
+        Roles::TEACHER => 'PROF',
+        Roles::ACCOUNTING => 'COMPT',
+        Roles::SECRETARIAT => 'SEC',
     ];
 
     /**
@@ -32,20 +33,20 @@ class MatriculeService
 
     public function generateUserMatricule(string $role): string
     {
-        $prefix   = self::rolePrefixes()[$role] ?? 'USR';
-        $year     = date('y');
+        $prefix = self::rolePrefixes()[$role] ?? 'USR';
+        $year = date('y');
         $sequence = $this->getNextUserSequence($prefix, $year);
 
-        return "{$prefix}{$year}" . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        return "{$prefix}{$year}".str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
     }
 
     public function generateStudentMatricule(?string $schoolCode = null): string
     {
-        $year       = date('y');
+        $year = date('y');
         $schoolCode = $schoolCode ? substr(strtoupper($schoolCode), 0, 3) : 'ECO';
-        $sequence   = $this->getNextStudentSequence($schoolCode, $year);
+        $sequence = $this->getNextStudentSequence($schoolCode, $year);
 
-        return "{$schoolCode}STU{$year}" . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        return "{$schoolCode}STU{$year}".str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
     }
 
     protected function getNextUserSequence(string $prefix, string $year): int
@@ -58,7 +59,7 @@ class MatriculeService
     protected function getNextStudentSequence(string $schoolCode, string $year): int
     {
         $schoolCode = strtoupper(substr($schoolCode, 0, 3));
-        $pattern    = "{$schoolCode}STU{$year}%";
+        $pattern = "{$schoolCode}STU{$year}%";
 
         // NB : pas de lockForUpdate() (cf. getNextUserSequence) — incompatible avec count() sur PostgreSQL.
         return Student::where('matricule', 'like', $pattern)->count() + 1;
@@ -68,8 +69,8 @@ class MatriculeService
     {
         if (preg_match('/^([A-Z]{3,5})(\d{2})(\d{3})$/', $matricule, $matches)) {
             return [
-                'prefix'   => $matches[1],
-                'year'     => '20' . $matches[2],
+                'prefix' => $matches[1],
+                'year' => '20'.$matches[2],
                 'sequence' => (int) $matches[3],
             ];
         }
@@ -80,7 +81,7 @@ class MatriculeService
     public function generateRandomMatricule(string $prefix = 'USR'): string
     {
         do {
-            $matricule = "{$prefix}-" . time() . '-' . Str::random(8);
+            $matricule = "{$prefix}-".time().'-'.Str::random(8);
         } while (User::where('natricule', $matricule)->exists());
 
         return $matricule;

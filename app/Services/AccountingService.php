@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\AccountingTransaction;
@@ -8,7 +10,7 @@ use App\Models\Payment;
 use App\Models\Payslip;
 use App\Models\StudentScholarship;
 
-class AccountingService
+final class AccountingService
 {
     /**
      * Enregistre la dépense de salaire d'un bulletin (net payé) et débite la
@@ -19,13 +21,13 @@ class AccountingService
         $name = $payslip->payload['employee']['name'] ?? 'Employé';
 
         $transaction = AccountingTransaction::create([
-            'type'             => 'EXPENSE',
-            'amount'           => $payslip->net,
-            'description'      => "Salaire {$periodLabel} — {$name}",
-            'reference_type'   => 'PAYROLL',
-            'reference_id'     => $payslip->id,
-            'cash_account_id'  => $cashAccountId,
-            'created_by'       => auth()->id(),
+            'type' => 'EXPENSE',
+            'amount' => $payslip->net,
+            'description' => "Salaire {$periodLabel} — {$name}",
+            'reference_type' => 'PAYROLL',
+            'reference_id' => $payslip->id,
+            'cash_account_id' => $cashAccountId,
+            'created_by' => auth()->id(),
             'transaction_date' => now(),
         ]);
 
@@ -71,20 +73,20 @@ class AccountingService
     public function recordPaymentTransaction(Payment $payment): AccountingTransaction
     {
         // Récupérer le nom de l'élève pour la description
-        $invoice    = $payment->invoice()->with('enrollment.student')->first();
-        $student    = $invoice?->enrollment?->student;
+        $invoice = $payment->invoice()->with('enrollment.student')->first();
+        $student = $invoice?->enrollment?->student;
         $studentName = $student
             ? "{$student->firstname} {$student->lastname}"
             : 'Élève inconnu';
 
         $transaction = AccountingTransaction::create([
-            'type'             => 'INCOME',
-            'amount'           => $payment->amount,
-            'description'      => "Paiement écolage — {$studentName}",
-            'reference_type'   => 'PAYMENT',
-            'reference_id'     => $payment->id,
-            'cash_account_id'  => $payment->cash_account_id,
-            'created_by'       => auth()->id(),
+            'type' => 'INCOME',
+            'amount' => $payment->amount,
+            'description' => "Paiement écolage — {$studentName}",
+            'reference_type' => 'PAYMENT',
+            'reference_id' => $payment->id,
+            'cash_account_id' => $payment->cash_account_id,
+            'created_by' => auth()->id(),
             'transaction_date' => $payment->paid_at ?? now(),
         ]);
 
@@ -105,7 +107,7 @@ class AccountingService
         StudentScholarship $studentScholarship,
         float $discountAmount
     ): AccountingTransaction {
-        $student     = $studentScholarship->student;
+        $student = $studentScholarship->student;
         $scholarship = $studentScholarship->scholarship;
         $studentName = $student
             ? "{$student->firstname} {$student->lastname}"
@@ -113,12 +115,12 @@ class AccountingService
         $scholarshipName = $scholarship?->name ?? 'Bourse';
 
         return AccountingTransaction::create([
-            'type'             => 'EXPENSE',
-            'amount'           => $discountAmount,
-            'description'      => "Réduction '{$scholarshipName}' accordée à {$studentName}",
-            'reference_type'   => 'SCHOLARSHIP',
-            'reference_id'     => $studentScholarship->id,
-            'created_by'       => auth()->id(),
+            'type' => 'EXPENSE',
+            'amount' => $discountAmount,
+            'description' => "Réduction '{$scholarshipName}' accordée à {$studentName}",
+            'reference_type' => 'SCHOLARSHIP',
+            'reference_id' => $studentScholarship->id,
+            'created_by' => auth()->id(),
             'transaction_date' => now(),
         ]);
     }
@@ -128,20 +130,20 @@ class AccountingService
      */
     public function cancelPaymentTransaction(Payment $payment): AccountingTransaction
     {
-        $invoice     = $payment->invoice()->with('enrollment.student')->first();
-        $student     = $invoice?->enrollment?->student;
+        $invoice = $payment->invoice()->with('enrollment.student')->first();
+        $student = $invoice?->enrollment?->student;
         $studentName = $student
             ? "{$student->firstname} {$student->lastname}"
             : 'Élève inconnu';
 
         $transaction = AccountingTransaction::create([
-            'type'             => 'EXPENSE',
-            'amount'           => $payment->amount,
-            'description'      => "Annulation paiement — {$studentName}",
-            'reference_type'   => 'CANCELLATION',
-            'reference_id'     => $payment->id,
-            'cash_account_id'  => $payment->cash_account_id,
-            'created_by'       => auth()->id(),
+            'type' => 'EXPENSE',
+            'amount' => $payment->amount,
+            'description' => "Annulation paiement — {$studentName}",
+            'reference_type' => 'CANCELLATION',
+            'reference_id' => $payment->id,
+            'cash_account_id' => $payment->cash_account_id,
+            'created_by' => auth()->id(),
             'transaction_date' => now(),
         ]);
 

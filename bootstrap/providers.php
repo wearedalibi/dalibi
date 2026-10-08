@@ -1,7 +1,11 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\FileStorageServiceProvider;
+use App\Providers\FortifyServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\FortifyServiceProvider::class,
-    App\Providers\FileStorageServiceProvider::class,
+    AppServiceProvider::class,
+    FortifyServiceProvider::class,
+    FileStorageServiceProvider::class,
 ];

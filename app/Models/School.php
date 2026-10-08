@@ -16,13 +16,13 @@
 
 namespace App\Models;
 
+use App\Constants\Currencies;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\GradingConfig;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Facades\Storage;
 
 class School extends Model
@@ -61,7 +61,7 @@ class School extends Model
     /** Symbole d'affichage de la monnaie de l'établissement (ex. « FCFA »). */
     public function currencySymbol(): string
     {
-        return \App\Constants\Currencies::symbol($this->currency);
+        return Currencies::symbol($this->currency);
     }
 
     /**

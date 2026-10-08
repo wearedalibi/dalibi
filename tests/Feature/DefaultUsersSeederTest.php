@@ -19,7 +19,7 @@ class DefaultUsersSeederTest extends TestCase
         $this->seed(DefaultUsersSeeder::class);
 
         $expected = [
-            'admin@dalibi.tg'     => Roles::ADMINISTRATOR,
+            'admin@dalibi.tg' => Roles::ADMINISTRATOR,
             'directeur@dalibi.tg' => Roles::DIRECTOR,
             'enseignant@dalibi.tg' => Roles::TEACHER,
             'comptable@dalibi.tg' => Roles::ACCOUNTING,

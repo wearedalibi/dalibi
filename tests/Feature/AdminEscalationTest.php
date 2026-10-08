@@ -38,20 +38,20 @@ class AdminEscalationTest extends TestCase
     {
         return array_merge([
             'firstname' => $user->firstname,
-            'lastname'  => $user->lastname,
-            'email'     => $user->email,
-            'gender'    => 'male',
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'gender' => 'male',
         ], $overrides);
     }
 
     public function test_secretary_cannot_reset_an_administrator_password(): void
     {
-        $admin     = $this->withRole(Roles::ADMINISTRATOR);
+        $admin = $this->withRole(Roles::ADMINISTRATOR);
         $secretary = $this->withRole(Roles::SECRETARIAT);
 
         $this->actingAs($secretary)
             ->put(route('users.update', $admin), $this->payload($admin, [
-                'password'              => 'MotDePasse-Pirate-2026',
+                'password' => 'MotDePasse-Pirate-2026',
                 'password_confirmation' => 'MotDePasse-Pirate-2026',
             ]))
             ->assertForbidden();
@@ -62,7 +62,7 @@ class AdminEscalationTest extends TestCase
 
     public function test_administrator_can_still_edit_another_administrator(): void
     {
-        $actor  = $this->withRole(Roles::ADMINISTRATOR);
+        $actor = $this->withRole(Roles::ADMINISTRATOR);
         $target = $this->withRole(Roles::ADMINISTRATOR);
 
         $this->actingAs($actor)
@@ -74,12 +74,12 @@ class AdminEscalationTest extends TestCase
 
     public function test_password_set_by_someone_else_must_be_changed_at_next_login(): void
     {
-        $admin   = $this->withRole(Roles::ADMINISTRATOR);
+        $admin = $this->withRole(Roles::ADMINISTRATOR);
         $teacher = $this->withRole(Roles::TEACHER);
 
         $this->actingAs($admin)
             ->put(route('users.update', $teacher), $this->payload($teacher, [
-                'password'              => 'Nouveau-MotDePasse-2026',
+                'password' => 'Nouveau-MotDePasse-2026',
                 'password_confirmation' => 'Nouveau-MotDePasse-2026',
             ]))
             ->assertRedirect();
@@ -90,7 +90,7 @@ class AdminEscalationTest extends TestCase
     public function test_secretary_cannot_grant_roles(): void
     {
         $secretary = $this->withRole(Roles::SECRETARIAT);
-        $teacher   = $this->withRole(Roles::TEACHER);
+        $teacher = $this->withRole(Roles::TEACHER);
         $adminRole = Role::findByName(Roles::ADMINISTRATOR);
 
         $this->actingAs($secretary)
@@ -105,13 +105,13 @@ class AdminEscalationTest extends TestCase
 
     public function test_administrator_role_cannot_be_stripped_of_its_permissions(): void
     {
-        $admin     = $this->withRole(Roles::ADMINISTRATOR);
+        $admin = $this->withRole(Roles::ADMINISTRATOR);
         $adminRole = Role::findByName(Roles::ADMINISTRATOR);
-        $before    = $adminRole->permissions()->count();
+        $before = $adminRole->permissions()->count();
 
         $this->actingAs($admin)
             ->put(route('roles.update', $adminRole), [
-                'name'        => 'administrateur',
+                'name' => 'administrateur',
                 'description' => 'Tentative',
                 'permissions' => [],
             ])

@@ -20,7 +20,7 @@ class InvoiceItem extends Model
     ];
 
     protected $casts = [
-        'amount'     => 'float',
+        'amount' => 'float',
         'sort_order' => 'integer',
     ];
 

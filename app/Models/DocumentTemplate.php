@@ -34,14 +34,14 @@ class DocumentTemplate extends Model
         'header_enabled' => 'boolean',
         'footer_enabled' => 'boolean',
         'show_signature' => 'boolean',
-        'is_default'     => 'boolean',
-        'is_active'      => 'boolean',
+        'is_default' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     /** Sources de corps possibles. */
     public const SOURCES = [
         'wysiwyg' => 'Éditeur libre',
-        'blade'   => 'Mise en page prédéfinie',
+        'blade' => 'Mise en page prédéfinie',
     ];
 
     /**
@@ -51,34 +51,34 @@ class DocumentTemplate extends Model
      * (jamais un chemin libre → aucun rendu de vue arbitraire, aucune RCE).
      */
     public const LAYOUTS = [
-        'certificat_scolarite'       => 'Certificat de scolarité',
-        'certificat_sortie'          => 'Certificat de sortie / radiation',
-        'attestation_frequentation'  => 'Attestation de fréquentation',
-        'attestation_inscription'    => 'Attestation d\'inscription',
-        'attestation_reussite'       => 'Attestation de réussite',
+        'certificat_scolarite' => 'Certificat de scolarité',
+        'certificat_sortie' => 'Certificat de sortie / radiation',
+        'attestation_frequentation' => 'Attestation de fréquentation',
+        'attestation_inscription' => 'Attestation d\'inscription',
+        'attestation_reussite' => 'Attestation de réussite',
     ];
 
     /** Catégories de documents. */
     public const CATEGORIES = [
-        'certificat'  => 'Certificats',
+        'certificat' => 'Certificats',
         'attestation' => 'Attestations',
-        'bulletin'    => 'Bulletins',
+        'bulletin' => 'Bulletins',
     ];
 
     /** Types disponibles par catégorie. */
     public const TYPES = [
         'certificat' => [
             'certificat_scolarite' => 'Certificat de scolarité',
-            'certificat_sortie'    => 'Certificat de sortie / radiation',
+            'certificat_sortie' => 'Certificat de sortie / radiation',
         ],
         'attestation' => [
             'attestation_frequentation' => 'Attestation de fréquentation',
-            'attestation_inscription'   => 'Attestation d\'inscription',
-            'attestation_reussite'      => 'Attestation de réussite',
+            'attestation_inscription' => 'Attestation d\'inscription',
+            'attestation_reussite' => 'Attestation de réussite',
         ],
         'bulletin' => [
             'bulletin_trimestriel' => 'Bulletin trimestriel',
-            'bulletin_annuel'      => 'Bulletin annuel',
+            'bulletin_annuel' => 'Bulletin annuel',
         ],
     ];
 

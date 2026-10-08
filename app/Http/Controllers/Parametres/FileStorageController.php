@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Models\FileStorageSetting;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,16 +22,16 @@ class FileStorageController extends Controller
         // Masquer les credentials : on ne renvoie jamais la clé ni le secret en clair.
         return Inertia::render('Parametres/FileStorage', [
             'settings' => [
-                'driver'      => $settings['driver']      ?? 'local',
-                's3_key'      => $this->maskKey($settings['s3_key'] ?? null),
-                's3_secret'   => '',
-                's3_region'   => $settings['s3_region']   ?? '',
-                's3_bucket'   => $settings['s3_bucket']   ?? '',
+                'driver' => $settings['driver'] ?? 'local',
+                's3_key' => $this->maskKey($settings['s3_key'] ?? null),
+                's3_secret' => '',
+                's3_region' => $settings['s3_region'] ?? '',
+                's3_bucket' => $settings['s3_bucket'] ?? '',
                 's3_endpoint' => $settings['s3_endpoint'] ?? '',
-                's3_url'      => $settings['s3_url']      ?? '',
+                's3_url' => $settings['s3_url'] ?? '',
             ],
-            'hasKey'    => !empty($settings['s3_key']),
-            'hasSecret' => !empty($settings['s3_secret']),
+            'hasKey' => ! empty($settings['s3_key']),
+            'hasSecret' => ! empty($settings['s3_secret']),
         ]);
     }
 
@@ -42,13 +42,13 @@ class FileStorageController extends Controller
             return '';
         }
 
-        return str_repeat('•', max(0, strlen($value) - 4)) . substr($value, -4);
+        return str_repeat('•', max(0, strlen($value) - 4)).substr($value, -4);
     }
 
     /** Vrai si la valeur soumise est une nouvelle saisie (ni vide, ni masquée). */
     private function isNewSecret(?string $value): bool
     {
-        return !empty($value) && !str_contains($value, '•');
+        return ! empty($value) && ! str_contains($value, '•');
     }
 
     public function update(Request $request): RedirectResponse
@@ -66,19 +66,19 @@ class FileStorageController extends Controller
 
         // --- Driver S3 ---
         $validated = $request->validate([
-            's3_key'      => ['nullable', 'string'],
-            's3_secret'   => ['nullable', 'string'],
-            's3_region'   => ['required', 'string'],
-            's3_bucket'   => ['required', 'string'],
+            's3_key' => ['nullable', 'string'],
+            's3_secret' => ['nullable', 'string'],
+            's3_region' => ['required', 'string'],
+            's3_bucket' => ['required', 'string'],
             's3_endpoint' => ['nullable', 'url'],
-            's3_url'      => ['nullable', 'url'],
+            's3_url' => ['nullable', 'url'],
         ]);
 
         // Nouvelle valeur fournie ? sinon on conserve celle déjà chiffrée en base.
-        $newKey    = $this->isNewSecret($validated['s3_key'] ?? null);
+        $newKey = $this->isNewSecret($validated['s3_key'] ?? null);
         $newSecret = $this->isNewSecret($validated['s3_secret'] ?? null);
 
-        $effectiveKey    = $newKey    ? $validated['s3_key']    : FileStorageSetting::get('s3_key');
+        $effectiveKey = $newKey ? $validated['s3_key'] : FileStorageSetting::get('s3_key');
         $effectiveSecret = $newSecret ? $validated['s3_secret'] : FileStorageSetting::get('s3_secret');
 
         // Valider la présence des credentials AVANT de basculer le driver.
@@ -94,10 +94,10 @@ class FileStorageController extends Controller
         if ($newSecret) {
             FileStorageSetting::set('s3_secret', $validated['s3_secret']);
         }
-        FileStorageSetting::set('s3_region',   $validated['s3_region']);
-        FileStorageSetting::set('s3_bucket',   $validated['s3_bucket']);
+        FileStorageSetting::set('s3_region', $validated['s3_region']);
+        FileStorageSetting::set('s3_bucket', $validated['s3_bucket']);
         FileStorageSetting::set('s3_endpoint', $validated['s3_endpoint'] ?? null);
-        FileStorageSetting::set('s3_url',      $validated['s3_url'] ?? null);
+        FileStorageSetting::set('s3_url', $validated['s3_url'] ?? null);
         FileStorageSetting::set('driver', 's3');
 
         FileStorageSetting::flushCache();
@@ -105,7 +105,7 @@ class FileStorageController extends Controller
         return back()->with('message', 'Configuration de stockage mise à jour.');
     }
 
-    public function test(Request $request): \Illuminate\Http\JsonResponse
+    public function test(Request $request): JsonResponse
     {
         abort_unless($request->user()->can('manage_file_storage'), 403);
 
@@ -118,7 +118,7 @@ class FileStorageController extends Controller
                 $disk = Storage::disk('public');
             }
 
-            $testFile = 'dalibi-storage-test-' . time() . '.txt';
+            $testFile = 'dalibi-storage-test-'.time().'.txt';
             $disk->put($testFile, 'ok');
             $disk->delete($testFile);
 

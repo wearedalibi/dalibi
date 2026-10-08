@@ -16,9 +16,7 @@ use Illuminate\Http\Request;
 
 class GradeController extends ApiController
 {
-    public function __construct(private readonly GradingService $grading)
-    {
-    }
+    public function __construct(private readonly GradingService $grading) {}
 
     public function index(Request $request, string $student): JsonResponse
     {
@@ -53,31 +51,31 @@ class GradeController extends ApiController
                 ->get();
 
             $subjects = $classSubjects->map(fn ($cs) => [
-                'subject'     => $cs->subject?->name,
+                'subject' => $cs->subject?->name,
                 'coefficient' => (float) $cs->coefficient,
-                'score'       => $cs->grades->first()?->score !== null ? (float) $cs->grades->first()->score : null,
-                'rank'        => $this->grading->subjectRanking($cs, $periodId, $config)->get($studentModel->id)['rank'] ?? null,
-                'comment'     => $cs->grades->first()?->comments,
+                'score' => $cs->grades->first()?->score !== null ? (float) $cs->grades->first()->score : null,
+                'rank' => $this->grading->subjectRanking($cs, $periodId, $config)->get($studentModel->id)['rank'] ?? null,
+                'comment' => $cs->grades->first()?->comments,
             ])->values();
 
             if ($enrollment->classroom) {
                 $ranking = $this->grading->classRanking($enrollment->classroom, $periodId, $config);
-                $me      = $ranking->get($studentModel->id);
+                $me = $ranking->get($studentModel->id);
                 $average = $me['average'] ?? null;
-                $rank    = $me['rank'] ?? null;
+                $rank = $me['rank'] ?? null;
                 $mention = $this->grading->mention($average, $config);
             }
         }
 
         return response()->json([
-            'enrolled'   => true,
-            'class'      => $enrollment->classroom?->name,
-            'period_id'  => $periodId,
-            'periods'    => $periods,
-            'average'    => $average,
-            'rank'       => $rank,
-            'mention'    => $mention,
-            'subjects'   => $subjects,
+            'enrolled' => true,
+            'class' => $enrollment->classroom?->name,
+            'period_id' => $periodId,
+            'periods' => $periods,
+            'average' => $average,
+            'rank' => $rank,
+            'mention' => $mention,
+            'subjects' => $subjects,
         ]);
     }
 }

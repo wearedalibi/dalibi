@@ -19,8 +19,7 @@ class MatriculeGenerated
         public string $modelId,
         public string $role, // For users: the role name
         public ?string $registrationNumber = null, // For students
-    ) {
-    }
+    ) {}
 
     /**
      * Get the event's dispatch name.

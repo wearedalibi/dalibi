@@ -40,11 +40,11 @@ return new class extends Migration
                 continue;
             }
 
-            $class       = DB::table('classes')->where('id', $cs->class_id)->first();
-            $yearId      = $cs->academic_year_id ?? null;
+            $class = DB::table('classes')->where('id', $cs->class_id)->first();
+            $yearId = $cs->academic_year_id ?? null;
             $classTypeId = $class->classroom_type_id ?? null;
 
-            $key = ($yearId ?? 'null') . '|' . ($classTypeId ?? 'null');
+            $key = ($yearId ?? 'null').'|'.($classTypeId ?? 'null');
             $periods = $cache[$key] ??= AcademicPeriod::forClassType($yearId, $classTypeId)->values();
 
             $idx = $termIndex[$grade->term] ?? null;

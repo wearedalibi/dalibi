@@ -21,28 +21,28 @@ class BulletinTemplate extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'columns'   => 'array',
-        'options'   => 'array',
+        'columns' => 'array',
+        'options' => 'array',
     ];
 
     /** Types de colonnes disponibles. */
     public const COLUMN_TYPES = [
-        'subject'      => 'Matière',
-        'note'         => 'Note',
-        'coefficient'  => 'Coefficient',
-        'definitive'   => 'Note définitive (moyenne × coef)',
-        'rang'         => 'Rang',
+        'subject' => 'Matière',
+        'note' => 'Note',
+        'coefficient' => 'Coefficient',
+        'definitive' => 'Note définitive (moyenne × coef)',
+        'rang' => 'Rang',
         'appreciation' => 'Appréciation',
-        'teacher'      => 'Professeur',
-        'signature'    => 'Signature',
-        'text'         => 'Texte libre',
+        'teacher' => 'Professeur',
+        'signature' => 'Signature',
+        'text' => 'Texte libre',
     ];
 
     /** Sources fixes pour les colonnes de type « note ». */
     public const NOTE_SOURCES = [
-        'classe'      => 'Note de classe',
+        'classe' => 'Note de classe',
         'composition' => 'Composition',
-        'moyenne'     => 'Moyenne de période',
+        'moyenne' => 'Moyenne de période',
     ];
 
     public function school(): BelongsTo
@@ -73,12 +73,12 @@ class BulletinTemplate extends Model
     public static function defaultOptions(): array
     {
         return [
-            'show_class_stats'     => true,
-            'show_period_recap'    => false,
-            'show_discipline'      => false,
-            'nb_text'              => "Il n'est délivré qu'un seul bulletin.",
+            'show_class_stats' => true,
+            'show_period_recap' => false,
+            'show_discipline' => false,
+            'nb_text' => "Il n'est délivré qu'un seul bulletin.",
             'signataire_titulaire' => 'Le Titulaire',
-            'signataire_chef'      => "Le Chef d'Établissement",
+            'signataire_chef' => "Le Chef d'Établissement",
         ];
     }
 
@@ -104,7 +104,7 @@ class BulletinTemplate extends Model
         }
 
         return new self([
-            'name'    => 'Par défaut',
+            'name' => 'Par défaut',
             'columns' => static::defaultColumns(),
             'options' => static::defaultOptions(),
         ]);

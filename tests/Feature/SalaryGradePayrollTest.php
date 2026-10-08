@@ -31,12 +31,12 @@ class SalaryGradePayrollTest extends TestCase
     private function employee(array $override = []): EmployeeProfile
     {
         return EmployeeProfile::create(array_merge([
-            'user_id'        => User::factory()->create()->id,
-            'job_title'      => 'Enseignant',
-            'contract_type'  => 'CDI',
-            'base_salary'    => 0,
+            'user_id' => User::factory()->create()->id,
+            'job_title' => 'Enseignant',
+            'contract_type' => 'CDI',
+            'base_salary' => 0,
             'payment_method' => 'CASH',
-            'status'         => 'active',
+            'status' => 'active',
         ], $override));
     }
 
@@ -52,7 +52,7 @@ class SalaryGradePayrollTest extends TestCase
         $this->assertEqualsWithDelta(145000, $slip->gross, 0.01);
         $baseLine = collect($slip->payload['lines'])->firstWhere('code', 'BASE');
         $this->assertEqualsWithDelta(145000, $baseLine['amount'], 0.01);
-        $this->assertSame('grade:' . $grade->id, $baseLine['origin']);
+        $this->assertSame('grade:'.$grade->id, $baseLine['origin']);
     }
 
     public function test_traced_allowance_is_added_as_its_own_line(): void
@@ -60,7 +60,7 @@ class SalaryGradePayrollTest extends TestCase
         $admin = $this->admin();
         $this->actingAs($admin);
         $grade = SalaryGrade::create(['name' => 'B2', 'base_amount' => 100000, 'active' => true]);
-        $emp   = $this->employee(['salary_grade_id' => $grade->id]);
+        $emp = $this->employee(['salary_grade_id' => $grade->id]);
         EmployeeAllowance::create([
             'employee_profile_id' => $emp->id, 'type' => 'earning', 'label' => 'Prime de responsabilité',
             'mode' => 'fixed', 'amount' => 20000, 'reason' => 'Chef de département', 'active' => true, 'created_by' => $admin->id,
@@ -80,7 +80,7 @@ class SalaryGradePayrollTest extends TestCase
     {
         $this->actingAs($this->admin());
         $grade = SalaryGrade::create(['name' => 'B2', 'base_amount' => 100000, 'active' => true]);
-        $emp   = $this->employee(['salary_grade_id' => $grade->id]);
+        $emp = $this->employee(['salary_grade_id' => $grade->id]);
         EmployeeAllowance::create(['employee_profile_id' => $emp->id, 'type' => 'deduction', 'label' => 'Avance', 'mode' => 'percent_base', 'amount' => 10, 'active' => true]);
 
         $run = app(PayrollService::class)->generate(7, 2026);
@@ -148,7 +148,7 @@ class SalaryGradePayrollTest extends TestCase
     {
         $this->actingAs($this->admin());
         $grade = SalaryGrade::create(['name' => 'A1', 'base_amount' => 100000, 'active' => true]);
-        $emp   = $this->employee(['salary_grade_id' => $grade->id]);
+        $emp = $this->employee(['salary_grade_id' => $grade->id]);
 
         $this->put(route('salary-grades.employees.sync', $grade->id), ['employee_ids' => []])->assertRedirect();
 
@@ -158,7 +158,7 @@ class SalaryGradePayrollTest extends TestCase
     public function test_allowance_records_its_author_for_traceability(): void
     {
         $admin = $this->admin();
-        $emp   = $this->employee();
+        $emp = $this->employee();
 
         $this->actingAs($admin)
             ->post(route('users.allowances.store', $emp->user_id), [

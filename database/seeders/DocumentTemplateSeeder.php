@@ -31,17 +31,17 @@ class DocumentTemplateSeeder extends Seeder
                 DocumentTemplate::updateOrCreate(
                     ['school_id' => $school->id, 'type' => $type, 'name' => $name],
                     [
-                        'category'        => $category,
-                        'description'     => $description,
-                        'source'          => 'blade',
-                        'layout'          => $type,
+                        'category' => $category,
+                        'description' => $description,
+                        'source' => 'blade',
+                        'layout' => $type,
                         'signatory_title' => 'Le Directeur',
-                        'header_enabled'  => true,
-                        'footer_enabled'  => true,
-                        'show_signature'  => true,
-                        'orientation'     => 'portrait',
-                        'is_default'      => true,
-                        'is_active'       => true,
+                        'header_enabled' => true,
+                        'footer_enabled' => true,
+                        'show_signature' => true,
+                        'orientation' => 'portrait',
+                        'is_default' => true,
+                        'is_active' => true,
                     ],
                 );
             }

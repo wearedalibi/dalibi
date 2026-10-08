@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\BulletinTemplate;
-use App\Models\AcademicPeriod;
 use App\Models\Classroom;
 use App\Models\ClassroomType;
 use App\Models\Enrollment;
@@ -23,32 +23,35 @@ class PortalApiTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private Classroom $class;
+
     private AcademicPeriod $period;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->school = School::factory()->create();
-        $this->year   = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
-        $type         = ClassroomType::factory()->create(['period_system' => 'trimestre']);
-        $this->class  = Classroom::factory()->create(['classroom_type_id' => $type->id]);
+        $this->year = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
+        $type = ClassroomType::factory()->create(['period_system' => 'trimestre']);
+        $this->class = Classroom::factory()->create(['classroom_type_id' => $type->id]);
         $this->period = AcademicPeriod::create(['name' => 'Trimestre 1', 'start_date' => '2025-09-01', 'end_date' => '2025-12-31', 'type' => 'trimestre', 'order' => 1, 'weight' => 1, 'is_current' => true, 'academic_year_id' => $this->year->id, 'class_type_id' => $type->id]);
     }
 
     private function student(): Student
     {
         $u = User::factory()->create();
-        $s = Student::create(['user_id' => $u->id, 'matricule' => 'M' . Str::random(6), 'firstname' => 'A', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2010-01-01']);
-        Enrollment::create(['school_id' => $this->school->id, 'student_id' => $s->id, 'class_id' => $this->class->id, 'academic_year_id' => $this->year->id, 'enrollment_code' => 'E' . Str::random(8), 'enrollment_date' => now(), 'status' => 'ACTIVE']);
+        $s = Student::create(['user_id' => $u->id, 'matricule' => 'M'.Str::random(6), 'firstname' => 'A', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2010-01-01']);
+        Enrollment::create(['school_id' => $this->school->id, 'student_id' => $s->id, 'class_id' => $this->class->id, 'academic_year_id' => $this->year->id, 'enrollment_code' => 'E'.Str::random(8), 'enrollment_date' => now(), 'status' => 'ACTIVE']);
 
         return $s;
     }
 
     private function guardianFor(Student ...$children): Guardian
     {
-        $g = Guardian::create(['first_name' => 'P', 'last_name' => Str::random(5), 'email' => Str::random(8) . '@ex.com', 'is_active' => true]);
+        $g = Guardian::create(['first_name' => 'P', 'last_name' => Str::random(5), 'email' => Str::random(8).'@ex.com', 'is_active' => true]);
         $g->password = 'secret123';
         $g->save();
         $g->children()->attach(collect($children)->pluck('id'));
@@ -86,7 +89,7 @@ class PortalApiTest extends TestCase
 
     public function test_student_can_only_access_self(): void
     {
-        $me    = $this->student();
+        $me = $this->student();
         $other = $this->student();
 
         Sanctum::actingAs($me, ['read']);
@@ -108,7 +111,7 @@ class PortalApiTest extends TestCase
                 'children' => [[
                     'id', 'name', 'matricule', 'class', 'enrolled', 'average', 'rank', 'mention',
                     'attendance' => ['present', 'absent', 'late', 'excused', 'total', 'rate'],
-                    'fees'       => ['billed', 'paid', 'balance'],
+                    'fees' => ['billed', 'paid', 'balance'],
                     'latest_bulletin',
                 ]],
                 'upcoming_events',
@@ -178,7 +181,7 @@ class PortalApiTest extends TestCase
             'academic_period_id' => $this->period->id,
             'class_id' => $this->class->id,
             'academic_year_id' => $this->year->id,
-            'reference' => 'BUL-' . Str::random(6),
+            'reference' => 'BUL-'.Str::random(6),
             'average' => 12.5, 'rank' => 1, 'mention' => 'Bien',
             'locked_at' => now(),
             'payload' => [

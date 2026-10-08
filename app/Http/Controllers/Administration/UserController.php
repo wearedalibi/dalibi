@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Administration;
-use App\Http\Controllers\Controller;
 
+use App\Constants\ContractTypes;
 use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\AcademicYear;
+use App\Models\SalaryGrade;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -17,17 +20,17 @@ class UserController extends Controller
 {
     public function index(): Response
     {
-        $query  = User::query()->with('roles');
-        $roles  = Role::select('id', 'name')->orderBy('name')->get();
+        $query = User::query()->with('roles');
+        $roles = Role::select('id', 'name')->orderBy('name')->get();
 
         $search = request('search');
         $roleId = request('role');
         $gender = request('gender');
 
         $normalizedGender = match ($gender) {
-            'M'     => 'male',
-            'F'     => 'female',
-            'O'     => 'other',
+            'M' => 'male',
+            'F' => 'female',
+            'O' => 'other',
             default => $gender,
         };
 
@@ -35,9 +38,9 @@ class UserController extends Controller
             $searchTerm = strtolower($search);
             $query->where(function ($q) use ($searchTerm): void {
                 $q->whereRaw('LOWER(firstname) LIKE ?', ["%{$searchTerm}%"])
-                  ->orWhereRaw('LOWER(lastname)  LIKE ?', ["%{$searchTerm}%"])
-                  ->orWhereRaw('LOWER(email)     LIKE ?', ["%{$searchTerm}%"])
-                  ->orWhereRaw('LOWER(natricule) LIKE ?', ["%{$searchTerm}%"]);
+                    ->orWhereRaw('LOWER(lastname)  LIKE ?', ["%{$searchTerm}%"])
+                    ->orWhereRaw('LOWER(email)     LIKE ?', ["%{$searchTerm}%"])
+                    ->orWhereRaw('LOWER(natricule) LIKE ?', ["%{$searchTerm}%"]);
             });
         }
 
@@ -55,13 +58,13 @@ class UserController extends Controller
         $users = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
         return Inertia::render('Administration/Users/Index', [
-            'users'   => $users,
-            'roles'   => $roles,
+            'users' => $users,
+            'roles' => $roles,
             'perPage' => $perPage,
             'filters' => [
-                'search'   => $search,
-                'role'     => $roleId,
-                'gender'   => $normalizedGender,
+                'search' => $search,
+                'role' => $roleId,
+                'gender' => $normalizedGender,
                 'per_page' => request('per_page'),
             ],
         ]);
@@ -79,20 +82,20 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $user = User::create([
-            'firstname'  => $request->validated('firstname'),
-            'lastname'   => $request->validated('lastname'),
-            'email'      => $request->validated('email'),
-            'password'   => Hash::make($request->validated('password')),
-            'gender'     => $request->validated('gender'),
+            'firstname' => $request->validated('firstname'),
+            'lastname' => $request->validated('lastname'),
+            'email' => $request->validated('email'),
+            'password' => Hash::make($request->validated('password')),
+            'gender' => $request->validated('gender'),
             'birth_date' => $request->validated('birth_date'),
-            'telephone'  => $request->validated('telephone'),
-            'address'    => $request->validated('address'),
-            'profile'    => $request->validated('profile'),
+            'telephone' => $request->validated('telephone'),
+            'address' => $request->validated('address'),
+            'profile' => $request->validated('profile'),
         ]);
 
         if ($request->has('roles') && auth()->user()->can('manage_roles_permissions')) {
             $roleIds = $request->validated('roles');
-            $roles   = Role::whereIn('id', $roleIds)->pluck('name');
+            $roles = Role::whereIn('id', $roleIds)->pluck('name');
             $user->syncRoles($roles);
         }
 
@@ -102,7 +105,7 @@ class UserController extends Controller
 
     public function show(User $user): Response
     {
-        $activeYear   = \App\Models\AcademicYear::where('active', true)->first(['id', 'year']);
+        $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
         $activeYearId = $activeYear?->id;
 
         $user->load([
@@ -125,10 +128,10 @@ class UserController extends Controller
         ]);
 
         return Inertia::render('Administration/Users/Show', [
-            'user'             => $user,
-            'activeYear'       => $activeYear?->year,
-            'contractTypes'    => \App\Constants\ContractTypes::options(),
-            'salaryGrades'     => \App\Models\SalaryGrade::where('active', true)->orderBy('sort_order')->orderBy('category')->get(['id', 'name', 'base_amount']),
+            'user' => $user,
+            'activeYear' => $activeYear?->year,
+            'contractTypes' => ContractTypes::options(),
+            'salaryGrades' => SalaryGrade::where('active', true)->orderBy('sort_order')->orderBy('category')->get(['id', 'name', 'base_amount']),
             'canManagePayroll' => auth()->user()->can('edit_employees'),
         ]);
     }
@@ -139,7 +142,7 @@ class UserController extends Controller
         $roles = Role::orderBy('name')->get();
 
         return Inertia::render('Administration/Users/Edit', [
-            'user'  => $user,
+            'user' => $user,
             'roles' => $roles,
         ]);
     }
@@ -150,18 +153,18 @@ class UserController extends Controller
         // ils pourraient réinitialiser le mot de passe d'un administrateur et prendre
         // sa place : on aligne `update` sur la protection déjà appliquée à `destroy`.
         if ($user->hasRole(Roles::ADMINISTRATOR) && ! auth()->user()->hasRole(Roles::ADMINISTRATOR)) {
-            abort(403, "Seul un administrateur peut modifier un compte administrateur.");
+            abort(403, 'Seul un administrateur peut modifier un compte administrateur.');
         }
 
         $data = [
-            'firstname'  => $request->validated('firstname'),
-            'lastname'   => $request->validated('lastname'),
-            'email'      => $request->validated('email'),
-            'gender'     => $request->validated('gender'),
+            'firstname' => $request->validated('firstname'),
+            'lastname' => $request->validated('lastname'),
+            'email' => $request->validated('email'),
+            'gender' => $request->validated('gender'),
             'birth_date' => $request->validated('birth_date'),
-            'telephone'  => $request->validated('telephone'),
-            'address'    => $request->validated('address'),
-            'profile'    => $request->validated('profile'),
+            'telephone' => $request->validated('telephone'),
+            'address' => $request->validated('address'),
+            'profile' => $request->validated('profile'),
         ];
 
         if ($request->filled('password')) {
@@ -179,7 +182,7 @@ class UserController extends Controller
 
         if (auth()->user()->can('manage_roles_permissions')) {
             $roleIds = $request->has('roles') ? ($request->validated('roles') ?? []) : [];
-            $roles   = Role::whereIn('id', $roleIds)->pluck('name');
+            $roles = Role::whereIn('id', $roleIds)->pluck('name');
             $user->syncRoles($roles);
         }
 

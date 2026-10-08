@@ -56,8 +56,8 @@ class SchoolCurrencyTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('schools.update', $school), [
-                'name'     => $school->name,
-                'code'     => $school->code,
+                'name' => $school->name,
+                'code' => $school->code,
                 'currency' => 'NGN',
             ])
             ->assertRedirect();
@@ -74,8 +74,8 @@ class SchoolCurrencyTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('schools.update', $school), [
-                'name'     => $school->name,
-                'code'     => $school->code,
+                'name' => $school->name,
+                'code' => $school->code,
                 'currency' => 'ZZZ',
             ])
             ->assertSessionHasErrors('currency');

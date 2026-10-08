@@ -18,9 +18,13 @@ class PromotionTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $y1;
+
     private AcademicYear $y2;
+
     private Classroom $c1;
+
     private Classroom $c2;
 
     protected function setUp(): void
@@ -52,7 +56,7 @@ class PromotionTest extends TestCase
 
         return Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $student->id, 'class_id' => $class->id,
-            'academic_year_id' => $year->id, 'enrollment_code' => 'INS-' . $mat, 'enrollment_date' => '2024-09-02',
+            'academic_year_id' => $year->id, 'enrollment_code' => 'INS-'.$mat, 'enrollment_date' => '2024-09-02',
             'status' => 'ACTIVE', 'academic_status' => $academic,
         ]);
     }
@@ -70,17 +74,17 @@ class PromotionTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('promotion.store'), [
-                'target_year_id'  => $this->y2->id,
+                'target_year_id' => $this->y2->id,
                 'target_class_id' => $this->c2->id,
-                'student_ids'     => [$e->student_id],
+                'student_ids' => [$e->student_id],
             ])
             ->assertRedirect();
 
         $this->assertDatabaseHas('enrollments', [
-            'student_id'       => $e->student_id,
+            'student_id' => $e->student_id,
             'academic_year_id' => $this->y2->id,
-            'class_id'         => $this->c2->id,
-            'academic_status'  => 'en_cours',
+            'class_id' => $this->c2->id,
+            'academic_status' => 'en_cours',
         ]);
     }
 
@@ -96,9 +100,9 @@ class PromotionTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('promotion.store'), [
-                'target_year_id'  => $this->y2->id,
+                'target_year_id' => $this->y2->id,
                 'target_class_id' => $this->c2->id,
-                'student_ids'     => [$e->student_id],
+                'student_ids' => [$e->student_id],
             ]);
 
         // Pas de doublon : une seule inscription dans l'année cible

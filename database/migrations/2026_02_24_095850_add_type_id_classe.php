@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-                Schema::table('classes', function (Blueprint $table) {
-            if (!Schema::hasColumn('classes', 'classroom_type_id')) {
+        Schema::table('classes', function (Blueprint $table) {
+            if (! Schema::hasColumn('classes', 'classroom_type_id')) {
                 $table->uuid('classroom_type_id')->nullable()->after('capacity');
                 $table->foreign('classroom_type_id')
                     ->references('id')
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-                Schema::table('classes', function (Blueprint $table) {
+        Schema::table('classes', function (Blueprint $table) {
             if (Schema::hasColumn('classes', 'classroom_type_id')) {
                 $table->dropForeign(['classroom_type_id']);
                 $table->dropColumn('classroom_type_id');

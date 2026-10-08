@@ -15,7 +15,7 @@ return new class extends Migration
         if (Schema::hasTable('users') && Schema::hasColumn('users', 'natricule')) {
             Schema::table('users', function (Blueprint $table) {
                 // Check if index doesn't already exist
-                if (!Schema::hasIndex('users', 'users_natricule_unique')) {
+                if (! Schema::hasIndex('users', 'users_natricule_unique')) {
                     $table->unique('natricule')->index();
                 }
             });
@@ -24,7 +24,7 @@ return new class extends Migration
         // Add unique index to registration_number column in students table
         if (Schema::hasTable('students') && Schema::hasColumn('students', 'registration_number')) {
             Schema::table('students', function (Blueprint $table) {
-                if (!Schema::hasIndex('students', 'students_registration_number_unique')) {
+                if (! Schema::hasIndex('students', 'students_registration_number_unique')) {
                     $table->unique('registration_number')->index();
                 }
             });

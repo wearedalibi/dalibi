@@ -31,10 +31,15 @@ class BulletinTemplateTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private ClassroomType $type;
+
     private Classroom $class;
+
     private AcademicPeriod $period;
+
     private ClassSubject $cs;
 
     protected function setUp(): void
@@ -46,9 +51,9 @@ class BulletinTemplateTest extends TestCase
         // Ces tests pilotent explicitement la résolution des modèles : on repart du
         // modèle par défaut provisionné à la création de l'école.
         BulletinTemplate::where('school_id', $this->school->id)->delete();
-        $this->year   = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
-        $this->type   = ClassroomType::factory()->create(['period_system' => 'trimestre']);
-        $this->class  = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
+        $this->year = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
+        $this->type = ClassroomType::factory()->create(['period_system' => 'trimestre']);
+        $this->class = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
         $this->period = AcademicPeriod::create([
             'name' => 'Trimestre 1', 'start_date' => '2025-09-01', 'end_date' => '2025-12-31',
             'type' => 'trimestre', 'order' => 1, 'weight' => 1, 'is_current' => true,
@@ -82,7 +87,7 @@ class BulletinTemplateTest extends TestCase
 
         // Modèle avec une colonne liée au type Interrogation
         $columns = BulletinTemplate::defaultColumns();
-        array_splice($columns, 1, 0, [['key' => 'interro', 'label' => 'Interro', 'width' => 9, 'type' => 'note', 'source' => 'type:' . $interro->id]]);
+        array_splice($columns, 1, 0, [['key' => 'interro', 'label' => 'Interro', 'width' => 9, 'type' => 'note', 'source' => 'type:'.$interro->id]]);
         BulletinTemplate::create([
             'school_id' => $this->school->id, 'classroom_type_id' => null, 'name' => 'Avec Interro',
             'is_active' => true, 'columns' => $columns, 'options' => BulletinTemplate::defaultOptions(),
@@ -111,7 +116,7 @@ class BulletinTemplateTest extends TestCase
         $continu = EvaluationType::create(['name' => 'Devoir', 'category' => 'continu']);
 
         $parent = Subject::create(['name' => 'Français', 'code' => 'FR']);
-        $child  = Subject::create(['name' => 'Dictée', 'code' => 'DICT', 'parent_id' => $parent->id]);
+        $child = Subject::create(['name' => 'Dictée', 'code' => 'DICT', 'parent_id' => $parent->id]);
         $childCs = ClassSubject::create([
             'class_id' => $this->class->id, 'subject_id' => $child->id,
             'coefficient' => 1, 'academic_year_id' => $this->year->id,
@@ -155,10 +160,10 @@ class BulletinTemplateTest extends TestCase
 
         $this->actingAs($admin)->put(route('bulletins.update', $card->id), [
             'appreciations' => [0 => 'Bon travail'],
-            'observations'  => 'RAS',
-            'decision'      => 'Félicitations',
-            'punitions'     => 2,
-            'exclusions'    => 0,
+            'observations' => 'RAS',
+            'decision' => 'Félicitations',
+            'punitions' => 2,
+            'exclusions' => 0,
         ])->assertRedirect();
 
         $card->refresh();
@@ -179,10 +184,10 @@ class BulletinTemplateTest extends TestCase
     private function student(): Student
     {
         $u = User::factory()->create();
-        $s = Student::create(['user_id' => $u->id, 'matricule' => 'M' . Str::random(6), 'firstname' => 'P', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2010-01-01']);
+        $s = Student::create(['user_id' => $u->id, 'matricule' => 'M'.Str::random(6), 'firstname' => 'P', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2010-01-01']);
         Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $s->id, 'class_id' => $this->class->id,
-            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E' . Str::random(8), 'enrollment_date' => now(), 'status' => 'ACTIVE',
+            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E'.Str::random(8), 'enrollment_date' => now(), 'status' => 'ACTIVE',
         ]);
 
         return $s;

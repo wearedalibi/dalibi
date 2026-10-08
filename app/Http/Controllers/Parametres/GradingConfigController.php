@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGradingConfigRequest;
 use App\Http\Requests\UpdateGradingConfigRequest;
 use App\Models\ClassroomType;
@@ -33,9 +32,9 @@ class GradingConfigController extends Controller
         $schools = School::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Parametres/GradingConfigs/Index', [
-            'configs'  => $configs,
-            'schools'  => $schools,
-            'filters'  => ['school_id' => $schoolId],
+            'configs' => $configs,
+            'schools' => $schools,
+            'filters' => ['school_id' => $schoolId],
         ]);
     }
 
@@ -46,10 +45,10 @@ class GradingConfigController extends Controller
         $schools = School::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Parametres/GradingConfigs/Create', [
-            'schools'            => $schools,
-            'classroomTypes'     => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
-            'defaultMentions'    => GradingConfig::defaultMentions(),
-            'preselectedSchoolId'=> $request->string('school_id')->toString() ?: null,
+            'schools' => $schools,
+            'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
+            'defaultMentions' => GradingConfig::defaultMentions(),
+            'preselectedSchoolId' => $request->string('school_id')->toString() ?: null,
         ]);
     }
 
@@ -68,9 +67,9 @@ class GradingConfigController extends Controller
         $schools = School::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Parametres/GradingConfigs/Edit', [
-            'config'          => $gradingConfig->load('school:id,name'),
-            'schools'         => $schools,
-            'classroomTypes'  => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
+            'config' => $gradingConfig->load('school:id,name'),
+            'schools' => $schools,
+            'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
             'defaultMentions' => GradingConfig::defaultMentions(),
         ]);
     }

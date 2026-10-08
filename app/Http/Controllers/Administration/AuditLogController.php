@@ -15,8 +15,8 @@ class AuditLogController extends Controller
         abort_unless($request->user()->can('view_audit_logs'), 403);
 
         $search = trim((string) $request->query('search', ''));
-        $event  = (string) $request->query('event', '');
-        $type   = (string) $request->query('type', '');
+        $event = (string) $request->query('event', '');
+        $type = (string) $request->query('type', '');
 
         $logs = AuditLog::query()
             ->with('user:id,firstname,lastname')
@@ -27,12 +27,12 @@ class AuditLogController extends Controller
             ->paginate(25)
             ->withQueryString()
             ->through(fn (AuditLog $log) => [
-                'id'         => $log->id,
-                'event'      => $log->event,
-                'entity'     => $log->entityType(),
-                'label'      => $log->label,
-                'user'       => $log->user ? trim($log->user->firstname . ' ' . $log->user->lastname) : null,
-                'changes'    => $this->summarizeChanges($log),
+                'id' => $log->id,
+                'event' => $log->event,
+                'entity' => $log->entityType(),
+                'label' => $log->label,
+                'user' => $log->user ? trim($log->user->firstname.' '.$log->user->lastname) : null,
+                'changes' => $this->summarizeChanges($log),
                 'ip_address' => $log->ip_address,
                 'created_at' => $log->created_at?->format('d/m/Y H:i'),
             ]);
@@ -44,8 +44,8 @@ class AuditLogController extends Controller
             ->sort();
 
         return Inertia::render('Administration/AuditLogs/Index', [
-            'logs'    => $logs,
-            'types'   => $types,
+            'logs' => $logs,
+            'types' => $types,
             'filters' => ['search' => $search, 'event' => $event, 'type' => $type],
         ]);
     }
@@ -58,8 +58,8 @@ class AuditLogController extends Controller
         return collect($keys)->map(function (string $key) use ($log) {
             return [
                 'field' => $key,
-                'old'   => $this->stringify($log->old_values[$key] ?? null),
-                'new'   => $this->stringify($log->new_values[$key] ?? null),
+                'old' => $this->stringify($log->old_values[$key] ?? null),
+                'new' => $this->stringify($log->new_values[$key] ?? null),
             ];
         })->all();
     }

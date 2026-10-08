@@ -28,11 +28,11 @@ class EnrollmentStatusTest extends TestCase
 
     private function enrollment(string $status = Enrollment::STATUS_ACTIVE): Enrollment
     {
-        $suffix = 'S' . str_pad((string) ++$this->seq, 3, '0', STR_PAD_LEFT);
+        $suffix = 'S'.str_pad((string) ++$this->seq, 3, '0', STR_PAD_LEFT);
 
         // Contexte partagé : une seule école / année / classe pour tout le test.
         $school = School::query()->first() ?? School::factory()->create();
-        $year   = AcademicYear::query()->first() ?? AcademicYear::create([
+        $year = AcademicYear::query()->first() ?? AcademicYear::create([
             'year' => '2025-2026', 'start_date' => '2025-09-01',
             'end_date' => '2026-07-31', 'active' => true,
         ]);
@@ -47,7 +47,7 @@ class EnrollmentStatusTest extends TestCase
         return Enrollment::create([
             'school_id' => $school->id, 'student_id' => $student->id,
             'class_id' => $class->id, 'academic_year_id' => $year->id,
-            'enrollment_code' => 'ENR-' . $suffix, 'enrollment_date' => '2025-09-02',
+            'enrollment_code' => 'ENR-'.$suffix, 'enrollment_date' => '2025-09-02',
             'status' => $status,
         ]);
     }

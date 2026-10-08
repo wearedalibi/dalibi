@@ -22,9 +22,9 @@ class SalaryGrade extends Model
 
     protected $casts = [
         'base_amount' => 'float',
-        'echelon'     => 'integer',
-        'active'      => 'boolean',
-        'sort_order'  => 'integer',
+        'echelon' => 'integer',
+        'active' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     public function employeeProfiles(): HasMany

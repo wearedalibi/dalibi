@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Comptabilite;
-use App\Http\Controllers\Controller;
 
 use App\Constants\ExpenseCategories;
+use App\Http\Controllers\Controller;
 use App\Models\AccountingTransaction;
 use App\Models\CashAccount;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,7 +24,7 @@ class TransactionController extends Controller
             ->when($request->date_to, fn ($q) => $q->whereDate('transaction_date', '<=', $request->date_to))
             ->orderByDesc('transaction_date');
 
-        $perPage      = in_array((int) $request->per_page, [10, 25, 50, 100], true)
+        $perPage = in_array((int) $request->per_page, [10, 25, 50, 100], true)
             ? (int) $request->per_page
             : 25;
 
@@ -56,11 +55,11 @@ class TransactionController extends Controller
         return Inertia::render('Comptabilite/Accounting/Transactions', [
             'transactions' => $transactions,
             'cashAccounts' => CashAccount::where('active', true)->orderBy('name')->get(['id', 'name', 'type']),
-            'cashSummary'  => $cashSummary,
-            'categories'   => ExpenseCategories::options(),
-            'totals'       => $totals,
-            'filters'      => $request->only(['type', 'reference_type', 'category', 'cash_account_id', 'date_from', 'date_to', 'per_page']),
-            'perPage'      => $perPage,
+            'cashSummary' => $cashSummary,
+            'categories' => ExpenseCategories::options(),
+            'totals' => $totals,
+            'filters' => $request->only(['type', 'reference_type', 'category', 'cash_account_id', 'date_from', 'date_to', 'per_page']),
+            'perPage' => $perPage,
         ]);
     }
 }

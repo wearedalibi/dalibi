@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\BulletinTemplate;
@@ -11,15 +13,13 @@ use App\Models\School;
  * Rend un bulletin scolaire à partir d'un modèle de colonnes configurable
  * (figé dans le snapshot {@see ReportCard}), coiffé de l'en-tête et du filigrane configurables.
  */
-class BulletinRenderer
+final class BulletinRenderer
 {
-    public function __construct(private readonly DocumentRenderer $documents)
-    {
-    }
+    public function __construct(private readonly DocumentRenderer $documents) {}
 
     public function render(ReportCard $reportCard, School $school): string
     {
-        $css  = $this->css();
+        $css = $this->css();
         $body = $this->documentBody($reportCard, $school);
 
         return <<<HTML
@@ -38,10 +38,10 @@ class BulletinRenderer
      */
     public function renderClass(iterable $cards, School $school): string
     {
-        $css   = $this->css();
+        $css = $this->css();
         $pages = [];
         foreach ($cards as $card) {
-            $pages[] = '<div class="bul-page">' . $this->documentBody($card, $school) . '</div>';
+            $pages[] = '<div class="bul-page">'.$this->documentBody($card, $school).'</div>';
         }
         $content = implode("\n", $pages);
 
@@ -57,27 +57,27 @@ class BulletinRenderer
     /** Contenu d'un bulletin (hors &lt;html&gt;/&lt;head&gt;) : filigrane, en-tête, tableau, pied. */
     private function documentBody(ReportCard $reportCard, School $school): string
     {
-        $p        = $reportCard->payload;
-        $columns  = $p['template']['columns'] ?? BulletinTemplate::defaultColumns();
-        $options  = $p['template']['options'] ?? BulletinTemplate::defaultOptions();
+        $p = $reportCard->payload;
+        $columns = $p['template']['columns'] ?? BulletinTemplate::defaultColumns();
+        $options = $p['template']['options'] ?? BulletinTemplate::defaultOptions();
         $periodLb = ($p['period']['system'] ?? 'trimestre') === 'semestre' ? 'Sem.' : 'Trim.';
 
         $variables = $this->documents->resolveVariables($school, $reportCard->student);
-        $header    = $this->documents->headerHtml($school, $variables);
+        $header = $this->documents->headerHtml($school, $variables);
         $watermark = $this->documents->watermarkHtml($school, $variables);
 
         $head = '';
         foreach ($columns as $col) {
             $label = e(str_replace('{periode}', $periodLb, $col['label'] ?? ''));
             $align = $this->isLeft($col) ? 'left' : 'center';
-            $width = isset($col['width']) ? 'width:' . (float) $col['width'] . '%;' : '';
+            $width = isset($col['width']) ? 'width:'.(float) $col['width'].'%;' : '';
             $head .= "<th class=\"{$align}\" style=\"{$width}\">{$label}</th>";
         }
 
-        $body  = $this->bodyRows($columns, $p);
-        $info  = $this->infoBlock($p);
-        $foot  = $this->footBlock($p, $options);
-        $title = e(mb_strtoupper('Bulletin — ' . ($p['period']['name'] ?? '')));
+        $body = $this->bodyRows($columns, $p);
+        $info = $this->infoBlock($p);
+        $foot = $this->footBlock($p, $options);
+        $title = e(mb_strtoupper('Bulletin — '.($p['period']['name'] ?? '')));
 
         return <<<HTML
             {$watermark}
@@ -107,9 +107,9 @@ class BulletinRenderer
             }
         }
 
-        $multi   = count($keys) > 1;
+        $multi = count($keys) > 1;
         $colspan = count($columns);
-        $html    = '';
+        $html = '';
 
         foreach ($keys as $g) {
             if ($multi) {
@@ -123,16 +123,16 @@ class BulletinRenderer
             foreach ($grouped[$g] as $line) {
                 $parent = $line['parent'] ?? null;
                 if ($parent && $parent !== $lastParent) {
-                    $html .= "<tr class=\"bul-subhead\"><td class=\"left\" colspan=\"{$colspan}\">" . e($parent) . '</td></tr>';
+                    $html .= "<tr class=\"bul-subhead\"><td class=\"left\" colspan=\"{$colspan}\">".e($parent).'</td></tr>';
                 }
                 $lastParent = $parent;
 
-                $html .= '<tr>' . $this->cells($columns, $line) . '</tr>';
+                $html .= '<tr>'.$this->cells($columns, $line).'</tr>';
                 $tc += (float) ($line['coefficient'] ?? 0);
                 $tp += (float) ($line['definitive'] ?? 0);
             }
 
-            $totalLabel = $multi ? 'TOTAL ' . ($g === 'facultatif' ? '(facult.)' : '(oblig.)') : 'TOTAL';
+            $totalLabel = $multi ? 'TOTAL '.($g === 'facultatif' ? '(facult.)' : '(oblig.)') : 'TOTAL';
             $html .= $this->totalRow($columns, $tc, $tp, $totalLabel);
         }
 
@@ -143,10 +143,10 @@ class BulletinRenderer
     {
         $cells = '';
         foreach ($columns as $col) {
-            $align  = $this->isLeft($col) ? 'left' : 'center';
+            $align = $this->isLeft($col) ? 'left' : 'center';
             $strong = ($col['type'] ?? '') === 'note' && ($col['source'] ?? '') === 'moyenne' ? ' strong' : '';
-            $small  = in_array($col['type'] ?? '', ['appreciation', 'teacher'], true) ? ' small' : '';
-            $cells .= "<td class=\"{$align}{$strong}{$small}\">" . $this->cell($line, $col) . '</td>';
+            $small = in_array($col['type'] ?? '', ['appreciation', 'teacher'], true) ? ' small' : '';
+            $cells .= "<td class=\"{$align}{$strong}{$small}\">".$this->cell($line, $col).'</td>';
         }
 
         return $cells;
@@ -158,16 +158,17 @@ class BulletinRenderer
         $first = true;
         foreach ($columns as $col) {
             if ($first) {
-                $cells .= '<td class="left strong">' . e($label) . '</td>';
+                $cells .= '<td class="left strong">'.e($label).'</td>';
                 $first = false;
+
                 continue;
             }
             $value = match ($col['type'] ?? '') {
                 'coefficient' => $this->num($totalCoeff),
-                'definitive'  => $this->num($totalPoints),
-                default       => '',
+                'definitive' => $this->num($totalPoints),
+                default => '',
             };
-            $cells .= '<td class="center strong">' . $value . '</td>';
+            $cells .= '<td class="center strong">'.$value.'</td>';
         }
 
         return "<tr class=\"bul-total-row\">{$cells}</tr>";
@@ -180,19 +181,19 @@ class BulletinRenderer
 
     private function cell(array $line, array $col): string
     {
-        $type   = $col['type'] ?? 'text';
+        $type = $col['type'] ?? 'text';
         $source = $col['source'] ?? null;
 
         return match ($type) {
-            'subject'      => (! empty($line['parent']) ? '» ' : '') . e($line['subject'] ?? ''),
-            'coefficient'  => $this->num($line['coefficient'] ?? null),
-            'definitive'   => $this->num($line['definitive'] ?? null),
-            'rang'         => $line['rang'] !== null ? e($this->ordinal((int) $line['rang'])) : '',
+            'subject' => (! empty($line['parent']) ? '» ' : '').e($line['subject'] ?? ''),
+            'coefficient' => $this->num($line['coefficient'] ?? null),
+            'definitive' => $this->num($line['definitive'] ?? null),
+            'rang' => $line['rang'] !== null ? e($this->ordinal((int) $line['rang'])) : '',
             'appreciation' => e($line['appreciation'] ?? ''),
-            'teacher'      => e($line['teacher'] ?? ''),
+            'teacher' => e($line['teacher'] ?? ''),
             'signature', 'text' => '',
-            'note'         => $this->noteValue($line, $source),
-            default        => '',
+            'note' => $this->noteValue($line, $source),
+            default => '',
         };
     }
 
@@ -214,10 +215,10 @@ class BulletinRenderer
 
     private function infoBlock(array $p): string
     {
-        $eleve    = e($p['student']['name'] ?? '');
-        $classe   = e($p['class']['name'] ?? '');
+        $eleve = e($p['student']['name'] ?? '');
+        $classe = e($p['class']['name'] ?? '');
         $effectif = e((string) ($p['effectif'] ?? ''));
-        $annee    = e($p['year'] ?? '');
+        $annee = e($p['year'] ?? '');
 
         return <<<HTML
         <table class="bul-info">
@@ -233,26 +234,26 @@ class BulletinRenderer
 
     private function footBlock(array $p, array $options): string
     {
-        $average  = $this->num($p['average'] ?? null);
-        $rank     = isset($p['rank']) && $p['rank'] !== null ? e($this->ordinal((int) $p['rank'])) : '—';
+        $average = $this->num($p['average'] ?? null);
+        $rank = isset($p['rank']) && $p['rank'] !== null ? e($this->ordinal((int) $p['rank'])) : '—';
         $effectif = e((string) ($p['effectif'] ?? ''));
-        $mention  = e($p['mention'] ?? '—');
-        $obs      = e($p['observations'] ?? '');
-        $nb       = e($options['nb_text'] ?? '');
+        $mention = e($p['mention'] ?? '—');
+        $obs = e($p['observations'] ?? '');
+        $nb = e($options['nb_text'] ?? '');
         $titulaire = e($options['signataire_titulaire'] ?? 'Le Titulaire');
-        $chef      = e($options['signataire_chef'] ?? "Le Chef d'Établissement");
+        $chef = e($options['signataire_chef'] ?? "Le Chef d'Établissement");
 
         $stats = '';
         if (! empty($options['show_class_stats']) && ! empty($p['class_stats'])) {
             $cs = $p['class_stats'];
-            $stats = '<div class="bul-stats">Moyenne la plus forte : <strong>' . $this->num($cs['highest'] ?? null) . '/20</strong>'
-                . ' — la plus faible : <strong>' . $this->num($cs['lowest'] ?? null) . '/20</strong>'
-                . ' — moyenne de la classe : <strong>' . $this->num($cs['average'] ?? null) . '/20</strong></div>';
+            $stats = '<div class="bul-stats">Moyenne la plus forte : <strong>'.$this->num($cs['highest'] ?? null).'/20</strong>'
+                .' — la plus faible : <strong>'.$this->num($cs['lowest'] ?? null).'/20</strong>'
+                .' — moyenne de la classe : <strong>'.$this->num($cs['average'] ?? null).'/20</strong></div>';
         }
 
         $discipline = ! empty($options['show_discipline']) ? $this->disciplineBlock($p) : '';
-        $recap      = ! empty($options['show_period_recap']) ? $this->recapBlock($p) : '';
-        $nbHtml     = $nb !== '' ? '<div class="bul-nb">N.B. : ' . $nb . '</div>' : '';
+        $recap = ! empty($options['show_period_recap']) ? $this->recapBlock($p) : '';
+        $nbHtml = $nb !== '' ? '<div class="bul-nb">N.B. : '.$nb.'</div>' : '';
 
         return <<<HTML
         <table class="bul-summary">
@@ -281,11 +282,11 @@ class BulletinRenderer
 
     private function disciplineBlock(array $p): string
     {
-        $retards    = e((string) ($p['retards'] ?? 0));
-        $absences   = e((string) ($p['absences'] ?? 0));
-        $punitions  = e((string) ($p['punitions'] ?? 0));
+        $retards = e((string) ($p['retards'] ?? 0));
+        $absences = e((string) ($p['absences'] ?? 0));
+        $punitions = e((string) ($p['punitions'] ?? 0));
         $exclusions = e((string) ($p['exclusions'] ?? 0));
-        $decision   = e(($p['decision'] ?? '') ?: ($p['mention'] ?? '—'));
+        $decision = e(($p['decision'] ?? '') ?: ($p['mention'] ?? '—'));
 
         return <<<HTML
         <table class="bul-disc">
@@ -311,14 +312,14 @@ class BulletinRenderer
 
         $rows = '';
         foreach ($recap['periods'] ?? [] as $period) {
-            $rows .= '<tr><td class="left">' . e($period['name'] ?? '') . '</td>'
-                . '<td>' . $this->num($period['average'] ?? null) . '/20</td>'
-                . '<td>' . ($period['rank'] !== null ? e($this->ordinal((int) $period['rank'])) : '—') . '</td></tr>';
+            $rows .= '<tr><td class="left">'.e($period['name'] ?? '').'</td>'
+                .'<td>'.$this->num($period['average'] ?? null).'/20</td>'
+                .'<td>'.($period['rank'] !== null ? e($this->ordinal((int) $period['rank'])) : '—').'</td></tr>';
         }
         $annual = $recap['annual'] ?? ['average' => null, 'rank' => null];
         $rows .= '<tr class="bul-total-row"><td class="left strong">Moyenne annuelle</td>'
-            . '<td class="strong">' . $this->num($annual['average'] ?? null) . '/20</td>'
-            . '<td class="strong">' . ($annual['rank'] !== null ? e($this->ordinal((int) $annual['rank'])) : '—') . '</td></tr>';
+            .'<td class="strong">'.$this->num($annual['average'] ?? null).'/20</td>'
+            .'<td class="strong">'.($annual['rank'] !== null ? e($this->ordinal((int) $annual['rank'])) : '—').'</td></tr>';
 
         return <<<HTML
         <table class="bul-recap">
@@ -339,7 +340,7 @@ class BulletinRenderer
 
     private function ordinal(int $rank): string
     {
-        return $rank === 1 ? '1er' : $rank . 'e';
+        return $rank === 1 ? '1er' : $rank.'e';
     }
 
     private function css(): string
@@ -347,7 +348,7 @@ class BulletinRenderer
         // L'en-tête ministériel est rendu par DocumentRenderer mais ses styles
         // (dont le plafond de taille du logo) ne sont pas dans le baseCss du bulletin :
         // sans eux le logo s'affiche à sa taille naturelle et écrase l'en-tête.
-        return $this->documents->headerCss() . <<<CSS
+        return $this->documents->headerCss().<<<'CSS'
         * { box-sizing: border-box; }
         body { font-family: 'DejaVu Sans', sans-serif; color: #1a1a1a; font-size: 11px; margin: 0; }
         .bul-title { text-align: center; font-weight: bold; font-size: 14px; text-transform: uppercase; margin: 6px 0 10px; }

@@ -8,14 +8,13 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
 /** Feuille Excel générique (titre + en-têtes + lignes). */
-class SheetFromArray implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
+class SheetFromArray implements FromArray, ShouldAutoSize, WithHeadings, WithTitle
 {
     public function __construct(
         private readonly string $title,
         private readonly array $headings,
         private readonly array $rows,
-    ) {
-    }
+    ) {}
 
     public function array(): array
     {

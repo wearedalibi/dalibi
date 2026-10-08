@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Constants\Roles;
 use App\Models\EmployeeProfile;
 use App\Models\PayrollSetting;
+use App\Models\Payslip;
 use App\Models\User;
 use App\Services\PayrollService;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -30,16 +31,16 @@ class PayrollStatutoryTest extends TestCase
     private function employee(float $base): EmployeeProfile
     {
         return EmployeeProfile::create([
-            'user_id'        => User::factory()->create()->id,
-            'job_title'      => 'Enseignant',
-            'contract_type'  => 'CDI',
-            'base_salary'    => $base,
+            'user_id' => User::factory()->create()->id,
+            'job_title' => 'Enseignant',
+            'contract_type' => 'CDI',
+            'base_salary' => $base,
             'payment_method' => 'CASH',
-            'status'         => 'active',
+            'status' => 'active',
         ]);
     }
 
-    private function lines(\App\Models\Payslip $slip): Collection
+    private function lines(Payslip $slip): Collection
     {
         return collect($slip->payload['lines']);
     }
@@ -49,7 +50,7 @@ class PayrollStatutoryTest extends TestCase
         $this->actingAs($this->admin());
         $this->employee(100000);
 
-        $run  = app(PayrollService::class)->generate(7, 2026);
+        $run = app(PayrollService::class)->generate(7, 2026);
         $slip = $run->payslips->first();
 
         $this->assertNull($this->lines($slip)->firstWhere('origin', 'cnss'));
@@ -63,7 +64,7 @@ class PayrollStatutoryTest extends TestCase
         PayrollSetting::current()->update(['cnss_enabled' => true, 'cnss_employee_rate' => 4, 'cnss_employer_rate' => 17.5, 'cnss_ceiling' => 0]);
         $this->employee(100000);
 
-        $run  = app(PayrollService::class)->generate(7, 2026);
+        $run = app(PayrollService::class)->generate(7, 2026);
         $slip = $run->payslips->first();
 
         $cnss = $this->lines($slip)->firstWhere('origin', 'cnss');

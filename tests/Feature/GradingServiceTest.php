@@ -28,9 +28,13 @@ class GradingServiceTest extends TestCase
     use RefreshDatabase;
 
     private GradingService $service;
+
     private School $school;
+
     private AcademicYear $year;
+
     private ClassroomType $type;
+
     private Classroom $class;
 
     protected function setUp(): void
@@ -38,26 +42,26 @@ class GradingServiceTest extends TestCase
         parent::setUp();
         $this->service = app(GradingService::class);
         $this->school = School::factory()->create();
-        $this->year   = AcademicYear::create([
+        $this->year = AcademicYear::create([
             'year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true,
         ]);
-        $this->type  = ClassroomType::factory()->create(['period_system' => 'trimestre']);
+        $this->type = ClassroomType::factory()->create(['period_system' => 'trimestre']);
         $this->class = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
     }
 
     private function config(?ClassroomType $type = null, bool $active = true, string $name = 'Test'): GradingConfig
     {
         return GradingConfig::create([
-            'school_id'         => $this->school->id,
+            'school_id' => $this->school->id,
             'classroom_type_id' => $type?->id,
-            'name'              => $name,
-            'is_active'         => $active,
-            'passing_score'     => 10,
+            'name' => $name,
+            'is_active' => $active,
+            'passing_score' => 10,
             'default_max_score' => 20,
-            'class_weight'      => 1,
-            'comp_weight'       => 1,
-            'round_precision'   => 2,
-            'mentions'          => GradingConfig::defaultMentions(),
+            'class_weight' => 1,
+            'comp_weight' => 1,
+            'round_precision' => 2,
+            'mentions' => GradingConfig::defaultMentions(),
         ]);
     }
 
@@ -66,9 +70,9 @@ class GradingServiceTest extends TestCase
         $subject = Subject::create(['name' => $name, 'code' => strtoupper(Str::random(5))]);
 
         return ClassSubject::create([
-            'class_id'         => $this->class->id,
-            'subject_id'       => $subject->id,
-            'coefficient'      => $coeff,
+            'class_id' => $this->class->id,
+            'subject_id' => $subject->id,
+            'coefficient' => $coeff,
             'academic_year_id' => $this->year->id,
         ]);
     }
@@ -77,13 +81,13 @@ class GradingServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $student = Student::create([
-            'user_id' => $user->id, 'matricule' => 'M' . Str::random(6),
+            'user_id' => $user->id, 'matricule' => 'M'.Str::random(6),
             'firstname' => 'P', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2010-01-01',
         ]);
 
         Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $student->id, 'class_id' => $this->class->id,
-            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E' . Str::random(8),
+            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E'.Str::random(8),
             'enrollment_date' => now(), 'status' => 'ACTIVE',
         ]);
 
@@ -127,7 +131,7 @@ class GradingServiceTest extends TestCase
     public function test_resolve_prefers_class_type_over_school_default(): void
     {
         $default = $this->config(null, true, 'Défaut école');
-        $typed   = $this->config($this->type, true, 'Type spécifique');
+        $typed = $this->config($this->type, true, 'Type spécifique');
 
         $this->assertSame($typed->id, GradingConfig::resolveFor($this->school, $this->type)?->id);
         $this->assertSame($default->id, GradingConfig::resolveFor($this->school, null)?->id);
@@ -137,17 +141,20 @@ class GradingServiceTest extends TestCase
     {
         $config = $this->config($this->type);
         $math = $this->subject('Maths', 2);
-        $fr   = $this->subject('Français', 1);
-        $p1   = $this->period('Trimestre 1', 1, 1, true);
+        $fr = $this->subject('Français', 1);
+        $p1 = $this->period('Trimestre 1', 1, 1, true);
 
         $a = $this->student();
         $b = $this->student();
         $c = $this->student();
 
         // A : (16*2 + 10)/3 = 14 ; B : (10*2 + 16)/3 = 12 ; C : (14*2 + 14)/3 = 14
-        $this->grade($a, $math, $p1, 16); $this->grade($a, $fr, $p1, 10);
-        $this->grade($b, $math, $p1, 10); $this->grade($b, $fr, $p1, 16);
-        $this->grade($c, $math, $p1, 14); $this->grade($c, $fr, $p1, 14);
+        $this->grade($a, $math, $p1, 16);
+        $this->grade($a, $fr, $p1, 10);
+        $this->grade($b, $math, $p1, 10);
+        $this->grade($b, $fr, $p1, 16);
+        $this->grade($c, $math, $p1, 14);
+        $this->grade($c, $fr, $p1, 14);
 
         $classSubjects = $this->class->classSubjects()->get();
 
@@ -172,7 +179,7 @@ class GradingServiceTest extends TestCase
         $student = $this->student();
 
         $continu = EvaluationType::create(['name' => 'Devoir', 'category' => 'continu']);
-        $compo   = EvaluationType::create(['name' => 'Composition', 'category' => 'composition']);
+        $compo = EvaluationType::create(['name' => 'Composition', 'category' => 'composition']);
 
         $this->evaluationMark($cs, $p1, $continu, $student, 12);
         $this->evaluationMark($cs, $p1, $compo, $student, 16);
@@ -208,14 +215,16 @@ class GradingServiceTest extends TestCase
     {
         $config = $this->config($this->type);
         $math = $this->subject('Maths', 2);
-        $fr   = $this->subject('Français', 1);
+        $fr = $this->subject('Français', 1);
         $p1 = $this->period('Trimestre 1', 1, 1);
         $p2 = $this->period('Trimestre 2', 2, 2);
 
         $a = $this->student();
         // P1 = 14 ; P2 = (18*2 + 15)/3 = 17 ; annuelle = (14*1 + 17*2)/3 = 16
-        $this->grade($a, $math, $p1, 16); $this->grade($a, $fr, $p1, 10);
-        $this->grade($a, $math, $p2, 18); $this->grade($a, $fr, $p2, 15);
+        $this->grade($a, $math, $p1, 16);
+        $this->grade($a, $fr, $p1, 10);
+        $this->grade($a, $math, $p2, 18);
+        $this->grade($a, $fr, $p2, 15);
 
         $classSubjects = $this->class->classSubjects()->get();
         $annual = $this->service->annualAverage($a->id, collect([$p1, $p2]), $classSubjects, $config);

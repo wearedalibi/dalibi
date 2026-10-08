@@ -21,20 +21,20 @@ class ArchivedDocument extends Model
     ];
 
     protected $casts = [
-        'size'            => 'integer',
+        'size' => 'integer',
         'retention_until' => 'date',
-        'archived_at'     => 'datetime',
+        'archived_at' => 'datetime',
     ];
 
     /** Catégories d'archivage (clé => libellé). */
     public const CATEGORIES = [
         'administratif' => 'Administratif',
-        'rh'            => 'Ressources humaines',
-        'comptable'     => 'Comptable',
-        'juridique'     => 'Juridique',
-        'courrier'      => 'Courrier',
-        'pedagogique'   => 'Pédagogique',
-        'autre'         => 'Autre',
+        'rh' => 'Ressources humaines',
+        'comptable' => 'Comptable',
+        'juridique' => 'Juridique',
+        'courrier' => 'Courrier',
+        'pedagogique' => 'Pédagogique',
+        'autre' => 'Autre',
     ];
 
     public function tags(): BelongsToMany
@@ -55,7 +55,7 @@ class ArchivedDocument extends Model
     /** Génère une référence séquentielle ARC-AAAA-0001. */
     public static function nextReference(): string
     {
-        $year  = now()->year;
+        $year = now()->year;
         $count = static::withTrashed()->whereYear('archived_at', $year)->count() + 1;
 
         return sprintf('ARC-%d-%04d', $year, $count);

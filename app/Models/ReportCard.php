@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReportCard extends Model
 {
-    use HasUuids, Auditable;
+    use Auditable, HasUuids;
 
     protected $fillable = [
         'student_id',
@@ -26,9 +26,9 @@ class ReportCard extends Model
     ];
 
     protected $casts = [
-        'payload'   => 'array',
-        'average'   => 'float',
-        'rank'      => 'integer',
+        'payload' => 'array',
+        'average' => 'float',
+        'rank' => 'integer',
         'locked_at' => 'datetime',
     ];
 

@@ -1,15 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Eleves;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\School;
-use App\Services\DocumentRenderer;
 use App\Models\Subject;
 use App\Models\TimetableSlot;
 use App\Models\User;
+use App\Services\DocumentRenderer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,11 +22,11 @@ class TimetableController extends Controller
 {
     public function index(Request $request): Response
     {
-        $classId      = $request->string('class_id')->toString();
+        $classId = $request->string('class_id')->toString();
         $activeYearId = $this->activeYearId();
 
         $classrooms = Classroom::orderBy('name')->get(['id', 'name', 'code']);
-        $subjects   = Subject::orderBy('name')->get(['id', 'name']);
+        $subjects = Subject::orderBy('name')->get(['id', 'name']);
 
         $slots = collect();
         if ($classId) {
@@ -37,26 +37,26 @@ class TimetableController extends Controller
                 ->orderBy('start_time')
                 ->get()
                 ->map(fn ($s) => [
-                    'id'           => $s->id,
-                    'day_of_week'  => $s->day_of_week,
-                    'start_time'   => substr($s->start_time, 0, 5),
-                    'end_time'     => substr($s->end_time, 0, 5),
-                    'subject_id'   => $s->subject_id,
+                    'id' => $s->id,
+                    'day_of_week' => $s->day_of_week,
+                    'start_time' => substr($s->start_time, 0, 5),
+                    'end_time' => substr($s->end_time, 0, 5),
+                    'subject_id' => $s->subject_id,
                     'subject_name' => $s->subject?->name,
-                    'teacher_id'   => $s->teacher_id,
+                    'teacher_id' => $s->teacher_id,
                     'teacher_name' => $s->teacher?->name,
-                    'room'         => $s->room,
+                    'room' => $s->room,
                 ]);
         }
 
         return Inertia::render('Eleves/Timetable/Index', [
             'classrooms' => $classrooms,
-            'subjects'   => $subjects,
-            'teachers'   => $this->markTeachers(),
-            'slots'      => $slots,
-            'days'       => TimetableSlot::DAYS,
-            'filters'    => ['class_id' => $classId],
-            'canManage'  => $request->user()->can('create_timetable'),
+            'subjects' => $subjects,
+            'teachers' => $this->markTeachers(),
+            'slots' => $slots,
+            'days' => TimetableSlot::DAYS,
+            'filters' => ['class_id' => $classId],
+            'canManage' => $request->user()->can('create_timetable'),
         ]);
     }
 
@@ -66,33 +66,33 @@ class TimetableController extends Controller
     public function teacher(Request $request): Response
     {
         $activeYearId = $this->activeYearId();
-        $teacherId    = $request->string('teacher_id')->toString();
+        $teacherId = $request->string('teacher_id')->toString();
 
         $teacher = $teacherId ? User::find($teacherId) : null;
-        $slots   = $teacherId
+        $slots = $teacherId
             ? $this->teacherSlots($teacherId, $activeYearId)->map(fn ($s) => [
-                'id'           => $s->id,
-                'day_of_week'  => $s->day_of_week,
-                'start_time'   => substr($s->start_time, 0, 5),
-                'end_time'     => substr($s->end_time, 0, 5),
+                'id' => $s->id,
+                'day_of_week' => $s->day_of_week,
+                'start_time' => substr($s->start_time, 0, 5),
+                'end_time' => substr($s->end_time, 0, 5),
                 'subject_name' => $s->subject?->name,
-                'class_name'   => $s->classroom?->name,
-                'room'         => $s->room,
+                'class_name' => $s->classroom?->name,
+                'room' => $s->room,
             ])->values()
             : collect();
 
         return Inertia::render('Eleves/Timetable/Teacher', [
             'teachers' => $this->markTeachers(),
-            'teacher'  => $teacher ? ['id' => $teacher->id, 'name' => $teacher->name] : null,
-            'slots'    => $slots,
-            'days'     => TimetableSlot::DAYS,
-            'filters'  => ['teacher_id' => $teacherId],
+            'teacher' => $teacher ? ['id' => $teacher->id, 'name' => $teacher->name] : null,
+            'slots' => $slots,
+            'days' => TimetableSlot::DAYS,
+            'filters' => ['teacher_id' => $teacherId],
         ]);
     }
 
     public function export(Request $request, string $classId)
     {
-        $classroom    = Classroom::findOrFail($classId);
+        $classroom = Classroom::findOrFail($classId);
         $activeYearId = $this->activeYearId();
 
         $slots = TimetableSlot::with(['subject:id,name', 'teacher:id,firstname,lastname'])
@@ -104,8 +104,8 @@ class TimetableController extends Controller
         return $this->schedulePdf(
             $slots,
             title: 'EMPLOI DU TEMPS',
-            subtitle: 'Classe : ' . $classroom->name,
-            filename: 'emploi-du-temps-' . Str::slug($classroom->name),
+            subtitle: 'Classe : '.$classroom->name,
+            filename: 'emploi-du-temps-'.Str::slug($classroom->name),
         );
     }
 
@@ -119,14 +119,14 @@ class TimetableController extends Controller
         ]);
 
         $activeYearId = $this->activeYearId();
-        $teacher      = User::findOrFail($validated['teacher_id']);
-        $year         = $activeYearId ? AcademicYear::find($activeYearId) : null;
+        $teacher = User::findOrFail($validated['teacher_id']);
+        $year = $activeYearId ? AcademicYear::find($activeYearId) : null;
 
         return $this->schedulePdf(
             $this->teacherSlots($teacher->id, $activeYearId),
             title: 'EMPLOI DU TEMPS — ENSEIGNANT',
-            subtitle: $teacher->name . ' — Année : ' . ($year?->year ?? '—'),
-            filename: 'emploi-du-temps-' . Str::slug($teacher->name),
+            subtitle: $teacher->name.' — Année : '.($year?->year ?? '—'),
+            filename: 'emploi-du-temps-'.Str::slug($teacher->name),
         );
     }
 
@@ -135,7 +135,7 @@ class TimetableController extends Controller
         abort_unless($request->user()->can('create_timetable'), 403);
 
         $data = $this->validateSlot($request);
-        $data['school_id']        = School::query()->value('id');
+        $data['school_id'] = School::query()->value('id');
         $data['academic_year_id'] = AcademicYear::where('active', true)->value('id');
 
         TimetableSlot::create($data);
@@ -164,13 +164,13 @@ class TimetableController extends Controller
     private function validateSlot(Request $request): array
     {
         return $request->validate([
-            'class_id'    => ['required', 'uuid', 'exists:classes,id'],
+            'class_id' => ['required', 'uuid', 'exists:classes,id'],
             'day_of_week' => ['required', 'integer', 'min:1', 'max:6'],
-            'start_time'  => ['required', 'date_format:H:i'],
-            'end_time'    => ['required', 'date_format:H:i', 'after:start_time'],
-            'subject_id'  => ['nullable', 'uuid', 'exists:subjects,id'],
-            'teacher_id'  => ['nullable', 'uuid', 'exists:users,id'],
-            'room'        => ['nullable', 'string', 'max:50'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'subject_id' => ['nullable', 'uuid', 'exists:subjects,id'],
+            'teacher_id' => ['nullable', 'uuid', 'exists:users,id'],
+            'room' => ['nullable', 'string', 'max:50'],
         ], [
             'end_time.after' => 'L\'heure de fin doit être après l\'heure de début.',
         ]);
@@ -211,7 +211,7 @@ class TimetableController extends Controller
      */
     private function buildScheduleGrid(Collection $slots): array
     {
-        $range = fn ($s) => substr($s->start_time, 0, 5) . '-' . substr($s->end_time, 0, 5);
+        $range = fn ($s) => substr($s->start_time, 0, 5).'-'.substr($s->end_time, 0, 5);
 
         $grid = [];
         foreach ($slots as $slot) {
@@ -220,7 +220,7 @@ class TimetableController extends Controller
 
         return [
             'timeRanges' => $slots->map($range)->unique()->sort()->values(),
-            'grid'       => $grid,
+            'grid' => $grid,
         ];
     }
 
@@ -229,20 +229,20 @@ class TimetableController extends Controller
     {
         ['timeRanges' => $timeRanges, 'grid' => $grid] = $this->buildScheduleGrid($slots);
 
-        $school   = School::query()->first();
+        $school = School::query()->first();
         $renderer = app(DocumentRenderer::class);
 
         $pdf = Pdf::loadView('exports.timetable', [
-            'school'     => $school,
+            'school' => $school,
             'headerHtml' => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
-            'headerCss'  => $renderer->headerCss(),
-            'title'      => $title,
-            'subtitle'   => $subtitle,
-            'days'       => TimetableSlot::DAYS,
+            'headerCss' => $renderer->headerCss(),
+            'title' => $title,
+            'subtitle' => $subtitle,
+            'days' => TimetableSlot::DAYS,
             'timeRanges' => $timeRanges,
-            'grid'       => $grid,
+            'grid' => $grid,
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream($filename . '.pdf');
+        return $pdf->stream($filename.'.pdf');
     }
 }

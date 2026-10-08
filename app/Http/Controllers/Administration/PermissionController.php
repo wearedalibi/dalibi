@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Administration;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +22,7 @@ class PermissionController extends Controller
             $searchTerm = strtolower(request('search'));
             $query->where(function ($q) use ($searchTerm): void {
                 $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchTerm}%"])
-                  ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchTerm}%"]);
+                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchTerm}%"]);
             });
         }
 
@@ -34,7 +33,7 @@ class PermissionController extends Controller
 
         return Inertia::render('Administration/Permissions/Index', [
             'permissions' => $permissions,
-            'filters'     => ['search' => request('search')],
+            'filters' => ['search' => request('search')],
         ]);
     }
 

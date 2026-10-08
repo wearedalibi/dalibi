@@ -25,16 +25,15 @@ class BulletinController extends Controller
     public function __construct(
         private readonly GradingService $grading,
         private readonly ReportCardBuilder $builder,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): Response
     {
         abort_unless($request->user()->can('view_bulletins'), 403);
 
-        $classId  = $request->string('class_id')->toString();
+        $classId = $request->string('class_id')->toString();
         $periodId = $request->string('academic_period_id')->toString();
-        $year     = AcademicYear::where('active', true)->first(['id', 'year']);
+        $year = AcademicYear::where('active', true)->first(['id', 'year']);
 
         $classrooms = Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'classroom_type_id']);
 
@@ -48,15 +47,15 @@ class BulletinController extends Controller
 
         $rows = [];
         if ($classId !== '' && $periodId !== '') {
-            $class         = Classroom::with('classroomType')->findOrFail($classId);
-            $config        = GradingConfig::resolveOrDefault(School::query()->first(), $class->classroomType);
+            $class = Classroom::with('classroomType')->findOrFail($classId);
+            $config = GradingConfig::resolveOrDefault(School::query()->first(), $class->classroomType);
             $classSubjects = $this->builder->classSubjects($class, $year?->id);
-            $students      = $this->builder->activeStudents($classId, $year?->id);
+            $students = $this->builder->activeStudents($classId, $year?->id);
 
             $index = $this->grading->loadEvaluationIndex($classSubjects, $students->pluck('id')->all(), [$periodId]);
             $averages = $students->map(fn ($s) => [
                 'student_id' => $s->id,
-                'average'    => $this->grading->periodAverageFromIndex($index, $s->id, $periodId, $classSubjects, $config),
+                'average' => $this->grading->periodAverageFromIndex($index, $s->id, $periodId, $classSubjects, $config),
             ]);
             $ranking = $this->grading->rank($averages);
 
@@ -68,13 +67,13 @@ class BulletinController extends Controller
                 $info = $ranking->get($s->id, ['average' => null, 'rank' => null]);
 
                 return [
-                    'student_id'     => $s->id,
-                    'name'           => $s->lastname . ' ' . $s->firstname,
-                    'matricule'      => $s->matricule,
-                    'average'        => $info['average'],
-                    'rank'           => $info['rank'],
-                    'mention'        => $this->grading->mention($info['average'], $config),
-                    'validated'      => $cards->has($s->id),
+                    'student_id' => $s->id,
+                    'name' => $s->lastname.' '.$s->firstname,
+                    'matricule' => $s->matricule,
+                    'average' => $info['average'],
+                    'rank' => $info['rank'],
+                    'mention' => $this->grading->mention($info['average'], $config),
+                    'validated' => $cards->has($s->id),
                     'report_card_id' => $cards->get($s->id),
                 ];
             })->values();
@@ -82,10 +81,10 @@ class BulletinController extends Controller
 
         return Inertia::render('Notes/Bulletins/Index', [
             'classrooms' => $classrooms,
-            'periods'    => $periods,
-            'rows'       => $rows,
+            'periods' => $periods,
+            'rows' => $rows,
             'activeYear' => $year,
-            'filters'    => ['class_id' => $classId, 'academic_period_id' => $periodId],
+            'filters' => ['class_id' => $classId, 'academic_period_id' => $periodId],
         ]);
     }
 
@@ -95,16 +94,16 @@ class BulletinController extends Controller
         abort_unless($request->user()->can('validate_bulletins'), 403);
 
         $validated = $request->validate([
-            'class_id'           => ['required', 'uuid', 'exists:classes,id'],
+            'class_id' => ['required', 'uuid', 'exists:classes,id'],
             'academic_period_id' => ['required', 'uuid', 'exists:academic_periods,id'],
-            'observations'       => ['nullable', 'string', 'max:1000'],
+            'observations' => ['nullable', 'string', 'max:1000'],
             // Par défaut, une re-validation conserve les éditions manuelles (appréciations,
             // observations, décision, discipline). `regenerate=true` repart de zéro.
-            'regenerate'         => ['sometimes', 'boolean'],
+            'regenerate' => ['sometimes', 'boolean'],
         ]);
 
-        $year   = AcademicYear::where('active', true)->first();
-        $class  = Classroom::with('classroomType')->findOrFail($validated['class_id']);
+        $year = AcademicYear::where('active', true)->first();
+        $class = Classroom::with('classroomType')->findOrFail($validated['class_id']);
         $period = AcademicPeriod::findOrFail($validated['academic_period_id']);
 
         $result = $this->builder->build(
@@ -135,11 +134,11 @@ class BulletinController extends Controller
             ->where('academic_period_id', $periodId)
             ->firstOrFail();
 
-        $school = School::query()->first() ?? new School();
+        $school = School::query()->first() ?? new School;
 
         $html = app(BulletinRenderer::class)->render($card, $school);
 
-        $filename = Str::slug('bulletin-' . $student->lastname . '-' . $student->firstname . '-' . ($card->payload['period']['name'] ?? '')) . '.pdf';
+        $filename = Str::slug('bulletin-'.$student->lastname.'-'.$student->firstname.'-'.($card->payload['period']['name'] ?? '')).'.pdf';
 
         return Pdf::loadHTML($html)->setPaper('a4', 'portrait')->download($filename);
     }
@@ -149,10 +148,10 @@ class BulletinController extends Controller
     {
         abort_unless($request->user()->can('download_bulletins'), 403);
 
-        $classId  = $request->string('class_id')->toString();
+        $classId = $request->string('class_id')->toString();
         $periodId = $request->string('academic_period_id')->toString();
 
-        $class  = Classroom::findOrFail($classId);
+        $class = Classroom::findOrFail($classId);
         $period = AcademicPeriod::findOrFail($periodId);
 
         $cards = ReportCard::with('student')
@@ -164,10 +163,10 @@ class BulletinController extends Controller
 
         abort_if($cards->isEmpty(), 404, 'Aucun bulletin validé pour cette classe et cette période.');
 
-        $school = School::query()->first() ?? new School();
-        $html   = app(BulletinRenderer::class)->renderClass($cards, $school);
+        $school = School::query()->first() ?? new School;
+        $html = app(BulletinRenderer::class)->renderClass($cards, $school);
 
-        $filename = Str::slug('bulletins-' . $class->name . '-' . ($period->name ?? '')) . '.pdf';
+        $filename = Str::slug('bulletins-'.$class->name.'-'.($period->name ?? '')).'.pdf';
 
         return Pdf::loadHTML($html)->setPaper('a4', 'portrait')->download($filename);
     }
@@ -177,13 +176,13 @@ class BulletinController extends Controller
     {
         $this->authorize('delete', $reportCard);
 
-        $classId  = $reportCard->class_id;
+        $classId = $reportCard->class_id;
         $periodId = $reportCard->academic_period_id;
 
         $reportCard->delete();
 
         return redirect()->route('bulletins.index', [
-            'class_id'           => $classId,
+            'class_id' => $classId,
             'academic_period_id' => $periodId,
         ])->with('message', 'Bulletin dévalidé.');
     }
@@ -197,19 +196,19 @@ class BulletinController extends Controller
 
         return Inertia::render('Notes/Bulletins/Edit', [
             'card' => [
-                'id'           => $reportCard->id,
-                'student'      => $p['student'] ?? [],
-                'period'       => $p['period'] ?? [],
+                'id' => $reportCard->id,
+                'student' => $p['student'] ?? [],
+                'period' => $p['period'] ?? [],
                 'observations' => $p['observations'] ?? '',
-                'decision'     => $p['decision'] ?? ($p['mention'] ?? ''),
-                'retards'      => $p['retards'] ?? 0,
-                'absences'     => $p['absences'] ?? 0,
-                'punitions'    => $p['punitions'] ?? 0,
-                'exclusions'   => $p['exclusions'] ?? 0,
-                'lines'        => collect($p['lines'] ?? [])->map(fn ($l, $i) => [
-                    'index'        => $i,
-                    'subject'      => $l['subject'] ?? '',
-                    'moyenne'      => $l['moyenne'] ?? null,
+                'decision' => $p['decision'] ?? ($p['mention'] ?? ''),
+                'retards' => $p['retards'] ?? 0,
+                'absences' => $p['absences'] ?? 0,
+                'punitions' => $p['punitions'] ?? 0,
+                'exclusions' => $p['exclusions'] ?? 0,
+                'lines' => collect($p['lines'] ?? [])->map(fn ($l, $i) => [
+                    'index' => $i,
+                    'subject' => $l['subject'] ?? '',
+                    'moyenne' => $l['moyenne'] ?? null,
                     'appreciation' => $l['appreciation'] ?? '',
                 ])->values(),
             ],
@@ -222,12 +221,12 @@ class BulletinController extends Controller
         $this->authorize('update', $reportCard);
 
         $validated = $request->validate([
-            'appreciations'   => ['array'],
+            'appreciations' => ['array'],
             'appreciations.*' => ['nullable', 'string', 'max:255'],
-            'observations'    => ['nullable', 'string', 'max:1000'],
-            'decision'        => ['nullable', 'string', 'max:150'],
-            'punitions'       => ['nullable', 'integer', 'min:0'],
-            'exclusions'      => ['nullable', 'integer', 'min:0'],
+            'observations' => ['nullable', 'string', 'max:1000'],
+            'decision' => ['nullable', 'string', 'max:150'],
+            'punitions' => ['nullable', 'integer', 'min:0'],
+            'exclusions' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $payload = $reportCard->payload;
@@ -239,9 +238,9 @@ class BulletinController extends Controller
         }
 
         $payload['observations'] = $validated['observations'] ?? ($payload['observations'] ?? '');
-        $payload['decision']     = $validated['decision'] ?? ($payload['decision'] ?? '');
-        $payload['punitions']    = $validated['punitions'] ?? 0;
-        $payload['exclusions']   = $validated['exclusions'] ?? 0;
+        $payload['decision'] = $validated['decision'] ?? ($payload['decision'] ?? '');
+        $payload['punitions'] = $validated['punitions'] ?? 0;
+        $payload['exclusions'] = $validated['exclusions'] ?? 0;
 
         $reportCard->update(['payload' => $payload]);
 

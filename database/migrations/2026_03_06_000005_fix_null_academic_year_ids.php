@@ -12,7 +12,7 @@ return new class extends Migration
     {
         // First, check if there are any academic years
         $academicYears = DB::table('academic_years')->get();
-        
+
         if ($academicYears->isEmpty()) {
             // No academic years exist, skip
             return;
@@ -24,7 +24,7 @@ return new class extends Migration
             ->orderBy('start_date', 'desc')
             ->first();
 
-        if (!$targetYear) {
+        if (! $targetYear) {
             $targetYear = DB::table('academic_years')
                 ->orderBy('start_date', 'desc')
                 ->first();
