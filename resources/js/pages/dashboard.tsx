@@ -211,7 +211,7 @@ function KpiCard({ title, value, sub, icon: Icon, color }: {
     };
     const { bg, text } = styles[color];
     return (
-        <div className="bg-white dark:bg-card p-5 min-h-28 flex flex-col justify-center border-b border-r border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-card rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 min-h-28 flex flex-col justify-center">
             <div className="flex items-start justify-between">
                 <div className="min-w-0">
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{title}</p>
@@ -357,7 +357,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 )}
 
                 {/* ── KPIs : grille unifiée — cards identiques, accolées, sans espace ── */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 overflow-hidden rounded-xl border border-gray-100 dark:border-gray-700">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {isEnrollment && (
                     <>
                         <KpiCard
@@ -382,7 +382,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             color="green"
                         />
                         {isFinancial && (
-                            <div className="bg-white dark:bg-card p-5 min-h-28 flex flex-col justify-center border-b border-r border-gray-100 dark:border-gray-700">
+                            <div className="bg-white dark:bg-card rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 min-h-28 flex flex-col justify-center">
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Taux de recouvrement</p>
                                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{collectedPct}%</p>
                                 <ProgressBar
