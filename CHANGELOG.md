@@ -4,6 +4,35 @@ Toutes les évolutions notables de **Dalibi** sont consignées ici.
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le versionnage
 respecte [SemVer](https://semver.org/lang/fr/).
 
+## [1.0.1] — 2026-10-11
+
+### Ajouté
+- **Inscriptions & paiements** : reçu de paiement et **facture imprimables** à en-tête
+  officielle unifiée (montant en toutes lettres, signature/cachet, double volet pour le
+  reçu) ; **confirmation d'inscription** portant l'état de règlement ; **cartes de
+  recouvrement** (facturé, encaissé, reste à recouvrer, impayées) sur la liste ;
+  pré-sélection de l'école et de l'année active à la création ; menu renommé
+  « Inscriptions & Paiements ».
+- **Affectations des matières** : page de **statistiques par enseignant** (filtre année
+  active + enseignant) avec export PDF.
+- **Emploi du temps** : vue et export PDF **par enseignant** (toutes classes confondues),
+  rattachés à l'année active.
+- **Tableau de bord** : nouvelles cartes — taux de présence du jour, nombre d'enseignants
+  et **ratio élèves/enseignant (REM)**, bulletins validés et moyenne générale de la période.
+
+### Modifié
+- **Tableau de bord** : cartes sur fond blanc, de dimension uniforme et espacées.
+- Emploi du temps et vues associées scopés sur l'**année académique active**.
+
+### Qualité & documentation
+- Formatage **PSR-12** (Laravel Pint) sur l'ensemble du projet, suppression des imports
+  inutilisés.
+- `declare(strict_types=1)` et classes `final` sur la couche services ; **API Resource**
+  dédiée pour le calendrier du portail ; garde de paiement (anti trop-perçu, sous verrou)
+  déplacée dans le service.
+- **README** : licence corrigée en **GNU GPL v3**, commande de seeder de démonstration,
+  fonctionnalités récentes.
+
 ## [1.0.0] — 2026-09-06
 
 Première version stable de **Dalibi**, système de gestion scolaire pensé pour les
