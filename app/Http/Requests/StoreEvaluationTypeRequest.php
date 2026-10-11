@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Constants\Roles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,8 +15,8 @@ class StoreEvaluationTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => ['required', 'string', 'max:255', Rule::unique('evaluation_types', 'name')],
-            'category'    => ['required', 'in:continu,composition'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('evaluation_types', 'name')],
+            'category' => ['required', 'in:continu,composition'],
             'description' => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -26,8 +25,8 @@ class StoreEvaluationTypeRequest extends FormRequest
     {
         return [
             'name.required' => 'Le nom est obligatoire.',
-            'name.unique'   => 'Ce type d\'évaluation existe déjà.',
-            'name.max'      => 'Le nom ne peut pas dépasser 255 caractères.',
+            'name.unique' => 'Ce type d\'évaluation existe déjà.',
+            'name.max' => 'Le nom ne peut pas dépasser 255 caractères.',
         ];
     }
 }

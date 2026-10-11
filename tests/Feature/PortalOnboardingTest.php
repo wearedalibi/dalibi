@@ -44,7 +44,7 @@ class PortalOnboardingTest extends TestCase
 
     private function guardian(): Guardian
     {
-        return Guardian::create(['first_name' => 'P', 'last_name' => 'Parent', 'email' => Str::random(8) . '@ex.com', 'is_active' => true]);
+        return Guardian::create(['first_name' => 'P', 'last_name' => 'Parent', 'email' => Str::random(8).'@ex.com', 'is_active' => true]);
     }
 
     public function test_secretariat_creates_guardian_links_student_and_sends_invitation(): void
@@ -74,7 +74,7 @@ class PortalOnboardingTest extends TestCase
 
     public function test_edit_page_renders_with_linked_children(): void
     {
-        $student  = $this->student('EDIT-777');
+        $student = $this->student('EDIT-777');
         $guardian = $this->guardian();
         $guardian->children()->sync([$student->id]);
 
@@ -107,7 +107,7 @@ class PortalOnboardingTest extends TestCase
 
     public function test_index_search_matches_child_matricule(): void
     {
-        $student  = $this->student('SRCH-777');
+        $student = $this->student('SRCH-777');
         $guardian = $this->guardian();
         $guardian->children()->sync([$student->id]);
         $this->guardian(); // un autre tuteur sans correspondance

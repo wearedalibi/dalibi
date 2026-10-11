@@ -49,8 +49,8 @@ class StudentImportTest extends TestCase
     public function test_imports_valid_rows_and_reports_errors(): void
     {
         $csv = "prenom;nom;sexe;date_naissance;lieu_naissance;nationalite;telephone;email;matricule\n"
-            . "Koffi;MENSAH;M;2012-05-14;Lomé;Togolaise;;;\n"   // valide
-            . "Ama;;F;2013-01-01;;;;;\n";                        // invalide (nom manquant)
+            ."Koffi;MENSAH;M;2012-05-14;Lomé;Togolaise;;;\n"   // valide
+            ."Ama;;F;2013-01-01;;;;;\n";                        // invalide (nom manquant)
 
         $this->actingAs($this->admin())
             ->post(route('students.import.store'), ['file' => $this->csv($csv)])

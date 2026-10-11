@@ -16,24 +16,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Laravel\Sanctum\HasApiTokens;
 use App\Concerns\Auditable;
 use App\Concerns\HasResetToken;
 use App\Services\MatriculeService;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
 class Student extends Model implements AuthenticatableContract
 {
-    use HasFactory, HasUuids, SoftDeletes, Auditable, HasApiTokens, AuthenticatableTrait, HasResetToken;
+    use Auditable, AuthenticatableTrait, HasApiTokens, HasFactory, HasResetToken, HasUuids, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -147,13 +147,11 @@ class Student extends Model implements AuthenticatableContract
     /** Dossier de stockage privé propre à l'élève. */
     public function storageFolder(): string
     {
-        return 'students/' . $this->id;
+        return 'students/'.$this->id;
     }
 
     /**
      * Générer un matricule pour cet élève
-     *
-     * @return string
      */
     public function generateMatricule(): string
     {

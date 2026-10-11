@@ -38,32 +38,32 @@ class AdministrationTest extends TestCase
     private function academicYear(array $overrides = []): AcademicYear
     {
         return AcademicYear::create(array_merge([
-            'year'       => '2024-2025',
+            'year' => '2024-2025',
             'start_date' => '2024-09-01',
-            'end_date'   => '2025-07-31',
-            'active'     => true,
+            'end_date' => '2025-07-31',
+            'active' => true,
         ], $overrides));
     }
 
     private function validYearPayload(array $overrides = []): array
     {
         return array_merge([
-            'year'       => '2025-2026',
+            'year' => '2025-2026',
             'start_date' => '2025-09-01',
-            'end_date'   => '2026-07-31',
-            'active'     => false,
+            'end_date' => '2026-07-31',
+            'active' => false,
         ], $overrides);
     }
 
     private function validPeriodPayload(string $academicYearId, array $overrides = []): array
     {
         return array_merge([
-            'name'             => 'Trimestre 1',
-            'type'             => 'trimestre',
-            'start_date'       => '2025-09-01',
-            'end_date'         => '2025-11-30',
-            'order'            => 1,
-            'is_current'       => false,
+            'name' => 'Trimestre 1',
+            'type' => 'trimestre',
+            'start_date' => '2025-09-01',
+            'end_date' => '2025-11-30',
+            'order' => 1,
+            'is_current' => false,
             'academic_year_id' => $academicYearId,
         ], $overrides);
     }
@@ -125,7 +125,7 @@ class AdministrationTest extends TestCase
             ->assertRedirect(route('academic-years.index'));
 
         $this->assertDatabaseHas('academic_years', [
-            'year'   => '2025-2026',
+            'year' => '2025-2026',
             'active' => false,
         ]);
     }
@@ -165,7 +165,7 @@ class AdministrationTest extends TestCase
         $this->actingAs($this->user())
             ->post(route('academic-years.store'), $this->validYearPayload([
                 'start_date' => '2025-09-01',
-                'end_date'   => '2025-08-01',
+                'end_date' => '2025-08-01',
             ]))
             ->assertSessionHasErrors('end_date');
     }
@@ -198,10 +198,10 @@ class AdministrationTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('academic-years.update', $year), [
-                'year'       => '2024-2025',
+                'year' => '2024-2025',
                 'start_date' => '2024-09-01',
-                'end_date'   => '2025-08-31',
-                'active'     => true,
+                'end_date' => '2025-08-31',
+                'active' => true,
             ])
             ->assertRedirect(route('academic-years.index'));
 
@@ -262,11 +262,11 @@ class AdministrationTest extends TestCase
         $year = $this->academicYear();
         AcademicPeriod::create($this->validPeriodPayload($year->id, ['type' => 'trimestre']));
         AcademicPeriod::create($this->validPeriodPayload($year->id, [
-            'name'       => 'Semestre 1',
-            'type'       => 'semestre',
+            'name' => 'Semestre 1',
+            'type' => 'semestre',
             'start_date' => '2025-09-01',
-            'end_date'   => '2026-01-31',
-            'order'      => 2,
+            'end_date' => '2026-01-31',
+            'order' => 2,
         ]));
 
         $this->actingAs($this->user())
@@ -342,7 +342,7 @@ class AdministrationTest extends TestCase
         $this->actingAs($this->user())
             ->post(route('academic-periods.store'), $this->validPeriodPayload($year->id, [
                 'start_date' => '2025-11-01',
-                'end_date'   => '2025-10-01',
+                'end_date' => '2025-10-01',
             ]))
             ->assertSessionHasErrors('end_date');
     }
@@ -351,7 +351,7 @@ class AdministrationTest extends TestCase
 
     public function test_authenticated_user_can_view_academic_period_detail(): void
     {
-        $year   = $this->academicYear();
+        $year = $this->academicYear();
         $period = AcademicPeriod::create($this->validPeriodPayload($year->id));
 
         $this->actingAs($this->user())
@@ -363,7 +363,7 @@ class AdministrationTest extends TestCase
 
     public function test_authenticated_user_can_view_academic_period_edit_form(): void
     {
-        $year   = $this->academicYear();
+        $year = $this->academicYear();
         $period = AcademicPeriod::create($this->validPeriodPayload($year->id));
 
         $this->actingAs($this->user())
@@ -373,19 +373,19 @@ class AdministrationTest extends TestCase
 
     public function test_can_update_academic_period(): void
     {
-        $year   = $this->academicYear();
+        $year = $this->academicYear();
         $period = AcademicPeriod::create($this->validPeriodPayload($year->id));
 
         $this->actingAs($this->user())
             ->put(route('academic-periods.update', $period), $this->validPeriodPayload($year->id, [
-                'name'       => 'Trimestre 1 (modifié)',
+                'name' => 'Trimestre 1 (modifié)',
                 'is_current' => true,
             ]))
             ->assertRedirect(route('academic-periods.index'));
 
         $this->assertDatabaseHas('academic_periods', [
-            'id'         => $period->id,
-            'name'       => 'Trimestre 1 (modifié)',
+            'id' => $period->id,
+            'name' => 'Trimestre 1 (modifié)',
             'is_current' => true,
         ]);
     }
@@ -394,7 +394,7 @@ class AdministrationTest extends TestCase
 
     public function test_can_delete_academic_period(): void
     {
-        $year   = $this->academicYear();
+        $year = $this->academicYear();
         $period = AcademicPeriod::create($this->validPeriodPayload($year->id));
 
         $this->actingAs($this->user())
@@ -406,7 +406,7 @@ class AdministrationTest extends TestCase
 
     public function test_guest_cannot_delete_academic_period(): void
     {
-        $year   = $this->academicYear();
+        $year = $this->academicYear();
         $period = AcademicPeriod::create($this->validPeriodPayload($year->id));
 
         $this->delete(route('academic-periods.destroy', $period))

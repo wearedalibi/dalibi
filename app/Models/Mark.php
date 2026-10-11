@@ -26,7 +26,7 @@ class Mark extends Model
     ];
 
     protected $casts = [
-        'score'  => 'decimal:2',
+        'score' => 'decimal:2',
         'absent' => 'boolean',
     ];
 

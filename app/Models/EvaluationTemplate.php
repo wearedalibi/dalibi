@@ -30,8 +30,8 @@ class EvaluationTemplate extends Model
 
     protected $casts = [
         'coefficient' => 'decimal:2',
-        'max_score'   => 'decimal:2',
-        'date'        => 'date',
+        'max_score' => 'decimal:2',
+        'date' => 'date',
     ];
 
     public function academicPeriod(): BelongsTo

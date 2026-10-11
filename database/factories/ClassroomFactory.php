@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Classroom;
 use App\Models\ClassroomType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Classroom>
+ * @extends Factory<Classroom>
  */
 class ClassroomFactory extends Factory
 {
@@ -15,11 +16,11 @@ class ClassroomFactory extends Factory
         $name = strtoupper(fake()->bothify('??#-?'));
 
         return [
-            'name'               => $name,
-            'code'               => strtoupper(fake()->unique()->bothify('??##')),
-            'capacity'           => fake()->numberBetween(20, 50),
-            'active'             => true,
-            'classroom_type_id'  => null,
+            'name' => $name,
+            'code' => strtoupper(fake()->unique()->bothify('??##')),
+            'capacity' => fake()->numberBetween(20, 50),
+            'active' => true,
+            'classroom_type_id' => null,
         ];
     }
 

@@ -61,6 +61,7 @@ chaque section, aligné sur les indicateurs de l'annuaire statistique / carte sc
 - **Préfixe de matricule configurable par rôle** (`config/matricule.php`), repli générique `USR`
 - Authentification email/mot de passe, **Two-Factor Authentication (2FA)**
 - Affectation des enseignants aux classes et matières (tout rôle disposant de la permission de saisie des notes est sélectionnable)
+- **Statistiques des affectations par enseignant** (filtre sur l'année active + enseignant) avec **export PDF**
 
 ### Gestion académique
 
@@ -82,9 +83,10 @@ chaque section, aligné sur les indicateurs de l'annuaire statistique / carte sc
 
 ### Emploi du temps
 
-- Grille hebdomadaire par classe (jour / créneau horaire)
+- Grille hebdomadaire **par classe** (jour / créneau horaire), **rattachée à l'année académique active**
 - Création, modification et suppression des créneaux (matière, enseignant)
-- Export PDF de l'emploi du temps d'une classe
+- **Vue par enseignant** : programmation complète d'un enseignant, toutes classes confondues
+- Export PDF (par classe **ou** par enseignant) avec en-tête officielle
 
 ### Examens & évaluations
 
@@ -171,7 +173,10 @@ Un visualiseur **Redoc** est exposé sur **`/docs/api`**, mais **gardé par l'en
 - **Tranches de paiement** (échéancier) avec **contrôle serveur** : le total des tranches ne peut jamais dépasser le montant de la structure
 - **Réplication d'une année** : copie de toutes les structures (et leurs tranches) d'une année source vers l'année active, sans doublons
 - Inscriptions et paiements des écolages avec cycle de facturation (émise / partiellement payée / payée)
+- **Reçu de paiement & facture imprimables** : **en-tête officielle unifiée** (identique aux bulletins), **montant en toutes lettres**, zone signature/cachet, et **deux volets** (exemplaire établissement + payeur) pour le reçu
 - **Reçus de paiement** : numérotation séquentielle (REC-AAAA-0001), **code-barres** avec code de vérification unique anti-falsification, page de vérification réservée à la comptabilité ; garde-fou anti trop-perçu
+- **Confirmation d'inscription** imprimable, portant l'**état de règlement** (soldée / partiellement réglée / non réglée)
+- **Synthèse de recouvrement** sur la liste des inscriptions (total facturé, encaissé + taux, reste à recouvrer, impayées), filtrable par année et classe
 
 ### Notes, bulletins & réclamations
 
@@ -261,7 +266,8 @@ DB_PASSWORD=votre_mot_de_passe
 
 ```bash
 php artisan migrate
-php artisan db:seed --class=SchoolDemoSeeder  # optionnel
+php artisan db:seed --class=ReferenceDataSeeder   # données de référence (rôles, classes, matières…)
+php artisan db:seed --class=DemoSeeder            # optionnel : jeu de démonstration complet (élèves, notes, finances…)
 ```
 
 ### 4 bis. Lien de stockage des fichiers
@@ -514,7 +520,7 @@ dalibi/
 │   │   ├── helpers/     # route.ts, etc.
 │   │   └── types/       # Types TypeScript & menu
 │   └── views/
-│       └── exports/     # Vues Blade pour export PDF (planning)
+│       └── exports/     # Vues Blade pour exports PDF (bulletins, reçus/factures, listes, emploi du temps, statistiques)
 └── routes/web.php       # Toutes les routes
 ```
 
@@ -538,7 +544,7 @@ php artisan test
 
 ## 📝 Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est un **logiciel libre** publié sous licence **GNU GPL v3**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## 🤝 Contribution
 

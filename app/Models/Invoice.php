@@ -27,17 +27,17 @@ class Invoice extends Model
     ];
 
     protected $casts = [
-        'subtotal'         => 'float',
-        'discount_amount'  => 'float',
-        'total'            => 'float',
-        'amount_paid'      => 'float',
+        'subtotal' => 'float',
+        'discount_amount' => 'float',
+        'total' => 'float',
+        'amount_paid' => 'float',
         'amount_remaining' => 'float',
-        'issued_at'        => 'date',
-        'due_date'         => 'date',
+        'issued_at' => 'date',
+        'due_date' => 'date',
     ];
 
     /* ------------------------------------------------------------------ */
-    /* Relations                                                            */
+    /* Relations */
     /* ------------------------------------------------------------------ */
 
     public function enrollment(): BelongsTo
@@ -56,7 +56,7 @@ class Invoice extends Model
     }
 
     /* ------------------------------------------------------------------ */
-    /* Business logic                                                       */
+    /* Business logic */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -64,10 +64,10 @@ class Invoice extends Model
      */
     public function recalculate(): void
     {
-        $this->subtotal        = (float) $this->items()->where('type', 'FEE')->sum('amount');
+        $this->subtotal = (float) $this->items()->where('type', 'FEE')->sum('amount');
         $this->discount_amount = (float) $this->items()->where('type', 'DISCOUNT')->sum('amount');
-        $this->total           = max(0, $this->subtotal - $this->discount_amount);
-        $this->amount_paid     = (float) $this->payments()->sum('amount');
+        $this->total = max(0, $this->subtotal - $this->discount_amount);
+        $this->amount_paid = (float) $this->payments()->sum('amount');
         $this->amount_remaining = max(0, $this->total - $this->amount_paid);
 
         if ($this->amount_paid <= 0) {

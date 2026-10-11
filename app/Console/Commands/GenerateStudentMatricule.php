@@ -39,6 +39,7 @@ class GenerateStudentMatricule extends Command
 
             if ($students->isEmpty()) {
                 $this->info('Aucun élève trouvé.');
+
                 return 0;
             }
 
@@ -49,13 +50,13 @@ class GenerateStudentMatricule extends Command
 
             foreach ($students as $student) {
                 // Générer matricule de l'utilisateur
-                if (!$student->user->natricule) {
+                if (! $student->user->natricule) {
                     $student->user->natricule = $student->user->generateMatricule();
                     $student->user->save();
                 }
 
                 // Générer numéro d'enregistrement
-                if (!$student->registration_number) {
+                if (! $student->registration_number) {
                     $student->registration_number = $student->generateRegistrationNumber();
                     $student->save();
                 }
@@ -72,8 +73,9 @@ class GenerateStudentMatricule extends Command
 
         $classId = $this->option('class-id');
 
-        if (!$classId) {
+        if (! $classId) {
             $this->error('Veuillez spécifier --class-id ou --all');
+
             return 1;
         }
 
@@ -81,6 +83,7 @@ class GenerateStudentMatricule extends Command
 
         if ($students->isEmpty()) {
             $this->error("Aucun élève trouvé pour la classe {$classId}");
+
             return 1;
         }
 
@@ -90,12 +93,12 @@ class GenerateStudentMatricule extends Command
         $progressBar->start();
 
         foreach ($students as $student) {
-            if (!$student->user->natricule) {
+            if (! $student->user->natricule) {
                 $student->user->natricule = $student->user->generateMatricule();
                 $student->user->save();
             }
 
-            if (!$student->registration_number) {
+            if (! $student->registration_number) {
                 $student->registration_number = $student->generateRegistrationNumber();
                 $student->save();
             }

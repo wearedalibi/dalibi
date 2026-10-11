@@ -18,7 +18,7 @@ class SalaryComponentController extends Controller
 
         $components = SalaryComponent::query()
             ->when($request->search, function ($q) use ($request) {
-                $term = '%' . $request->search . '%';
+                $term = '%'.$request->search.'%';
                 $q->where(fn ($s) => $s->where('name', 'like', $term)->orWhere('code', 'like', $term));
             })
             ->when(in_array($request->type, ['earning', 'deduction'], true), fn ($q) => $q->where('type', $request->type))
@@ -28,8 +28,8 @@ class SalaryComponentController extends Controller
 
         return Inertia::render('Rh/SalaryComponents/Index', [
             'components' => $components,
-            'perPage'    => $perPage,
-            'filters'    => $request->only(['search', 'type']),
+            'perPage' => $perPage,
+            'filters' => $request->only(['search', 'type']),
         ]);
     }
 
@@ -57,16 +57,16 @@ class SalaryComponentController extends Controller
     private function validateData(Request $request): array
     {
         return $request->validate([
-            'name'           => ['required', 'string', 'max:255'],
-            'code'           => ['nullable', 'string', 'max:50'],
-            'type'           => ['required', Rule::in([SalaryComponent::EARNING, SalaryComponent::DEDUCTION])],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:50'],
+            'type' => ['required', Rule::in([SalaryComponent::EARNING, SalaryComponent::DEDUCTION])],
             'default_amount' => ['nullable', 'numeric', 'min:0', 'max:999999999'],
-            'is_default'     => ['sometimes', 'boolean'],
-            'active'         => ['sometimes', 'boolean'],
-            'sort_order'     => ['nullable', 'integer', 'min:0'],
+            'is_default' => ['sometimes', 'boolean'],
+            'active' => ['sometimes', 'boolean'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ], [
             'name.required' => 'Le nom de la rubrique est obligatoire.',
-            'type.in'       => 'Type invalide (gain ou retenue).',
+            'type.in' => 'Type invalide (gain ou retenue).',
         ]);
     }
 }

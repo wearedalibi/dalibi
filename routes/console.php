@@ -17,7 +17,7 @@ try {
     $frequency = BackupSetting::get('frequency', 'none');
 
     if ($frequency !== 'none') {
-        $time  = BackupSetting::get('time', '02:00');
+        $time = BackupSetting::get('time', '02:00');
         $event = Schedule::command('backup:run --scheduled');
 
         if ($frequency === 'weekly') {
@@ -28,6 +28,6 @@ try {
 
         $event->withoutOverlapping();
     }
-} catch (\Throwable) {
+} catch (Throwable) {
     // Table backup_settings absente (avant migrations) : aucune planification.
 }

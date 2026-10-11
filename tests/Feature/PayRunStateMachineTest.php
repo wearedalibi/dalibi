@@ -38,12 +38,12 @@ class PayRunStateMachineTest extends TestCase
     private function makeRun(float $base = 100000): PayRun
     {
         EmployeeProfile::create([
-            'user_id'        => User::factory()->create()->id,
-            'job_title'      => 'Enseignant',
-            'contract_type'  => 'CDI',
-            'base_salary'    => $base,
+            'user_id' => User::factory()->create()->id,
+            'job_title' => 'Enseignant',
+            'contract_type' => 'CDI',
+            'base_salary' => $base,
             'payment_method' => 'CASH',
-            'status'         => 'active',
+            'status' => 'active',
         ]);
 
         return app(PayrollService::class)->generate(7, 2026);
@@ -60,7 +60,7 @@ class PayRunStateMachineTest extends TestCase
     {
         $admin = $this->admin();
         $this->actingAs($admin);
-        $run  = $this->makeRun();
+        $run = $this->makeRun();
         $cash = $this->cash();
 
         $this->actingAs($admin)
@@ -87,7 +87,7 @@ class PayRunStateMachineTest extends TestCase
     {
         $admin = $this->admin();
         $this->actingAs($admin);
-        $run  = $this->makeRun();
+        $run = $this->makeRun();
         $cash = $this->cash();
 
         $this->actingAs($admin)->post(route('pay-runs.validate', $run));
@@ -111,7 +111,7 @@ class PayRunStateMachineTest extends TestCase
     {
         $admin = $this->admin();
         $this->actingAs($admin);
-        $run  = $this->makeRun();
+        $run = $this->makeRun();
         $cash = $this->cash();
 
         $this->actingAs($admin)->post(route('pay-runs.validate', $run));

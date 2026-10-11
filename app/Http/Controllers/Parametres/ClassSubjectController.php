@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassSubjectRequest;
 use App\Http\Requests\UpdateClassSubjectRequest;
 use App\Models\AcademicYear;
-use App\Models\ClassSubject;
 use App\Models\Classroom;
+use App\Models\ClassSubject;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -29,9 +29,9 @@ class ClassSubjectController extends Controller
                 $q->whereHas('class', function ($q) use ($search) {
                     $q->where('name', 'ilike', "%{$search}%");
                 })
-                ->orWhereHas('subject', function ($q) use ($search) {
-                    $q->where('name', 'ilike', "%{$search}%");
-                });
+                    ->orWhereHas('subject', function ($q) use ($search) {
+                        $q->where('name', 'ilike', "%{$search}%");
+                    });
             });
         }
 
@@ -143,7 +143,7 @@ class ClassSubjectController extends Controller
         $classrooms = Classroom::where('active', true)
             ->orderBy('name')
             ->get();
-        
+
         // Get all subjects and mark the ones already assigned for this class+year
         $subjects = Subject::orderBy('name')->get();
         $assignedSubjects = ClassSubject::where('class_id', $classSubject->class_id)
@@ -157,7 +157,7 @@ class ClassSubjectController extends Controller
                 'subject' => $assignment->subject,
             ])
             ->values();
-        
+
         $academicYears = AcademicYear::where('active', true)
             ->select(['id', 'year', 'start_date', 'end_date'])
             ->orderBy('start_date', 'desc')

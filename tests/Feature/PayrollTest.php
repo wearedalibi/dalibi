@@ -7,11 +7,14 @@ use App\Models\AccountingTransaction;
 use App\Models\CashAccount;
 use App\Models\EmployeeProfile;
 use App\Models\PayRun;
+use App\Models\Payslip;
 use App\Models\SalaryComponent;
+use App\Models\School;
 use App\Models\User;
 use App\Services\PayrollService;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class PayrollTest extends TestCase
@@ -34,12 +37,12 @@ class PayrollTest extends TestCase
         $u = User::factory()->create();
 
         return EmployeeProfile::create([
-            'user_id'        => $u->id,
-            'job_title'      => 'Enseignant',
-            'contract_type'  => 'CDI',
-            'base_salary'    => $base,
+            'user_id' => $u->id,
+            'job_title' => 'Enseignant',
+            'contract_type' => 'CDI',
+            'base_salary' => $base,
             'payment_method' => 'CASH',
-            'status'         => 'active',
+            'status' => 'active',
         ]);
     }
 
@@ -75,7 +78,7 @@ class PayrollTest extends TestCase
         $this->actingAs($this->admin());
         $this->employee(100000);
         $cash = $this->cash(500000);
-        $svc  = app(PayrollService::class);
+        $svc = app(PayrollService::class);
 
         $run = $svc->generate(7, 2026);
         $svc->validate($run->fresh());
@@ -97,7 +100,7 @@ class PayrollTest extends TestCase
         $this->actingAs($this->admin());
         $this->employee(120000);
         $cash = $this->cash(500000);
-        $svc  = app(PayrollService::class);
+        $svc = app(PayrollService::class);
 
         $run = $svc->generate(7, 2026);
         $svc->validate($run->fresh());
@@ -118,17 +121,17 @@ class PayrollTest extends TestCase
         $svc = app(PayrollService::class);
         $svc->generate(7, 2026);
 
-        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $svc->generate(7, 2026);
     }
 
     public function test_payslip_pdf_downloads_with_document_header(): void
     {
-        \App\Models\School::factory()->create();
+        School::factory()->create();
         $this->actingAs($this->admin());
         $this->employee(100000);
 
-        $run  = app(PayrollService::class)->generate(7, 2026);
+        $run = app(PayrollService::class)->generate(7, 2026);
         $slip = $run->payslips->first();
 
         $res = $this->get(route('payslips.pdf', $slip->id));
@@ -156,7 +159,7 @@ class PayrollTest extends TestCase
         $this->actingAs($this->admin());
         $this->employee(100000);
         $cash = $this->cash(500000);
-        $svc  = app(PayrollService::class);
+        $svc = app(PayrollService::class);
 
         $run = $svc->generate(7, 2026);
         $svc->validate($run->fresh());
@@ -165,7 +168,7 @@ class PayrollTest extends TestCase
         $this->delete(route('pay-runs.destroy', $run->id))->assertRedirect(route('pay-runs.index'));
 
         $this->assertDatabaseMissing('pay_runs', ['id' => $run->id]);
-        $this->assertSame(0, \App\Models\Payslip::where('pay_run_id', $run->id)->count());
+        $this->assertSame(0, Payslip::where('pay_run_id', $run->id)->count());
         $this->assertSame(0, AccountingTransaction::where('reference_type', 'PAYROLL')->count());
         $this->assertEqualsWithDelta(500000, (float) $cash->fresh()->balance, 0.01);
     }

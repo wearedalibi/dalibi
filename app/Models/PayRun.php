@@ -12,9 +12,12 @@ class PayRun extends Model
 {
     use HasFactory, HasUuids;
 
-    public const DRAFT     = 'draft';
+    public const DRAFT = 'draft';
+
     public const VALIDATED = 'validated';
-    public const PAID      = 'paid';
+
+    public const PAID = 'paid';
+
     public const CANCELLED = 'cancelled';
 
     protected $fillable = [
@@ -34,13 +37,13 @@ class PayRun extends Model
     ];
 
     protected $casts = [
-        'period_month'     => 'integer',
-        'period_year'      => 'integer',
-        'total_gross'      => 'float',
+        'period_month' => 'integer',
+        'period_year' => 'integer',
+        'total_gross' => 'float',
         'total_deductions' => 'float',
-        'total_net'        => 'float',
-        'validated_at'     => 'datetime',
-        'paid_at'          => 'datetime',
+        'total_net' => 'float',
+        'validated_at' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     public function payslips(): HasMany
@@ -63,6 +66,6 @@ class PayRun extends Model
     {
         $months = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-        return ($months[$this->period_month] ?? $this->period_month) . ' ' . $this->period_year;
+        return ($months[$this->period_month] ?? $this->period_month).' '.$this->period_year;
     }
 }

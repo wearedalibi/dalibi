@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAcademicYearRequest;
 use App\Http\Requests\UpdateAcademicYearRequest;
 use App\Jobs\ArchiveAcademicYearJob;
@@ -87,7 +87,7 @@ class AcademicYearController extends Controller
             ArchiveAcademicYearJob::dispatch($academicYear->id, $request->user()?->id);
 
             return redirect()->route('academic-years.index')
-                ->with('message', "Année académique clôturée. Une archive de sauvegarde est en cours de génération.");
+                ->with('message', 'Année académique clôturée. Une archive de sauvegarde est en cours de génération.');
         }
 
         return redirect()->route('academic-years.index')

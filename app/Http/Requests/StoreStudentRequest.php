@@ -58,17 +58,17 @@ class StoreStudentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'firstname.required' => "Le prénom est obligatoire.",
-            'lastname.required' => "Le nom est obligatoire.",
-            'gender.required' => "Le genre est obligatoire.",
-            'birth_date.required' => "La date de naissance est obligatoire.",
+            'firstname.required' => 'Le prénom est obligatoire.',
+            'lastname.required' => 'Le nom est obligatoire.',
+            'gender.required' => 'Le genre est obligatoire.',
+            'birth_date.required' => 'La date de naissance est obligatoire.',
             'information.admission_type.required' => "Le type d'admission est obligatoire.",
-            'parent.father_firstname.min' => "Le prénom du père doit avoir au moins 2 caractères.",
-            'parent.father_lastname.min' => "Le nom du père doit avoir au moins 2 caractères.",
-            'parent.mother_firstname.min' => "Le prénom de la mère doit avoir au moins 2 caractères.",
-            'parent.mother_lastname.min' => "Le nom de la mère doit avoir au moins 2 caractères.",
-            'matricule.unique' => "Ce matricule existe déjà.",
-            'email.unique' => "Cet email existe déjà.",
+            'parent.father_firstname.min' => 'Le prénom du père doit avoir au moins 2 caractères.',
+            'parent.father_lastname.min' => 'Le nom du père doit avoir au moins 2 caractères.',
+            'parent.mother_firstname.min' => 'Le prénom de la mère doit avoir au moins 2 caractères.',
+            'parent.mother_lastname.min' => 'Le nom de la mère doit avoir au moins 2 caractères.',
+            'matricule.unique' => 'Ce matricule existe déjà.',
+            'email.unique' => 'Cet email existe déjà.',
         ];
     }
 }

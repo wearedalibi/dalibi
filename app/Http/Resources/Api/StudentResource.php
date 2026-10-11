@@ -14,12 +14,12 @@ class StudentResource extends JsonResource
             : null;
 
         return [
-            'id'           => $this->id,
-            'matricule'    => $this->matricule,
-            'firstname'    => $this->firstname,
-            'lastname'     => $this->lastname,
-            'gender'       => $this->gender,
-            'class'        => $classroom?->name,
+            'id' => $this->id,
+            'matricule' => $this->matricule,
+            'firstname' => $this->firstname,
+            'lastname' => $this->lastname,
+            'gender' => $this->gender,
+            'class' => $classroom?->name,
             'relationship' => $this->whenPivotLoaded('guardian_student', fn () => $this->pivot->relationship),
         ];
     }

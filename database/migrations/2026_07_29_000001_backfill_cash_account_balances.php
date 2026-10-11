@@ -14,10 +14,10 @@ return new class extends Migration
     public function up(): void
     {
         $methodToType = [
-            'CASH'          => 'CASH',
-            'MOBILE_MONEY'  => 'MOBILE_MONEY',
+            'CASH' => 'CASH',
+            'MOBILE_MONEY' => 'MOBILE_MONEY',
             'BANK_TRANSFER' => 'BANK',
-            'CHEQUE'        => 'BANK',
+            'CHEQUE' => 'BANK',
         ];
 
         // Caisse par défaut (1re active) pour chaque type.
@@ -47,7 +47,7 @@ return new class extends Migration
 
         // 3) Recalculer chaque solde = somme INCOME − somme EXPENSE des transactions de la caisse.
         foreach (CashAccount::all() as $account) {
-            $income  = (float) AccountingTransaction::where('cash_account_id', $account->id)->where('type', 'INCOME')->sum('amount');
+            $income = (float) AccountingTransaction::where('cash_account_id', $account->id)->where('type', 'INCOME')->sum('amount');
             $expense = (float) AccountingTransaction::where('cash_account_id', $account->id)->where('type', 'EXPENSE')->sum('amount');
             $account->updateQuietly(['balance' => $income - $expense]);
         }

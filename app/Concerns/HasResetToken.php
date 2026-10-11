@@ -2,11 +2,13 @@
 
 namespace App\Concerns;
 
+use App\Models\Guardian;
+use App\Models\Student;
 use Illuminate\Support\Str;
 
 /**
  * Jeton d'invitation / réinitialisation de mot de passe (haché, expirant).
- * Partagé par les comptes du portail ({@see \App\Models\Guardian}, {@see \App\Models\Student}).
+ * Partagé par les comptes du portail ({@see Guardian}, {@see Student}).
  *
  * Nécessite les colonnes : reset_token (string nullable), reset_expires_at (timestamp nullable).
  */
@@ -17,7 +19,7 @@ trait HasResetToken
         $raw = Str::random(48);
 
         $this->forceFill([
-            'reset_token'      => hash('sha256', $raw),
+            'reset_token' => hash('sha256', $raw),
             'reset_expires_at' => now()->addDays($days),
         ])->save();
 

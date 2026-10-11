@@ -20,7 +20,7 @@ class DocumentHeaderSeeder extends Seeder
 
             DocumentHeader::create([
                 'school_id' => $school->id,
-                'layout'    => $config['layout'],
+                'layout' => $config['layout'],
                 'watermark' => $config['watermark'],
             ]);
         });

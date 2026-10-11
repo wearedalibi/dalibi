@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassSubjectRequest;
 use App\Models\AcademicYear;
-use App\Models\ClassSubject;
 use App\Models\Classroom;
+use App\Models\ClassSubject;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;

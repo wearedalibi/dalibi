@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Eleves;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,7 +12,6 @@ use Inertia\Response;
 
 class StudentImportController extends Controller
 {
-
     /** Colonnes attendues (clé canonique => libellé). */
     private const COLUMNS = ['prenom', 'nom', 'sexe', 'date_naissance', 'lieu_naissance', 'nationalite', 'telephone', 'email', 'matricule'];
 
@@ -29,10 +27,10 @@ class StudentImportController extends Controller
     {
         $header = implode(';', self::COLUMNS);
         $example = implode(';', ['Koffi', 'MENSAH', 'M', '2012-05-14', 'Lomé', 'Togolaise', '+228 90 00 00 00', '', '']);
-        $csv = "\xEF\xBB\xBF" . $header . "\n" . $example . "\n"; // BOM UTF-8 pour Excel
+        $csv = "\xEF\xBB\xBF".$header."\n".$example."\n"; // BOM UTF-8 pour Excel
 
         return response($csv, 200, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="modele-import-eleves.csv"',
         ]);
     }
@@ -47,9 +45,9 @@ class StudentImportController extends Controller
 
         $rows = $this->parseCsv($request->file('file')->getRealPath());
 
-        $errors   = [];
-        $valid    = [];
-        $seenMat  = [];
+        $errors = [];
+        $valid = [];
+        $seenMat = [];
         $seenMail = [];
 
         foreach ($rows as $i => $row) {
@@ -57,44 +55,59 @@ class StudentImportController extends Controller
             $rowErrors = [];
 
             $prenom = trim($row['prenom'] ?? '');
-            $nom    = trim($row['nom'] ?? '');
-            $sexe   = $this->normalizeGender($row['sexe'] ?? '');
-            $dob    = $this->parseDate($row['date_naissance'] ?? '');
-            $mat    = trim($row['matricule'] ?? '');
-            $email  = trim($row['email'] ?? '');
+            $nom = trim($row['nom'] ?? '');
+            $sexe = $this->normalizeGender($row['sexe'] ?? '');
+            $dob = $this->parseDate($row['date_naissance'] ?? '');
+            $mat = trim($row['matricule'] ?? '');
+            $email = trim($row['email'] ?? '');
 
-            if ($prenom === '') $rowErrors[] = 'Prénom manquant';
-            if ($nom === '')    $rowErrors[] = 'Nom manquant';
-            if (! $sexe)        $rowErrors[] = 'Sexe invalide (M/F)';
-            if (! $dob)         $rowErrors[] = 'Date de naissance invalide (AAAA-MM-JJ)';
+            if ($prenom === '') {
+                $rowErrors[] = 'Prénom manquant';
+            }
+            if ($nom === '') {
+                $rowErrors[] = 'Nom manquant';
+            }
+            if (! $sexe) {
+                $rowErrors[] = 'Sexe invalide (M/F)';
+            }
+            if (! $dob) {
+                $rowErrors[] = 'Date de naissance invalide (AAAA-MM-JJ)';
+            }
 
             if ($mat !== '') {
-                if (isset($seenMat[$mat]))                       $rowErrors[] = 'Matricule en double dans le fichier';
-                elseif (Student::where('matricule', $mat)->exists()) $rowErrors[] = 'Matricule déjà existant';
+                if (isset($seenMat[$mat])) {
+                    $rowErrors[] = 'Matricule en double dans le fichier';
+                } elseif (Student::where('matricule', $mat)->exists()) {
+                    $rowErrors[] = 'Matricule déjà existant';
+                }
                 $seenMat[$mat] = true;
             }
             if ($email !== '') {
-                if (isset($seenMail[$email]))                       $rowErrors[] = 'Email en double dans le fichier';
-                elseif (Student::where('email', $email)->exists())  $rowErrors[] = 'Email déjà existant';
+                if (isset($seenMail[$email])) {
+                    $rowErrors[] = 'Email en double dans le fichier';
+                } elseif (Student::where('email', $email)->exists()) {
+                    $rowErrors[] = 'Email déjà existant';
+                }
                 $seenMail[$email] = true;
             }
 
             if ($rowErrors) {
                 $errors[] = ['line' => $line, 'name' => trim("$nom $prenom"), 'errors' => $rowErrors];
+
                 continue;
             }
 
             $valid[] = [
-                'firstname'      => $prenom,
-                'lastname'       => $nom,
-                'gender'         => $sexe,
-                'birth_date'     => $dob,
+                'firstname' => $prenom,
+                'lastname' => $nom,
+                'gender' => $sexe,
+                'birth_date' => $dob,
                 'place_of_birth' => trim($row['lieu_naissance'] ?? '') ?: null,
-                'nationality'    => trim($row['nationalite'] ?? '') ?: null,
-                'phone'          => trim($row['telephone'] ?? '') ?: null,
-                'email'          => $email ?: null,
-                'matricule'      => $mat ?: null,
-                'active'         => true,
+                'nationality' => trim($row['nationalite'] ?? '') ?: null,
+                'phone' => trim($row['telephone'] ?? '') ?: null,
+                'email' => $email ?: null,
+                'matricule' => $mat ?: null,
+                'active' => true,
             ];
         }
 
@@ -110,10 +123,10 @@ class StudentImportController extends Controller
 
         return Inertia::render('Eleves/Students/Import', [
             'result' => [
-                'total'    => count($rows),
+                'total' => count($rows),
                 'imported' => $imported,
-                'failed'   => count($errors),
-                'errors'   => $errors,
+                'failed' => count($errors),
+                'errors' => $errors,
             ],
         ]);
     }

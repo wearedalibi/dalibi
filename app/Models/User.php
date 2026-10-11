@@ -4,35 +4,38 @@
  * Projet : Système de Gestion Scolaire (SIGE) - Togo
  * Description : Gestion des élèves, des notes et des bulletins.
  * * Copyright (c) 2026 Kudayah Sassou Horacio Herve.
- * * Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier 
- * selon les termes de la Licence Publique Générale GNU (GPL v3) telle que publiée 
+ * * Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+ * selon les termes de la Licence Publique Générale GNU (GPL v3) telle que publiée
  * par la Free Software Foundation.
- * * Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; 
- * sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN BUT PARTICULIER. 
+ * * Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ;
+ * sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN BUT PARTICULIER.
  * Consultez la Licence Publique Générale GNU pour plus de détails.
- * * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU 
+ * * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU
  * avec ce programme. Sinon, voir <https://www.gnu.org/licenses/>.
  */
 
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Concerns\Auditable;
+use App\Constants\Roles;
+use App\Services\MatriculeService;
+use App\Traits\HasMatricule;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Concerns\Auditable;
-use App\Constants\Roles;
-use App\Traits\HasMatricule;
-use App\Services\MatriculeService;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasUuids, Notifiable, TwoFactorAuthenticatable, HasRoles, HasMatricule, Auditable;
+    /** @use HasFactory<UserFactory> */
+    use Auditable, HasFactory, HasMatricule, HasRoles, HasUuids, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -103,19 +106,19 @@ class User extends Authenticatable
     }
 
     /** Profil RH (paie) de l'utilisateur, s'il est employé. */
-    public function employeeProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function employeeProfile(): HasOne
     {
         return $this->hasOne(EmployeeProfile::class);
     }
 
     /** Affectations matières où l'utilisateur est l'enseignant. */
-    public function subjectAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function subjectAssignments(): HasMany
     {
         return $this->hasMany(SubjectAssignment::class, 'teacher_id');
     }
 
     /** Créneaux d'emploi du temps où l'utilisateur est l'enseignant. */
-    public function timetableSlots(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function timetableSlots(): HasMany
     {
         return $this->hasMany(TimetableSlot::class, 'teacher_id');
     }
@@ -147,8 +150,6 @@ class User extends Authenticatable
 
     /**
      * Générer un matricule pour cet utilisateur basé sur son rôle
-     *
-     * @return string
      */
     public function generateMatricule(): string
     {

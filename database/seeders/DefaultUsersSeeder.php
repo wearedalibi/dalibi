@@ -26,15 +26,15 @@ class DefaultUsersSeeder extends Seeder
         // École par défaut (dépendance des seeders de classes)
         if (! School::query()->exists()) {
             School::create([
-                'name'        => 'École Centrale',
-                'level'       => 'primaire',
-                'code'        => 'ECOLE001',
-                'address'     => 'Lomé, Togo',
-                'phone'       => '+228 22 123 456',
-                'email'       => 'contact@dalibi.tg',
-                'principal'   => 'Directeur École',
+                'name' => 'École Centrale',
+                'level' => 'primaire',
+                'code' => 'ECOLE001',
+                'address' => 'Lomé, Togo',
+                'phone' => '+228 22 123 456',
+                'email' => 'contact@dalibi.tg',
+                'principal' => 'Directeur École',
                 'description' => 'École de démonstration',
-                'active'      => true,
+                'active' => true,
             ]);
         }
 
@@ -51,14 +51,14 @@ class DefaultUsersSeeder extends Seeder
             $user = User::updateOrCreate(
                 ['email' => $email],
                 [
-                    'firstname'            => $firstname,
-                    'lastname'             => $lastname,
-                    'gender'               => 'female',
-                    'password'             => self::PASSWORD,
-                    'is_demo'              => true,
+                    'firstname' => $firstname,
+                    'lastname' => $lastname,
+                    'gender' => 'female',
+                    'password' => self::PASSWORD,
+                    'is_demo' => true,
                     // Mot de passe connu : l'utilisateur doit en choisir un à la 1re connexion.
                     'must_change_password' => true,
-                    'email_verified_at'    => Carbon::now(),
+                    'email_verified_at' => Carbon::now(),
                 ],
             );
 
@@ -75,8 +75,8 @@ class DefaultUsersSeeder extends Seeder
         }
 
         $this->command?->warn(
-            'Comptes de démonstration créés — mot de passe : "' . self::PASSWORD . '". '
-            . 'Un changement de mot de passe sera exigé à la première connexion.'
+            'Comptes de démonstration créés — mot de passe : "'.self::PASSWORD.'". '
+            .'Un changement de mot de passe sera exigé à la première connexion.'
         );
     }
 }

@@ -48,12 +48,12 @@ class ClassTypeSeeder extends Seeder
 
             if (! $exists) {
                 DB::table('classroom_types')->insert([
-                    'id'          => (string) Str::uuid(),
-                    'name'        => $type['name'],
+                    'id' => (string) Str::uuid(),
+                    'name' => $type['name'],
                     'description' => $type['description'],
-                    'active'      => $type['active'],
-                    'created_at'  => now(),
-                    'updated_at'  => now(),
+                    'active' => $type['active'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
         }

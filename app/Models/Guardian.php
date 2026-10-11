@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Guardian extends Authenticatable
 {
-    use HasApiTokens, HasUuids, Notifiable, HasResetToken;
+    use HasApiTokens, HasResetToken, HasUuids, Notifiable;
 
     protected $fillable = [
         'first_name',
@@ -28,10 +28,10 @@ class Guardian extends Authenticatable
     ];
 
     protected $casts = [
-        'is_active'         => 'boolean',
+        'is_active' => 'boolean',
         'email_verified_at' => 'datetime',
-        'reset_expires_at'  => 'datetime',
-        'password'          => 'hashed',
+        'reset_expires_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
     /** Enfants liés à ce tuteur. */
@@ -42,7 +42,6 @@ class Guardian extends Authenticatable
 
     public function fullName(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 }
-

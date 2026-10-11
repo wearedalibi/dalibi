@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Constants\Roles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ReviewNoteReclamationRequest extends FormRequest
@@ -15,7 +14,7 @@ class ReviewNoteReclamationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status'          => ['required', 'in:approved,rejected'],
+            'status' => ['required', 'in:approved,rejected'],
             'corrected_score' => ['nullable', 'numeric', 'min:0', 'max:9999'],
             'correction_note' => ['nullable', 'string', 'max:1000'],
         ];
@@ -34,7 +33,7 @@ class ReviewNoteReclamationRequest extends FormRequest
     {
         return [
             'status.required' => 'La décision est obligatoire.',
-            'status.in'       => 'La décision doit être "approuvé" ou "rejeté".',
+            'status.in' => 'La décision doit être "approuvé" ou "rejeté".',
         ];
     }
 }

@@ -129,6 +129,8 @@ interface DashboardProps {
         total_users:       number;
         enrollments_year:  number;
         enrollments_week:  number;
+        teachers_count:    number;
+        rem:               number | null;
         recentEnrollments: RecentEnrollment[];
         byClass:           EnrollmentByClass[];
     };
@@ -146,6 +148,11 @@ interface DashboardProps {
         exam_registrations:  number;
         pendingPermissions:  PendingPermission[];
         upcomingExams:       UpcomingExam[];
+    };
+    bulletins?: {
+        period:    string | null;
+        validated: number;
+        average:   number | null;
     };
 }
 
@@ -204,13 +211,14 @@ function KpiCard({ title, value, sub, icon: Icon, color }: {
     };
     const { bg, text } = styles[color];
     return (
-        <div className={`${bg} rounded-xl p-5 shadow-sm min-h-28 flex flex-col justify-center`}>
+        <div className="bg-white dark:bg-card rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 min-h-28 flex flex-col justify-center">
             <div className="flex items-start justify-between">
                 <div className="min-w-0">
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{title}</p>
                     <p className={`text-2xl font-bold ${text} mt-1.5 truncate`}>{value}</p>
                     {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{sub}</p>}
                 </div>
+                {/* Chip d'icône : seul accent coloré restant, le fond de la card reste blanc. */}
                 <div className={`${bg} rounded-lg p-2 shrink-0 ml-3`}>
                     <Icon className={`w-6 h-6 ${text}`} />
                 </div>
@@ -265,7 +273,7 @@ function SectionCard({ title, icon, count, children, action }: {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tableau de bord', href: '/dashboard' }];
 
-export default function Dashboard({ activeYear, selectedYearId, selectedYear, academicYears, userRole, financial, enrollments, teaching, academic }: Readonly<DashboardProps>) {
+export default function Dashboard({ activeYear, selectedYearId, selectedYear, academicYears, userRole, financial, enrollments, teaching, academic, bulletins }: Readonly<DashboardProps>) {
     const theme = useChartTheme();
     const fmt = useMoney();
 
@@ -286,7 +294,12 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
     const isEnrollment = !!enrollments;
     const isTeacher    = !!teaching;
     const isAcademic   = !!academic;
+    const isBulletins  = !!bulletins;
     const reasonLabel: Record<string, string> = { medical: 'Médical', familial: 'Familial', autre: 'Autre' };
+
+    // Taux de présence du jour (présents / pointés), calculé depuis les compteurs existants.
+    const pointedToday = academic ? academic.present_today + academic.absent_today : 0;
+    const presenceRateToday = pointedToday > 0 ? Math.round((academic!.present_today / pointedToday) * 100) : null;
 
     const g = enrollments?.students_by_gender;
     const genderTotal = g ? g.male + g.female + g.other : 0;
@@ -343,9 +356,10 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                     </div>
                 )}
 
-                {/* ── KPIs inscriptions ─────────────────────────────────── */}
+                {/* ── KPIs : grille unifiée — cards identiques, accolées, sans espace ── */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {isEnrollment && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <>
                         <KpiCard
                             title="Élèves inscrits"
                             value={enrollments.enrollments_year}
@@ -368,7 +382,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             color="green"
                         />
                         {isFinancial && (
-                            <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm flex flex-col justify-center min-h-28">
+                            <div className="bg-white dark:bg-card rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 min-h-28 flex flex-col justify-center">
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Taux de recouvrement</p>
                                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{collectedPct}%</p>
                                 <ProgressBar
@@ -377,12 +391,6 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                 />
                             </div>
                         )}
-                    </div>
-                )}
-
-                {/* ── Effectifs par sexe + classes + utilisateurs ───────── */}
-                {isEnrollment && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <KpiCard
                             title="Garçons"
                             value={enrollments.students_by_gender.male}
@@ -411,18 +419,37 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             icon={Users}
                             color="orange"
                         />
-                    </div>
+                        <KpiCard
+                            title="Enseignants"
+                            value={enrollments.teachers_count}
+                            sub="Personnel pédagogique"
+                            icon={GraduationCap}
+                            color="purple"
+                        />
+                        <KpiCard
+                            title="Ratio élèves/enseignant"
+                            value={enrollments.rem ?? '—'}
+                            sub={`REM · ${enrollments.teachers_count} enseignant${enrollments.teachers_count > 1 ? 's' : ''}`}
+                            icon={Users}
+                            color="blue"
+                        />
+                    </>
                 )}
-
-                {/* ── KPIs vie scolaire & pédagogie ─────────────────────── */}
                 {isAcademic && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <>
                         <KpiCard
                             title="Présences du jour"
                             value={academic.present_today}
                             sub={`${academic.absent_today} absence${academic.absent_today > 1 ? 's' : ''} aujourd'hui`}
                             icon={UserCheck}
                             color="green"
+                        />
+                        <KpiCard
+                            title="Taux de présence (jour)"
+                            value={presenceRateToday !== null ? `${presenceRateToday}%` : '—'}
+                            sub={pointedToday > 0 ? `${academic.present_today}/${pointedToday} pointés` : 'Aucun pointage'}
+                            icon={UserCheck}
+                            color={presenceRateToday === null ? 'blue' : presenceRateToday >= 90 ? 'green' : presenceRateToday >= 75 ? 'orange' : 'red'}
                         />
                         <KpiCard
                             title="Permissions en attente"
@@ -445,12 +472,28 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             icon={GraduationCap}
                             color="blue"
                         />
-                    </div>
+                    </>
                 )}
-
-                {/* ── KPIs financiers (facturation + synthèse du mois) ─────── */}
+                {isBulletins && (
+                    <>
+                        <KpiCard
+                            title="Bulletins validés"
+                            value={bulletins.validated}
+                            sub={bulletins.period ? `Période : ${bulletins.period}` : 'Toutes périodes'}
+                            icon={FileBadge}
+                            color="blue"
+                        />
+                        <KpiCard
+                            title="Moyenne générale"
+                            value={bulletins.average !== null ? `${bulletins.average}/20` : '—'}
+                            sub={bulletins.period ? `Période : ${bulletins.period}` : 'Période courante'}
+                            icon={CheckCircle2}
+                            color="green"
+                        />
+                    </>
+                )}
                 {isFinancial && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <>
                         <KpiCard
                             title="Total facturé"
                             value={fmt(Number(stats?.total_amount ?? 0))}
@@ -488,8 +531,9 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             icon={Wallet}
                             color={financial.month.net >= 0 ? 'blue' : 'orange'}
                         />
-                    </div>
+                    </>
                 )}
+                </div>
 
                 {/* ── Permissions en attente + Prochains examens ────────── */}
                 {isAcademic && (
@@ -890,7 +934,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             ) : (
                                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 p-5">
                                     {teaching.assignments.map(a => (
-                                        <div key={a.id} className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                                        <div key={a.id} className="bg-white dark:bg-card rounded-lg p-4 border border-gray-100 dark:border-gray-700">
                                             <p className="font-semibold text-blue-700 dark:text-blue-300 text-sm">{a.subject}</p>
                                             <p className="text-xs text-blue-500 dark:text-blue-400 mt-1">
                                                 {a.class_name} <span className="opacity-60">({a.class_code})</span>

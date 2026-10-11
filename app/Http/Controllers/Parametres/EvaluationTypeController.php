@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEvaluationTypeRequest;
 use App\Http\Requests\UpdateEvaluationTypeRequest;
 use App\Models\EvaluationType;
@@ -34,7 +33,7 @@ class EvaluationTypeController extends Controller
 
         return Inertia::render('Parametres/EvaluationTypes/Index', [
             'evaluationTypes' => $evaluationTypes,
-            'filters'         => ['search' => $search],
+            'filters' => ['search' => $search],
         ]);
     }
 

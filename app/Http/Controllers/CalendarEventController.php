@@ -15,8 +15,8 @@ class CalendarEventController extends Controller
     public function index(Request $request): Response
     {
         $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
-        $yearId     = $request->string('academic_year_id')->toString() ?: $activeYear?->id;
-        $type       = (string) $request->query('type', '');
+        $yearId = $request->string('academic_year_id')->toString() ?: $activeYear?->id;
+        $type = (string) $request->query('type', '');
 
         $events = CalendarEvent::query()
             ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
@@ -24,24 +24,24 @@ class CalendarEventController extends Controller
             ->orderBy('start_date')->orderBy('start_time')
             ->get()
             ->map(fn (CalendarEvent $e) => [
-                'id'          => $e->id,
-                'title'       => $e->title,
+                'id' => $e->id,
+                'title' => $e->title,
                 'description' => $e->description,
-                'type'        => $e->type,
-                'start_date'  => $e->start_date?->format('Y-m-d'),
-                'end_date'    => $e->end_date?->format('Y-m-d'),
-                'all_day'     => $e->all_day,
-                'start_time'  => $e->start_time,
-                'end_time'    => $e->end_time,
-                'color'       => $e->color,
+                'type' => $e->type,
+                'start_date' => $e->start_date?->format('Y-m-d'),
+                'end_date' => $e->end_date?->format('Y-m-d'),
+                'all_day' => $e->all_day,
+                'start_time' => $e->start_time,
+                'end_time' => $e->end_time,
+                'color' => $e->color,
             ]);
 
         return Inertia::render('Calendar/Index', [
-            'events'        => $events,
-            'types'         => CalendarEvent::TYPES,
+            'events' => $events,
+            'types' => CalendarEvent::TYPES,
             'academicYears' => AcademicYear::orderByDesc('start_date')->get(['id', 'year']),
-            'activeYear'    => $activeYear,
-            'filters'       => ['academic_year_id' => $yearId, 'type' => $type],
+            'activeYear' => $activeYear,
+            'filters' => ['academic_year_id' => $yearId, 'type' => $type],
         ]);
     }
 

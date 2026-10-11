@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Eleves;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\DocumentIssuance;
+use App\Models\DocumentTemplate;
 use App\Models\Enrollment;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
@@ -67,8 +69,8 @@ class StudentController extends Controller
         }
 
         // Filtres portés par l'inscription : ils doivent viser la MÊME inscription.
-        $classId        = $request->string('class_id')->toString();
-        $yearId         = $request->string('academic_year_id')->toString();
+        $classId = $request->string('class_id')->toString();
+        $yearId = $request->string('academic_year_id')->toString();
         $academicStatus = $request->string('academic_status')->toString();
 
         if ($classId !== '' || $yearId !== '' || $academicStatus !== '') {
@@ -81,19 +83,19 @@ class StudentController extends Controller
 
         // Tri (liste blanche) + départage par id : sans lui, des created_at identiques
         // (création en masse) rendent l'ordre non déterministe et la pagination instable.
-        $sort      = in_array($request->string('sort')->toString(), self::SORTABLE, true)
+        $sort = in_array($request->string('sort')->toString(), self::SORTABLE, true)
             ? $request->string('sort')->toString() : 'created_at';
         $direction = $request->string('direction')->toString() === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sort, $direction)->orderBy('id');
 
-        $perPage  = in_array((int) $request->per_page, [10, 25, 50, 100], true)
+        $perPage = in_array((int) $request->per_page, [10, 25, 50, 100], true)
             ? (int) $request->per_page : 25;
 
         $students = $query->paginate($perPage)->withQueryString();
 
         return Inertia::render('Eleves/Students/Index', [
             'students' => $students,
-            'perPage'  => $perPage,
+            'perPage' => $perPage,
             'filters' => array_merge(
                 $request->only([
                     'search', 'gender', 'nationality', 'status', 'per_page',
@@ -102,12 +104,12 @@ class StudentController extends Controller
                 ['sort' => $sort, 'direction' => $direction],
             ),
             'options' => [
-                'classrooms'       => Classroom::orderBy('name')->get(['id', 'name']),
-                'academicYears'    => AcademicYear::orderByDesc('start_date')->get(['id', 'year']),
+                'classrooms' => Classroom::orderBy('name')->get(['id', 'name']),
+                'academicYears' => AcademicYear::orderByDesc('start_date')->get(['id', 'year']),
                 'academicStatuses' => Enrollment::ACADEMIC_STATUSES,
-                'regions'          => Student::query()->whereNotNull('region')->where('region', '!=', '')
+                'regions' => Student::query()->whereNotNull('region')->where('region', '!=', '')
                     ->distinct()->orderBy('region')->pluck('region'),
-                'prefectures'      => Student::query()->whereNotNull('prefecture')->where('prefecture', '!=', '')
+                'prefectures' => Student::query()->whereNotNull('prefecture')->where('prefecture', '!=', '')
                     ->distinct()->orderBy('prefecture')->pluck('prefecture'),
             ],
             // Query builder (sans casts Eloquent) : l'alias "active" entrerait sinon en
@@ -152,12 +154,12 @@ class StudentController extends Controller
 
     public function store(StoreStudentRequest $request): RedirectResponse
     {
-        $data  = $request->validated();
+        $data = $request->validated();
         $photo = $request->file('profile_photo');
 
         DB::transaction(function () use ($data, $photo): void {
             $studentFillable = array_filter(
-                (new Student())->getFillable(),
+                (new Student)->getFillable(),
                 static fn (string $column): bool => $column !== 'user_id'
             );
 
@@ -169,7 +171,7 @@ class StudentController extends Controller
 
             if ($photo) {
                 $student->update([
-                    'profile_photo' => $photo->store($student->storageFolder() . '/photo', 'secure'),
+                    'profile_photo' => $photo->store($student->storageFolder().'/photo', 'secure'),
                 ]);
             }
 
@@ -196,32 +198,32 @@ class StudentController extends Controller
             ->first();
 
         // Modèles de documents actifs (hors bulletins, générés séparément)
-        $templates = \App\Models\DocumentTemplate::where('is_active', true)
+        $templates = DocumentTemplate::where('is_active', true)
             ->whereIn('category', ['certificat', 'attestation'])
             ->orderBy('category')->orderBy('name')
             ->get()
             ->map(fn ($t) => [
-                'id'         => $t->id,
-                'name'       => $t->name,
+                'id' => $t->id,
+                'name' => $t->name,
                 'type_label' => $t->typeLabel(),
-                'category'   => $t->category,
+                'category' => $t->category,
             ]);
 
         // Documents déjà délivrés (traçabilité)
-        $issued = \App\Models\DocumentIssuance::with(['template:id,name', 'issuedBy:id,firstname,lastname'])
+        $issued = DocumentIssuance::with(['template:id,name', 'issuedBy:id,firstname,lastname'])
             ->where('student_id', $student->id)
             ->orderByDesc('issued_at')
             ->get()
             ->map(fn ($i) => [
-                'id'               => $i->id,
+                'id' => $i->id,
                 'reference_number' => $i->reference_number,
-                'template_name'    => $i->template?->name,
-                'issued_by'        => $i->issuedBy?->name,
-                'issued_at'        => $i->issued_at?->format('d/m/Y H:i'),
+                'template_name' => $i->template?->name,
+                'issued_by' => $i->issuedBy?->name,
+                'issued_at' => $i->issued_at?->format('d/m/Y H:i'),
             ]);
 
         // Inscription de l'année active (pour la réaffectation de classe)
-        $activeYear = \App\Models\AcademicYear::where('active', true)->first(['id', 'year']);
+        $activeYear = AcademicYear::where('active', true)->first(['id', 'year']);
         $currentEnrollment = $activeYear
             ? Enrollment::with('classroom:id,name,code')
                 ->where('student_id', $student->id)
@@ -232,27 +234,27 @@ class StudentController extends Controller
         return Inertia::render('Eleves/Students/Show', [
             'student' => $student,
             'documentContext' => [
-                'templates'      => $templates,
-                'classe'         => $latestEnrollment?->classroom?->name,
+                'templates' => $templates,
+                'classe' => $latestEnrollment?->classroom?->name,
                 'annee_scolaire' => $latestEnrollment?->academicYear?->year,
             ],
             'issuedDocuments' => $issued,
             'currentEnrollment' => $currentEnrollment ? [
-                'id'         => $currentEnrollment->id,
-                'class_id'   => $currentEnrollment->class_id,
+                'id' => $currentEnrollment->id,
+                'class_id' => $currentEnrollment->class_id,
                 'class_name' => $currentEnrollment->classroom?->name,
                 'class_code' => $currentEnrollment->classroom?->code,
-                'year'       => $activeYear?->year,
+                'year' => $activeYear?->year,
             ] : null,
-            'classrooms' => \App\Models\Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
             'documents' => $student->documents()->with('uploadedBy:id,firstname,lastname')->latest()->get()->map(fn ($d) => [
-                'id'            => $d->id,
-                'name'          => $d->name,
+                'id' => $d->id,
+                'name' => $d->name,
                 'original_name' => $d->original_name,
-                'mime'          => $d->mime,
-                'size'          => $d->size,
-                'uploaded_by'   => $d->uploadedBy?->name,
-                'created_at'    => $d->created_at?->format('d/m/Y'),
+                'mime' => $d->mime,
+                'size' => $d->size,
+                'uploaded_by' => $d->uploadedBy?->name,
+                'created_at' => $d->created_at?->format('d/m/Y'),
             ]),
         ]);
     }
@@ -268,7 +270,7 @@ class StudentController extends Controller
             'class_id' => ['required', 'uuid', 'exists:classes,id'],
         ]);
 
-        $activeYear = \App\Models\AcademicYear::where('active', true)->first(['id']);
+        $activeYear = AcademicYear::where('active', true)->first(['id']);
         abort_unless($activeYear, 422, 'Aucune année académique active.');
 
         $enrollment = Enrollment::where('student_id', $student->id)
@@ -336,12 +338,12 @@ class StudentController extends Controller
 
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
-        $data  = $request->validated();
+        $data = $request->validated();
         $photo = $request->file('profile_photo');
 
         DB::transaction(function () use ($data, $student, $photo): void {
             $studentFillable = array_filter(
-                (new Student())->getFillable(),
+                (new Student)->getFillable(),
                 static fn (string $column): bool => $column !== 'user_id'
             );
 
@@ -356,7 +358,7 @@ class StudentController extends Controller
                     Storage::disk('secure')->delete($student->profile_photo);
                 }
                 $student->update([
-                    'profile_photo' => $photo->store($student->storageFolder() . '/photo', 'secure'),
+                    'profile_photo' => $photo->store($student->storageFolder().'/photo', 'secure'),
                 ]);
             }
 
@@ -399,7 +401,7 @@ class StudentController extends Controller
         }
 
         $student->update([
-            'profile_photo' => $request->file('photo')->store($student->storageFolder() . '/photo', 'secure'),
+            'profile_photo' => $request->file('photo')->store($student->storageFolder().'/photo', 'secure'),
         ]);
 
         return back()->with('success', 'Photo mise à jour.');

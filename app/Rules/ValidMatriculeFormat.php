@@ -17,15 +17,10 @@ class ValidMatriculeFormat implements ValidationRule
 
     /**
      * Run the validation rule.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param  Closure  $fail
-     * @return void
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!$this->matriculeService->isValidMatriculeFormat($value)) {
+        if (! $this->matriculeService->isValidMatriculeFormat($value)) {
             $fail("Le matricule ':attribute' doit avoir le format correct (ex: ADM26001, PROF26001).");
         }
     }

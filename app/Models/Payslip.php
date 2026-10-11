@@ -23,10 +23,10 @@ class Payslip extends Model
     ];
 
     protected $casts = [
-        'gross'            => 'float',
+        'gross' => 'float',
         'total_deductions' => 'float',
-        'net'              => 'float',
-        'payload'          => 'array',
+        'net' => 'float',
+        'payload' => 'array',
     ];
 
     public function payRun(): BelongsTo

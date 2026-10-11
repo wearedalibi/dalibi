@@ -26,12 +26,12 @@ class Payment extends Model
     ];
 
     protected $casts = [
-        'amount'  => 'float',
+        'amount' => 'float',
         'paid_at' => 'date',
     ];
 
     /* ------------------------------------------------------------------ */
-    /* Relations                                                            */
+    /* Relations */
     /* ------------------------------------------------------------------ */
 
     public function invoice(): BelongsTo

@@ -141,7 +141,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ], [Permissions::VIEW_STUDENT_PARENTS_INFO]);
         Role::firstOrCreate(['name' => Roles::SECRETARIAT])->syncPermissions($secretary);
 
-        $this->command?->info('Rôles et permissions synchronisés (' . count(Permissions::all()) . ' permissions).');
+        $this->command?->info('Rôles et permissions synchronisés ('.count(Permissions::all()).' permissions).');
     }
 
     /**

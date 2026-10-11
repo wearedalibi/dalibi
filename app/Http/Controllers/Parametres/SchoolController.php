@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
-use App\Models\ClassroomType;
-use App\Models\School;
+use App\Constants\Currencies;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
+use App\Models\ClassroomType;
+use App\Models\School;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -37,7 +38,7 @@ class SchoolController extends Controller
 
         return Inertia::render('Parametres/Schools/Create', [
             'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
-            'currencies' => \App\Constants\Currencies::options(),
+            'currencies' => Currencies::options(),
         ]);
     }
 
@@ -87,7 +88,7 @@ class SchoolController extends Controller
             'school' => $school,
             'classroomTypes' => ClassroomType::where('active', true)->orderBy('name')->get(['id', 'name', 'period_system']),
             'selectedClassTypes' => $school->classTypes()->pluck('classroom_types.id'),
-            'currencies' => \App\Constants\Currencies::options(),
+            'currencies' => Currencies::options(),
         ]);
     }
 

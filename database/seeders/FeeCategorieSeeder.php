@@ -44,7 +44,7 @@ class FeeCategorieSeeder extends Seeder
             [
                 'name' => 'Frais d\'examen',
                 'description' => 'Frais pour les examens et les évaluations',
-            ]
+            ],
         ];
 
         foreach ($categories as $category) {

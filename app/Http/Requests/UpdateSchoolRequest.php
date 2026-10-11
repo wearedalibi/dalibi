@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Constants\Roles;
+use App\Constants\Currencies;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -21,20 +21,20 @@ class UpdateSchoolRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('schools', 'name')->ignore($this->school)],
             'code' => ['required', 'string', 'max:50', Rule::unique('schools', 'code')->ignore($this->school)],
-            'logo'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'devise'   => ['nullable', 'string', 'max:500'],
-            'currency' => ['nullable', Rule::in(\App\Constants\Currencies::codes())],
-            'terme'    => ['nullable', 'string', 'max:255'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'devise' => ['nullable', 'string', 'max:500'],
+            'currency' => ['nullable', Rule::in(Currencies::codes())],
+            'terme' => ['nullable', 'string', 'max:255'],
             'ministry' => ['nullable', 'string', 'max:255'],
-            'email'  => ['nullable', 'email', 'max:255'],
-            'phone'  => ['nullable', 'string', 'max:20'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:500'],
-            'region'  => ['nullable', 'string', 'max:150'],
-            'city'    => ['nullable', 'string', 'max:150'],
-            'po_box'  => ['nullable', 'string', 'max:120'],
-            'active'  => ['sometimes', 'boolean'],
+            'region' => ['nullable', 'string', 'max:150'],
+            'city' => ['nullable', 'string', 'max:150'],
+            'po_box' => ['nullable', 'string', 'max:120'],
+            'active' => ['sometimes', 'boolean'],
             'portal_enabled' => ['sometimes', 'boolean'],
-            'class_type_ids'   => ['nullable', 'array'],
+            'class_type_ids' => ['nullable', 'array'],
             'class_type_ids.*' => ['uuid', 'exists:classroom_types,id'],
         ];
     }

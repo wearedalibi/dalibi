@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\CashAccount;
@@ -12,8 +14,9 @@ use App\Models\Receipt;
 use App\Models\StudentScholarship;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
-class InvoiceService
+final class InvoiceService
 {
     public function __construct(private readonly AccountingService $accountingService) {}
 
@@ -31,24 +34,24 @@ class InvoiceService
                 ->get();
 
             $invoice = Invoice::create([
-                'enrollment_id'    => $enrollment->id,
-                'invoice_number'   => $this->generateInvoiceNumber(),
-                'subtotal'         => 0,
-                'discount_amount'  => 0,
-                'total'            => 0,
-                'amount_paid'      => 0,
+                'enrollment_id' => $enrollment->id,
+                'invoice_number' => $this->generateInvoiceNumber(),
+                'subtotal' => 0,
+                'discount_amount' => 0,
+                'total' => 0,
+                'amount_paid' => 0,
                 'amount_remaining' => 0,
-                'status'           => 'ISSUED',
-                'issued_at'        => now()->toDateString(),
+                'status' => 'ISSUED',
+                'issued_at' => now()->toDateString(),
             ]);
 
             $order = 0;
             foreach ($feeStructures as $fee) {
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
-                    'label'      => $fee->feeCategory->name ?? 'Frais scolaires',
-                    'type'       => 'FEE',
-                    'amount'     => $fee->amount,
+                    'label' => $fee->feeCategory->name ?? 'Frais scolaires',
+                    'type' => 'FEE',
+                    'amount' => $fee->amount,
                     'sort_order' => $order++,
                 ]);
             }
@@ -61,7 +64,7 @@ class InvoiceService
 
             if ($studentScholarship && $studentScholarship->scholarship) {
                 $scholarship = $studentScholarship->scholarship;
-                $subtotal    = $feeStructures->sum('amount');
+                $subtotal = $feeStructures->sum('amount');
 
                 $discountAmount = $scholarship->type === 'percentage'
                     ? round($subtotal * ((float) $scholarship->value / 100), 2)
@@ -69,9 +72,9 @@ class InvoiceService
 
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
-                    'label'      => 'Bourse : ' . $scholarship->name,
-                    'type'       => 'DISCOUNT',
-                    'amount'     => $discountAmount,
+                    'label' => 'Bourse : '.$scholarship->name,
+                    'type' => 'DISCOUNT',
+                    'amount' => $discountAmount,
                     'sort_order' => $order,
                 ]);
 
@@ -91,6 +94,19 @@ class InvoiceService
     public function recordPayment(Invoice $invoice, array $data): Payment
     {
         return DB::transaction(function () use ($invoice, $data): Payment {
+            // Garde anti trop-perçu, évaluée SOUS VERROU : sans cela, deux requêtes
+            // concurrentes (double-clic, deux caissiers) liraient le même reste dû et
+            // passeraient toutes les deux — le trop-perçu étant ensuite masqué par le
+            // max(0, …) de recalculate().
+            $invoice = Invoice::whereKey($invoice->id)->lockForUpdate()->firstOrFail();
+
+            $remaining = (float) $invoice->amount_remaining;
+            if ((float) ($data['amount'] ?? 0) > $remaining + 0.001) {
+                throw ValidationException::withMessages([
+                    'amount' => 'Le montant dépasse le reste à payer ('.number_format($remaining, 0, ',', ' ').' F).',
+                ]);
+            }
+
             $data['invoice_id'] = $invoice->id;
 
             // Rattache le paiement à la caisse correspondant au moyen de paiement
@@ -102,8 +118,8 @@ class InvoiceService
             $payment = Payment::create($data);
 
             Receipt::create([
-                'payment_id'        => $payment->id,
-                'receipt_number'    => $this->generateReceiptNumber(),
+                'payment_id' => $payment->id,
+                'receipt_number' => $this->generateReceiptNumber(),
                 'verification_code' => $this->generateVerificationCode(),
             ]);
 
@@ -128,9 +144,9 @@ class InvoiceService
     private function resolveCashAccountId(?string $method): ?string
     {
         $type = match ($method) {
-            'MOBILE_MONEY'            => 'MOBILE_MONEY',
+            'MOBILE_MONEY' => 'MOBILE_MONEY',
             'BANK_TRANSFER', 'CHEQUE' => 'BANK',
-            default                   => 'CASH',
+            default => 'CASH',
         };
 
         return CashAccount::where('active', true)
@@ -140,7 +156,7 @@ class InvoiceService
     }
 
     /* ------------------------------------------------------------------ */
-    /* Générateurs de numéros uniques                                      */
+    /* Générateurs de numéros uniques */
     /* ------------------------------------------------------------------ */
 
     /** Numéro de facture séquentiel par année : INV-AAAA-0001 */
@@ -148,8 +164,8 @@ class InvoiceService
     {
         $year = now()->format('Y');
         do {
-            $seq    = Invoice::where('invoice_number', 'like', "INV-{$year}-%")->count() + 1;
-            $number = 'INV-' . $year . '-' . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
+            $seq = Invoice::where('invoice_number', 'like', "INV-{$year}-%")->count() + 1;
+            $number = 'INV-'.$year.'-'.str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
         } while (Invoice::where('invoice_number', $number)->exists());
 
         return $number;
@@ -160,8 +176,8 @@ class InvoiceService
     {
         $year = now()->format('Y');
         do {
-            $seq    = Receipt::where('receipt_number', 'like', "REC-{$year}-%")->count() + 1;
-            $number = 'REC-' . $year . '-' . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
+            $seq = Receipt::where('receipt_number', 'like', "REC-{$year}-%")->count() + 1;
+            $number = 'REC-'.$year.'-'.str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
         } while (Receipt::where('receipt_number', $number)->exists());
 
         return $number;
@@ -171,7 +187,7 @@ class InvoiceService
     public function generateVerificationCode(): string
     {
         do {
-            $code = 'DAL-' . strtoupper(Str::random(12));
+            $code = 'DAL-'.strtoupper(Str::random(12));
         } while (Receipt::where('verification_code', $code)->exists());
 
         return $code;

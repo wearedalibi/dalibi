@@ -21,6 +21,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -29,10 +30,15 @@ class BulletinTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private ClassroomType $type;
+
     private Classroom $class;
+
     private AcademicPeriod $period;
+
     private ClassSubject $cs;
 
     protected function setUp(): void
@@ -41,9 +47,9 @@ class BulletinTest extends TestCase
         $this->seed(RolesAndPermissionsSeeder::class);
 
         $this->school = School::factory()->create();
-        $this->year   = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
-        $this->type   = ClassroomType::factory()->create(['period_system' => 'trimestre']);
-        $this->class  = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
+        $this->year = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
+        $this->type = ClassroomType::factory()->create(['period_system' => 'trimestre']);
+        $this->class = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
         $this->period = AcademicPeriod::create([
             'name' => 'Trimestre 1', 'start_date' => '2025-09-01', 'end_date' => '2025-12-31',
             'type' => 'trimestre', 'order' => 1, 'weight' => 1, 'is_current' => true,
@@ -105,12 +111,12 @@ class BulletinTest extends TestCase
     {
         $u = User::factory()->create();
         $s = Student::create([
-            'user_id' => $u->id, 'matricule' => 'M' . Str::random(6),
+            'user_id' => $u->id, 'matricule' => 'M'.Str::random(6),
             'firstname' => 'P', 'lastname' => Str::random(5), 'gender' => 'male', 'birth_date' => '2010-01-01',
         ]);
         Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $s->id, 'class_id' => $this->class->id,
-            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E' . Str::random(8),
+            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E'.Str::random(8),
             'enrollment_date' => now(), 'status' => 'ACTIVE',
         ]);
 
@@ -134,7 +140,7 @@ class BulletinTest extends TestCase
     public function test_validate_creates_locked_report_cards_with_classe_compo(): void
     {
         $continu = EvaluationType::create(['name' => 'Devoir', 'category' => 'continu']);
-        $compo   = EvaluationType::create(['name' => 'Composition', 'category' => 'composition']);
+        $compo = EvaluationType::create(['name' => 'Composition', 'category' => 'composition']);
 
         $student = $this->student();
         $this->mark($student, $continu, 12);
@@ -178,7 +184,7 @@ class BulletinTest extends TestCase
     public function test_validation_is_correct_and_query_budget_stays_flat(): void
     {
         $continu = EvaluationType::create(['name' => 'Devoir', 'category' => 'continu']);
-        $compo   = EvaluationType::create(['name' => 'Composition', 'category' => 'composition']);
+        $compo = EvaluationType::create(['name' => 'Composition', 'category' => 'composition']);
 
         // 2e matière (coefficient 1).
         $subject2 = Subject::create(['name' => 'Français', 'code' => 'FR']);
@@ -199,14 +205,14 @@ class BulletinTest extends TestCase
         $this->markOn($b, $this->cs, $compo, 8);
         $this->markOn($b, $cs2, $continu, 18);
 
-        \Illuminate\Support\Facades\DB::enableQueryLog();
+        DB::enableQueryLog();
 
         $this->actingAs($this->admin())->post(route('bulletins.validate'), [
             'class_id' => $this->class->id, 'academic_period_id' => $this->period->id,
         ])->assertRedirect();
 
-        $queries = count(\Illuminate\Support\Facades\DB::getQueryLog());
-        \Illuminate\Support\Facades\DB::disableQueryLog();
+        $queries = count(DB::getQueryLog());
+        DB::disableQueryLog();
 
         // Classement + moyennes.
         $cardA = ReportCard::where('student_id', $a->id)->firstOrFail();
@@ -245,10 +251,10 @@ class BulletinTest extends TestCase
         // 2) Édition manuelle (appréciation, observations, décision, discipline).
         $this->actingAs($admin)->put(route('bulletins.update', $card->id), [
             'appreciations' => [0 => 'Élève très sérieux'],
-            'observations'  => 'Félicitations du conseil',
-            'decision'      => 'Admis en classe supérieure',
-            'punitions'     => 2,
-            'exclusions'    => 1,
+            'observations' => 'Félicitations du conseil',
+            'decision' => 'Admis en classe supérieure',
+            'punitions' => 2,
+            'exclusions' => 1,
         ])->assertRedirect();
 
         // 3) Re-validation par défaut : les éditions sont conservées.
@@ -289,7 +295,7 @@ class BulletinTest extends TestCase
         ])->assertRedirect();
 
         $response = $this->actingAs($admin)->get(
-            route('bulletins.download', $student->id) . '?academic_period_id=' . $this->period->id
+            route('bulletins.download', $student->id).'?academic_period_id='.$this->period->id
         );
 
         $response->assertOk();
@@ -310,7 +316,7 @@ class BulletinTest extends TestCase
         ])->assertRedirect();
 
         $response = $this->actingAs($admin)->get(
-            route('bulletins.download-class') . '?class_id=' . $this->class->id . '&academic_period_id=' . $this->period->id
+            route('bulletins.download-class').'?class_id='.$this->class->id.'&academic_period_id='.$this->period->id
         );
 
         $response->assertOk();
@@ -346,7 +352,7 @@ class BulletinTest extends TestCase
     public function test_download_class_404_when_no_bulletins(): void
     {
         $this->actingAs($this->admin())->get(
-            route('bulletins.download-class') . '?class_id=' . $this->class->id . '&academic_period_id=' . $this->period->id
+            route('bulletins.download-class').'?class_id='.$this->class->id.'&academic_period_id='.$this->period->id
         )->assertNotFound();
     }
 }

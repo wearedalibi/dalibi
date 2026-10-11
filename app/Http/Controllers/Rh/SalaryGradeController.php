@@ -20,7 +20,7 @@ class SalaryGradeController extends Controller
 
         $grades = SalaryGrade::withCount('employeeProfiles')
             ->when($request->search, function ($q) use ($request) {
-                $term = '%' . $request->search . '%';
+                $term = '%'.$request->search.'%';
                 $q->where(fn ($s) => $s->where('name', 'like', $term)->orWhere('category', 'like', $term));
             })
             ->when($request->status === 'active', fn ($q) => $q->where('active', true))
@@ -30,9 +30,9 @@ class SalaryGradeController extends Controller
             ->withQueryString();
 
         return Inertia::render('Rh/SalaryGrades/Index', [
-            'grades'   => $grades,
-            'perPage'  => $perPage,
-            'filters'  => $request->only(['search', 'status']),
+            'grades' => $grades,
+            'perPage' => $perPage,
+            'filters' => $request->only(['search', 'status']),
             'settings' => PayrollSetting::current(),
         ]);
     }
@@ -79,17 +79,17 @@ class SalaryGradeController extends Controller
             ->where('status', 'active')
             ->get()
             ->map(fn (EmployeeProfile $e) => [
-                'id'            => $e->id,
-                'name'          => $e->fullName() ?: '—',
-                'job_title'     => $e->job_title,
+                'id' => $e->id,
+                'name' => $e->fullName() ?: '—',
+                'job_title' => $e->job_title,
                 'current_grade' => $e->salaryGrade ? ['id' => $e->salaryGrade->id, 'name' => $e->salaryGrade->name] : null,
             ])
             ->sortBy('name')
             ->values();
 
         return Inertia::render('Rh/SalaryGrades/Employees', [
-            'grade'       => $salaryGrade->only(['id', 'name', 'base_amount']),
-            'employees'   => $employees,
+            'grade' => $salaryGrade->only(['id', 'name', 'base_amount']),
+            'employees' => $employees,
             'assignedIds' => EmployeeProfile::where('salary_grade_id', $salaryGrade->id)->pluck('id'),
         ]);
     }
@@ -98,7 +98,7 @@ class SalaryGradeController extends Controller
     public function syncEmployees(Request $request, SalaryGrade $salaryGrade): RedirectResponse
     {
         $data = $request->validate([
-            'employee_ids'   => ['array'],
+            'employee_ids' => ['array'],
             'employee_ids.*' => ['uuid', 'exists:employee_profiles,id'],
         ]);
         $ids = $data['employee_ids'] ?? [];
@@ -124,9 +124,9 @@ class SalaryGradeController extends Controller
     public function updateSettings(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'seniority_enabled'       => ['required', 'boolean'],
+            'seniority_enabled' => ['required', 'boolean'],
             'seniority_rate_per_year' => ['required', 'numeric', 'min:0', 'max:100'],
-            'seniority_cap_percent'   => ['required', 'numeric', 'min:0', 'max:100'],
+            'seniority_cap_percent' => ['required', 'numeric', 'min:0', 'max:100'],
         ]);
 
         PayrollSetting::current()->update($data);
@@ -137,14 +137,14 @@ class SalaryGradeController extends Controller
     private function validateData(Request $request): array
     {
         return $request->validate([
-            'name'        => ['required', 'string', 'max:255'],
-            'category'    => ['nullable', 'string', 'max:50'],
-            'echelon'     => ['nullable', 'integer', 'min:0', 'max:100'],
+            'name' => ['required', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:50'],
+            'echelon' => ['nullable', 'integer', 'min:0', 'max:100'],
             'base_amount' => ['required', 'numeric', 'min:0', 'max:999999999'],
-            'active'      => ['sometimes', 'boolean'],
-            'sort_order'  => ['nullable', 'integer', 'min:0'],
+            'active' => ['sometimes', 'boolean'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ], [
-            'name.required'        => 'Le nom de la grille est obligatoire.',
+            'name.required' => 'Le nom de la grille est obligatoire.',
             'base_amount.required' => 'Le salaire de base est obligatoire.',
         ]);
     }

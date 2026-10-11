@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassroomRequest;
 use App\Http\Requests\UpdateClassroomRequest;
 use App\Models\AcademicYear;
@@ -25,13 +25,13 @@ class ClassroomController extends Controller
                 ->orWhere('code', 'like', "%{$search}%")
             ));
 
-        $classrooms  = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $classrooms = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         $activeCount = Classroom::where('active', true)->count();
 
         return Inertia::render('Parametres/Classrooms/Index', [
-            'classrooms'  => $classrooms,
+            'classrooms' => $classrooms,
             'activeCount' => $activeCount,
-            'filters'     => ['search' => $search],
+            'filters' => ['search' => $search],
         ]);
     }
 

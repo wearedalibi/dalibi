@@ -27,8 +27,7 @@ class ArchiveAcademicYearJob implements ShouldQueue
         public string $academicYearId,
         public ?string $userId = null,
         public bool $scheduled = false,
-    ) {
-    }
+    ) {}
 
     public function handle(BackupService $service): void
     {

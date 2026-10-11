@@ -18,8 +18,7 @@ class GuardianInvitation extends Mailable implements ShouldQueue
         public Guardian $guardian,
         public string $url,
         public bool $isReset = false,
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Plus, Pencil, Trash2, Search, BookOpen, CheckCircle2, Eye, ChevronLeft, ChevronRight, X, Users, ClipboardList } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, BookOpen, CheckCircle2, Eye, ChevronLeft, ChevronRight, X, Users, ClipboardList, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import {
     AlertDialog,
@@ -167,13 +167,23 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                             Gérez les affectations des enseignants aux matières et classes
                         </p>
                     </div>
-                    <Button 
-                        onClick={() => router.get(route('subject-assignments.create'))}
-                        className="gap-2 bg-blue-600 hover:bg-blue-700"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Nouvelle affectation
-                    </Button>
+                    <div className="flex gap-3 shrink-0">
+                        <Button
+                            variant="outline"
+                            onClick={() => router.get(route('subject-assignments.statistics'))}
+                            className="gap-2"
+                        >
+                            <BarChart3 className="w-5 h-5" />
+                            Statistiques des affectations
+                        </Button>
+                        <Button
+                            onClick={() => router.get(route('subject-assignments.create'))}
+                            className="gap-2 bg-blue-600 hover:bg-blue-700"
+                        >
+                            <Plus className="w-5 h-5" />
+                            Nouvelle affectation
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Stats Cards */}

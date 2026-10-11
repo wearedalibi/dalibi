@@ -34,10 +34,10 @@ class BulletinController extends ApiController
             ->where('id', $reportCard)
             ->firstOrFail();
 
-        $school = School::query()->first() ?? new School();
-        $html   = app(BulletinRenderer::class)->render($card, $school);
+        $school = School::query()->first() ?? new School;
+        $html = app(BulletinRenderer::class)->render($card, $school);
 
-        $filename = Str::slug('bulletin-' . $studentModel->lastname . '-' . ($card->payload['period']['name'] ?? '')) . '.pdf';
+        $filename = Str::slug('bulletin-'.$studentModel->lastname.'-'.($card->payload['period']['name'] ?? '')).'.pdf';
 
         return Pdf::loadHTML($html)->setPaper('a4', 'portrait')->download($filename);
     }

@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\EmployeeProfile;
+use App\Models\PayrollSetting;
 use App\Models\PayRun;
 use App\Models\Payslip;
-use App\Models\PayrollSetting;
 use App\Models\SalaryComponent;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class PayrollService
+final class PayrollService
 {
     public function __construct(private readonly AccountingService $accountingService) {}
 
@@ -36,12 +38,12 @@ class PayrollService
 
         return DB::transaction(function () use ($month, $year, $label): PayRun {
             $run = PayRun::create([
-                'reference'    => $this->generateReference($month, $year),
+                'reference' => $this->generateReference($month, $year),
                 'period_month' => $month,
-                'period_year'  => $year,
-                'label'        => $label,
-                'status'       => PayRun::DRAFT,
-                'created_by'   => auth()->id(),
+                'period_year' => $year,
+                'label' => $label,
+                'status' => PayRun::DRAFT,
+                'created_by' => auth()->id(),
             ]);
 
             $components = SalaryComponent::where('active', true)
@@ -80,26 +82,26 @@ class PayrollService
         $base = $employee->effectiveBaseSalary();
 
         $lines = [[
-            'code'   => 'BASE',
-            'label'  => 'Salaire de base',
-            'type'   => SalaryComponent::EARNING,
+            'code' => 'BASE',
+            'label' => 'Salaire de base',
+            'type' => SalaryComponent::EARNING,
             'amount' => $base,
-            'origin' => $employee->salary_grade_id ? 'grade:' . $employee->salary_grade_id : 'base',
+            'origin' => $employee->salary_grade_id ? 'grade:'.$employee->salary_grade_id : 'base',
         ]];
 
         // Prime d'ancienneté (si activée) : % du base par année, plafonnée.
         if ($settings->seniority_enabled && $settings->seniority_rate_per_year > 0 && $employee->hire_date) {
             $periodEnd = Carbon::create($year, $month, 1)->endOfMonth();
-            $years     = (int) $employee->hire_date->diffInYears($periodEnd); // années pleines
-            $rate      = $settings->seniority_rate_per_year * $years;
+            $years = (int) $employee->hire_date->diffInYears($periodEnd); // années pleines
+            $rate = $settings->seniority_rate_per_year * $years;
             if ($settings->seniority_cap_percent > 0) {
                 $rate = min($rate, $settings->seniority_cap_percent);
             }
             if ($rate > 0 && $years > 0) {
                 $lines[] = [
-                    'code'   => 'ANC',
-                    'label'  => "Prime d'ancienneté ({$years} an" . ($years > 1 ? 's' : '') . ')',
-                    'type'   => SalaryComponent::EARNING,
+                    'code' => 'ANC',
+                    'label' => "Prime d'ancienneté ({$years} an".($years > 1 ? 's' : '').')',
+                    'type' => SalaryComponent::EARNING,
                     'amount' => round($base * $rate / 100, 2),
                     'origin' => 'seniority',
                 ];
@@ -109,11 +111,11 @@ class PayrollService
         // Rubriques par défaut (globales).
         foreach ($components as $c) {
             $lines[] = [
-                'code'   => $c->code,
-                'label'  => $c->name,
-                'type'   => $c->type,
+                'code' => $c->code,
+                'label' => $c->name,
+                'type' => $c->type,
                 'amount' => (float) ($c->default_amount ?? 0),
-                'origin' => 'component:' . $c->id,
+                'origin' => 'component:'.$c->id,
             ];
         }
 
@@ -121,12 +123,12 @@ class PayrollService
         foreach ($employee->allowances as $a) {
             if ($a->appliesTo($month, $year)) {
                 $lines[] = [
-                    'code'   => null,
-                    'label'  => $a->label,
-                    'type'   => $a->type,
+                    'code' => null,
+                    'label' => $a->label,
+                    'type' => $a->type,
                     'amount' => $a->computeAmount($base),
                     'reason' => $a->reason,
-                    'origin' => 'allowance:' . $a->id,
+                    'origin' => 'allowance:'.$a->id,
                 ];
             }
         }
@@ -154,7 +156,7 @@ class PayrollService
     private function statutory(float $gross, PayrollSetting $s): array
     {
         $deductions = [];
-        $employer   = [];
+        $employer = [];
         $cnssEmployee = 0.0;
 
         if ($s->cnss_enabled && $s->cnss_employee_rate > 0) {
@@ -192,10 +194,10 @@ class PayrollService
 
         usort($brackets, fn ($a, $b) => (($a['up_to'] ?? INF) <=> ($b['up_to'] ?? INF)));
 
-        $tax  = 0.0;
+        $tax = 0.0;
         $prev = 0.0;
         foreach ($brackets as $b) {
-            $cap  = isset($b['up_to']) && $b['up_to'] !== null ? (float) $b['up_to'] : INF;
+            $cap = isset($b['up_to']) && $b['up_to'] !== null ? (float) $b['up_to'] : INF;
             $rate = (float) ($b['rate'] ?? 0);
             if ($taxable <= $prev) {
                 break;
@@ -235,10 +237,10 @@ class PayrollService
             $payload['lines'] = $lines;
 
             $payslip->update([
-                'payload'          => $payload,
-                'gross'            => $gross,
+                'payload' => $payload,
+                'gross' => $gross,
                 'total_deductions' => $deductions,
-                'net'              => $net,
+                'net' => $net,
             ]);
 
             $this->refreshTotals($run);
@@ -276,8 +278,8 @@ class PayrollService
             }
 
             $locked->update([
-                'status'          => PayRun::PAID,
-                'paid_at'         => now(),
+                'status' => PayRun::PAID,
+                'paid_at' => now(),
                 'cash_account_id' => $cashAccountId,
             ]);
 
@@ -333,7 +335,7 @@ class PayrollService
     }
 
     /* ------------------------------------------------------------------ */
-    /* Helpers                                                             */
+    /* Helpers */
     /* ------------------------------------------------------------------ */
 
     private function persistPayslip(PayRun $run, EmployeeProfile $employee, array $lines, array $employerCharges = []): Payslip
@@ -341,21 +343,21 @@ class PayrollService
         [$gross, $deductions, $net] = $this->totals($lines);
 
         return Payslip::create([
-            'pay_run_id'          => $run->id,
+            'pay_run_id' => $run->id,
             'employee_profile_id' => $employee->id,
-            'reference'           => $run->reference . '-' . Str::upper(Str::random(4)),
-            'gross'               => $gross,
-            'total_deductions'    => $deductions,
-            'net'                 => $net,
-            'payload'             => [
+            'reference' => $run->reference.'-'.Str::upper(Str::random(4)),
+            'gross' => $gross,
+            'total_deductions' => $deductions,
+            'net' => $net,
+            'payload' => [
                 'employee' => [
-                    'name'          => $employee->fullName(),
-                    'matricule'     => $employee->employee_number,
-                    'job_title'     => $employee->job_title,
+                    'name' => $employee->fullName(),
+                    'matricule' => $employee->employee_number,
+                    'job_title' => $employee->job_title,
                     'contract_type' => $employee->contract_type,
-                    'cnss_number'   => $employee->cnss_number,
+                    'cnss_number' => $employee->cnss_number,
                 ],
-                'lines'            => $lines,
+                'lines' => $lines,
                 'employer_charges' => $employerCharges,
             ],
         ]);
@@ -387,9 +389,9 @@ class PayrollService
         ')->first();
 
         $run->update([
-            'total_gross'      => (float) $sums->g,
+            'total_gross' => (float) $sums->g,
             'total_deductions' => (float) $sums->d,
-            'total_net'        => (float) $sums->n,
+            'total_net' => (float) $sums->n,
         ]);
     }
 
@@ -413,7 +415,7 @@ class PayrollService
     {
         if (! in_array($run->status, $allowed, true)) {
             throw ValidationException::withMessages([
-                'status' => ['Action impossible pour un cycle au statut « ' . $run->status . ' ».'],
+                'status' => ['Action impossible pour un cycle au statut « '.$run->status.' ».'],
             ]);
         }
     }
@@ -421,10 +423,10 @@ class PayrollService
     private function generateReference(int $month, int $year): string
     {
         $base = sprintf('PAIE-%04d-%02d', $year, $month);
-        $ref  = $base;
-        $i    = 1;
+        $ref = $base;
+        $i = 1;
         while (PayRun::where('reference', $ref)->exists()) {
-            $ref = $base . '-' . (++$i);
+            $ref = $base.'-'.(++$i);
         }
 
         return $ref;

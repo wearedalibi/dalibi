@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Eleves;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\UpdateEnrollmentRequest;
 use App\Models\AcademicYear;
@@ -94,29 +94,29 @@ class EnrollmentController extends Controller
             COALESCE(SUM(CASE WHEN invoices.amount_paid = 0 THEN invoices.amount_remaining ELSE 0 END), 0) as unpaid_amount
         ')->first();
 
-        $billed    = (float) $agg->billed;
+        $billed = (float) $agg->billed;
         $collected = (float) $agg->collected;
 
         return Inertia::render('Eleves/Enrollments/Index', [
-            'enrollments'   => $enrollments,
-            'perPage'       => $perPage,
-            'filters'       => [
-                'search'           => $request->string('search')->toString(),
-                'status'           => $request->string('status')->toString(),
+            'enrollments' => $enrollments,
+            'perPage' => $perPage,
+            'filters' => [
+                'search' => $request->string('search')->toString(),
+                'status' => $request->string('status')->toString(),
                 'academic_year_id' => $yearFilter,
-                'class_id'         => $request->string('class_id')->toString(),
-                'per_page'         => (string) $perPage,
+                'class_id' => $request->string('class_id')->toString(),
+                'per_page' => (string) $perPage,
             ],
-            'finance'       => [
-                'billed'        => $billed,
-                'collected'     => $collected,
-                'remaining'     => (float) $agg->remaining,
+            'finance' => [
+                'billed' => $billed,
+                'collected' => $collected,
+                'remaining' => (float) $agg->remaining,
                 'recovery_rate' => $billed > 0 ? (int) round($collected / $billed * 100) : 0,
-                'unpaid_count'  => (int) $agg->unpaid_count,
+                'unpaid_count' => (int) $agg->unpaid_count,
                 'unpaid_amount' => (float) $agg->unpaid_amount,
             ],
             'academicYears' => AcademicYear::orderByDesc('year')->get(['id', 'year']),
-            'classrooms'    => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
         ]);
     }
 
@@ -125,16 +125,16 @@ class EnrollmentController extends Controller
         $feeStructures = FeeStructure::with('feeCategory')
             ->get(['id', 'class_id', 'academic_year_id', 'fee_category_id', 'amount'])
             ->map(fn ($f) => [
-                'class_id'         => $f->class_id,
+                'class_id' => $f->class_id,
                 'academic_year_id' => $f->academic_year_id,
-                'label'            => $f->feeCategory->name ?? 'Frais scolaires',
-                'amount'           => $f->amount,
+                'label' => $f->feeCategory->name ?? 'Frais scolaires',
+                'amount' => $f->amount,
             ]);
 
         return Inertia::render('Eleves/Enrollments/Create', [
-            'schools'       => School::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
-            'students'      => Student::where('active', true)->orderBy('firstname')->orderBy('lastname')->get(['id', 'firstname', 'lastname', 'matricule']),
-            'classrooms'    => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'schools' => School::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'students' => Student::where('active', true)->orderBy('firstname')->orderBy('lastname')->get(['id', 'firstname', 'lastname', 'matricule']),
+            'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
             'academicYears' => AcademicYear::orderByDesc('year')->get(['id', 'year', 'active']),
             'feeStructures' => $feeStructures,
         ]);
@@ -142,7 +142,7 @@ class EnrollmentController extends Controller
 
     public function store(StoreEnrollmentRequest $request): RedirectResponse
     {
-        $data                = $request->validated();
+        $data = $request->validated();
         $data['enrolled_by'] = auth()->id();
 
         $enrollment = DB::transaction(function () use ($data, $request) {
@@ -153,17 +153,17 @@ class EnrollmentController extends Controller
             $enrollment = Enrollment::create($data);
 
             $invoiceService = app(InvoiceService::class);
-            $invoice        = $invoiceService->createFromEnrollment($enrollment);
+            $invoice = $invoiceService->createFromEnrollment($enrollment);
 
             if ($request->filled('first_payment_amount') && (float) $request->input('first_payment_amount') > 0) {
                 $invoiceService->recordPayment($invoice->fresh(), [
-                    'amount'           => $request->input('first_payment_amount'),
-                    'payment_method'   => $request->input('first_payment_method', 'CASH'),
-                    'paid_by'          => $request->input('first_payment_paid_by'),
-                    'paid_at'          => $request->input('first_payment_date', now()->toDateString()),
+                    'amount' => $request->input('first_payment_amount'),
+                    'payment_method' => $request->input('first_payment_method', 'CASH'),
+                    'paid_by' => $request->input('first_payment_paid_by'),
+                    'paid_at' => $request->input('first_payment_date', now()->toDateString()),
                     'reference_number' => $request->input('first_payment_reference'),
-                    'notes'            => $request->input('first_payment_notes'),
-                    'created_by'       => auth()->id(),
+                    'notes' => $request->input('first_payment_notes'),
+                    'created_by' => auth()->id(),
                 ]);
             }
 
@@ -184,7 +184,7 @@ class EnrollmentController extends Controller
 
         return Inertia::render('Eleves/Enrollments/Show', [
             'enrollment' => $enrollment,
-            'invoice'    => $invoice,
+            'invoice' => $invoice,
         ]);
     }
 
@@ -192,7 +192,7 @@ class EnrollmentController extends Controller
     {
         $enrollment->load(['school', 'student', 'classroom', 'academicYear', 'enrolledBy']);
 
-        $school   = $enrollment->school;
+        $school = $enrollment->school;
         $renderer = app(DocumentRenderer::class);
 
         // État de règlement pour la mention conditionnelle (soldée / partielle / impayée).
@@ -202,13 +202,13 @@ class EnrollmentController extends Controller
 
         return Inertia::render('Eleves/Enrollments/Receipt', [
             'enrollment' => $enrollment,
-            'header'     => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
-            'headerCss'  => $renderer->headerCss(),
-            'finance'    => $invoice ? [
-                'total'            => (float) $invoice->total,
-                'amount_paid'      => (float) $invoice->amount_paid,
+            'header' => $school ? $renderer->headerHtml($school, $renderer->resolveVariables($school)) : '',
+            'headerCss' => $renderer->headerCss(),
+            'finance' => $invoice ? [
+                'total' => (float) $invoice->total,
+                'amount_paid' => (float) $invoice->amount_paid,
                 'amount_remaining' => (float) $invoice->amount_remaining,
-                'status'           => $invoice->status,
+                'status' => $invoice->status,
             ] : null,
         ]);
     }
@@ -218,10 +218,10 @@ class EnrollmentController extends Controller
         $enrollment->load(['school', 'student', 'classroom', 'academicYear']);
 
         return Inertia::render('Eleves/Enrollments/Edit', [
-            'enrollment'    => $enrollment,
-            'schools'       => School::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
-            'students'      => Student::where('active', true)->orderBy('firstname')->orderBy('lastname')->get(['id', 'firstname', 'lastname', 'matricule']),
-            'classrooms'    => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'enrollment' => $enrollment,
+            'schools' => School::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'students' => Student::where('active', true)->orderBy('firstname')->orderBy('lastname')->get(['id', 'firstname', 'lastname', 'matricule']),
+            'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
             'academicYears' => AcademicYear::orderByDesc('year')->get(['id', 'year', 'active']),
         ]);
     }
@@ -253,7 +253,7 @@ class EnrollmentController extends Controller
         // encaissement en laissant le journal et le solde inchangés.
         if ($enrollment->invoice()->whereHas('payments')->exists()) {
             return back()->withErrors([
-                'delete' => "Cette inscription porte des paiements : elle ne peut pas être supprimée sans corrompre la comptabilité. Changez plutôt son statut.",
+                'delete' => 'Cette inscription porte des paiements : elle ne peut pas être supprimée sans corrompre la comptabilité. Changez plutôt son statut.',
             ]);
         }
 
@@ -266,7 +266,7 @@ class EnrollmentController extends Controller
     private function generateEnrollmentCode(): string
     {
         do {
-            $code = 'INS-' . now()->format('Y') . '-' . str_pad((string) random_int(1, 99999), 5, '0', STR_PAD_LEFT);
+            $code = 'INS-'.now()->format('Y').'-'.str_pad((string) random_int(1, 99999), 5, '0', STR_PAD_LEFT);
         } while (Enrollment::where('enrollment_code', $code)->exists());
 
         return $code;

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Constants\Roles;
+use App\Models\AcademicYear;
 use App\Models\Backup;
 use App\Models\BackupSetting;
 use App\Models\FileStorageSetting;
@@ -26,7 +29,7 @@ use Symfony\Component\Process\Process;
  *  - sur PostgreSQL, délégation à `pg_dump` (format custom, schéma inclus),
  *    avec repli automatique sur l'export SQL portable si l'outil est absent.
  */
-class BackupService
+final class BackupService
 {
     /** Tables transitoires exclues des sauvegardes. */
     private const EXCLUDED = [
@@ -64,7 +67,7 @@ class BackupService
      * étiqueté, conservé à long terme et exclu de la rétention automatique.
      * Idempotent : au plus une archive verrouillée par année.
      */
-    public function archiveAcademicYear(\App\Models\AcademicYear $year, ?string $userId = null, bool $scheduled = false): ?Backup
+    public function archiveAcademicYear(AcademicYear $year, ?string $userId = null, bool $scheduled = false): ?Backup
     {
         $already = Backup::where('academic_year_id', $year->id)
             ->where('locked', true)
@@ -75,13 +78,13 @@ class BackupService
             return null;
         }
 
-        $prefix = 'archive_' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $year->year);
+        $prefix = 'archive_'.preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $year->year);
 
         // Format SQL : dump complet (schéma inclus sur PostgreSQL via pg_dump).
         return $this->generate('sql', $prefix, $userId, $scheduled, [
             'academic_year_id' => $year->id,
-            'label'            => 'Année ' . $year->year,
-            'locked'           => true,
+            'label' => 'Année '.$year->year,
+            'locked' => true,
         ]);
     }
 
@@ -93,29 +96,29 @@ class BackupService
      */
     private function generate(string $format, string $prefix, ?string $userId, bool $scheduled, array $extra = [], bool $withMedia = false): Backup
     {
-        $disk      = $this->disk();
+        $disk = $this->disk();
         $timestamp = now()->format('Y-m-d_His');
-        $filename  = "{$prefix}_{$timestamp}.{$format}";
-        $path      = self::DIRECTORY . '/' . $filename;
-        $tmp       = tempnam(sys_get_temp_dir(), 'bkp_');
-        $bundle    = null; // fichier ZIP temporaire si médias inclus
+        $filename = "{$prefix}_{$timestamp}.{$format}";
+        $path = self::DIRECTORY.'/'.$filename;
+        $tmp = tempnam(sys_get_temp_dir(), 'bkp_');
+        $bundle = null; // fichier ZIP temporaire si médias inclus
 
         try {
             // Le builder écrit dans $tmp et renvoie l'extension réellement produite.
             $extension = $this->writeDump($format, $tmp);
 
             // Fichier final = dump seul, ou archive ZIP (dump + médias).
-            $finalTmp  = $tmp;
+            $finalTmp = $tmp;
             if ($withMedia) {
-                $bundle    = $this->bundleWithMedia($tmp, "dump.{$extension}");
-                $finalTmp  = $bundle;
+                $bundle = $this->bundleWithMedia($tmp, "dump.{$extension}");
+                $finalTmp = $bundle;
                 $extension = 'zip';
             }
 
-            $filename  = "{$prefix}_{$timestamp}.{$extension}";
-            $path      = self::DIRECTORY . '/' . $filename;
-            $size      = filesize($finalTmp) ?: 0;
-            $checksum  = hash_file('sha256', $finalTmp) ?: null;
+            $filename = "{$prefix}_{$timestamp}.{$extension}";
+            $path = self::DIRECTORY.'/'.$filename;
+            $size = filesize($finalTmp) ?: 0;
+            $checksum = hash_file('sha256', $finalTmp) ?: null;
 
             $stream = fopen($finalTmp, 'rb');
             Storage::disk($disk)->writeStream($path, $stream);
@@ -124,26 +127,26 @@ class BackupService
             }
 
             return Backup::create(array_merge([
-                'filename'       => $filename,
-                'path'           => $path,
-                'disk'           => $this->driverName(),
-                'format'         => $format,
-                'size'           => $size,
-                'checksum'       => $checksum,
+                'filename' => $filename,
+                'path' => $path,
+                'disk' => $this->driverName(),
+                'format' => $format,
+                'size' => $size,
+                'checksum' => $checksum,
                 'includes_media' => $withMedia,
-                'status'         => 'completed',
-                'scheduled'      => $scheduled,
-                'created_by'     => $userId,
+                'status' => 'completed',
+                'scheduled' => $scheduled,
+                'created_by' => $userId,
             ], $extra));
         } catch (\Throwable $e) {
             $backup = Backup::create(array_merge([
-                'filename'   => $filename,
-                'path'       => $path,
-                'disk'       => $this->driverName(),
-                'format'     => $format,
-                'status'     => 'failed',
-                'error'      => mb_substr($e->getMessage(), 0, 1000),
-                'scheduled'  => $scheduled,
+                'filename' => $filename,
+                'path' => $path,
+                'disk' => $this->driverName(),
+                'format' => $format,
+                'status' => 'failed',
+                'error' => mb_substr($e->getMessage(), 0, 1000),
+                'scheduled' => $scheduled,
                 'created_by' => $userId,
             ], $extra));
 
@@ -164,19 +167,19 @@ class BackupService
      * Emballe le dump de base + tous les fichiers uploadés (disques « media »
      * hors dossier des sauvegardes, et « secure ») dans une archive ZIP.
      *
-     * @return string  chemin du fichier ZIP temporaire
+     * @return string chemin du fichier ZIP temporaire
      */
     private function bundleWithMedia(string $dumpTmp, string $dumpInnerName): string
     {
         $zipPath = tempnam(sys_get_temp_dir(), 'zip_');
-        $zip     = new \ZipArchive();
+        $zip = new \ZipArchive;
 
         if ($zip->open($zipPath, \ZipArchive::OVERWRITE) !== true) {
             throw new \RuntimeException("Impossible de créer l'archive ZIP.");
         }
 
         $temps = []; // fichiers temporaires (disques distants) à nettoyer après fermeture
-        $zip->addFile($dumpTmp, 'database/' . $dumpInnerName);
+        $zip->addFile($dumpTmp, 'database/'.$dumpInnerName);
         $this->addDiskToZip($zip, 'media', 'media', [self::DIRECTORY], $temps);
         $this->addDiskToZip($zip, 'secure', 'secure', [], $temps);
         $zip->close();
@@ -198,7 +201,7 @@ class BackupService
     private function addDiskToZip(\ZipArchive $zip, string $diskName, string $prefix, array $excludeDirs, array &$temps): void
     {
         try {
-            $disk  = Storage::disk($diskName);
+            $disk = Storage::disk($diskName);
             $files = $disk->allFiles();
         } catch (\Throwable) {
             return; // disque absent ou illisible : on n'échoue pas la sauvegarde
@@ -206,7 +209,7 @@ class BackupService
 
         foreach ($files as $rel) {
             foreach ($excludeDirs as $dir) {
-                if (str_starts_with($rel, $dir . '/')) {
+                if (str_starts_with($rel, $dir.'/')) {
                     continue 2;
                 }
             }
@@ -236,7 +239,7 @@ class BackupService
     /**
      * Écrit la sauvegarde du format demandé dans $tmp.
      *
-     * @return string  extension du fichier généré (json.gz | sql.gz | dump)
+     * @return string extension du fichier généré (json.gz | sql.gz | dump)
      */
     private function writeDump(string $format, string $tmp): string
     {
@@ -315,12 +318,12 @@ class BackupService
 
         // Fichier compressé : on décompresse dans un fichier temporaire
         $source = $path;
-        $tmp    = null;
+        $tmp = null;
         if (str_ends_with($name, '.gz')) {
             $tmp = tempnam(sys_get_temp_dir(), 'rst_');
             $this->gunzip($path, $tmp);
             $source = $tmp;
-            $name   = substr($name, 0, -3); // retire « .gz »
+            $name = substr($name, 0, -3); // retire « .gz »
         }
 
         $ext = pathinfo($name, PATHINFO_EXTENSION);
@@ -348,19 +351,19 @@ class BackupService
      */
     private function restoreZip(string $zipPath): array
     {
-        $dir = sys_get_temp_dir() . '/rstzip_' . bin2hex(random_bytes(6));
+        $dir = sys_get_temp_dir().'/rstzip_'.bin2hex(random_bytes(6));
         mkdir($dir, 0700, true);
 
-        $zip = new \ZipArchive();
+        $zip = new \ZipArchive;
         if ($zip->open($zipPath) !== true) {
-            throw new \RuntimeException("Archive ZIP illisible.");
+            throw new \RuntimeException('Archive ZIP illisible.');
         }
         $zip->extractTo($dir);
         $zip->close();
 
         try {
             // Base de données
-            $dbFiles = glob($dir . '/database/*') ?: [];
+            $dbFiles = glob($dir.'/database/*') ?: [];
             if (empty($dbFiles)) {
                 throw new \RuntimeException("L'archive ne contient pas de sauvegarde de base (dossier database/).");
             }
@@ -368,8 +371,8 @@ class BackupService
             $result = $this->restoreDbFile($dbFile, basename($dbFile));
 
             // Médias
-            $mediaCount = $this->restoreDiskFromDir($dir . '/media', 'media')
-                + $this->restoreDiskFromDir($dir . '/secure', 'secure');
+            $mediaCount = $this->restoreDiskFromDir($dir.'/media', 'media')
+                + $this->restoreDiskFromDir($dir.'/secure', 'secure');
 
             $result['media'] = $mediaCount;
 
@@ -386,7 +389,7 @@ class BackupService
             return 0;
         }
 
-        $disk  = Storage::disk($diskName);
+        $disk = Storage::disk($diskName);
         $count = 0;
 
         $iterator = new \RecursiveIteratorIterator(
@@ -397,7 +400,7 @@ class BackupService
             if (! $file->isFile()) {
                 continue;
             }
-            $rel    = ltrim(str_replace('\\', '/', substr($file->getPathname(), strlen($sourceDir))), '/');
+            $rel = ltrim(str_replace('\\', '/', substr($file->getPathname(), strlen($sourceDir))), '/');
             $stream = fopen($file->getPathname(), 'rb');
             $disk->writeStream($rel, $stream);
             if (is_resource($stream)) {
@@ -548,7 +551,7 @@ class BackupService
         // pg_restore peut émettre des avertissements non bloquants (exit 1) ;
         // on échoue seulement sur une erreur franche (exit >= 2).
         if ($process->getExitCode() >= 2) {
-            throw new \RuntimeException('pg_restore a échoué : ' . mb_substr($process->getErrorOutput(), 0, 500));
+            throw new \RuntimeException('pg_restore a échoué : '.mb_substr($process->getErrorOutput(), 0, 500));
         }
 
         return ['format' => 'dump', 'tables' => 0];
@@ -560,9 +563,9 @@ class BackupService
         try {
             match (DB::getDriverName()) {
                 'sqlite' => DB::statement('PRAGMA defer_foreign_keys = ON'),
-                'mysql'  => DB::statement('SET FOREIGN_KEY_CHECKS=0'),
-                'pgsql'  => DB::statement("SET session_replication_role = 'replica'"),
-                default  => null,
+                'mysql' => DB::statement('SET FOREIGN_KEY_CHECKS=0'),
+                'pgsql' => DB::statement("SET session_replication_role = 'replica'"),
+                default => null,
             };
         } catch (\Throwable) {
             // Best effort selon les privilèges du compte SGBD
@@ -573,9 +576,9 @@ class BackupService
     {
         try {
             match (DB::getDriverName()) {
-                'mysql'  => DB::statement('SET FOREIGN_KEY_CHECKS=1'),
-                'pgsql'  => DB::statement("SET session_replication_role = 'origin'"),
-                default  => null,
+                'mysql' => DB::statement('SET FOREIGN_KEY_CHECKS=1'),
+                'pgsql' => DB::statement("SET session_replication_role = 'origin'"),
+                default => null,
             };
         } catch (\Throwable) {
             // Best effort
@@ -599,7 +602,7 @@ class BackupService
             return ['ok' => false, 'reason' => 'Aucune empreinte enregistrée (sauvegarde antérieure).'];
         }
 
-        $ctx    = hash_init('sha256');
+        $ctx = hash_init('sha256');
         $stream = Storage::disk($this->disk())->readStream($backup->path);
         while (! feof($stream)) {
             hash_update($ctx, (string) fread($stream, 262144));
@@ -630,9 +633,9 @@ class BackupService
         try {
             match (DB::getDriverName()) {
                 'sqlite' => DB::statement('PRAGMA foreign_keys = OFF'),
-                'mysql'  => DB::statement('SET FOREIGN_KEY_CHECKS=0'),
-                'pgsql'  => DB::statement("SET session_replication_role = 'replica'"),
-                default  => null,
+                'mysql' => DB::statement('SET FOREIGN_KEY_CHECKS=0'),
+                'pgsql' => DB::statement("SET session_replication_role = 'replica'"),
+                default => null,
             };
         } catch (\Throwable) {
             // Best effort selon les privilèges du compte SGBD
@@ -644,9 +647,9 @@ class BackupService
         try {
             match (DB::getDriverName()) {
                 'sqlite' => DB::statement('PRAGMA foreign_keys = ON'),
-                'mysql'  => DB::statement('SET FOREIGN_KEY_CHECKS=1'),
-                'pgsql'  => DB::statement("SET session_replication_role = 'origin'"),
-                default  => null,
+                'mysql' => DB::statement('SET FOREIGN_KEY_CHECKS=1'),
+                'pgsql' => DB::statement("SET session_replication_role = 'origin'"),
+                default => null,
             };
         } catch (\Throwable) {
             // Best effort
@@ -676,16 +679,16 @@ class BackupService
 
         $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
 
-        gzwrite($gz, '{"generated_at":' . json_encode(now()->toIso8601String())
-            . ',"driver":' . json_encode(DB::getDriverName())
-            . ',"tables":{');
+        gzwrite($gz, '{"generated_at":'.json_encode(now()->toIso8601String())
+            .',"driver":'.json_encode(DB::getDriverName())
+            .',"tables":{');
 
         $firstTable = true;
         foreach ($this->tables() as $table) {
-            gzwrite($gz, ($firstTable ? '' : ',') . json_encode($table) . ':[');
+            gzwrite($gz, ($firstTable ? '' : ',').json_encode($table).':[');
             $firstRow = true;
             foreach (DB::table($table)->cursor() as $row) {
-                gzwrite($gz, ($firstRow ? '' : ',') . json_encode((array) $row, $flags));
+                gzwrite($gz, ($firstRow ? '' : ',').json_encode((array) $row, $flags));
                 $firstRow = false;
             }
             gzwrite($gz, ']');
@@ -705,8 +708,8 @@ class BackupService
         }
 
         gzwrite($gz, "-- Sauvegarde Dalibi\n");
-        gzwrite($gz, '-- Généré le ' . now()->toDateTimeString() . "\n");
-        gzwrite($gz, '-- SGBD : ' . DB::getDriverName() . "\n\n");
+        gzwrite($gz, '-- Généré le '.now()->toDateTimeString()."\n");
+        gzwrite($gz, '-- SGBD : '.DB::getDriverName()."\n\n");
 
         foreach ($this->tables() as $table) {
             $columns = null;
@@ -714,11 +717,11 @@ class BackupService
                 $arr = (array) $row;
                 if ($columns === null) {
                     $columns = array_keys($arr);
-                    $colList = implode(', ', array_map(fn ($c) => '"' . $c . '"', $columns));
+                    $colList = implode(', ', array_map(fn ($c) => '"'.$c.'"', $columns));
                     gzwrite($gz, "-- Table : {$table}\n");
                 }
                 $values = array_map(fn ($v) => $this->quote($v), array_values($arr));
-                gzwrite($gz, sprintf('INSERT INTO "%s" (%s) VALUES (%s);' . "\n", $table, $colList, implode(', ', $values)));
+                gzwrite($gz, sprintf('INSERT INTO "%s" (%s) VALUES (%s);'."\n", $table, $colList, implode(', ', $values)));
             }
             if ($columns !== null) {
                 gzwrite($gz, "\n");
@@ -744,18 +747,18 @@ class BackupService
         $process->run();
 
         if (! $process->isSuccessful()) {
-            throw new \RuntimeException('pg_dump indisponible ou en échec : ' . mb_substr($process->getErrorOutput(), 0, 300));
+            throw new \RuntimeException('pg_dump indisponible ou en échec : '.mb_substr($process->getErrorOutput(), 0, 300));
         }
     }
 
     /** Paramètres de connexion PostgreSQL de la connexion par défaut. */
     private function pgConnection(): array
     {
-        $conn = config('database.connections.' . config('database.default'));
+        $conn = config('database.connections.'.config('database.default'));
 
         return [
-            'host'     => $conn['host'] ?? '127.0.0.1',
-            'port'     => $conn['port'] ?? 5432,
+            'host' => $conn['host'] ?? '127.0.0.1',
+            'port' => $conn['port'] ?? 5432,
             'database' => $conn['database'] ?? '',
             'username' => $conn['username'] ?? '',
             'password' => (string) ($conn['password'] ?? ''),
@@ -765,7 +768,7 @@ class BackupService
     /** Décompresse un fichier .gz vers $dest, en flux. */
     private function gunzip(string $src, string $dest): void
     {
-        $in  = gzopen($src, 'rb');
+        $in = gzopen($src, 'rb');
         $out = fopen($dest, 'wb');
         if ($in === false || $out === false) {
             throw new \RuntimeException('Impossible de décompresser le fichier de sauvegarde.');
@@ -792,7 +795,7 @@ class BackupService
             return (string) $value;
         }
 
-        return "'" . str_replace("'", "''", (string) $value) . "'";
+        return "'".str_replace("'", "''", (string) $value)."'";
     }
 
     /** Liste des tables à sauvegarder (préfixe de schéma retiré, tables transitoires exclues). */

@@ -20,7 +20,7 @@ class DocumentIssuance extends Model
     ];
 
     protected $casts = [
-        'payload'   => 'array',
+        'payload' => 'array',
         'issued_at' => 'datetime',
     ];
 

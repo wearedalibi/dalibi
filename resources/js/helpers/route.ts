@@ -122,6 +122,8 @@ export function route(name: string, params?: any): string {
 
         // Subject Assignments routes
         'subject-assignments.index': '/subject-assignments',
+        'subject-assignments.statistics': '/subject-assignments/statistics',
+        'subject-assignments.statistics.export': '/subject-assignments/statistics/export',
         'subject-assignments.create': '/subject-assignments/create',
         'subject-assignments.store': '/subject-assignments',
         'subject-assignments.show': `/subject-assignments/${params}`,
@@ -351,6 +353,8 @@ export function route(name: string, params?: any): string {
 
         // Timetable
         'timetable.index':   '/timetable',
+        'timetable.teacher': '/timetable/teacher',
+        'timetable.teacher.export': '/timetable/teacher/export',
         'timetable.export':  `/timetable/${params}/export`,
         'timetable.store':   '/timetable',
         'timetable.update':  `/timetable/${params}`,

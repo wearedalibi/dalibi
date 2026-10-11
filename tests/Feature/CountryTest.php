@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Constants\Roles;
 use App\Models\Country;
 use App\Models\User;
+use Database\Seeders\CountrySeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -99,13 +100,13 @@ class CountryTest extends TestCase
 
     public function test_seeder_is_idempotent_and_keeps_stable_uuid(): void
     {
-        $this->seed(\Database\Seeders\CountrySeeder::class);
+        $this->seed(CountrySeeder::class);
         $count = Country::count();
         $this->assertGreaterThan(200, $count);
         $togoId = Country::where('code', 'TG')->value('id');
 
         // Deuxième exécution : aucun doublon, id inchangé.
-        $this->seed(\Database\Seeders\CountrySeeder::class);
+        $this->seed(CountrySeeder::class);
         $this->assertSame($count, Country::count());
         $this->assertSame($togoId, Country::where('code', 'TG')->value('id'));
     }

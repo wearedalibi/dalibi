@@ -11,18 +11,18 @@ class ExpenseCategories
 {
     /** @var array<string, array{label: string, emoji: string}> */
     public const ALL = [
-        'RENT'          => ['label' => 'Loyer',         'emoji' => '🏠'],
-        'ELECTRICITY'   => ['label' => 'Électricité',   'emoji' => '⚡'],
-        'WATER'         => ['label' => 'Eau',           'emoji' => '💧'],
-        'SUPPLIES'      => ['label' => 'Fournitures',   'emoji' => '📦'],
-        'SALARY'        => ['label' => 'Personnel',     'emoji' => '👤'],
-        'MAINTENANCE'   => ['label' => 'Entretien',     'emoji' => '🔧'],
-        'TRANSPORT'     => ['label' => 'Transport',     'emoji' => '🚗'],
+        'RENT' => ['label' => 'Loyer',         'emoji' => '🏠'],
+        'ELECTRICITY' => ['label' => 'Électricité',   'emoji' => '⚡'],
+        'WATER' => ['label' => 'Eau',           'emoji' => '💧'],
+        'SUPPLIES' => ['label' => 'Fournitures',   'emoji' => '📦'],
+        'SALARY' => ['label' => 'Personnel',     'emoji' => '👤'],
+        'MAINTENANCE' => ['label' => 'Entretien',     'emoji' => '🔧'],
+        'TRANSPORT' => ['label' => 'Transport',     'emoji' => '🚗'],
         'COMMUNICATION' => ['label' => 'Communication', 'emoji' => '📞'],
-        'HEALTH'        => ['label' => 'Santé',         'emoji' => '💊'],
-        'FOOD'          => ['label' => 'Alimentation',  'emoji' => '🍽️'],
-        'TAX'           => ['label' => 'Taxes & impôts', 'emoji' => '🧾'],
-        'OTHER'         => ['label' => 'Autre',         'emoji' => '📌'],
+        'HEALTH' => ['label' => 'Santé',         'emoji' => '💊'],
+        'FOOD' => ['label' => 'Alimentation',  'emoji' => '🍽️'],
+        'TAX' => ['label' => 'Taxes & impôts', 'emoji' => '🧾'],
+        'OTHER' => ['label' => 'Autre',         'emoji' => '📌'],
     ];
 
     /** Clés valides (pour la validation). */

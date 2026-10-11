@@ -1,23 +1,20 @@
 <?php
 
 namespace App\Http\Controllers\Comptabilite;
-use App\Http\Controllers\Controller;
 
 use App\Constants\Currencies;
-use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\CashAccount;
 use App\Models\Enrollment;
-use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\Receipt;
 use App\Models\School;
 use App\Services\DocumentRenderer;
 use App\Services\InvoiceService;
 use App\Support\FrenchNumberSpeller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -64,8 +61,8 @@ class InvoiceController extends Controller
         }
 
         return Inertia::render('Eleves/Enrollments/Invoice', [
-            'enrollment'   => $enrollment,
-            'invoice'      => $invoice,
+            'enrollment' => $enrollment,
+            'invoice' => $invoice,
             'cashAccounts' => CashAccount::where('active', true)->orderBy('type')->orderBy('name')->get(['id', 'name', 'type']),
         ]);
     }
@@ -84,22 +81,9 @@ class InvoiceController extends Controller
         $data = $request->validated();
         $data['created_by'] = auth()->id();
 
-        // Garde anti trop-perçu, évaluée SOUS VERROU : sans cela, deux requêtes
-        // concurrentes (double-clic, deux caissiers) liraient le même reste dû et
-        // passeraient toutes les deux — le trop-perçu étant ensuite masqué par le
-        // `max(0, …)` de `recalculate()`.
-        DB::transaction(function () use ($data, $invoice): void {
-            $locked = Invoice::whereKey($invoice->id)->lockForUpdate()->firstOrFail();
-
-            $remaining = (float) $locked->amount_remaining;
-            if ((float) $data['amount'] > $remaining + 0.001) {
-                throw ValidationException::withMessages([
-                    'amount' => 'Le montant dépasse le reste à payer (' . number_format($remaining, 0, ',', ' ') . ' F).',
-                ]);
-            }
-
-            $this->invoiceService->recordPayment($locked, $data);
-        });
+        // Le verrou pessimiste et la garde anti trop-perçu sont assurés
+        // par InvoiceService::recordPayment() (logique métier côté service).
+        $this->invoiceService->recordPayment($invoice, $data);
 
         return redirect()->route('enrollments.invoice', $enrollment->id)
             ->with('success', 'Paiement enregistré avec succès.');
@@ -123,8 +107,8 @@ class InvoiceController extends Controller
         $school = $enrollment->school;
 
         return Inertia::render('Eleves/Enrollments/InvoicePrint', [
-            'enrollment'   => $enrollment,
-            'invoice'      => $invoice,
+            'enrollment' => $enrollment,
+            'invoice' => $invoice,
             'totalInWords' => FrenchNumberSpeller::money(
                 (float) $invoice->total,
                 $school?->currency ?: Currencies::DEFAULT,
@@ -151,12 +135,12 @@ class InvoiceController extends Controller
         $school = $payment->invoice?->enrollment?->school;
 
         return Inertia::render('Comptabilite/Payments/Receipt', [
-            'payment'        => $payment,
-            'amountInWords'  => FrenchNumberSpeller::money(
+            'payment' => $payment,
+            'amountInWords' => FrenchNumberSpeller::money(
                 (float) $payment->amount,
                 $school?->currency ?: Currencies::DEFAULT,
             ),
-            'verifyUrl'      => route('receipts.verify'),
+            'verifyUrl' => route('receipts.verify'),
             ...$this->officialHeader($school),
         ]);
     }
@@ -175,28 +159,28 @@ class InvoiceController extends Controller
         $result = null;
 
         if ($code !== '') {
-            $receipt = \App\Models\Receipt::with([
+            $receipt = Receipt::with([
                 'payment.invoice.enrollment.student:id,firstname,lastname,matricule',
                 'payment.invoice.enrollment.classroom:id,name',
                 'payment.invoice.enrollment.academicYear:id,year',
             ])->where('verification_code', $code)->first();
 
             $result = $receipt && $receipt->payment ? [
-                'valid'          => true,
+                'valid' => true,
                 'receipt_number' => $receipt->receipt_number,
-                'amount'         => (float) $receipt->payment->amount,
-                'paid_at'        => $receipt->payment->paid_at?->format('d/m/Y'),
-                'student'        => $receipt->payment->invoice?->enrollment?->student
-                    ? $receipt->payment->invoice->enrollment->student->lastname . ' ' . $receipt->payment->invoice->enrollment->student->firstname
+                'amount' => (float) $receipt->payment->amount,
+                'paid_at' => $receipt->payment->paid_at?->format('d/m/Y'),
+                'student' => $receipt->payment->invoice?->enrollment?->student
+                    ? $receipt->payment->invoice->enrollment->student->lastname.' '.$receipt->payment->invoice->enrollment->student->firstname
                     : null,
-                'matricule'      => $receipt->payment->invoice?->enrollment?->student?->matricule,
-                'class_name'     => $receipt->payment->invoice?->enrollment?->classroom?->name,
-                'year'           => $receipt->payment->invoice?->enrollment?->academicYear?->year,
+                'matricule' => $receipt->payment->invoice?->enrollment?->student?->matricule,
+                'class_name' => $receipt->payment->invoice?->enrollment?->classroom?->name,
+                'year' => $receipt->payment->invoice?->enrollment?->academicYear?->year,
             ] : ['valid' => false];
         }
 
         return Inertia::render('Comptabilite/Payments/Verify', [
-            'code'   => $code,
+            'code' => $code,
             'result' => $result,
         ]);
     }

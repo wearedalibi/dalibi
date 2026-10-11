@@ -35,7 +35,7 @@ class SchoolObserver
 
         DocumentHeader::create([
             'school_id' => $school->id,
-            'layout'    => $config['layout'],
+            'layout' => $config['layout'],
             'watermark' => $config['watermark'],
         ]);
     }
@@ -52,12 +52,12 @@ class SchoolObserver
         }
 
         BulletinTemplate::create([
-            'school_id'         => $school->id,
+            'school_id' => $school->id,
             'classroom_type_id' => null,
-            'name'              => 'Modèle par défaut',
-            'is_active'         => true,
-            'columns'           => BulletinTemplate::defaultColumns(),
-            'options'           => BulletinTemplate::defaultOptions(),
+            'name' => 'Modèle par défaut',
+            'is_active' => true,
+            'columns' => BulletinTemplate::defaultColumns(),
+            'options' => BulletinTemplate::defaultOptions(),
         ]);
     }
 }

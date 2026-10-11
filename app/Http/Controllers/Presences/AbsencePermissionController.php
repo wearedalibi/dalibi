@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Presences;
 
 use App\Http\Controllers\Controller;
-use App\Constants\Roles;
 use App\Models\AbsencePermission;
 use App\Models\AcademicYear;
 use App\Models\Student;
@@ -17,9 +16,9 @@ class AbsencePermissionController extends Controller
 {
     public function index(Request $request): Response
     {
-        $status    = $request->string('status')->toString();
+        $status = $request->string('status')->toString();
         $studentId = $request->string('student_id')->toString();
-        $search    = $request->string('search')->toString();
+        $search = $request->string('search')->toString();
 
         $permissions = AbsencePermission::query()
             ->with([
@@ -30,10 +29,9 @@ class AbsencePermissionController extends Controller
             ->when($status && in_array($status, ['pending', 'approved', 'rejected'], true), fn ($q) => $q->where('status', $status))
             ->when($studentId, fn ($q) => $q->where('student_id', $studentId))
             ->when($search, function ($q) use ($search): void {
-                $like = '%' . strtolower($search) . '%';
-                $q->whereHas('student', fn ($sq) =>
-                    $sq->whereRaw("LOWER(lastname || ' ' || firstname) LIKE ?", [$like])
-                       ->orWhereRaw('LOWER(matricule) LIKE ?', [$like])
+                $like = '%'.strtolower($search).'%';
+                $q->whereHas('student', fn ($sq) => $sq->whereRaw("LOWER(lastname || ' ' || firstname) LIKE ?", [$like])
+                    ->orWhereRaw('LOWER(matricule) LIKE ?', [$like])
                 );
             })
             ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END")
@@ -50,8 +48,8 @@ class AbsencePermissionController extends Controller
 
         return Inertia::render('Presences/AbsencePermissions/Index', [
             'permissions' => $permissions,
-            'stats'       => $stats,
-            'filters'     => compact('status', 'studentId', 'search'),
+            'stats' => $stats,
+            'filters' => compact('status', 'studentId', 'search'),
         ]);
     }
 
@@ -72,7 +70,7 @@ class AbsencePermissionController extends Controller
         }
 
         return Inertia::render('Presences/AbsencePermissions/Create', [
-            'students'    => $students,
+            'students' => $students,
             'preStudentId' => $request->string('student_id')->toString(),
         ]);
     }
@@ -80,10 +78,10 @@ class AbsencePermissionController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'student_id'  => ['required', 'uuid', 'exists:students,id'],
-            'start_date'  => ['required', 'date'],
-            'end_date'    => ['required', 'date', 'gte:start_date'],
-            'reason'      => ['required', 'in:medical,familial,autre'],
+            'student_id' => ['required', 'uuid', 'exists:students,id'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'gte:start_date'],
+            'reason' => ['required', 'in:medical,familial,autre'],
             'description' => ['required', 'string', 'max:2000'],
         ], [
             'end_date.gte' => 'La date de fin doit être après la date de début.',
@@ -92,7 +90,7 @@ class AbsencePermissionController extends Controller
         AbsencePermission::create([
             ...$validated,
             'requested_by' => $request->user()->id,
-            'status'       => 'pending',
+            'status' => 'pending',
         ]);
 
         return redirect()->route('absence-permissions.index')
@@ -125,7 +123,7 @@ class AbsencePermissionController extends Controller
         abort_if(Gate::inspect('review', $absencePermission)->denied(), 422, 'Cette demande a déjà été traitée.');
 
         $validated = $request->validate([
-            'decision'       => ['required', 'in:approved,rejected'],
+            'decision' => ['required', 'in:approved,rejected'],
             'review_comment' => ['nullable', 'string', 'max:1000'],
         ]);
 

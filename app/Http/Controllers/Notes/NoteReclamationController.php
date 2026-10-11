@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Notes;
-use App\Http\Controllers\Controller;
 
 use App\Constants\Roles;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ReviewNoteReclamationRequest;
 use App\Http\Requests\StoreNoteReclamationRequest;
 use App\Models\Evaluation;
@@ -12,8 +12,8 @@ use App\Models\NoteReclamation;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,7 +24,7 @@ class NoteReclamationController extends Controller
         abort_unless($request->user()->can('view_note_reclamations'), 403);
 
         $status = $request->string('status')->toString();
-        $user   = $request->user();
+        $user = $request->user();
 
         $query = NoteReclamation::query()
             ->with([
@@ -50,8 +50,8 @@ class NoteReclamationController extends Controller
 
         return Inertia::render('Notes/NoteReclamations/Index', [
             'reclamations' => $reclamations,
-            'filters'      => ['status' => $status],
-            'canReview'    => $user->can('review_note_reclamations'),
+            'filters' => ['status' => $status],
+            'canReview' => $user->can('review_note_reclamations'),
         ]);
     }
 
@@ -60,7 +60,7 @@ class NoteReclamationController extends Controller
         abort_unless($request->user()->can('create_note_reclamations'), 403);
 
         $evaluationId = $request->string('evaluation_id')->toString();
-        $studentId    = $request->string('student_id')->toString();
+        $studentId = $request->string('student_id')->toString();
 
         $evaluation = Evaluation::with([
             'template:id,name,coefficient,max_score,academic_period_id',
@@ -87,8 +87,8 @@ class NoteReclamationController extends Controller
             ->exists();
 
         return Inertia::render('Notes/NoteReclamations/Create', [
-            'evaluation'    => $evaluation,
-            'student'       => $student->only(['id', 'firstname', 'lastname', 'matricule']),
+            'evaluation' => $evaluation,
+            'student' => $student->only(['id', 'firstname', 'lastname', 'matricule']),
             'originalScore' => $existingMark?->score !== null ? (float) $existingMark->score : null,
             'pendingExists' => $pendingExists,
         ]);
@@ -96,7 +96,7 @@ class NoteReclamationController extends Controller
 
     public function store(StoreNoteReclamationRequest $request): RedirectResponse
     {
-        $data       = $request->validated();
+        $data = $request->validated();
         $evaluation = Evaluation::findOrFail($data['evaluation_id']);
 
         if (! $evaluation->locked_at) {
@@ -139,7 +139,7 @@ class NoteReclamationController extends Controller
 
         return Inertia::render('Notes/NoteReclamations/Show', [
             'reclamation' => $noteReclamation,
-            'canReview'   => $request->user()->can('review_note_reclamations'),
+            'canReview' => $request->user()->can('review_note_reclamations'),
         ]);
     }
 
@@ -150,9 +150,9 @@ class NoteReclamationController extends Controller
             return back()->withErrors(['status' => $decision->message()]);
         }
 
-        $data       = $request->validated();
+        $data = $request->validated();
         $evaluation = $noteReclamation->evaluation()->with('template:id,max_score')->first();
-        $maxScore   = (float) ($evaluation?->template?->max_score ?? 9999);
+        $maxScore = (float) ($evaluation?->template?->max_score ?? 9999);
 
         if ($data['status'] === 'approved' && isset($data['corrected_score']) && $data['corrected_score'] > $maxScore) {
             return back()->withErrors(['corrected_score' => "La note corrigée ne peut pas dépasser {$maxScore}."]);
@@ -160,9 +160,9 @@ class NoteReclamationController extends Controller
 
         DB::transaction(function () use ($noteReclamation, $data): void {
             $noteReclamation->update([
-                'status'          => $data['status'],
-                'reviewed_by'     => auth()->id(),
-                'reviewed_at'     => now(),
+                'status' => $data['status'],
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
                 'corrected_score' => $data['corrected_score'] ?? null,
                 'correction_note' => $data['correction_note'] ?? null,
             ]);
@@ -171,11 +171,11 @@ class NoteReclamationController extends Controller
                 Mark::updateOrCreate(
                     [
                         'evaluation_id' => $noteReclamation->evaluation_id,
-                        'student_id'    => $noteReclamation->student_id,
+                        'student_id' => $noteReclamation->student_id,
                     ],
                     [
-                        'score'      => $data['corrected_score'],
-                        'absent'     => false,
+                        'score' => $data['corrected_score'],
+                        'absent' => false,
                         'created_by' => auth()->id(),
                     ]
                 );

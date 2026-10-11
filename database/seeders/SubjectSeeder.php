@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class SubjectSeeder extends Seeder
 {

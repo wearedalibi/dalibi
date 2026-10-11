@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Eleves;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\StudentDocument;
 use Illuminate\Http\RedirectResponse;
@@ -24,20 +24,20 @@ class StudentDocumentController extends Controller
         ], [
             'name.required' => 'Le nom du document est requis.',
             'file.required' => 'Le fichier est requis.',
-            'file.mimes'    => 'Formats acceptés : PDF, image, Word.',
-            'file.max'      => 'Le fichier ne doit pas dépasser 5 Mo.',
+            'file.mimes' => 'Formats acceptés : PDF, image, Word.',
+            'file.max' => 'Le fichier ne doit pas dépasser 5 Mo.',
         ]);
 
         $file = $request->file('file');
-        $path = $file->store($student->storageFolder() . '/documents', 'secure');
+        $path = $file->store($student->storageFolder().'/documents', 'secure');
 
         $student->documents()->create([
-            'name'          => $validated['name'],
-            'path'          => $path,
+            'name' => $validated['name'],
+            'path' => $path,
             'original_name' => $file->getClientOriginalName(),
-            'mime'          => $file->getClientMimeType(),
-            'size'          => $file->getSize(),
-            'uploaded_by'   => $request->user()->id,
+            'mime' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'uploaded_by' => $request->user()->id,
         ]);
 
         return back()->with('success', 'Document ajouté au dossier de l\'élève.');

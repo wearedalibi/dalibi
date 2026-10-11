@@ -33,8 +33,8 @@ class EmployeeProfile extends Model
 
     protected $casts = [
         'base_salary' => 'float',
-        'hire_date'   => 'date',
-        'end_date'    => 'date',
+        'hire_date' => 'date',
+        'end_date' => 'date',
     ];
 
     public function user(): BelongsTo
@@ -61,7 +61,7 @@ class EmployeeProfile extends Model
     /** Nom complet de l'employé (via le compte utilisateur). */
     public function fullName(): string
     {
-        return trim(($this->user?->firstname ?? '') . ' ' . ($this->user?->lastname ?? ''));
+        return trim(($this->user?->firstname ?? '').' '.($this->user?->lastname ?? ''));
     }
 
     /**

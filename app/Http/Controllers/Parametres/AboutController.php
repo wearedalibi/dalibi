@@ -20,10 +20,10 @@ class AboutController extends Controller
 
         return Inertia::render('Parametres/About', [
             'app' => [
-                'name'        => config('app.name', 'Dalibi'),
-                'version'     => $version,
-                'laravel'     => app()->version(),
-                'php'         => PHP_VERSION,
+                'name' => config('app.name', 'Dalibi'),
+                'version' => $version,
+                'laravel' => app()->version(),
+                'php' => PHP_VERSION,
                 'environment' => app()->environment(),
             ],
         ]);

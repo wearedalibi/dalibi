@@ -16,9 +16,9 @@ class Backup extends Model
     ];
 
     protected $casts = [
-        'size'           => 'integer',
-        'scheduled'      => 'boolean',
-        'locked'         => 'boolean',
+        'size' => 'integer',
+        'scheduled' => 'boolean',
+        'locked' => 'boolean',
         'includes_media' => 'boolean',
     ];
 

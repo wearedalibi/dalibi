@@ -36,7 +36,7 @@ class DocumentHeaderTest extends TestCase
         $school = School::factory()->create(['name' => 'École Test']);
 
         $layout = [
-            'width'  => 760,
+            'width' => 760,
             'height' => 140,
             'elements' => [[
                 'id' => 'a', 'type' => 'text', 'x' => 10, 'y' => 5, 'w' => 200,
@@ -51,8 +51,8 @@ class DocumentHeaderTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('document-header.update'), [
-                'preset'    => 'personnalise',
-                'layout'    => json_encode($layout),
+                'preset' => 'personnalise',
+                'layout' => json_encode($layout),
                 'watermark' => json_encode($watermark),
             ])
             ->assertRedirect();
@@ -71,8 +71,8 @@ class DocumentHeaderTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('document-header.update'), [
-                'preset'    => 'invalide',
-                'layout'    => json_encode(['width' => 760, 'height' => 130, 'elements' => []]),
+                'preset' => 'invalide',
+                'layout' => json_encode(['width' => 760, 'height' => 130, 'elements' => []]),
                 'watermark' => json_encode(['enabled' => false]),
             ])
             ->assertSessionHasErrors('preset');
@@ -84,14 +84,14 @@ class DocumentHeaderTest extends TestCase
 
         $config = DocumentHeader::defaultLayout($school);
         $config['watermark']['enabled'] = true;
-        $config['watermark']['text']    = 'CONFIDENTIEL';
+        $config['watermark']['text'] = 'CONFIDENTIEL';
 
         // Toute école dispose déjà d'un en-tête par défaut (provisionné à sa création) :
         // on le met à jour plutôt que d'en créer un second (contrainte d'unicité).
         DocumentHeader::updateOrCreate(['school_id' => $school->id], [
             'school_id' => $school->id,
-            'preset'    => 'personnalise',
-            'layout'    => $config['layout'],
+            'preset' => 'personnalise',
+            'layout' => $config['layout'],
             'watermark' => $config['watermark'],
         ]);
 
@@ -100,7 +100,7 @@ class DocumentHeaderTest extends TestCase
         $template = new DocumentTemplate([
             'header_enabled' => true,
             'show_signature' => false,
-            'content'        => '<p>Corps du document</p>',
+            'content' => '<p>Corps du document</p>',
         ]);
         $template->setRelation('school', $school->load('documentHeader'));
 
@@ -129,8 +129,8 @@ class DocumentHeaderTest extends TestCase
         // on le met à jour plutôt que d'en créer un second (contrainte d'unicité).
         DocumentHeader::updateOrCreate(['school_id' => $school->id], [
             'school_id' => $school->id,
-            'preset'    => 'personnalise',
-            'layout'    => $config['layout'],
+            'preset' => 'personnalise',
+            'layout' => $config['layout'],
             'watermark' => $config['watermark'],
         ]);
 
@@ -148,7 +148,7 @@ class DocumentHeaderTest extends TestCase
 
     public function test_template_body_escapes_variable_values(): void
     {
-        $school  = School::factory()->create(['name' => 'École']);
+        $school = School::factory()->create(['name' => 'École']);
         $student = new Student([
             'firstname' => '<img src=x onerror=alert(1)>', 'lastname' => 'X', 'matricule' => 'M1',
         ]);
@@ -168,16 +168,16 @@ class DocumentHeaderTest extends TestCase
     public function test_renderer_uses_ministerial_header_by_default(): void
     {
         $school = School::factory()->create([
-            'name'     => 'Sans Config',
+            'name' => 'Sans Config',
             'ministry' => 'Ministère des Enseignements Primaire, Secondaire et Technique',
-            'terme'    => 'République Togolaise',
+            'terme' => 'République Togolaise',
         ]);
 
         $renderer = app(DocumentRenderer::class);
         $template = new DocumentTemplate([
             'header_enabled' => true,
             'show_signature' => false,
-            'content'        => '<p>Corps</p>',
+            'content' => '<p>Corps</p>',
         ]);
         $template->setRelation('school', $school);
 
@@ -201,8 +201,8 @@ class DocumentHeaderTest extends TestCase
         // on le met à jour plutôt que d'en créer un second (contrainte d'unicité).
         DocumentHeader::updateOrCreate(['school_id' => $school->id], [
             'school_id' => $school->id,
-            'preset'    => 'ministeriel',
-            'layout'    => $config['layout'],
+            'preset' => 'ministeriel',
+            'layout' => $config['layout'],
             'watermark' => $config['watermark'],
         ]);
 

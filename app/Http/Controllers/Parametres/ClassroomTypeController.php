@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Parametres;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassroomTypeRequest;
 use App\Http\Requests\UpdateClassroomTypeRequest;
 use App\Models\ClassroomType;

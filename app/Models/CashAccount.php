@@ -21,11 +21,11 @@ class CashAccount extends Model
 
     protected $casts = [
         'balance' => 'float',
-        'active'  => 'boolean',
+        'active' => 'boolean',
     ];
 
     /* ------------------------------------------------------------------ */
-    /* Relations                                                            */
+    /* Relations */
     /* ------------------------------------------------------------------ */
 
     public function transactions(): HasMany
@@ -39,16 +39,16 @@ class CashAccount extends Model
     }
 
     /* ------------------------------------------------------------------ */
-    /* Helpers                                                              */
+    /* Helpers */
     /* ------------------------------------------------------------------ */
 
     public function typeLabel(): string
     {
         return match ($this->type) {
-            'CASH'         => 'Espèces',
+            'CASH' => 'Espèces',
             'MOBILE_MONEY' => 'Mobile Money',
-            'BANK'         => 'Banque',
-            default        => $this->type,
+            'BANK' => 'Banque',
+            default => $this->type,
         };
     }
 }

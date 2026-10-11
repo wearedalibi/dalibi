@@ -49,10 +49,10 @@ class ExpenseCategoryTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('expenses.store'), [
-                'description'      => "Facture d'électricité octobre",
-                'category'         => 'ELECTRICITY',
-                'amount'           => 25000,
-                'cash_account_id'  => $cash->id,
+                'description' => "Facture d'électricité octobre",
+                'category' => 'ELECTRICITY',
+                'amount' => 25000,
+                'cash_account_id' => $cash->id,
                 'transaction_date' => '2026-07-30',
             ])
             ->assertRedirect(route('accounting.transactions'));
@@ -71,10 +71,10 @@ class ExpenseCategoryTest extends TestCase
         $this->actingAs($this->admin())
             ->from(route('expenses.create'))
             ->post(route('expenses.store'), [
-                'description'      => 'Test',
-                'category'         => 'NOPE',
-                'amount'           => 1000,
-                'cash_account_id'  => $cash->id,
+                'description' => 'Test',
+                'category' => 'NOPE',
+                'amount' => 1000,
+                'cash_account_id' => $cash->id,
                 'transaction_date' => '2026-07-30',
             ])
             ->assertSessionHasErrors('category');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('class_subjects', function (Blueprint $table) {
             // First add the column
             $table->uuid('academic_year_id')->nullable()->after('teacher_id');
-            
+
             // Add the foreign key
             $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
         });

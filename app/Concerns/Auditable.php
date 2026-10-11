@@ -52,7 +52,7 @@ trait Auditable
     /** Libellé lisible de l'entité pour le journal. */
     public function auditLabel(): ?string
     {
-        $full = trim(($this->firstname ?? '') . ' ' . ($this->lastname ?? ''));
+        $full = trim(($this->firstname ?? '').' '.($this->lastname ?? ''));
         if ($full !== '') {
             return $full;
         }
@@ -71,16 +71,16 @@ trait Auditable
         $request = app()->runningInConsole() ? null : request();
 
         AuditLog::create([
-            'user_id'        => auth()->id(),
-            'event'          => $event,
+            'user_id' => auth()->id(),
+            'event' => $event,
             'auditable_type' => $this->getMorphClass(),
-            'auditable_id'   => $this->getKey(),
-            'label'          => $this->auditLabel(),
-            'old_values'     => $old,
-            'new_values'     => $new,
-            'url'            => $request?->fullUrl(),
-            'ip_address'     => $request?->ip(),
-            'user_agent'     => $request ? substr((string) $request->userAgent(), 0, 255) : null,
+            'auditable_id' => $this->getKey(),
+            'label' => $this->auditLabel(),
+            'old_values' => $old,
+            'new_values' => $new,
+            'url' => $request?->fullUrl(),
+            'ip_address' => $request?->ip(),
+            'user_agent' => $request ? substr((string) $request->userAgent(), 0, 255) : null,
         ]);
     }
 }

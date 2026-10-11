@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Constants\Roles;
+use App\Models\User;
 use App\Services\MatriculeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -23,7 +24,7 @@ class MatriculeServiceTest extends TestCase
     public function it_generates_user_matricule_with_correct_format()
     {
         $matricule = $this->service->generateUserMatricule(Roles::TEACHER);
-        
+
         $this->assertMatchesRegularExpression('/^[A-Z]{3,4}[0-9]{2}[0-9]{3}$/', $matricule);
     }
 
@@ -137,7 +138,7 @@ class MatriculeServiceTest extends TestCase
         $this->assertTrue($this->service->isValidMatriculeFormat('ADM26001'));
         $this->assertTrue($this->service->isValidMatriculeFormat('PROF26001'));
         $this->assertTrue($this->service->isValidMatriculeFormat('COMPT26001'));
-        
+
         $this->assertFalse($this->service->isValidMatriculeFormat('INVALID'));
         $this->assertFalse($this->service->isValidMatriculeFormat('ADM2600'));
         $this->assertFalse($this->service->isValidMatriculeFormat('ADM260001'));
@@ -149,7 +150,7 @@ class MatriculeServiceTest extends TestCase
         // La séquence dépend du nombre d'utilisateurs existants : on persiste
         // le premier matricule avant de générer le second.
         $matricule1 = $this->service->generateUserMatricule(Roles::TEACHER);
-        \App\Models\User::factory()->create(['natricule' => $matricule1]);
+        User::factory()->create(['natricule' => $matricule1]);
 
         $matricule2 = $this->service->generateUserMatricule(Roles::TEACHER);
 

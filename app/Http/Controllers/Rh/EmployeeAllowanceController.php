@@ -24,20 +24,20 @@ class EmployeeAllowanceController extends Controller
         }
 
         $data = $request->validate([
-            'type'      => ['required', Rule::in([SalaryComponent::EARNING, SalaryComponent::DEDUCTION])],
-            'label'     => ['required', 'string', 'max:255'],
-            'mode'      => ['required', Rule::in([EmployeeAllowance::MODE_FIXED, EmployeeAllowance::MODE_PERCENT_BASE])],
-            'amount'    => ['required', 'numeric', 'min:0', 'max:999999999'],
-            'reason'    => ['nullable', 'string', 'max:255'],
+            'type' => ['required', Rule::in([SalaryComponent::EARNING, SalaryComponent::DEDUCTION])],
+            'label' => ['required', 'string', 'max:255'],
+            'mode' => ['required', Rule::in([EmployeeAllowance::MODE_FIXED, EmployeeAllowance::MODE_PERCENT_BASE])],
+            'amount' => ['required', 'numeric', 'min:0', 'max:999999999'],
+            'reason' => ['nullable', 'string', 'max:255'],
             'starts_on' => ['nullable', 'date'],
-            'ends_on'   => ['nullable', 'date', 'after_or_equal:starts_on'],
+            'ends_on' => ['nullable', 'date', 'after_or_equal:starts_on'],
         ], [
             'label.required' => 'Le libellé est obligatoire.',
             'amount.required' => 'Le montant est obligatoire.',
         ]);
 
         $data['employee_profile_id'] = $profile->id;
-        $data['active']     = true;
+        $data['active'] = true;
         $data['created_by'] = auth()->id();
 
         EmployeeAllowance::create($data);

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Constants\Roles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,9 +18,9 @@ class UpdateRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'          => ['required', 'string', 'max:255', Rule::unique('roles', 'name')->ignore($this->route('role'))],
-            'description'   => ['nullable', 'string', 'max:500'],
-            'permissions'   => ['nullable', 'array'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('roles', 'name')->ignore($this->route('role'))],
+            'description' => ['nullable', 'string', 'max:500'],
+            'permissions' => ['nullable', 'array'],
             'permissions.*' => ['exists:permissions,id'],
         ];
     }
@@ -32,9 +31,9 @@ class UpdateRoleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'         => 'Le nom du rôle est requis.',
-            'name.unique'           => 'Ce rôle existe déjà.',
-            'permissions.*.exists'  => 'Une ou plusieurs permissions sélectionnées n\'existent pas.',
+            'name.required' => 'Le nom du rôle est requis.',
+            'name.unique' => 'Ce rôle existe déjà.',
+            'permissions.*.exists' => 'Une ou plusieurs permissions sélectionnées n\'existent pas.',
         ];
     }
 }

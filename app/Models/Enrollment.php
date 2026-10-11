@@ -4,29 +4,29 @@
  * Projet : Système de Gestion Scolaire (SIGE) - Togo
  * Description : Gestion des élèves, des notes et des bulletins.
  * * Copyright (c) 2026 Kudayah Sassou Horacio Herve.
- * * Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier 
- * selon les termes de la Licence Publique Générale GNU (GPL v3) telle que publiée 
+ * * Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+ * selon les termes de la Licence Publique Générale GNU (GPL v3) telle que publiée
  * par la Free Software Foundation.
- * * Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; 
- * sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN BUT PARTICULIER. 
+ * * Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ;
+ * sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN BUT PARTICULIER.
  * Consultez la Licence Publique Générale GNU pour plus de détails.
- * * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU 
+ * * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU
  * avec ce programme. Sinon, voir <https://www.gnu.org/licenses/>.
  */
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Concerns\Auditable;
 
 class Enrollment extends Model
 {
-    use HasFactory, HasUuids, Auditable;
+    use Auditable, HasFactory, HasUuids;
 
     protected $fillable = [
         'school_id',
@@ -43,7 +43,7 @@ class Enrollment extends Model
     ];
 
     protected $casts = [
-        'enrollment_date'   => 'date',
+        'enrollment_date' => 'date',
         'status_changed_at' => 'datetime',
     ];
 
@@ -53,8 +53,10 @@ class Enrollment extends Model
      * minuscules ne remonte aucune ligne : passez toujours par ces constantes
      * ou par le scope `active()`.
      */
-    public const STATUS_PENDING   = 'PENDING';
-    public const STATUS_ACTIVE    = 'ACTIVE';
+    public const STATUS_PENDING = 'PENDING';
+
+    public const STATUS_ACTIVE = 'ACTIVE';
+
     public const STATUS_CANCELLED = 'CANCELLED';
 
     public const STATUSES = [self::STATUS_PENDING, self::STATUS_ACTIVE, self::STATUS_CANCELLED];
@@ -67,11 +69,11 @@ class Enrollment extends Model
 
     /** Statuts académiques (distincts du statut de paiement). */
     public const ACADEMIC_STATUSES = [
-        'en_cours'   => 'En cours',
-        'valide'     => 'Validé',
+        'en_cours' => 'En cours',
+        'valide' => 'Validé',
         'non_valide' => 'Non validé',
-        'abandon'    => 'Abandon',
-        'transfere'  => 'Transféré',
+        'abandon' => 'Abandon',
+        'transfere' => 'Transféré',
     ];
 
     /** Statuts considérés comme « scolarité active » (présents à l'appel). */

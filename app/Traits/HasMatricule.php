@@ -24,8 +24,6 @@ trait HasMatricule
 
     /**
      * Obtenir le service de matricule
-     *
-     * @return MatriculeService
      */
     protected function getMatriculeService(): MatriculeService
     {

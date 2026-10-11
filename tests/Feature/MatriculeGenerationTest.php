@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Constants\Roles;
-use App\Models\User;
 use App\Models\School;
+use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -111,7 +111,7 @@ class MatriculeGenerationTest extends TestCase
 
         // Should default to administrator
         $user->natricule = $user->generateMatricule();
-        
+
         $this->assertNotNull($user->natricule);
     }
 
@@ -139,7 +139,7 @@ class MatriculeGenerationTest extends TestCase
         $user1 = User::factory()->create([
             'natricule' => null,
         ]);
-        
+
         $user2 = User::factory()->create([
             'natricule' => null,
         ]);

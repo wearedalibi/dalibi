@@ -27,8 +27,8 @@ class AbsencePermission extends Model
     ];
 
     protected $casts = [
-        'start_date'  => 'date',
-        'end_date'    => 'date',
+        'start_date' => 'date',
+        'end_date' => 'date',
         'reviewed_at' => 'datetime',
     ];
 
@@ -60,10 +60,10 @@ class AbsencePermission extends Model
     {
         DB::transaction(function () use ($reviewerId, $comment): void {
             $this->update([
-                'status'         => 'approved',
-                'reviewed_by'    => $reviewerId,
+                'status' => 'approved',
+                'reviewed_by' => $reviewerId,
                 'review_comment' => $comment,
-                'reviewed_at'    => now(),
+                'reviewed_at' => now(),
             ]);
 
             // Marque auto les appels existants dans la plage de dates
@@ -73,7 +73,7 @@ class AbsencePermission extends Model
                 })
                 ->whereIn('status', ['absent'])
                 ->update([
-                    'status'        => 'excused',
+                    'status' => 'excused',
                     'permission_id' => $this->id,
                 ]);
         });
@@ -85,10 +85,10 @@ class AbsencePermission extends Model
     public function reject(string $reviewerId, ?string $comment = null): void
     {
         $this->update([
-            'status'         => 'rejected',
-            'reviewed_by'    => $reviewerId,
+            'status' => 'rejected',
+            'reviewed_by' => $reviewerId,
             'review_comment' => $comment,
-            'reviewed_at'    => now(),
+            'reviewed_at' => now(),
         ]);
     }
 }

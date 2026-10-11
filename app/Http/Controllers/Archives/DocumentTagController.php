@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Archives;
 
 use App\Http\Controllers\Controller;
-use App\Constants\Roles;
 use App\Models\DocumentTag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,7 +13,6 @@ use Inertia\Response;
 
 class DocumentTagController extends Controller
 {
-
     private function authorizeManage(Request $request): void
     {
         // Socle de sécurité (voir ArchiveController) : jamais d'accès sans le droit de lecture.
@@ -33,14 +31,14 @@ class DocumentTagController extends Controller
             ->paginate(15)
             ->withQueryString()
             ->through(fn (DocumentTag $t) => [
-                'id'              => $t->id,
-                'name'            => $t->name,
-                'color'           => $t->color,
+                'id' => $t->id,
+                'name' => $t->name,
+                'color' => $t->color,
                 'documents_count' => $t->documents_count,
             ]);
 
         return Inertia::render('Archives/Tags', [
-            'tags'    => $tags,
+            'tags' => $tags,
             'filters' => ['search' => $search],
         ]);
     }
@@ -50,7 +48,7 @@ class DocumentTagController extends Controller
         $this->authorizeManage($request);
 
         $data = $request->validate([
-            'name'  => ['required', 'string', 'max:50'],
+            'name' => ['required', 'string', 'max:50'],
             'color' => ['nullable', 'string', 'max:20'],
         ]);
 
@@ -60,8 +58,8 @@ class DocumentTagController extends Controller
         }
 
         DocumentTag::create([
-            'name'  => trim($data['name']),
-            'slug'  => $slug,
+            'name' => trim($data['name']),
+            'slug' => $slug,
             'color' => $data['color'] ?? '#64748b',
         ]);
 
@@ -73,7 +71,7 @@ class DocumentTagController extends Controller
         $this->authorizeManage($request);
 
         $data = $request->validate([
-            'name'  => ['required', 'string', 'max:50'],
+            'name' => ['required', 'string', 'max:50'],
             'color' => ['nullable', 'string', 'max:20'],
         ]);
 
@@ -84,8 +82,8 @@ class DocumentTagController extends Controller
         }
 
         $documentTag->update([
-            'name'  => trim($data['name']),
-            'slug'  => Str::slug($data['name']),
+            'name' => trim($data['name']),
+            'slug' => Str::slug($data['name']),
             'color' => $data['color'] ?? $documentTag->color,
         ]);
 

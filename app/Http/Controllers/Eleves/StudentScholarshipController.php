@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Eleves;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentScholarshipRequest;
 use App\Http\Requests\UpdateStudentScholarshipRequest;
 use App\Models\AcademicYear;
@@ -28,15 +28,15 @@ class StudentScholarshipController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->whereHas('student', function ($query) use ($search) {
                     $query->whereRaw('LOWER(firstname) LIKE ?', ["%{$search}%"])
-                          ->orWhereRaw('LOWER(lastname) LIKE ?', ["%{$search}%"])
-                          ->orWhereRaw('LOWER(matricule) LIKE ?', ["%{$search}%"]);
+                        ->orWhereRaw('LOWER(lastname) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(matricule) LIKE ?', ["%{$search}%"]);
                 })
-                ->orWhereHas('scholarship', function ($query) use ($search) {
-                    $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
-                })
-                ->orWhereHas('academicYear', function ($query) use ($search) {
-                    $query->whereRaw('LOWER(year) LIKE ?', ["%{$search}%"]);
-                });
+                    ->orWhereHas('scholarship', function ($query) use ($search) {
+                        $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                    })
+                    ->orWhereHas('academicYear', function ($query) use ($search) {
+                        $query->whereRaw('LOWER(year) LIKE ?', ["%{$search}%"]);
+                    });
             });
         }
 

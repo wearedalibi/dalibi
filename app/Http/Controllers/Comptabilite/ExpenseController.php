@@ -7,9 +7,9 @@
  */
 
 namespace App\Http\Controllers\Comptabilite;
-use App\Http\Controllers\Controller;
 
 use App\Constants\ExpenseCategories;
+use App\Http\Controllers\Controller;
 use App\Models\AccountingTransaction;
 use App\Models\CashAccount;
 use Illuminate\Http\RedirectResponse;
@@ -38,8 +38,8 @@ class ExpenseController extends Controller
 
         return Inertia::render('Comptabilite/Expenses/Create', [
             'cashAccounts' => $cashAccounts,
-            'categories'   => ExpenseCategories::options(),
-            'recent'       => $recent,
+            'categories' => ExpenseCategories::options(),
+            'recent' => $recent,
         ]);
     }
 
@@ -49,30 +49,30 @@ class ExpenseController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'description'      => ['required', 'string', 'max:255'],
-            'category'         => ['required', 'string', 'in:' . implode(',', ExpenseCategories::keys())],
-            'amount'           => ['required', 'numeric', 'min:1', 'max:999999999'],
-            'cash_account_id'  => ['required', 'uuid', 'exists:cash_accounts,id'],
+            'description' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'in:'.implode(',', ExpenseCategories::keys())],
+            'amount' => ['required', 'numeric', 'min:1', 'max:999999999'],
+            'cash_account_id' => ['required', 'uuid', 'exists:cash_accounts,id'],
             'transaction_date' => ['required', 'date'],
         ], [
-            'description.required'      => 'La description est obligatoire.',
-            'category.required'         => 'Veuillez choisir une catégorie.',
-            'category.in'               => 'Catégorie invalide.',
-            'amount.required'           => 'Le montant est obligatoire.',
-            'amount.min'                => 'Le montant doit être supérieur à 0.',
-            'cash_account_id.required'  => 'Veuillez sélectionner une caisse.',
+            'description.required' => 'La description est obligatoire.',
+            'category.required' => 'Veuillez choisir une catégorie.',
+            'category.in' => 'Catégorie invalide.',
+            'amount.required' => 'Le montant est obligatoire.',
+            'amount.min' => 'Le montant doit être supérieur à 0.',
+            'cash_account_id.required' => 'Veuillez sélectionner une caisse.',
             'transaction_date.required' => 'La date est obligatoire.',
         ]);
 
         DB::transaction(function () use ($validated): void {
             AccountingTransaction::create([
-                'type'             => 'EXPENSE',
-                'amount'           => $validated['amount'],
-                'description'      => $validated['description'],
-                'reference_type'   => 'EXPENSE',
-                'category'         => $validated['category'],
-                'cash_account_id'  => $validated['cash_account_id'],
-                'created_by'       => auth()->id(),
+                'type' => 'EXPENSE',
+                'amount' => $validated['amount'],
+                'description' => $validated['description'],
+                'reference_type' => 'EXPENSE',
+                'category' => $validated['category'],
+                'cash_account_id' => $validated['cash_account_id'],
+                'created_by' => auth()->id(),
                 'transaction_date' => $validated['transaction_date'],
             ]);
 

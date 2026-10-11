@@ -24,8 +24,11 @@ class StatisticsTest extends TestCase
     use RefreshDatabase;
 
     private School $school;
+
     private AcademicYear $year;
+
     private Classroom $class;
+
     private ClassroomType $type;
 
     protected function setUp(): void
@@ -33,18 +36,18 @@ class StatisticsTest extends TestCase
         parent::setUp();
         $this->seed(RolesAndPermissionsSeeder::class);
         $this->school = School::factory()->create();
-        $this->year   = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
-        $this->type   = ClassroomType::factory()->create(['period_system' => 'trimestre']);
-        $this->class  = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
+        $this->year = AcademicYear::create(['year' => '2025-2026', 'start_date' => '2025-09-01', 'end_date' => '2026-07-31', 'active' => true]);
+        $this->type = ClassroomType::factory()->create(['period_system' => 'trimestre']);
+        $this->class = Classroom::factory()->create(['classroom_type_id' => $this->type->id]);
     }
 
     private function enrolled(string $gender, string $academicStatus, ?string $region = null): Student
     {
         $u = User::factory()->create();
-        $s = Student::create(['user_id' => $u->id, 'matricule' => 'M' . Str::random(6), 'firstname' => 'A', 'lastname' => Str::random(5), 'gender' => $gender, 'birth_date' => '2010-01-01', 'region' => $region]);
+        $s = Student::create(['user_id' => $u->id, 'matricule' => 'M'.Str::random(6), 'firstname' => 'A', 'lastname' => Str::random(5), 'gender' => $gender, 'birth_date' => '2010-01-01', 'region' => $region]);
         Enrollment::create([
             'school_id' => $this->school->id, 'student_id' => $s->id, 'class_id' => $this->class->id,
-            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E' . Str::random(8),
+            'academic_year_id' => $this->year->id, 'enrollment_code' => 'E'.Str::random(8),
             'enrollment_date' => now(), 'status' => 'ACTIVE', 'academic_status' => $academicStatus,
         ]);
 

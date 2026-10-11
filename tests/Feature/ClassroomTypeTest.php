@@ -33,10 +33,10 @@ class ClassroomTypeTest extends TestCase
     private function validPayload(array $overrides = []): array
     {
         return array_merge([
-            'name'          => 'Primaire',
-            'description'   => 'Cycle primaire',
+            'name' => 'Primaire',
+            'description' => 'Cycle primaire',
             'period_system' => 'trimestre',
-            'active'        => true,
+            'active' => true,
         ], $overrides);
     }
 
@@ -107,7 +107,7 @@ class ClassroomTypeTest extends TestCase
             ->assertRedirect(route('classroom-types.index'));
 
         $this->assertDatabaseHas('classroom_types', [
-            'name'   => 'Primaire',
+            'name' => 'Primaire',
             'active' => true,
         ]);
     }
@@ -169,16 +169,16 @@ class ClassroomTypeTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('classroom-types.update', $type), [
-                'name'          => 'Lycée Technique',
-                'description'   => 'Filières techniques',
+                'name' => 'Lycée Technique',
+                'description' => 'Filières techniques',
                 'period_system' => 'trimestre',
-                'active'        => false,
+                'active' => false,
             ])
             ->assertRedirect(route('classroom-types.index'));
 
         $this->assertDatabaseHas('classroom_types', [
-            'id'     => $type->id,
-            'name'   => 'Lycée Technique',
+            'id' => $type->id,
+            'name' => 'Lycée Technique',
             'active' => false,
         ]);
     }
@@ -190,9 +190,9 @@ class ClassroomTypeTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('classroom-types.update', $type), [
-                'name'          => 'Existant',
+                'name' => 'Existant',
                 'period_system' => 'trimestre',
-                'active'        => true,
+                'active' => true,
             ])
             ->assertSessionHasErrors('name');
     }
@@ -203,10 +203,10 @@ class ClassroomTypeTest extends TestCase
 
         $this->actingAs($this->user())
             ->put(route('classroom-types.update', $type), [
-                'name'          => 'Primaire',
-                'description'   => 'Description mise à jour',
+                'name' => 'Primaire',
+                'description' => 'Description mise à jour',
                 'period_system' => 'trimestre',
-                'active'        => true,
+                'active' => true,
             ])
             ->assertRedirect(route('classroom-types.index'));
     }
@@ -228,10 +228,10 @@ class ClassroomTypeTest extends TestCase
     {
         $type = ClassroomType::create(['name' => 'Primaire', 'active' => true]);
         Classroom::create([
-            'name'               => 'CP1',
-            'code'               => 'CP1',
-            'capacity'           => 30,
-            'classroom_type_id'  => $type->id,
+            'name' => 'CP1',
+            'code' => 'CP1',
+            'capacity' => 30,
+            'classroom_type_id' => $type->id,
         ]);
 
         $this->actingAs($this->user())

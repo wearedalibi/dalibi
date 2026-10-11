@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Constants\Currencies;
+use App\Models\School;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,9 +43,9 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user'        => $user,
+                'user' => $user,
                 // Rôles et permissions de l'utilisateur (pour conditionner la vue côté front)
-                'roles'       => $user ? $user->getRoleNames()->values() : [],
+                'roles' => $user ? $user->getRoleNames()->values() : [],
                 'permissions' => $user ? $user->getAllPermissions()->pluck('name')->values() : [],
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
@@ -61,16 +63,16 @@ class HandleInertiaRequests extends Middleware
      */
     private function currency(): array
     {
-        $code = \App\Models\School::query()->value('currency') ?: \App\Constants\Currencies::DEFAULT;
+        $code = School::query()->value('currency') ?: Currencies::DEFAULT;
 
-        return ['code' => $code, 'symbol' => \App\Constants\Currencies::symbol($code)];
+        return ['code' => $code, 'symbol' => Currencies::symbol($code)];
     }
 
     /** @return array{code: string, symbol: string} */
     private static function defaultCurrency(): array
     {
-        $code = \App\Constants\Currencies::DEFAULT;
+        $code = Currencies::DEFAULT;
 
-        return ['code' => $code, 'symbol' => \App\Constants\Currencies::symbol($code)];
+        return ['code' => $code, 'symbol' => Currencies::symbol($code)];
     }
 }

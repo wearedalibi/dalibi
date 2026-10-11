@@ -23,7 +23,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function beforeRefreshingDatabase()
     {
-        if (config('database.connections.' . config('database.default') . '.driver') === 'sqlite') {
+        if (config('database.connections.'.config('database.default').'.driver') === 'sqlite') {
             DB::statement('PRAGMA foreign_keys = OFF');
         }
     }

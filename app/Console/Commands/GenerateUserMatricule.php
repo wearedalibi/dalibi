@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
-use App\Models\School;
 use App\Services\MatriculeService;
 use Illuminate\Console\Command;
 
@@ -39,6 +38,7 @@ class GenerateUserMatricule extends Command
 
             if ($users->isEmpty()) {
                 $this->info('Aucun utilisateur sans matricule trouvé.');
+
                 return 0;
             }
 
@@ -62,21 +62,24 @@ class GenerateUserMatricule extends Command
 
         $userId = $this->option('user-id');
 
-        if (!$userId) {
+        if (! $userId) {
             $this->error('Veuillez spécifier --user-id ou --all');
+
             return 1;
         }
 
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             $this->error("Utilisateur avec l'ID {$userId} non trouvé.");
+
             return 1;
         }
 
-        if (!$this->option('force') && $user->natricule) {
+        if (! $this->option('force') && $user->natricule) {
             $this->error("L'utilisateur a déjà un matricule: {$user->natricule}");
             $this->info('Utilisez --force pour forcer la régénération.');
+
             return 1;
         }
 

@@ -8,9 +8,13 @@ namespace App\Constants;
 class Roles
 {
     public const ADMINISTRATOR = 'administrateur';
+
     public const DIRECTOR = 'directeur';
+
     public const TEACHER = 'enseignant';
+
     public const ACCOUNTING = 'comptabilité';
+
     public const SECRETARIAT = 'secrétariat';
 
     /**
