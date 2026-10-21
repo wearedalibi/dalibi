@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'actions' => [
+        'save' => 'Save',
+        'cancel' => 'Cancel',
+        'create' => 'Create',
+        'add' => 'Add',
+        'edit' => 'Edit',
+        'update' => 'Update',
+        'delete' => 'Delete',
+        'remove' => 'Remove',
+        'search' => 'Search',
+        'filter' => 'Filter',
+        'reset' => 'Reset',
+        'confirm' => 'Confirm',
+        'back' => 'Back',
+        'close' => 'Close',
+        'print' => 'Print',
+        'export' => 'Export',
+        'download' => 'Download',
+        'view' => 'View',
+        'details' => 'Details',
+        'validate' => 'Validate',
+        'next' => 'Next',
+        'previous' => 'Previous',
+        'yes' => 'Yes',
+        'no' => 'No',
+    ],
+    'status' => [
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        'pending' => 'Pending',
+        'loading' => 'Loading…',
+    ],
+    'messages' => [
+        'none' => 'No results',
+        'confirm_delete' => 'Confirm deletion',
+        'saved' => 'Saved',
+        'required' => 'This field is required',
+    ],
+    'pagination' => [
+        'showing' => 'Showing :from to :to of :total',
+        'per_page' => 'Rows per page',
+        'page' => 'Page',
+    ],
+];

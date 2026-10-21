@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { UserMenuContent } from '@/components/user-menu-content';
+import { useTranslation } from '@/helpers/i18n';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { getFullName } from '@/hooks/use-initials';
 import { mainNavItems } from '@/types';
@@ -23,6 +24,7 @@ import { mainNavItems } from '@/types';
 export function AppSidebarHeader() {
     const { auth } = usePage().props;
     const { currentUrl, findActiveKey } = useCurrentUrl();
+    const { t } = useTranslation();
 
     const fullName = getFullName(auth.user.firstname, auth.user.lastname);
     const initials = `${auth.user.firstname?.[0] ?? ''}${auth.user.lastname?.[0] ?? ''}`.toUpperCase();
@@ -62,9 +64,9 @@ export function AppSidebarHeader() {
                                     {i > 0 && <BreadcrumbSeparator />}
                                     <BreadcrumbItem>
                                         {i === trail.length - 1 ? (
-                                            <BreadcrumbPage className="font-medium">{label}</BreadcrumbPage>
+                                            <BreadcrumbPage className="font-medium">{t(label)}</BreadcrumbPage>
                                         ) : (
-                                            <span>{label}</span>
+                                            <span>{t(label)}</span>
                                         )}
                                     </BreadcrumbItem>
                                 </Fragment>

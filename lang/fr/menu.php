@@ -1,0 +1,82 @@
+<?php
+
+return [
+    'dashboard' => 'Tableau de bord',
+    'calendar' => 'Calendrier',
+
+    'students' => 'Élèves',
+    'students_list' => 'Élèves',
+    'enrollments' => 'Inscriptions & Paiements',
+    'roster' => 'Effectifs / Listes',
+    'promotion' => 'Passage de classe',
+    'student_stats' => 'Statistiques élèves',
+    'student_scholarships' => "Bourses d'étudiants",
+    'timetable' => 'Emploi du temps',
+
+    'attendance' => 'Présences',
+    'attendance_entry' => "Saisie de l'appel",
+    'attendance_stats' => 'Statistiques',
+    'absence_permissions' => 'Demandes de permission',
+
+    'exams' => 'Examens',
+    'evaluation_templates' => "Modèles d'évaluation",
+    'evaluations' => 'Évaluations par classe',
+    'exam_planning' => 'Planning des examens',
+    'official_exams' => 'Examens officiels',
+
+    'grades' => 'Notes',
+    'grades_entry' => 'Saisie de notes',
+    'bulletins' => 'Bulletins',
+    'bulletin_template' => 'Modèle de bulletin',
+    'note_reclamations' => 'Réclamations',
+
+    'accounting' => 'Comptabilité',
+    'accounting_overview' => "Vue d'ensemble",
+    'transactions' => 'Journal des transactions',
+    'new_expense' => 'Nouvelle dépense',
+    'situation' => 'Situation par classe',
+    'cash_accounts' => 'Caisses',
+    'verify_receipt' => 'Vérifier un reçu',
+
+    'payroll' => 'Personnel & Paie',
+    'payroll_overview' => "Vue d'ensemble",
+    'personnel' => 'Personnel',
+    'pay_runs' => 'Cycles de paie',
+    'salary_grades' => 'Grilles salariales',
+    'salary_components' => 'Rubriques de paie',
+    'payroll_settings' => 'Réglages (CNSS, ITS)',
+
+    'archives' => 'Archives',
+    'archived_documents' => 'Documents archivés',
+    'tags' => 'Tags',
+
+    'administration' => 'Administration',
+    'users' => 'Utilisateurs',
+    'roles' => 'Rôles',
+    'permissions' => 'Permissions',
+    'subject_assignments' => 'Affectations',
+    'audit_logs' => "Journal d'audit",
+    'portal_access' => 'Accès portail',
+
+    'statistics' => 'Statistiques',
+
+    'settings' => 'Paramètres',
+    'school' => 'École',
+    'classrooms' => 'Classes',
+    'classroom_types' => 'Types de classes',
+    'subjects' => 'Matières',
+    'countries' => 'Pays',
+    'evaluation_types' => "Types d'évaluation",
+    'academic_years' => 'Années académiques',
+    'academic_periods' => 'Périodes académiques',
+    'fee_categories' => 'Catégories de frais',
+    'fee_structures' => 'Structures de frais',
+    'scholarships' => 'Bourses',
+    'grading_configs' => 'Calcul des moyennes',
+    'file_storage' => 'Fichiers & Stockage',
+    'document_templates' => 'Modèles de documents',
+    'backups' => 'Sauvegardes',
+    'about' => 'À propos',
+
+    'my_account' => 'Mon compte',
+];

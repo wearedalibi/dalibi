@@ -55,6 +55,7 @@ class User extends Authenticatable
         'password',
         'is_demo',
         'must_change_password',
+        'locale',
     ];
 
     /**
