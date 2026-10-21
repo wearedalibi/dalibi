@@ -1,0 +1,82 @@
+<?php
+
+return [
+    'dashboard' => 'Dashboard',
+    'calendar' => 'Calendar',
+
+    'students' => 'Students',
+    'students_list' => 'Students',
+    'enrollments' => 'Enrollments & Payments',
+    'roster' => 'Rosters / Lists',
+    'promotion' => 'Class promotion',
+    'student_stats' => 'Student statistics',
+    'student_scholarships' => 'Student scholarships',
+    'timetable' => 'Timetable',
+
+    'attendance' => 'Attendance',
+    'attendance_entry' => 'Take attendance',
+    'attendance_stats' => 'Statistics',
+    'absence_permissions' => 'Absence requests',
+
+    'exams' => 'Exams',
+    'evaluation_templates' => 'Evaluation templates',
+    'evaluations' => 'Class evaluations',
+    'exam_planning' => 'Exam planning',
+    'official_exams' => 'Official exams',
+
+    'grades' => 'Grades',
+    'grades_entry' => 'Grade entry',
+    'bulletins' => 'Report cards',
+    'bulletin_template' => 'Report card template',
+    'note_reclamations' => 'Grade claims',
+
+    'accounting' => 'Accounting',
+    'accounting_overview' => 'Overview',
+    'transactions' => 'Transaction journal',
+    'new_expense' => 'New expense',
+    'situation' => 'Status by class',
+    'cash_accounts' => 'Cash accounts',
+    'verify_receipt' => 'Verify a receipt',
+
+    'payroll' => 'Staff & Payroll',
+    'payroll_overview' => 'Overview',
+    'personnel' => 'Staff',
+    'pay_runs' => 'Pay runs',
+    'salary_grades' => 'Salary grades',
+    'salary_components' => 'Pay components',
+    'payroll_settings' => 'Settings (CNSS, ITS)',
+
+    'archives' => 'Archives',
+    'archived_documents' => 'Archived documents',
+    'tags' => 'Tags',
+
+    'administration' => 'Administration',
+    'users' => 'Users',
+    'roles' => 'Roles',
+    'permissions' => 'Permissions',
+    'subject_assignments' => 'Assignments',
+    'audit_logs' => 'Audit log',
+    'portal_access' => 'Portal access',
+
+    'statistics' => 'Statistics',
+
+    'settings' => 'Settings',
+    'school' => 'School',
+    'classrooms' => 'Classes',
+    'classroom_types' => 'Class types',
+    'subjects' => 'Subjects',
+    'countries' => 'Countries',
+    'evaluation_types' => 'Evaluation types',
+    'academic_years' => 'Academic years',
+    'academic_periods' => 'Academic periods',
+    'fee_categories' => 'Fee categories',
+    'fee_structures' => 'Fee structures',
+    'scholarships' => 'Scholarships',
+    'grading_configs' => 'Grade calculation',
+    'file_storage' => 'Files & Storage',
+    'document_templates' => 'Document templates',
+    'backups' => 'Backups',
+    'about' => 'About',
+
+    'my_account' => 'My account',
+];

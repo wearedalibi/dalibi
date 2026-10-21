@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'actions' => [
+        'save' => 'Enregistrer',
+        'cancel' => 'Annuler',
+        'create' => 'Créer',
+        'add' => 'Ajouter',
+        'edit' => 'Modifier',
+        'update' => 'Mettre à jour',
+        'delete' => 'Supprimer',
+        'remove' => 'Retirer',
+        'search' => 'Rechercher',
+        'filter' => 'Filtrer',
+        'reset' => 'Réinitialiser',
+        'confirm' => 'Confirmer',
+        'back' => 'Retour',
+        'close' => 'Fermer',
+        'print' => 'Imprimer',
+        'export' => 'Exporter',
+        'download' => 'Télécharger',
+        'view' => 'Voir',
+        'details' => 'Détails',
+        'validate' => 'Valider',
+        'next' => 'Suivant',
+        'previous' => 'Précédent',
+        'yes' => 'Oui',
+        'no' => 'Non',
+    ],
+    'status' => [
+        'active' => 'Actif',
+        'inactive' => 'Inactif',
+        'pending' => 'En attente',
+        'loading' => 'Chargement…',
+    ],
+    'messages' => [
+        'none' => 'Aucun résultat',
+        'confirm_delete' => 'Confirmer la suppression',
+        'saved' => 'Enregistré',
+        'required' => 'Ce champ est obligatoire',
+    ],
+    'pagination' => [
+        'showing' => 'Affichage de :from à :to sur :total',
+        'per_page' => 'Lignes par page',
+        'page' => 'Page',
+    ],
+];
