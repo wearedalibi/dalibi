@@ -3,6 +3,7 @@ import { User, Lock, Shield, Palette } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Separator } from '@/components/ui/separator';
+import { useTranslation } from '@/helpers/i18n';
 import { toPath, useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
@@ -11,30 +12,16 @@ import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Mon profil',
-        href: edit(),
-        icon: User,
-    },
-    {
-        title: 'Mot de passe',
-        href: editPassword(),
-        icon: Lock,
-    },
-    {
-        title: 'Authentification 2FA',
-        href: show(),
-        icon: Shield,
-    },
-    {
-        title: 'Apparence',
-        href: editAppearance(),
-        icon: Palette,
-    },
-];
-
 export default function SettingsLayout({ children, bare = false }: Readonly<PropsWithChildren<{ bare?: boolean }>>) {
+    const { t } = useTranslation();
+
+    const sidebarNavItems: NavItem[] = [
+        { title: t('settings.profile.title'), href: edit(), icon: User },
+        { title: t('settings.password.title'), href: editPassword(), icon: Lock },
+        { title: t('settings.two_factor.title'), href: show(), icon: Shield },
+        { title: t('settings.appearance.title'), href: editAppearance(), icon: Palette },
+    ];
+
     // Le lien le plus spécifique gagne, et une sous-page reste rattachée à son onglet.
     const activeHref = useCurrentUrl().findActiveHref(sidebarNavItems.map((i) => i.href));
 
@@ -47,8 +34,8 @@ export default function SettingsLayout({ children, bare = false }: Readonly<Prop
         <div className="min-h-screen bg-background">
             <div className="px-4 py-6">
                 <Heading
-                    title="Mon compte"
-                    description="Gérez votre profil et les paramètres de votre compte"
+                    title={t('settings.account')}
+                    description={t('settings.account_desc')}
                 />
 
                 <div className="flex flex-col lg:flex-row lg:gap-6 mt-6">
