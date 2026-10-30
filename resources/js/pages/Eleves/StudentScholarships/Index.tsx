@@ -24,6 +24,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -79,6 +80,8 @@ interface Props {
 }
 
 export default function Index({ studentScholarships, scholarships, academicYears, filters }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedScholarship, setSelectedScholarship] = useState<StudentScholarship | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -158,17 +161,17 @@ export default function Index({ studentScholarships, scholarships, academicYears
 
     return (
         <AppLayout>
-            <Head title="Bourses d'Étudiants" />
-            
+            <Head title={t('scholarships.index.title')} />
+
             <div className="space-y-6">
                 {/* Header avec titre et bouton */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><GraduationCap className="h-7 w-7 text-blue-600 shrink-0" />
-                            Bourses d'élèves
+                            {t('scholarships.index.title')}
                         </h1>
                         <p className="mt-3 text-base text-gray-600">
-                            Gérez les attributions de bourses aux élèves
+                            {t('scholarships.index.subtitle')}
                         </p>
                     </div>
                     <Button
@@ -176,7 +179,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         <Plus className="h-4 w-4 mr-2" />
-                        Nouvelle Attribution
+                        {t('scholarships.index.new')}
                     </Button>
                 </div>
 
@@ -187,7 +190,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                             <Award className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">Total des attributions</p>
+                            <p className="text-sm font-medium text-gray-600">{t('scholarships.index.total')}</p>
                             <p className="text-2xl font-bold text-gray-900">{studentScholarships.total}</p>
                         </div>
                     </div>
@@ -199,14 +202,14 @@ export default function Index({ studentScholarships, scholarships, academicYears
                         {/* Recherche */}
                         <div className="lg:col-span-2">
                             <Label htmlFor="search" className="text-sm font-medium text-gray-700">
-                                Recherche
+                                {t('scholarships.index.search')}
                             </Label>
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <Input
                                     id="search"
                                     type="text"
-                                    placeholder="Rechercher par élève, bourse..."
+                                    placeholder={t('scholarships.index.search_ph')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={handleKeyPress}
@@ -218,11 +221,11 @@ export default function Index({ studentScholarships, scholarships, academicYears
                         {/* Filtre par bourse */}
                         <div>
                             <Label htmlFor="scholarship-filter" className="text-sm font-medium text-gray-700">
-                                Bourse
+                                {t('scholarships.index.scholarship')}
                             </Label>
                             <Select value={selectedScholarshipFilter} onValueChange={setSelectedScholarshipFilter}>
                                 <SelectTrigger className="border-gray-300">
-                                    <SelectValue placeholder="Toutes les bourses" />
+                                    <SelectValue placeholder={t('scholarships.index.all_scholarships')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {scholarships.map((scholarship) => (
@@ -237,11 +240,11 @@ export default function Index({ studentScholarships, scholarships, academicYears
                         {/* Filtre par année académique */}
                         <div>
                             <Label htmlFor="academic-year-filter" className="text-sm font-medium text-gray-700">
-                                Année académique
+                                {t('scholarships.index.academic_year')}
                             </Label>
                             <Select value={selectedAcademicYearFilter} onValueChange={setSelectedAcademicYearFilter}>
                                 <SelectTrigger className="border-gray-300">
-                                    <SelectValue placeholder="Toutes les années" />
+                                    <SelectValue placeholder={t('scholarships.index.all_years')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {academicYears.map((year) => (
@@ -263,7 +266,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                                 className="border-gray-300"
                             >
                                 <X className="h-4 w-4 mr-2" />
-                                Effacer les filtres
+                                {t('scholarships.index.clear_filters')}
                             </Button>
                         )}
                         <Button
@@ -271,7 +274,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                             className="bg-blue-600 hover:bg-blue-700"
                         >
                             <Search className="h-4 w-4 mr-2" />
-                            Rechercher
+                            {t('common.actions.search')}
                         </Button>
                     </div>
                 </div>
@@ -282,7 +285,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                         <div className="flex items-center gap-4">
                             <div>
                                 <Label htmlFor="per-page" className="text-sm font-medium text-gray-700">
-                                    Éléments par page
+                                    {t('scholarships.index.per_page')}
                                 </Label>
                                 <Select value={perPage.toString()} onValueChange={(value) => setPerPage(parseInt(value))}>
                                     <SelectTrigger className="border-gray-300 w-20">
@@ -306,11 +309,11 @@ export default function Index({ studentScholarships, scholarships, academicYears
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow className="border-b border-gray-200">
-                                    <TableHead className="font-semibold text-gray-900">Élève</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Bourse</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Année académique</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Date d'attribution</TableHead>
-                                    <TableHead className="font-semibold text-gray-900 text-center">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('scholarships.index.col_student')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('scholarships.index.col_scholarship')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('scholarships.index.col_year')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('scholarships.index.col_date')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900 text-center">{t('scholarships.index.col_actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -319,7 +322,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                                         <TableCell colSpan={5} className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <Award className="w-12 h-12 text-gray-300" />
-                                                <p className="text-lg">Aucune attribution de bourse trouvée</p>
+                                                <p className="text-lg">{t('scholarships.index.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -353,7 +356,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-gray-600">
-                                                {new Date(scholarship.created_at).toLocaleDateString('fr-FR')}
+                                                {new Date(scholarship.created_at).toLocaleDateString(dateLocale)}
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 <div className="flex gap-2 justify-center">
@@ -394,7 +397,7 @@ export default function Index({ studentScholarships, scholarships, academicYears
                     {studentScholarships.last_page > 1 && (
                         <div className="flex items-center justify-between border-t border-gray-100 bg-white px-6 py-4">
                             <div className="text-sm text-gray-600">
-                                Affichage de {studentScholarships.from} à {studentScholarships.to} sur {studentScholarships.total} résultats
+                                {t('scholarships.index.showing', { from: studentScholarships.from, to: studentScholarships.to, total: studentScholarships.total })}
                             </div>
                             <div className="flex gap-2">
                                 <Button
@@ -438,19 +441,19 @@ export default function Index({ studentScholarships, scholarships, academicYears
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                <AlertDialogTitle>{t('scholarships.index.delete_title')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer cette attribution de bourse ? Cette action est irréversible.
+                    {t('scholarships.index.delete_confirm')}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="flex justify-end gap-3">
-                <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                <AlertDialogCancel disabled={isDeleting}>{t('common.actions.cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                     onClick={confirmDelete}
                     disabled={isDeleting}
                     className="bg-red-600 hover:bg-red-700"
                 >
-                    {isDeleting ? 'Suppression...' : 'Supprimer'}
+                    {isDeleting ? t('scholarships.index.deleting') : t('common.actions.delete')}
                 </AlertDialogAction>
             </div>
         </AlertDialogContent>

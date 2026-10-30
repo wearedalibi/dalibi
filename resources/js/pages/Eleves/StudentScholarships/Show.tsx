@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -60,7 +61,10 @@ interface ShowProps {
 }
 
 export default function Show({ studentScholarship }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const currency = useCurrencySymbol();
+    const studentName = `${studentScholarship.student.firstname} ${studentScholarship.student.lastname}`;
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const handleDelete = () => {
@@ -74,7 +78,7 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
 
     return (
         <AppLayout>
-            <Head title={`Bourse - ${studentScholarship.student.firstname} ${studentScholarship.student.lastname}`} />
+            <Head title={t('scholarships.show.head', { name: studentName })} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -86,14 +90,14 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             onClick={() => router.visit(route('student-scholarships.index'))}
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
-                            Retour
+                            {t('common.actions.back')}
                         </Button>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900">
-                                Attribution de Bourse
+                                {t('scholarships.show.title')}
                             </h1>
                             <p className="text-sm text-gray-600">
-                                Détails de l'attribution de bourse à {studentScholarship.student.firstname} {studentScholarship.student.lastname}
+                                {t('scholarships.show.subtitle', { name: studentName })}
                             </p>
                         </div>
                     </div>
@@ -103,7 +107,7 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             onClick={() => router.visit(route('student-scholarships.edit', studentScholarship.id))}
                         >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Modifier
+                            {t('common.actions.edit')}
                         </Button>
                         <Button
                             variant="outline"
@@ -111,7 +115,7 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             className="text-red-600 hover:text-red-700"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Supprimer
+                            {t('common.actions.delete')}
                         </Button>
                     </div>
                 </div>
@@ -125,43 +129,43 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             <CardHeader className="bg-blue-50">
                                 <CardTitle className="flex items-center gap-2 text-blue-900">
                                     <User className="h-5 w-5" />
-                                    Informations de l'Élève
+                                    {t('scholarships.show.student_info')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Nom complet</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.full_name')}</label>
                                         <p className="text-lg font-semibold">
                                             {studentScholarship.student.firstname} {studentScholarship.student.lastname}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Matricule</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.matricule')}</label>
                                         <p className="text-lg font-semibold text-blue-600">
                                             {studentScholarship.student.matricule}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Genre</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.gender')}</label>
                                         <p className="capitalize">
-                                            {studentScholarship.student.gender === 'male' ? 'Masculin' :
-                                             studentScholarship.student.gender === 'female' ? 'Féminin' : 'Autre'}
+                                            {studentScholarship.student.gender === 'male' ? t('scholarships.show.male') :
+                                             studentScholarship.student.gender === 'female' ? t('scholarships.show.female') : t('scholarships.show.other')}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Date de naissance</label>
-                                        <p>{new Date(studentScholarship.student.birth_date).toLocaleDateString('fr-FR')}</p>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.birth_date')}</label>
+                                        <p>{new Date(studentScholarship.student.birth_date).toLocaleDateString(dateLocale)}</p>
                                     </div>
                                     {studentScholarship.student.email && (
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Email</label>
+                                            <label className="text-sm font-medium text-gray-500">{t('scholarships.show.email')}</label>
                                             <p>{studentScholarship.student.email}</p>
                                         </div>
                                     )}
                                     {studentScholarship.student.phone && (
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Téléphone</label>
+                                            <label className="text-sm font-medium text-gray-500">{t('scholarships.show.phone')}</label>
                                             <p>{studentScholarship.student.phone}</p>
                                         </div>
                                     )}
@@ -174,28 +178,28 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             <CardHeader className="bg-green-50">
                                 <CardTitle className="flex items-center gap-2 text-green-900">
                                     <Award className="h-5 w-5" />
-                                    Informations de la Bourse
+                                    {t('scholarships.show.scholarship_info')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Nom de la bourse</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.scholarship_name')}</label>
                                         <p className="text-lg font-semibold">{studentScholarship.scholarship.name}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Type</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.type')}</label>
                                         <p className="capitalize">{studentScholarship.scholarship.type}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Valeur maximale</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.max_value')}</label>
                                         <p className="text-lg font-semibold text-green-600">
                                             {studentScholarship.scholarship.value.toLocaleString()} {currency}
                                         </p>
                                     </div>
                                     {studentScholarship.scholarship.description && (
                                         <div className="md:col-span-2">
-                                            <label className="text-sm font-medium text-gray-500">Description</label>
+                                            <label className="text-sm font-medium text-gray-500">{t('scholarships.show.description')}</label>
                                             <p className="mt-1">{studentScholarship.scholarship.description}</p>
                                         </div>
                                     )}
@@ -209,7 +213,7 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                                 <CardHeader className="bg-gray-50">
                                     <CardTitle className="flex items-center gap-2 text-gray-900">
                                         <FileText className="h-5 w-5" />
-                                        Notes
+                                        {t('scholarships.show.notes')}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="pt-6">
@@ -226,20 +230,20 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             <CardHeader className="bg-purple-50">
                                 <CardTitle className="flex items-center gap-2 text-purple-900">
                                     <Calendar className="h-5 w-5" />
-                                    Année Académique
+                                    {t('scholarships.show.academic_year')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Année</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.year')}</label>
                                         <p className="text-lg font-semibold">{studentScholarship.academic_year.year}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Période</label>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.period')}</label>
                                         <p>
-                                            {new Date(studentScholarship.academic_year.start_date).toLocaleDateString('fr-FR')} - {' '}
-                                            {new Date(studentScholarship.academic_year.end_date).toLocaleDateString('fr-FR')}
+                                            {new Date(studentScholarship.academic_year.start_date).toLocaleDateString(dateLocale)} - {' '}
+                                            {new Date(studentScholarship.academic_year.end_date).toLocaleDateString(dateLocale)}
                                         </p>
                                     </div>
                                 </div>
@@ -251,35 +255,35 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
                             <CardHeader className="bg-orange-50">
                                 <CardTitle className="flex items-center gap-2 text-orange-900">
                                     <Clock className="h-5 w-5" />
-                                    Détails de l'Attribution
+                                    {t('scholarships.show.details')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Date d'attribution</label>
-                                        <p>{new Date(studentScholarship.created_at).toLocaleDateString('fr-FR')}</p>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.award_date')}</label>
+                                        <p>{new Date(studentScholarship.created_at).toLocaleDateString(dateLocale)}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-500">Dernière modification</label>
-                                        <p>{new Date(studentScholarship.updated_at).toLocaleDateString('fr-FR')}</p>
+                                        <label className="text-sm font-medium text-gray-500">{t('scholarships.show.last_modified')}</label>
+                                        <p>{new Date(studentScholarship.updated_at).toLocaleDateString(dateLocale)}</p>
                                     </div>
                                     {studentScholarship.number_of_year && (
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Nombre d'années</label>
+                                            <label className="text-sm font-medium text-gray-500">{t('scholarships.show.number_of_year')}</label>
                                             <p className="text-lg font-semibold">{studentScholarship.number_of_year}</p>
                                         </div>
                                     )}
                                     {studentScholarship.start_date && (
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Date de début</label>
-                                            <p>{new Date(studentScholarship.start_date).toLocaleDateString('fr-FR')}</p>
+                                            <label className="text-sm font-medium text-gray-500">{t('scholarships.show.start_date')}</label>
+                                            <p>{new Date(studentScholarship.start_date).toLocaleDateString(dateLocale)}</p>
                                         </div>
                                     )}
                                     {studentScholarship.end_date && (
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Date de fin</label>
-                                            <p>{new Date(studentScholarship.end_date).toLocaleDateString('fr-FR')}</p>
+                                            <label className="text-sm font-medium text-gray-500">{t('scholarships.show.end_date')}</label>
+                                            <p>{new Date(studentScholarship.end_date).toLocaleDateString(dateLocale)}</p>
                                         </div>
                                     )}
                                 </div>
@@ -293,19 +297,18 @@ export default function Show({ studentScholarship }: Readonly<ShowProps>) {
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('scholarships.index.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette attribution de bourse ?
-                            Cette action est irréversible.
+                            {t('scholarships.index.delete_confirm')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-3">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={confirmDelete}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
