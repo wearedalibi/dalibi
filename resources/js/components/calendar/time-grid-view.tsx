@@ -1,5 +1,6 @@
 import { format, isToday } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from '@/helpers/i18n';
 import { CalEvent, fromMinutes, packWeek, solidClass, toISO, toMinutes } from './utils';
 import type { DragPayload } from './month-view';
 
@@ -36,6 +37,8 @@ const readPayload = (ev: React.DragEvent): TimeDragPayload | null => {
 };
 
 export function TimeGridView({ days, events, canEdit, canCreate, onCreateAt, onEditEvent, onDrop }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dfLocale = locale === 'en' ? enUS : fr;
     const allDay = events.filter((e) => e.all_day);
     const timed = events.filter((e) => !e.all_day && e.start_time);
     const segs = packWeek(allDay, days);
@@ -49,7 +52,7 @@ export function TimeGridView({ days, events, canEdit, canCreate, onCreateAt, onE
                 {days.map((d) => (
                     <div key={toISO(d)} className="px-2 py-2 text-center">
                         <div className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                            {format(d, 'EEE', { locale: fr })}
+                            {format(d, 'EEE', { locale: dfLocale })}
                         </div>
                         <span
                             className={`mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
@@ -64,7 +67,7 @@ export function TimeGridView({ days, events, canEdit, canCreate, onCreateAt, onE
 
             {/* Bandeau « journée entière » */}
             <div className="grid border-b border-slate-100" style={{ gridTemplateColumns: cols }}>
-                <div className="px-2 py-2 text-right text-[10px] uppercase tracking-wide text-gray-400">Journée</div>
+                <div className="px-2 py-2 text-right text-[10px] uppercase tracking-wide text-gray-400">{t('calendar.all_day_label')}</div>
                 <div className="relative min-h-[34px] py-1" style={{ gridColumn: '2 / -1' }}>
                     {/* Cibles de drop (une par jour) */}
                     <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(0,1fr))` }}>
@@ -207,7 +210,7 @@ export function TimeGridView({ days, events, canEdit, canCreate, onCreateAt, onE
                                                         JSON.stringify({ id: e.id, mode: 'resize-end', grabDay: toISO(day) }),
                                                     );
                                                 }}
-                                                title="Étirer la fin"
+                                                title={t('calendar.resize_hint')}
                                                 className="absolute inset-x-0 bottom-0 h-1.5 cursor-ns-resize bg-black/20 opacity-0 transition hover:opacity-100"
                                             />
                                         )}

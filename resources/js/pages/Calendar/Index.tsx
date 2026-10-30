@@ -1,6 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { addDays, addMonths, addWeeks, differenceInCalendarDays, eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
 import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
@@ -19,6 +19,7 @@ import { MonthView, type DragPayload } from '@/components/calendar/month-view';
 import { TimeGridView, type TimeDragPayload } from '@/components/calendar/time-grid-view';
 import { CalEvent, eventEnd, eventStart, fromMinutes, monthGridDays, toDate, toISO, toMinutes } from '@/components/calendar/utils';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Year { id: string; year: string }
@@ -31,12 +32,7 @@ interface Props {
 }
 
 type View = 'month' | 'week' | 'day' | 'agenda';
-const VIEWS: { key: View; label: string }[] = [
-    { key: 'month', label: 'Mois' },
-    { key: 'week', label: 'Semaine' },
-    { key: 'day', label: 'Jour' },
-    { key: 'agenda', label: 'Liste' },
-];
+const VIEW_KEYS: View[] = ['month', 'week', 'day', 'agenda'];
 const ALL = '__all__';
 
 const emptyForm = (): Omit<CalEvent, 'id' | 'color'> => ({
@@ -46,6 +42,8 @@ const emptyForm = (): Omit<CalEvent, 'id' | 'color'> => ({
 });
 
 export default function Index({ events, types, academicYears, activeYear, filters }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dfLocale = locale === 'en' ? enUS : fr;
     const perms = (usePage().props.auth?.permissions ?? []) as string[];
     const canCreate = perms.includes('create_calendar');
     const canEdit = perms.includes('edit_calendar');
@@ -84,9 +82,9 @@ export default function Index({ events, types, academicYears, activeYear, filter
     });
 
     const title = (() => {
-        if (view === 'month') return format(cursor, 'MMMM yyyy', { locale: fr });
-        if (view === 'week') return `${format(weekDays[0], 'd MMM', { locale: fr })} – ${format(weekDays[6], 'd MMM yyyy', { locale: fr })}`;
-        if (view === 'day') return format(cursor, 'EEEE d MMMM yyyy', { locale: fr });
+        if (view === 'month') return format(cursor, 'MMMM yyyy', { locale: dfLocale });
+        if (view === 'week') return `${format(weekDays[0], 'd MMM', { locale: dfLocale })} – ${format(weekDays[6], 'd MMM yyyy', { locale: dfLocale })}`;
+        if (view === 'day') return format(cursor, 'EEEE d MMMM yyyy', { locale: dfLocale });
         return activeYear?.year ?? '';
     })();
 
@@ -186,17 +184,17 @@ export default function Index({ events, types, academicYears, activeYear, filter
 
     return (
         <AppLayout>
-            <Head title="Calendrier" />
+            <Head title={t('calendar.title')} />
             <div className="w-full space-y-6">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-                            <CalendarDays className="h-7 w-7 text-blue-600 shrink-0" /> Calendrier académique
+                            <CalendarDays className="h-7 w-7 text-blue-600 shrink-0" /> {t('calendar.header_title')}
                         </h1>
-                        <p className="mt-2 text-gray-500">Congés, examens, réunions et événements{activeYear ? ` — ${activeYear.year}` : ''}.</p>
+                        <p className="mt-2 text-gray-500">{t('calendar.subtitle')}{activeYear ? ` — ${activeYear.year}` : ''}.</p>
                     </div>
                     {canCreate && (
-                        <Button onClick={openCreate} className="gap-2 bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4" /> Nouvel événement</Button>
+                        <Button onClick={openCreate} className="gap-2 bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4" /> {t('calendar.new_event')}</Button>
                     )}
                 </div>
 
@@ -204,38 +202,38 @@ export default function Index({ events, types, academicYears, activeYear, filter
                 <div className="rounded-2xl bg-linear-to-br from-slate-50 to-white p-4 shadow-sm ring-1 ring-slate-100 flex flex-wrap gap-3 items-center">
                     {view !== 'agenda' && (
                         <div className="flex items-center gap-1">
-                            <Button variant="outline" size="sm" onClick={() => step(-1)} aria-label="Précédent"><ChevronLeft className="w-4 h-4" /></Button>
-                            <Button variant="outline" size="sm" onClick={() => setCursor(new Date())}>Aujourd&apos;hui</Button>
-                            <Button variant="outline" size="sm" onClick={() => step(1)} aria-label="Suivant"><ChevronRight className="w-4 h-4" /></Button>
+                            <Button variant="outline" size="sm" onClick={() => step(-1)} aria-label={t('calendar.prev')}><ChevronLeft className="w-4 h-4" /></Button>
+                            <Button variant="outline" size="sm" onClick={() => setCursor(new Date())}>{t('calendar.today')}</Button>
+                            <Button variant="outline" size="sm" onClick={() => step(1)} aria-label={t('calendar.next')}><ChevronRight className="w-4 h-4" /></Button>
                         </div>
                     )}
                     <span className="text-sm font-semibold text-gray-700 capitalize min-w-40">{title}</span>
 
                     {/* Sélecteur de vue */}
                     <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
-                        {VIEWS.map((v) => (
+                        {VIEW_KEYS.map((v) => (
                             <button
-                                key={v.key}
+                                key={v}
                                 type="button"
-                                onClick={() => setView(v.key)}
+                                onClick={() => setView(v)}
                                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${
-                                    view === v.key ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-slate-50'
+                                    view === v ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-slate-50'
                                 }`}
                             >
-                                {v.label}
+                                {t(`calendar.view.${v}`)}
                             </button>
                         ))}
                     </div>
 
                     <div className="ml-auto flex flex-wrap gap-2">
                         <Select value={filters.academic_year_id || ''} onValueChange={(v) => reload({ academic_year_id: v })}>
-                            <SelectTrigger className="w-40"><SelectValue placeholder="Année" /></SelectTrigger>
+                            <SelectTrigger className="w-40"><SelectValue placeholder={t('calendar.year')} /></SelectTrigger>
                             <SelectContent>{academicYears.map((y) => <SelectItem key={y.id} value={y.id}>{y.year}</SelectItem>)}</SelectContent>
                         </Select>
                         <Select value={filters.type || ALL} onValueChange={(v) => reload({ type: v === ALL ? '' : v })}>
-                            <SelectTrigger className="w-40"><SelectValue placeholder="Type" /></SelectTrigger>
+                            <SelectTrigger className="w-40"><SelectValue placeholder={t('calendar.type')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL}>Tous les types</SelectItem>
+                                <SelectItem value={ALL}>{t('calendar.all_types')}</SelectItem>
                                 {Object.entries(types).map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
                             </SelectContent>
                         </Select>
@@ -244,7 +242,7 @@ export default function Index({ events, types, academicYears, activeYear, filter
 
                 {canEdit && view !== 'agenda' && (
                     <p className="text-xs text-gray-400 -mt-3">
-                        Astuce : glissez un événement pour le déplacer, tirez son bord pour changer sa fin.
+                        {t('calendar.drag_hint')}
                     </p>
                 )}
 
@@ -299,17 +297,17 @@ export default function Index({ events, types, academicYears, activeYear, filter
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingId ? "Modifier l'événement" : 'Nouvel événement'}</DialogTitle>
-                        <DialogDescription>Renseignez les informations de l&apos;événement.</DialogDescription>
+                        <DialogTitle>{editingId ? t('calendar.dialog.edit_title') : t('calendar.dialog.new_title')}</DialogTitle>
+                        <DialogDescription>{t('calendar.dialog.desc')}</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submit} className="space-y-4 py-1">
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Titre *</Label>
+                            <Label className="text-sm">{t('calendar.dialog.field_title')}</Label>
                             <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={errors.title ? 'border-red-400' : ''} />
                             {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Type</Label>
+                            <Label className="text-sm">{t('calendar.dialog.field_type')}</Label>
                             <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>{Object.entries(types).map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}</SelectContent>
@@ -317,39 +315,39 @@ export default function Index({ events, types, academicYears, activeYear, filter
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <Label className="text-sm">Début *</Label>
+                                <Label className="text-sm">{t('calendar.dialog.start')}</Label>
                                 <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className={errors.start_date ? 'border-red-400' : ''} />
                             </div>
                             <div className="space-y-1.5">
-                                <Label className="text-sm">Fin</Label>
+                                <Label className="text-sm">{t('calendar.dialog.end')}</Label>
                                 <Input type="date" value={form.end_date ?? ''} onChange={(e) => setForm({ ...form, end_date: e.target.value })} className={errors.end_date ? 'border-red-400' : ''} />
                                 {errors.end_date && <p className="text-xs text-red-500">{errors.end_date}</p>}
                             </div>
                         </div>
                         <label className="flex items-center gap-2 text-sm">
-                            <Checkbox checked={form.all_day} onCheckedChange={(v) => setForm({ ...form, all_day: Boolean(v) })} /> Toute la journée
+                            <Checkbox checked={form.all_day} onCheckedChange={(v) => setForm({ ...form, all_day: Boolean(v) })} /> {t('calendar.dialog.all_day')}
                         </label>
                         {!form.all_day && (
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1.5"><Label className="text-sm">Heure début</Label><Input type="time" value={form.start_time ?? ''} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></div>
-                                <div className="space-y-1.5"><Label className="text-sm">Heure fin</Label><Input type="time" value={form.end_time ?? ''} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></div>
+                                <div className="space-y-1.5"><Label className="text-sm">{t('calendar.dialog.start_time')}</Label><Input type="time" value={form.start_time ?? ''} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></div>
+                                <div className="space-y-1.5"><Label className="text-sm">{t('calendar.dialog.end_time')}</Label><Input type="time" value={form.end_time ?? ''} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></div>
                             </div>
                         )}
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Description</Label>
+                            <Label className="text-sm">{t('calendar.dialog.description')}</Label>
                             <Textarea rows={2} value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} />
                         </div>
                         <div className="flex justify-between gap-2 pt-1">
                             <div>
                                 {editingId && canDelete && (
                                     <Button type="button" variant="outline" className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => { setOpen(false); setDeleteId(editingId); }}>
-                                        Supprimer
+                                        {t('common.actions.delete')}
                                     </Button>
                                 )}
                             </div>
                             <div className="flex gap-2">
-                                <Button type="button" variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
-                                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">{editingId ? 'Enregistrer' : 'Ajouter'}</Button>
+                                <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t('common.actions.cancel')}</Button>
+                                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">{editingId ? t('common.actions.save') : t('common.actions.add')}</Button>
                             </div>
                         </div>
                     </form>
@@ -359,12 +357,12 @@ export default function Index({ events, types, academicYears, activeYear, filter
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cet événement ?</AlertDialogTitle>
-                        <AlertDialogDescription>Cette action est irréversible.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('calendar.delete_title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('calendar.delete_desc')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && router.delete(route('calendar.destroy', deleteId), { preserveScroll: true, onSuccess: () => setDeleteId(null) })}>Supprimer</AlertDialogAction>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
+                        <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && router.delete(route('calendar.destroy', deleteId), { preserveScroll: true, onSuccess: () => setDeleteId(null) })}>{t('common.actions.delete')}</AlertDialogAction>
                     </div>
                 </AlertDialogContent>
             </AlertDialog>
