@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslation } from '@/helpers/i18n';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -22,12 +23,13 @@ export default function Login({
     canResetPassword,
 }: Readonly<Props>) {
     const [showPassword, setShowPassword] = useState(false);
+    const { t } = useTranslation();
     return (
         <AuthLayout
-            title="Connexion"
-            description="Entrez vos identifiants pour accéder à votre compte"
+            title={t('auth.login.title')}
+            description={t('auth.login.description')}
         >
-            <Head title="Connexion" />
+            <Head title={t('auth.login.title')} />
 
             <Form
                 {...store.form()}
@@ -37,7 +39,7 @@ export default function Login({
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Adresse email</Label>
+                                <Label htmlFor="email">{t('auth.login.email')}</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -45,20 +47,20 @@ export default function Login({
                                     required
                                     autoFocus
                                     autoComplete="email"
-                                    placeholder="vous@example.com"
+                                    placeholder={t('auth.login.email_placeholder')}
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Mot de passe</Label>
+                                    <Label htmlFor="password">{t('auth.login.password')}</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
                                             className="ml-auto text-sm"
                                         >
-                                            Mot de passe oublié ?
+                                            {t('auth.login.forgot')}
                                         </TextLink>
                                     )}
                                 </div>
@@ -69,7 +71,7 @@ export default function Login({
                                         name="password"
                                         required
                                         autoComplete="current-password"
-                                        placeholder="Mot de passe"
+                                        placeholder={t('auth.login.password_placeholder')}
                                         className="pr-10"
                                     />
                                     <button
@@ -92,7 +94,7 @@ export default function Login({
                                     id="remember"
                                     name="remember"
                                 />
-                                <Label htmlFor="remember">Se souvenir de moi</Label>
+                                <Label htmlFor="remember">{t('auth.login.remember')}</Label>
                             </div>
 
                             <Button
@@ -102,7 +104,7 @@ export default function Login({
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Se connecter
+                                {t('auth.login.submit')}
                             </Button>
                     </div>
                 )}

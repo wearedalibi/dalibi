@@ -3,6 +3,7 @@
 return [
     'title' => 'Paramètres',
     'account' => 'Mon compte',
+    'account_desc' => 'Gérez votre profil et les paramètres de votre compte',
 
     'profile' => [
         'title' => 'Profil',

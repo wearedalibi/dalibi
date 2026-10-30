@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { TOGO_REGIONS, prefecturesOf } from '@/data/togo';
+import { useTranslation } from '@/helpers/i18n';
 
 const selectCls = 'flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400';
 
@@ -72,14 +73,6 @@ interface StudentFormStepsProps {
     onSubmit: (data: StudentFormPayload) => void;
 }
 
-const stepLabels = [
-    "Informations de l'élève",
-    'Dossier administratif',
-    'Parents',
-    'Santé',
-    'Récapitulatif',
-];
-
 export function StudentFormSteps({
     mode,
     initialValues,
@@ -88,16 +81,25 @@ export function StudentFormSteps({
     onCancel,
     onSubmit,
 }: Readonly<StudentFormStepsProps>) {
+    const { t } = useTranslation();
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState<StudentFormPayload>(initialValues);
 
+    const stepLabels = [
+        t('students.form.steps.student'),
+        t('students.form.steps.admin'),
+        t('students.form.steps.parents'),
+        t('students.form.steps.health'),
+        t('students.form.steps.summary'),
+    ];
+
     const buttonLabel = useMemo(() => {
         if (mode === 'create') {
-            return isSubmitting ? 'Ajout...' : 'Ajouter';
+            return isSubmitting ? t('students.form.adding') : t('common.actions.add');
         }
 
-        return isSubmitting ? 'Enregistrement...' : 'Enregistrer';
-    }, [mode, isSubmitting]);
+        return isSubmitting ? t('students.form.saving') : t('common.actions.save');
+    }, [mode, isSubmitting, t]);
 
     const setField = <K extends keyof StudentFormPayload>(field: K, value: StudentFormPayload[K]) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -175,7 +177,7 @@ export function StudentFormSteps({
                                 onClick={() => setCurrentStep(index)}
                                 className={`rounded-lg px-4 py-3 text-left transition-colors ${buttonClasses}`}
                             >
-                                <p className="text-xs font-semibold uppercase tracking-wide">Étape {index + 1}</p>
+                                <p className="text-xs font-semibold uppercase tracking-wide">{t('students.form.step', { n: index + 1 })}</p>
                                 <p className="text-sm font-medium mt-1">{label}</p>
                             </button>
                         );
@@ -192,11 +194,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
                                     <User className="w-5 h-5 text-blue-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Identité de l'élève</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.identity')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="matricule" className="block text-sm font-medium text-gray-900 mb-2">Matricule</label>
+                                    <label htmlFor="matricule" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.matricule')}</label>
                                     <Input
                                         id="matricule"
                                         value={formData.matricule}
@@ -207,22 +209,22 @@ export function StudentFormSteps({
                                 </div>
 
                                 <div>
-                                    <label htmlFor="gender" className="block text-sm font-medium text-gray-900 mb-2">Genre *</label>
+                                    <label htmlFor="gender" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.gender')}</label>
                                     <select
                                         id="gender"
                                         value={formData.gender}
                                         onChange={(event) => setField('gender', event.target.value as 'male' | 'female' | '')}
                                         className={`w-full px-3 py-2 rounded-lg border bg-white ${getError('gender') ? 'border-red-500' : 'border-gray-300'}`}
                                     >
-                                        <option value="">Sélectionner</option>
-                                        <option value="male">Masculin</option>
-                                        <option value="female">Féminin</option>
+                                        <option value="">{t('students.form.select')}</option>
+                                        <option value="male">{t('students.gender.male')}</option>
+                                        <option value="female">{t('students.gender.female')}</option>
                                     </select>
                                     {getError('gender') && <p className="text-sm text-red-600 mt-1">{getError('gender')}</p>}
                                 </div>
 
                                 <div>
-                                    <label htmlFor="firstname" className="block text-sm font-medium text-gray-900 mb-2">Prénom *</label>
+                                    <label htmlFor="firstname" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.firstname')}</label>
                                     <Input
                                         id="firstname"
                                         value={formData.firstname}
@@ -233,7 +235,7 @@ export function StudentFormSteps({
                                 </div>
 
                                 <div>
-                                    <label htmlFor="lastname" className="block text-sm font-medium text-gray-900 mb-2">Nom *</label>
+                                    <label htmlFor="lastname" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.lastname')}</label>
                                     <Input
                                         id="lastname"
                                         value={formData.lastname}
@@ -251,11 +253,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center">
                                     <Calendar className="w-5 h-5 text-emerald-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Naissance</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.birth')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label htmlFor="birth_date" className="block text-sm font-medium text-gray-900 mb-2">Date de naissance *</label>
+                                    <label htmlFor="birth_date" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.birth_date')}</label>
                                     <Input
                                         id="birth_date"
                                         type="date"
@@ -267,7 +269,7 @@ export function StudentFormSteps({
                                 </div>
 
                                 <div>
-                                    <label htmlFor="place_of_birth" className="block text-sm font-medium text-gray-900 mb-2">Lieu de naissance</label>
+                                    <label htmlFor="place_of_birth" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.place_of_birth')}</label>
                                     <Input
                                         id="place_of_birth"
                                         value={formData.place_of_birth}
@@ -278,7 +280,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="nationality" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Globe className="w-4 h-4 text-emerald-600" />
-                                        Nationalité
+                                        {t('students.form.lbl.nationality')}
                                     </label>
                                     <Input
                                         id="nationality"
@@ -295,13 +297,13 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-violet-100 flex items-center justify-center">
                                     <Phone className="w-5 h-5 text-violet-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Coordonnées</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.contact')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Phone className="w-4 h-4 text-violet-600" />
-                                        Téléphone
+                                        {t('students.form.lbl.phone')}
                                     </label>
                                     <Input
                                         id="phone"
@@ -313,7 +315,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Mail className="w-4 h-4 text-violet-600" />
-                                        Email
+                                        {t('students.form.lbl.email')}
                                     </label>
                                     <Input
                                         id="email"
@@ -328,7 +330,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="city" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <MapPin className="w-4 h-4 text-violet-600" />
-                                        Ville
+                                        {t('students.form.lbl.city')}
                                     </label>
                                     <Input
                                         id="city"
@@ -340,7 +342,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="region" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <MapPin className="w-4 h-4 text-violet-600" />
-                                        Région
+                                        {t('students.form.lbl.region')}
                                     </label>
                                     <select
                                         id="region"
@@ -359,7 +361,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="prefecture" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <MapPin className="w-4 h-4 text-violet-600" />
-                                        Préfecture
+                                        {t('students.form.lbl.prefecture')}
                                     </label>
                                     <select
                                         id="prefecture"
@@ -376,7 +378,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="address" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <MapPin className="w-4 h-4 text-violet-600" />
-                                        Adresse
+                                        {t('students.form.lbl.address')}
                                     </label>
                                     <Input
                                         id="address"
@@ -393,11 +395,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center">
                                     <Camera className="w-5 h-5 text-amber-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Photo et statut</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.photo_status')}</h3>
                             </div>
                             <div className="space-y-4">
                                 <div>
-                                    <label htmlFor="profile_photo" className="block text-sm font-medium text-gray-900 mb-2">Photo de profil</label>
+                                    <label htmlFor="profile_photo" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.profile_photo')}</label>
                                     <input
                                         id="profile_photo"
                                         type="file"
@@ -406,10 +408,10 @@ export function StudentFormSteps({
                                         className="block w-full text-sm text-gray-600 file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-medium file:text-blue-700 hover:file:bg-blue-100"
                                     />
                                     {formData.profile_photo instanceof File ? (
-                                        <p className="text-xs text-emerald-600 mt-1">Sélectionné : {formData.profile_photo.name}</p>
+                                        <p className="text-xs text-emerald-600 mt-1">{t('students.form.photo_selected', { name: formData.profile_photo.name })}</p>
                                     ) : (
                                         <p className="text-xs text-gray-400 mt-1">
-                                            Image (JPG, PNG…), 4 Mo max.{mode === 'edit' ? ' Laissez vide pour conserver la photo actuelle.' : ''}
+                                            {t('students.form.photo_hint')}{mode === 'edit' ? t('students.form.photo_hint_keep') : ''}
                                         </p>
                                     )}
                                     {getError('profile_photo') && <p className="text-sm text-red-600 mt-1">{getError('profile_photo')}</p>}
@@ -421,7 +423,7 @@ export function StudentFormSteps({
                                         checked={formData.active}
                                         onCheckedChange={(checked) => setField('active', checked === true)}
                                     />
-                                    <label htmlFor="active" className="text-sm font-medium text-gray-700">Élève actif</label>
+                                    <label htmlFor="active" className="text-sm font-medium text-gray-700">{t('students.form.lbl.active')}</label>
                                 </div>
                             </div>
                         </div>
@@ -436,19 +438,19 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center">
                                     <FileText className="w-5 h-5 text-indigo-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Type d'admission</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.admission')}</h3>
                             </div>
                             <div>
-                                <label htmlFor="admission_type" className="block text-sm font-medium text-gray-900 mb-2">Type d'admission *</label>
+                                <label htmlFor="admission_type" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.admission_type')}</label>
                                 <select
                                     id="admission_type"
                                     value={formData.information.admission_type}
                                     onChange={(event) => setSectionField('information', 'admission_type', event.target.value as 'new' | 'transfer' | 're_admission')}
                                     className={`w-full px-3 py-2 rounded-lg border bg-white ${getError('information.admission_type') ? 'border-red-500' : 'border-gray-300'}`}
                                 >
-                                    <option value="new">Nouvelle inscription</option>
-                                    <option value="transfer">Transfert</option>
-                                    <option value="re_admission">Ré-admission</option>
+                                    <option value="new">{t('students.admission.new')}</option>
+                                    <option value="transfer">{t('students.admission.transfer')}</option>
+                                    <option value="re_admission">{t('students.admission.re_admission')}</option>
                                 </select>
                                 {getError('information.admission_type') && <p className="text-sm text-red-600 mt-1">{getError('information.admission_type')}</p>}
                             </div>
@@ -460,11 +462,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center">
                                     <Shield className="w-5 h-5 text-teal-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Acte de naissance</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.birth_cert')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label htmlFor="birth_certificate_number" className="block text-sm font-medium text-gray-900 mb-2">N° acte de naissance</label>
+                                    <label htmlFor="birth_certificate_number" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.birth_cert_number')}</label>
                                     <Input
                                         id="birth_certificate_number"
                                         value={formData.information.birth_certificate_number}
@@ -473,7 +475,7 @@ export function StudentFormSteps({
                                 </div>
 
                                 <div>
-                                    <label htmlFor="birth_certificate_issue_date" className="block text-sm font-medium text-gray-900 mb-2">Date de délivrance</label>
+                                    <label htmlFor="birth_certificate_issue_date" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.issue_date')}</label>
                                     <Input
                                         id="birth_certificate_issue_date"
                                         type="date"
@@ -483,7 +485,7 @@ export function StudentFormSteps({
                                 </div>
 
                                 <div>
-                                    <label htmlFor="birth_certificate_issue_place" className="block text-sm font-medium text-gray-900 mb-2">Lieu de délivrance</label>
+                                    <label htmlFor="birth_certificate_issue_place" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.issue_place')}</label>
                                     <Input
                                         id="birth_certificate_issue_place"
                                         value={formData.information.birth_certificate_issue_place}
@@ -503,11 +505,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
                                     <UserSquare className="w-5 h-5 text-blue-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Informations du père</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.father')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="father_firstname" className="block text-sm font-medium text-gray-900 mb-2">Prénom du père *</label>
+                                    <label htmlFor="father_firstname" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.father_firstname')}</label>
                                     <Input
                                         id="father_firstname"
                                         value={formData.parent.father_firstname}
@@ -517,7 +519,7 @@ export function StudentFormSteps({
                                     {getError('parent.father_firstname') && <p className="text-sm text-red-600 mt-1">{getError('parent.father_firstname')}</p>}
                                 </div>
                                 <div>
-                                    <label htmlFor="father_lastname" className="block text-sm font-medium text-gray-900 mb-2">Nom du père *</label>
+                                    <label htmlFor="father_lastname" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.father_lastname')}</label>
                                     <Input
                                         id="father_lastname"
                                         value={formData.parent.father_lastname}
@@ -527,7 +529,7 @@ export function StudentFormSteps({
                                     {getError('parent.father_lastname') && <p className="text-sm text-red-600 mt-1">{getError('parent.father_lastname')}</p>}
                                 </div>
                                 <div>
-                                    <label htmlFor="father_profession" className="block text-sm font-medium text-gray-900 mb-2">Profession du père</label>
+                                    <label htmlFor="father_profession" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.father_profession')}</label>
                                     <Input
                                         id="father_profession"
                                         value={formData.parent.father_profession}
@@ -537,7 +539,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="father_phone" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Phone className="w-4 h-4 text-blue-600" />
-                                        Téléphone du père
+                                        {t('students.form.lbl.father_phone')}
                                     </label>
                                     <Input
                                         id="father_phone"
@@ -554,11 +556,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center">
                                     <UserSquare className="w-5 h-5 text-pink-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Informations de la mère</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.mother')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="mother_firstname" className="block text-sm font-medium text-gray-900 mb-2">Prénom de la mère *</label>
+                                    <label htmlFor="mother_firstname" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.mother_firstname')}</label>
                                     <Input
                                         id="mother_firstname"
                                         value={formData.parent.mother_firstname}
@@ -568,7 +570,7 @@ export function StudentFormSteps({
                                     {getError('parent.mother_firstname') && <p className="text-sm text-red-600 mt-1">{getError('parent.mother_firstname')}</p>}
                                 </div>
                                 <div>
-                                    <label htmlFor="mother_lastname" className="block text-sm font-medium text-gray-900 mb-2">Nom de la mère *</label>
+                                    <label htmlFor="mother_lastname" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.mother_lastname')}</label>
                                     <Input
                                         id="mother_lastname"
                                         value={formData.parent.mother_lastname}
@@ -578,7 +580,7 @@ export function StudentFormSteps({
                                     {getError('parent.mother_lastname') && <p className="text-sm text-red-600 mt-1">{getError('parent.mother_lastname')}</p>}
                                 </div>
                                 <div>
-                                    <label htmlFor="mother_profession" className="block text-sm font-medium text-gray-900 mb-2">Profession de la mère</label>
+                                    <label htmlFor="mother_profession" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.mother_profession')}</label>
                                     <Input
                                         id="mother_profession"
                                         value={formData.parent.mother_profession}
@@ -588,7 +590,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="mother_phone" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Phone className="w-4 h-4 text-pink-600" />
-                                        Téléphone de la mère
+                                        {t('students.form.lbl.mother_phone')}
                                     </label>
                                     <Input
                                         id="mother_phone"
@@ -605,12 +607,12 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center">
                                     <Mail className="w-5 h-5 text-purple-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Contact des parents</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.parents_contact')}</h3>
                             </div>
                             <div>
                                 <label htmlFor="parent_email" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                     <Mail className="w-4 h-4 text-purple-600" />
-                                    Email parent/tuteur
+                                    {t('students.form.lbl.parent_email')}
                                 </label>
                                 <Input
                                     id="parent_email"
@@ -631,13 +633,13 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center">
                                     <Droplet className="w-5 h-5 text-red-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Informations médicales</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.medical')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="blood_group" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Droplet className="w-4 h-4 text-red-600" />
-                                        Groupe sanguin
+                                        {t('students.form.lbl.blood_group')}
                                     </label>
                                     <Input
                                         id="blood_group"
@@ -648,7 +650,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="vaccinations" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Shield className="w-4 h-4 text-red-600" />
-                                        Vaccinations
+                                        {t('students.form.lbl.vaccinations')}
                                     </label>
                                     <Input
                                         id="vaccinations"
@@ -665,11 +667,11 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center">
                                     <AlertCircle className="w-5 h-5 text-orange-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Contact d'urgence</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.emergency')}</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="emergency_contact_name" className="block text-sm font-medium text-gray-900 mb-2">Contact d'urgence</label>
+                                    <label htmlFor="emergency_contact_name" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.emergency_contact')}</label>
                                     <Input
                                         id="emergency_contact_name"
                                         value={formData.medical.emergency_contact_name}
@@ -679,7 +681,7 @@ export function StudentFormSteps({
                                 <div>
                                     <label htmlFor="emergency_contact_phone" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                                         <Phone className="w-4 h-4 text-orange-600" />
-                                        Téléphone d'urgence
+                                        {t('students.form.lbl.emergency_phone')}
                                     </label>
                                     <Input
                                         id="emergency_contact_phone"
@@ -696,10 +698,10 @@ export function StudentFormSteps({
                                 <div className="w-9 h-9 rounded-full bg-rose-100 flex items-center justify-center">
                                     <Heart className="w-5 h-5 text-rose-600" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900">Allergies et sensibilités</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.allergies')}</h3>
                             </div>
                             <div>
-                                <label htmlFor="allergies" className="block text-sm font-medium text-gray-900 mb-2">Allergies</label>
+                                <label htmlFor="allergies" className="block text-sm font-medium text-gray-900 mb-2">{t('students.form.lbl.allergies')}</label>
                                 <textarea
                                     id="allergies"
                                     value={formData.medical.allergies}
@@ -713,21 +715,21 @@ export function StudentFormSteps({
                 )}
 
                 {currentStep === 4 && (() => {
-                    const genderLabel = ({ male: 'Masculin', female: 'Féminin', '': '—' } as Record<string, string>)[formData.gender] ?? '—';
-                    const admissionLabel = ({ new: 'Nouvelle inscription', transfer: 'Transfert', re_admission: 'Réadmission' } as Record<string, string>)[formData.information.admission_type] ?? '—';
+                    const genderLabel = ({ male: t('students.gender.male'), female: t('students.gender.female'), '': '—' } as Record<string, string>)[formData.gender] ?? '—';
+                    const admissionLabel = ({ new: t('students.admission.new'), transfer: t('students.admission.transfer'), re_admission: t('students.admission.re_admission') } as Record<string, string>)[formData.information.admission_type] ?? '—';
                     const photoLabel = formData.profile_photo instanceof File
                         ? formData.profile_photo.name
-                        : (formData.profile_photo ? 'Photo actuelle conservée' : 'Aucune');
+                        : (formData.profile_photo ? t('students.form.photo_kept') : t('students.form.photo_none'));
                     const val = (v: string) => (v && v.trim() !== '' ? v : '—');
                     const full = (last: string, first: string) => val(`${last} ${first}`.trim());
                     const sections: { title: string; rows: [string, string][] }[] = [
-                        { title: 'Identité', rows: [['Matricule', val(formData.matricule)], ['Nom', val(formData.lastname)], ['Prénom', val(formData.firstname)], ['Genre', genderLabel]] },
-                        { title: 'Naissance', rows: [['Date', val(formData.birth_date)], ['Lieu', val(formData.place_of_birth)]] },
-                        { title: 'Origine & contact', rows: [['Région', val(formData.region)], ['Préfecture', val(formData.prefecture)], ['Ville', val(formData.city)], ['Adresse', val(formData.address)], ['Nationalité', val(formData.nationality)], ['Téléphone', val(formData.phone)], ['E-mail', val(formData.email)]] },
-                        { title: 'Dossier administratif', rows: [["Type d'admission", admissionLabel], ['N° extrait de naissance', val(formData.information.birth_certificate_number)]] },
-                        { title: 'Parents', rows: [['Père', full(formData.parent.father_lastname, formData.parent.father_firstname)], ['Tél. père', val(formData.parent.father_phone)], ['Mère', full(formData.parent.mother_lastname, formData.parent.mother_firstname)], ['Tél. mère', val(formData.parent.mother_phone)]] },
-                        { title: 'Santé', rows: [['Groupe sanguin', val(formData.medical.blood_group)], ["Contact d'urgence", val(formData.medical.emergency_contact_name)], ['Tél. urgence', val(formData.medical.emergency_contact_phone)]] },
-                        { title: 'Photo & statut', rows: [['Photo', photoLabel], ['Statut', formData.active ? 'Actif' : 'Inactif']] },
+                        { title: t('students.form.recap.identity'), rows: [[t('students.form.recap.matricule'), val(formData.matricule)], [t('students.form.recap.lastname'), val(formData.lastname)], [t('students.form.recap.firstname'), val(formData.firstname)], [t('students.form.recap.gender'), genderLabel]] },
+                        { title: t('students.form.recap.birth'), rows: [[t('students.form.recap.date'), val(formData.birth_date)], [t('students.form.recap.place'), val(formData.place_of_birth)]] },
+                        { title: t('students.form.recap.origin_contact'), rows: [[t('students.form.recap.region'), val(formData.region)], [t('students.form.recap.prefecture'), val(formData.prefecture)], [t('students.form.recap.city'), val(formData.city)], [t('students.form.recap.address'), val(formData.address)], [t('students.form.recap.nationality'), val(formData.nationality)], [t('students.form.recap.phone'), val(formData.phone)], [t('students.form.recap.email'), val(formData.email)]] },
+                        { title: t('students.form.recap.admin'), rows: [[t('students.form.recap.admission_type'), admissionLabel], [t('students.form.recap.birth_cert'), val(formData.information.birth_certificate_number)]] },
+                        { title: t('students.form.recap.parents'), rows: [[t('students.form.recap.father'), full(formData.parent.father_lastname, formData.parent.father_firstname)], [t('students.form.recap.father_phone'), val(formData.parent.father_phone)], [t('students.form.recap.mother'), full(formData.parent.mother_lastname, formData.parent.mother_firstname)], [t('students.form.recap.mother_phone'), val(formData.parent.mother_phone)]] },
+                        { title: t('students.form.recap.health'), rows: [[t('students.form.recap.blood_group'), val(formData.medical.blood_group)], [t('students.form.recap.emergency'), val(formData.medical.emergency_contact_name)], [t('students.form.recap.emergency_phone'), val(formData.medical.emergency_contact_phone)]] },
+                        { title: t('students.form.recap.photo_status'), rows: [[t('students.form.recap.photo'), photoLabel], [t('students.form.recap.status'), formData.active ? t('common.status.active') : t('common.status.inactive')]] },
                     ];
 
                     return (
@@ -738,8 +740,8 @@ export function StudentFormSteps({
                                         <FileText className="w-5 h-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">Récapitulatif</h3>
-                                        <p className="text-sm text-gray-500">Vérifiez les informations avant d'ajouter l'élève.</p>
+                                        <h3 className="text-lg font-semibold text-gray-900">{t('students.form.sec.summary')}</h3>
+                                        <p className="text-sm text-gray-500">{t('students.form.summary_hint')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -772,19 +774,19 @@ export function StudentFormSteps({
                             onClick={() => setCurrentStep((prev) => prev - 1)}
                             className="border-gray-300 text-gray-700"
                         >
-                            Retour
+                            {t('common.actions.back')}
                         </Button>
                     )}
                 </div>
 
                 <div className="flex items-center gap-3">
                     <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 text-gray-700">
-                        Annuler
+                        {t('common.actions.cancel')}
                     </Button>
 
                     {currentStep < stepLabels.length - 1 ? (
                         <Button type="submit" disabled={!canGoNext()} className="bg-blue-600 hover:bg-blue-700">
-                            Suivant
+                            {t('common.actions.next')}
                         </Button>
                     ) : (
                         <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">

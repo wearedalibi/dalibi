@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Year { id: string; year: string; active: boolean; }
@@ -33,6 +34,7 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 export default function Index({ years, classrooms, students, stats, statuses, filters }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [srcYear, setSrcYear]   = useState(filters.source_year_id || '');
     const [srcClass, setSrcClass] = useState(filters.source_class_id || '');
     const [tgtYear, setTgtYear]   = useState(filters.target_year_id || '');
@@ -74,30 +76,30 @@ export default function Index({ years, classrooms, students, stats, statuses, fi
 
     return (
         <AppLayout>
-            <Head title="Passage de classe" />
+            <Head title={t('promotion.title')} />
             <div className="w-full space-y-6">
 
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ArrowLeftRight className="h-7 w-7 text-blue-600 shrink-0" />Passage de classe</h1>
-                    <p className="mt-2 text-gray-500">Réinscrivez en masse les élèves validés vers la classe et l'année suivantes.</p>
+                    <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ArrowLeftRight className="h-7 w-7 text-blue-600 shrink-0" />{t('promotion.title')}</h1>
+                    <p className="mt-2 text-gray-500">{t('promotion.subtitle')}</p>
                 </div>
 
                 {/* Sélecteurs source → cible */}
                 <div className="rounded-2xl bg-slate-50/70 ring-1 ring-slate-200 shadow-sm p-4">
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto_1fr_1fr] gap-3 items-end">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Année source</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('promotion.source_year')}</label>
                             <Select value={srcYear} onValueChange={v => { setSrcYear(v); load({ source_year_id: v }); }}>
-                                <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-                                <SelectContent>{years.map(y => <SelectItem key={y.id} value={y.id}>{y.year}{y.active ? ' (active)' : ''}</SelectItem>)}</SelectContent>
+                                <SelectTrigger><SelectValue placeholder={t('promotion.choose')} /></SelectTrigger>
+                                <SelectContent>{years.map(y => <SelectItem key={y.id} value={y.id}>{y.year}{y.active ? ` (${t('promotion.active')})` : ''}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Classe source</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('promotion.source_class')}</label>
                             <Select value={srcClass || 'none'} onValueChange={v => { const val = v === 'none' ? '' : v; setSrcClass(val); load({ source_class_id: val }); }}>
-                                <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('promotion.choose')} /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none" disabled>Choisir</SelectItem>
+                                    <SelectItem value="none" disabled>{t('promotion.choose')}</SelectItem>
                                     {classrooms.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.code})</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -106,18 +108,18 @@ export default function Index({ years, classrooms, students, stats, statuses, fi
                             <ArrowRight className="w-5 h-5 text-gray-400" />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Année cible</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('promotion.target_year')}</label>
                             <Select value={tgtYear} onValueChange={v => { setTgtYear(v); load({ target_year_id: v }); }}>
-                                <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-                                <SelectContent>{years.map(y => <SelectItem key={y.id} value={y.id}>{y.year}{y.active ? ' (active)' : ''}</SelectItem>)}</SelectContent>
+                                <SelectTrigger><SelectValue placeholder={t('promotion.choose')} /></SelectTrigger>
+                                <SelectContent>{years.map(y => <SelectItem key={y.id} value={y.id}>{y.year}{y.active ? ` (${t('promotion.active')})` : ''}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Classe cible</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('promotion.target_class')}</label>
                             <Select value={tgtClass || 'none'} onValueChange={v => setTgtClass(v === 'none' ? '' : v)}>
-                                <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('promotion.choose')} /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none" disabled>Choisir</SelectItem>
+                                    <SelectItem value="none" disabled>{t('promotion.choose')}</SelectItem>
                                     {classrooms.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.code})</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -128,17 +130,17 @@ export default function Index({ years, classrooms, students, stats, statuses, fi
                 {!ready ? (
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 py-20 text-center text-gray-400">
                         <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                        <p className="text-lg font-medium">Choisissez une année et une classe source</p>
+                        <p className="text-lg font-medium">{t('promotion.select_prompt')}</p>
                     </div>
                 ) : (
                     <>
                         {/* Stats */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {[
-                                { label: 'Élèves', value: stats.total ?? 0, color: 'text-gray-700', icon: Users },
-                                { label: 'Validés', value: stats.valide ?? 0, color: 'text-emerald-600', icon: CheckCircle2 },
-                                { label: 'Non validés', value: stats.non_valide ?? 0, color: 'text-amber-600', icon: Users },
-                                { label: 'Déjà réinscrits', value: stats.deja_reinscrit ?? 0, color: 'text-blue-600', icon: GraduationCap },
+                                { label: t('promotion.stat.students'), value: stats.total ?? 0, color: 'text-gray-700', icon: Users },
+                                { label: t('promotion.stat.valide'), value: stats.valide ?? 0, color: 'text-emerald-600', icon: CheckCircle2 },
+                                { label: t('promotion.stat.non_valide'), value: stats.non_valide ?? 0, color: 'text-amber-600', icon: Users },
+                                { label: t('promotion.stat.reenrolled'), value: stats.deja_reinscrit ?? 0, color: 'text-blue-600', icon: GraduationCap },
                             ].map(c => {
                                 const Icon = c.icon;
                                 return (
@@ -155,12 +157,12 @@ export default function Index({ years, classrooms, students, stats, statuses, fi
 
                         {/* Barre d'action */}
                         <div className="flex items-center gap-3 bg-blue-50 ring-1 ring-blue-100 rounded-2xl px-5 py-3 flex-wrap">
-                            <span className="text-sm font-medium text-blue-800">{selected.length} élève(s) sélectionné(s)</span>
+                            <span className="text-sm font-medium text-blue-800">{t('promotion.selected', { count: selected.length })}</span>
                             {!tgtYear || !tgtClass ? (
-                                <span className="text-sm text-amber-600">⚠ Choisissez l'année et la classe cible</span>
+                                <span className="text-sm text-amber-600">⚠ {t('promotion.choose_target')}</span>
                             ) : null}
                             <Button className="ml-auto bg-blue-600 hover:bg-blue-700 gap-2" disabled={!canSubmit} onClick={submit}>
-                                <ArrowRight className="w-4 h-4" /> Réinscrire la sélection
+                                <ArrowRight className="w-4 h-4" /> {t('promotion.reenroll_selection')}
                             </Button>
                         </div>
 
@@ -172,15 +174,15 @@ export default function Index({ years, classrooms, students, stats, statuses, fi
                                         <TableHead className="w-10">
                                             <input type="checkbox" checked={selected.length > 0 && selected.length === selectableIds.length} onChange={toggleAll} className="rounded" />
                                         </TableHead>
-                                        <TableHead>Élève</TableHead>
-                                        <TableHead>Matricule</TableHead>
-                                        <TableHead>Statut (année source)</TableHead>
-                                        <TableHead>Cible</TableHead>
+                                        <TableHead>{t('promotion.col_student')}</TableHead>
+                                        <TableHead>{t('promotion.col_matricule')}</TableHead>
+                                        <TableHead>{t('promotion.col_status_source')}</TableHead>
+                                        <TableHead>{t('promotion.col_target')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {students.length === 0 ? (
-                                        <TableRow><TableCell colSpan={5} className="py-12 text-center text-gray-400">Aucun élève dans cette classe.</TableCell></TableRow>
+                                        <TableRow><TableCell colSpan={5} className="py-12 text-center text-gray-400">{t('promotion.empty')}</TableCell></TableRow>
                                     ) : students.map(s => (
                                         <TableRow key={s.enrollment_id} className={s.already_enrolled ? 'bg-gray-50/50' : 'hover:bg-gray-50'}>
                                             <TableCell>
@@ -195,8 +197,8 @@ export default function Index({ years, classrooms, students, stats, statuses, fi
                                             </TableCell>
                                             <TableCell>
                                                 {s.already_enrolled
-                                                    ? <span className="text-xs text-emerald-600 font-medium inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Déjà réinscrit</span>
-                                                    : <span className="text-xs text-gray-400">À réinscrire</span>}
+                                                    ? <span className="text-xs text-emerald-600 font-medium inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> {t('promotion.already_reenrolled')}</span>
+                                                    : <span className="text-xs text-gray-400">{t('promotion.to_reenroll')}</span>}
                                             </TableCell>
                                         </TableRow>
                                     ))}

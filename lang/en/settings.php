@@ -3,6 +3,7 @@
 return [
     'title' => 'Settings',
     'account' => 'My account',
+    'account_desc' => 'Manage your profile and account settings',
 
     'profile' => [
         'title' => 'Profile',

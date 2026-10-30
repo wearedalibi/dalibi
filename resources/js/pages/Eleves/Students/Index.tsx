@@ -23,6 +23,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -101,42 +102,38 @@ interface Filters {
     direction?: string;
 }
 
-const SORT_OPTIONS: { value: string; label: string }[] = [
-    { value: 'created_at', label: 'Date d\'ajout' },
-    { value: 'lastname', label: 'Nom' },
-    { value: 'firstname', label: 'Prénom' },
-    { value: 'matricule', label: 'Matricule' },
-    { value: 'birth_date', label: 'Date de naissance' },
-];
-
-function renderGenderBadge(gender?: 'male' | 'female' | '' | null) {
-    if (gender === 'male') {
-        return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                <Mars className="w-3.5 h-3.5" />
-                Masculin
-            </span>
-        );
-    }
-
-    if (gender === 'female') {
-        return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700">
-                <Venus className="w-3.5 h-3.5" />
-                Féminin
-            </span>
-        );
-    }
-
-    return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-            <CircleHelp className="w-3.5 h-3.5" />
-            Non renseigné
-        </span>
-    );
-}
+const SORT_VALUES = ['created_at', 'lastname', 'firstname', 'matricule', 'birth_date'] as const;
 
 export default function Index({ students, perPage, stats, filters, options }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
+
+    const renderGenderBadge = (gender?: 'male' | 'female' | '' | null) => {
+        if (gender === 'male') {
+            return (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                    <Mars className="w-3.5 h-3.5" />
+                    {t('students.gender.male')}
+                </span>
+            );
+        }
+
+        if (gender === 'female') {
+            return (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700">
+                    <Venus className="w-3.5 h-3.5" />
+                    {t('students.gender.female')}
+                </span>
+            );
+        }
+
+        return (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                <CircleHelp className="w-3.5 h-3.5" />
+                {t('students.gender.unknown')}
+            </span>
+        );
+    };
+
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
@@ -270,28 +267,28 @@ export default function Index({ students, perPage, stats, filters, options }: Re
 
     const statsCards = [
         {
-            title: 'Total élèves',
+            title: t('students.stats.total'),
             value: stats.total,
             icon: Users,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Élèves actifs',
+            title: t('students.stats.active'),
             value: stats.active,
             icon: UserCheck,
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
         {
-            title: 'Élèves hommes',
+            title: t('students.stats.male'),
             value: stats.male,
             icon: Mars,
             bgColor: 'bg-sky-50',
             textColor: 'text-sky-600',
         },
         {
-            title: 'Élèves femmes',
+            title: t('students.stats.female'),
             value: stats.female,
             icon: Venus,
             bgColor: 'bg-pink-50',
@@ -301,13 +298,13 @@ export default function Index({ students, perPage, stats, filters, options }: Re
 
     return (
         <AppLayout>
-            <Head title="Élèves" />
+            <Head title={t('students.title')} />
 
             <div className="space-y-6">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Users className="h-7 w-7 text-blue-600 shrink-0" />Élèves</h1>
-                        <p className="mt-2 text-lg text-gray-600">Gérez les profils élèves de votre établissement</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Users className="h-7 w-7 text-blue-600 shrink-0" />{t('students.title')}</h1>
+                        <p className="mt-2 text-lg text-gray-600">{t('students.subtitle')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button
@@ -316,14 +313,14 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                             className="gap-2"
                         >
                             <Upload className="w-4 h-4" />
-                            Importer
+                            {t('students.import')}
                         </Button>
                         <Button
                             onClick={() => router.get(route('students.create'))}
                             className="gap-2 bg-blue-600 hover:bg-blue-700"
                         >
                             <Plus className="w-5 h-5" />
-                            Nouvel élève
+                            {t('students.new')}
                         </Button>
                     </div>
                 </div>
@@ -348,19 +345,19 @@ export default function Index({ students, perPage, stats, filters, options }: Re
 
                 {selectedStudentIds.length > 0 && (
                     <div className="bg-blue-50 text-blue-800 px-4 py-3 rounded-xl flex items-center justify-between gap-4 shadow-sm ring-1 ring-blue-100">
-                        <span className="text-sm font-medium">{selectedStudentIds.length} élève(s) sélectionné(s)</span>
+                        <span className="text-sm font-medium">{t('students.bulk.selected', { count: selectedStudentIds.length })}</span>
                         <div className="flex items-center gap-2">
                             <select
                                 value={bulkAction}
                                 onChange={(event) => setBulkAction(event.target.value)}
                                 className="h-10 rounded-md border border-blue-200 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Choisir une action</option>
-                                <option value="activate">Activer</option>
-                                <option value="deactivate">Désactiver</option>
+                                <option value="">{t('students.bulk.choose')}</option>
+                                <option value="activate">{t('students.bulk.activate')}</option>
+                                <option value="deactivate">{t('students.bulk.deactivate')}</option>
                             </select>
                             <Button onClick={handleBulkAction} disabled={!bulkAction} className="bg-blue-600 hover:bg-blue-700 text-white">
-                                Appliquer
+                                {t('students.bulk.apply')}
                             </Button>
                         </div>
                     </div>
@@ -373,7 +370,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                             <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Rechercher (nom, matricule, e-mail)..."
+                                placeholder={t('students.search.placeholder')}
                                 value={searchQuery}
                                 onChange={(event) => setSearchQuery(event.target.value)}
                                 onKeyDown={(event) => event.key === 'Enter' && handleSearch()}
@@ -382,7 +379,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                         </div>
                         <Input
                             type="text"
-                            placeholder="Nationalité"
+                            placeholder={t('students.search.nationality')}
                             value={nationalityFilter}
                             onChange={(event) => setNationalityFilter(event.target.value)}
                             onKeyDown={(event) => event.key === 'Enter' && handleSearch()}
@@ -390,7 +387,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                         />
                         <Button onClick={handleSearch} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
                             <Search className="w-4 h-4" />
-                            Rechercher
+                            {t('common.actions.search')}
                         </Button>
                         <Button
                             variant="outline"
@@ -399,7 +396,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                             className="border-gray-300 text-gray-700 hover:bg-gray-50 gap-2"
                         >
                             <SlidersHorizontal className="w-4 h-4" />
-                            Filtres
+                            {t('students.search.filters')}
                             {advancedFilterCount > 0 && (
                                 <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-xs font-semibold text-white">
                                     {advancedFilterCount}
@@ -414,7 +411,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                                 className="border-gray-300 text-gray-700 hover:bg-gray-50 gap-2"
                             >
                                 <X className="w-4 h-4" />
-                                Réinitialiser ({activeFilterCount})
+                                {t('students.search.reset_count', { count: activeFilterCount })}
                             </Button>
                         )}
                     </div>
@@ -427,7 +424,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                             onChange={(e) => go({ class_id: e.target.value })}
                             className={FILTER_CLS}
                         >
-                            <option value="">Toutes les classes</option>
+                            <option value="">{t('students.filter.all_classes')}</option>
                             {options.classrooms.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                         <select
@@ -435,7 +432,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                             onChange={(e) => go({ academic_year_id: e.target.value })}
                             className={FILTER_CLS}
                         >
-                            <option value="">Toutes les années</option>
+                            <option value="">{t('students.filter.all_years')}</option>
                             {options.academicYears.map((y) => <option key={y.id} value={y.id}>{y.year}</option>)}
                         </select>
                         <select
@@ -443,46 +440,46 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                             onChange={(e) => go({ academic_status: e.target.value })}
                             className={FILTER_CLS}
                         >
-                            <option value="">Scolarité (tous)</option>
+                            <option value="">{t('students.filter.schooling_all')}</option>
                             {Object.entries(options.academicStatuses).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                         </select>
                         <select value={filters?.gender ?? ''} onChange={(e) => go({ gender: e.target.value })} className={FILTER_CLS}>
-                            <option value="">Sexe</option>
-                            <option value="male">Masculin</option>
-                            <option value="female">Féminin</option>
+                            <option value="">{t('students.filter.gender')}</option>
+                            <option value="male">{t('students.gender.male')}</option>
+                            <option value="female">{t('students.gender.female')}</option>
                         </select>
                         <select value={filters?.status ?? ''} onChange={(e) => go({ status: e.target.value })} className={FILTER_CLS}>
-                            <option value="">Statut</option>
-                            <option value="active">Actif</option>
-                            <option value="inactive">Inactif</option>
+                            <option value="">{t('students.filter.status')}</option>
+                            <option value="active">{t('students.filter.active')}</option>
+                            <option value="inactive">{t('students.filter.inactive')}</option>
                         </select>
                         {options.regions.length > 0 && (
                             <select value={filters?.region ?? ''} onChange={(e) => go({ region: e.target.value })} className={FILTER_CLS}>
-                                <option value="">Région</option>
+                                <option value="">{t('students.filter.region')}</option>
                                 {options.regions.map((r) => <option key={r} value={r}>{r}</option>)}
                             </select>
                         )}
                         {options.prefectures.length > 0 && (
                             <select value={filters?.prefecture ?? ''} onChange={(e) => go({ prefecture: e.target.value })} className={FILTER_CLS}>
-                                <option value="">Préfecture</option>
+                                <option value="">{t('students.filter.prefecture')}</option>
                                 {options.prefectures.map((p) => <option key={p} value={p}>{p}</option>)}
                             </select>
                         )}
 
                         {/* Tri */}
                         <div className="ml-auto flex items-center gap-2">
-                            <span className="text-sm text-gray-500">Trier :</span>
+                            <span className="text-sm text-gray-500">{t('students.sort.label')}</span>
                             <select value={filters?.sort ?? 'created_at'} onChange={(e) => go({ sort: e.target.value })} className={FILTER_CLS}>
-                                {SORT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                                {SORT_VALUES.map((v) => <option key={v} value={v}>{t(`students.sort.${v}`)}</option>)}
                             </select>
                             <Button
                                 variant="outline"
                                 className="h-10 border-gray-300 gap-1.5"
                                 onClick={() => go({ direction: filters?.direction === 'asc' ? 'desc' : 'asc' })}
-                                title={filters?.direction === 'asc' ? 'Croissant' : 'Décroissant'}
+                                title={filters?.direction === 'asc' ? t('students.sort.asc') : t('students.sort.desc')}
                             >
                                 <ArrowUpDown className="w-4 h-4" />
-                                {filters?.direction === 'asc' ? 'Croissant' : 'Décroissant'}
+                                {filters?.direction === 'asc' ? t('students.sort.asc') : t('students.sort.desc')}
                             </Button>
                         </div>
                     </div>
@@ -493,10 +490,10 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                     {/* Table header: count + per-page selector */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                         <p className="text-sm text-gray-600">
-                            <span className="font-semibold">{students.total}</span> élève(s)
+                            <span className="font-semibold">{students.total}</span> {t('students.table.unit')}
                         </p>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <span>Lignes par page :</span>
+                            <span>{t('students.table.per_page')}</span>
                             <select
                                 value={perPage}
                                 onChange={(e) => changePerPage(Number(e.target.value))}
@@ -516,16 +513,16 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                                         <Checkbox
                                             checked={allVisibleSelected}
                                             onCheckedChange={(checked) => toggleSelectAllVisible(checked === true)}
-                                            aria-label="Sélectionner tous les élèves"
+                                            aria-label={t('students.table.select_all')}
                                         />
                                     </TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Élève</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Matricule</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Sexe / Gender</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Nationalité</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Contact</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Statut</TableHead>
-                                    <TableHead className="text-center font-semibold text-gray-900 w-28">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.table.student')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.table.matricule')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.table.gender')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.table.nationality')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.table.contact')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.table.status')}</TableHead>
+                                    <TableHead className="text-center font-semibold text-gray-900 w-28">{t('students.table.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -534,7 +531,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                                         <TableCell colSpan={8} className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <Users className="w-12 h-12 text-gray-300" />
-                                                <p className="text-lg">Aucun élève trouvé</p>
+                                                <p className="text-lg">{t('students.table.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -545,7 +542,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                                                 <Checkbox
                                                     checked={selectedStudentIds.includes(student.id)}
                                                     onCheckedChange={(checked) => toggleSelectStudent(student.id, checked === true)}
-                                                    aria-label={`Sélectionner ${student.firstname} ${student.lastname}`}
+                                                    aria-label={t('students.table.select_one', { name: `${student.firstname} ${student.lastname}` })}
                                                 />
                                             </TableCell>
                                             <TableCell className="font-semibold text-gray-900">
@@ -585,31 +582,31 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`px-2 py-1 rounded text-sm font-medium ${student.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {student.active ? 'Actif' : 'Inactif'}
+                                                    {student.active ? t('common.status.active') : t('common.status.inactive')}
                                                 </span>
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 <div className="flex gap-2 justify-center">
                                                     <IconButton
-                                                        label="Voir la fiche"
+                                                        label={t('students.table.view')}
                                                         icon={<Eye className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.visit(route('students.show', student.id))}
                                                     />
                                                     <IconButton
-                                                        label="Modifier"
+                                                        label={t('common.actions.edit')}
                                                         icon={<Pencil className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.visit(route('students.edit', student.id))}
                                                     />
                                                     <IconButton
-                                                        label="Historique"
+                                                        label={t('students.table.history')}
                                                         icon={<History className="w-4 h-4" />}
                                                         className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
                                                         onClick={() => router.visit(route('students.history', student.id))}
                                                     />
                                                     <IconButton
-                                                        label="Supprimer"
+                                                        label={t('common.actions.delete')}
                                                         icon={<Trash2 className="w-4 h-4" />}
                                                         className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                         onClick={() => setDeleteConfirm(student.id)}
@@ -627,7 +624,7 @@ export default function Index({ students, perPage, stats, filters, options }: Re
                 {students.last_page > 1 && (
                     <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
                         <p className="text-sm text-gray-600">
-                            {students.from}–{students.to} sur <span className="font-semibold">{students.total}</span> élèves
+                            {t('students.table.range', { from: students.from, to: students.to, total: students.total })}
                         </p>
                         <div className="flex items-center gap-1">
                             {/* First + Prev */}
@@ -668,19 +665,19 @@ export default function Index({ students, perPage, stats, filters, options }: Re
             <AlertDialog open={deleteConfirm !== null} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer l'élève</AlertDialogTitle>
+                        <AlertDialogTitle>{t('students.delete.title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cet élève ? Cette action est irréversible.
+                            {t('students.delete.confirm')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3 justify-end">
-                        <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeleting}>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             disabled={isDeleting || !deleteConfirm}
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('students.delete.deleting') : t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
