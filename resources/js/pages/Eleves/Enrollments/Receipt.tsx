@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useMoney } from '@/helpers/money';
+import { useTranslation } from '@/helpers/i18n';
 import { OfficialHeader } from '@/components/documents/official-header';
 
 interface School { name: string; code: string; }
@@ -35,12 +36,6 @@ interface ReceiptProps {
     finance?: Finance | null;
 }
 
-const statusLabel: Record<Enrollment['status'], string> = {
-    PENDING:   'En attente',
-    ACTIVE:    'Active',
-    CANCELLED: 'Annulée',
-};
-
 const statusClass: Record<Enrollment['status'], string> = {
     PENDING:   'bg-yellow-100 text-yellow-700',
     ACTIVE:    'bg-green-100 text-green-700',
@@ -49,25 +44,27 @@ const statusClass: Record<Enrollment['status'], string> = {
 
 export default function Receipt({ enrollment, header, headerCss, finance }: Readonly<ReceiptProps>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const enrolledByName = [enrollment.enrolled_by?.firstname, enrollment.enrolled_by?.lastname].filter(Boolean).join(' ');
     const studentName = enrollment.student ? `${enrollment.student.lastname} ${enrollment.student.firstname}` : '—';
-    const enrollmentDate = new Date(enrollment.enrollment_date).toLocaleDateString('fr-FR');
-    const issuedAt = new Date(enrollment.created_at).toLocaleString('fr-FR');
+    const enrollmentDate = new Date(enrollment.enrollment_date).toLocaleDateString(dateLocale);
+    const issuedAt = new Date(enrollment.created_at).toLocaleString(dateLocale);
 
     // Mention conditionnelle selon le solde : soldée / partielle / impayée.
     const hasFees   = !!finance && finance.total > 0;
     const remaining = finance?.amount_remaining ?? 0;
     const settlement = (() => {
         if (!hasFees) {
-            return { label: 'Aucun frais facturé', cls: 'bg-gray-100 text-gray-600' };
+            return { label: t('enrollments.receipt.settle.no_fees'), cls: 'bg-gray-100 text-gray-600' };
         }
         if (remaining <= 0) {
-            return { label: 'Inscription soldée', cls: 'bg-green-100 text-green-700' };
+            return { label: t('enrollments.receipt.settle.settled'), cls: 'bg-green-100 text-green-700' };
         }
         if ((finance?.amount_paid ?? 0) > 0) {
-            return { label: `Partiellement réglée — reste ${fmt(remaining)}`, cls: 'bg-amber-100 text-amber-700' };
+            return { label: t('enrollments.receipt.settle.partial', { amount: fmt(remaining) }), cls: 'bg-amber-100 text-amber-700' };
         }
-        return { label: `Non réglée — reste ${fmt(remaining)}`, cls: 'bg-red-100 text-red-700' };
+        return { label: t('enrollments.receipt.settle.unpaid', { amount: fmt(remaining) }), cls: 'bg-red-100 text-red-700' };
     })();
 
     const field = (label: string, value: string) => (
@@ -79,7 +76,7 @@ export default function Receipt({ enrollment, header, headerCss, finance }: Read
 
     return (
         <>
-            <Head title={`Confirmation - ${enrollment.enrollment_code}`} />
+            <Head title={t('enrollments.receipt.head', { code: enrollment.enrollment_code })} />
 
             <div className="confirmation-page min-h-screen bg-gray-100 print:bg-white p-6 print:p-0">
                 <div className="mx-auto max-w-2xl">
@@ -88,7 +85,7 @@ export default function Receipt({ enrollment, header, headerCss, finance }: Read
                             onClick={() => window.print()}
                             className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                         >
-                            Imprimer
+                            {t('common.actions.print')}
                         </button>
                     </div>
 
@@ -98,44 +95,42 @@ export default function Receipt({ enrollment, header, headerCss, finance }: Read
 
                         {/* Titre + n° */}
                         <div className="flex items-start justify-between border-b-2 border-gray-900 pb-3 mb-6">
-                            <h1 className="text-xl font-bold uppercase tracking-wide">Confirmation d'inscription</h1>
+                            <h1 className="text-xl font-bold uppercase tracking-wide">{t('enrollments.receipt.title')}</h1>
                             <div className="text-right text-sm">
-                                <p><span className="text-gray-500">N° </span><span className="font-bold">{enrollment.enrollment_code}</span></p>
-                                <p className="text-gray-500">Le {enrollmentDate}</p>
+                                <p><span className="text-gray-500">{t('enrollments.receipt.number')} </span><span className="font-bold">{enrollment.enrollment_code}</span></p>
+                                <p className="text-gray-500">{t('enrollments.receipt.issued_on', { date: enrollmentDate })}</p>
                             </div>
                         </div>
 
                         {/* Détails */}
                         <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm mb-6">
-                            {field('Élève', studentName)}
-                            {field('Matricule', enrollment.student?.matricule ?? '—')}
-                            {field('Classe', enrollment.classroom ? `${enrollment.classroom.name} (${enrollment.classroom.code})` : '—')}
-                            {field('Année académique', enrollment.academic_year?.year ?? '—')}
+                            {field(t('enrollments.receipt.student'), studentName)}
+                            {field(t('enrollments.receipt.matricule'), enrollment.student?.matricule ?? '—')}
+                            {field(t('enrollments.receipt.class'), enrollment.classroom ? `${enrollment.classroom.name} (${enrollment.classroom.code})` : '—')}
+                            {field(t('enrollments.receipt.academic_year'), enrollment.academic_year?.year ?? '—')}
                             <div>
-                                <p className="text-gray-400 text-[10px] uppercase tracking-wide">Statut</p>
+                                <p className="text-gray-400 text-[10px] uppercase tracking-wide">{t('enrollments.receipt.status')}</p>
                                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusClass[enrollment.status]}`}>
-                                    {statusLabel[enrollment.status]}
+                                    {t(`enrollments.receipt.status_opt.${enrollment.status}`)}
                                 </span>
                             </div>
                             <div>
-                                <p className="text-gray-400 text-[10px] uppercase tracking-wide">Règlement</p>
+                                <p className="text-gray-400 text-[10px] uppercase tracking-wide">{t('enrollments.receipt.settlement')}</p>
                                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${settlement.cls}`}>
                                     {settlement.label}
                                 </span>
                             </div>
-                            {field('Enregistrée par', enrolledByName || enrollment.enrolled_by?.email || '—')}
+                            {field(t('enrollments.receipt.registered_by'), enrolledByName || enrollment.enrolled_by?.email || '—')}
                         </div>
 
                         {/* Mention */}
                         <div className="border-l-4 border-blue-600 pl-4 py-1 mb-10">
                             <p className="text-sm text-gray-700 leading-relaxed">
-                                La direction confirme l'inscription de l'élève <span className="font-semibold">{studentName}</span> en
-                                classe de <span className="font-semibold">{enrollment.classroom?.name ?? '—'}</span> pour l'année
-                                académique <span className="font-semibold">{enrollment.academic_year?.year ?? '—'}</span>.
+                                {t('enrollments.receipt.mention_p1')}<span className="font-semibold">{studentName}</span>{t('enrollments.receipt.mention_p2')}<span className="font-semibold">{enrollment.classroom?.name ?? '—'}</span>{t('enrollments.receipt.mention_p3')}<span className="font-semibold">{enrollment.academic_year?.year ?? '—'}</span>.
                             </p>
                             {hasFees && remaining > 0 && (
                                 <p className="text-xs text-gray-500 italic mt-2">
-                                    Document délivré sous réserve du règlement du solde restant ({fmt(remaining)}).
+                                    {t('enrollments.receipt.reserve_note', { amount: fmt(remaining) })}
                                 </p>
                             )}
                         </div>
@@ -143,16 +138,16 @@ export default function Receipt({ enrollment, header, headerCss, finance }: Read
                         {/* Signature & cachet */}
                         <div className="grid grid-cols-2 gap-8 text-xs">
                             <div>
-                                <p className="text-gray-500 mb-1">Cachet de l'établissement</p>
+                                <p className="text-gray-500 mb-1">{t('enrollments.receipt.stamp')}</p>
                                 <div className="h-20 border border-dashed border-gray-300 rounded" />
                             </div>
                             <div className="text-center">
-                                <p className="text-gray-500 mb-1">La Direction</p>
+                                <p className="text-gray-500 mb-1">{t('enrollments.receipt.management')}</p>
                                 <div className="h-20 border-b border-gray-300" />
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-gray-400 mt-6">Document établi le {issuedAt}. À conserver.</p>
+                        <p className="text-[10px] text-gray-400 mt-6">{t('enrollments.receipt.established_on', { date: issuedAt })}</p>
                     </div>
                 </div>
             </div>
