@@ -3,6 +3,7 @@ import { useMoney } from '@/helpers/money';
 import { ArrowLeft, FileText, CheckCircle2, Clock, AlertCircle, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface School {
@@ -61,18 +62,11 @@ interface ShowProps {
     invoice?: InvoiceSummary | null;
 }
 
-const invoiceStatusConfig: Record<InvoiceStatus, { label: string; icon: React.ReactNode; badge: string }> = {
-    ISSUED:         { label: 'Non payé',          icon: <Clock className="w-3.5 h-3.5" />,        badge: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    PARTIALLY_PAID: { label: 'Partiellement payé', icon: <AlertCircle className="w-3.5 h-3.5" />, badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    PAID:           { label: 'Soldé',              icon: <CheckCircle2 className="w-3.5 h-3.5" />, badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-    CANCELLED:      { label: 'Annulé',             icon: null,                                      badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-};
-
-
-const statusMap: Record<Enrollment['status'], string> = {
-    PENDING:   'En attente',
-    ACTIVE:    'Actif',
-    CANCELLED: 'Annulé',
+const invoiceStatusConfig: Record<InvoiceStatus, { icon: React.ReactNode; badge: string }> = {
+    ISSUED:         { icon: <Clock className="w-3.5 h-3.5" />,        badge: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
+    PARTIALLY_PAID: { icon: <AlertCircle className="w-3.5 h-3.5" />, badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+    PAID:           { icon: <CheckCircle2 className="w-3.5 h-3.5" />, badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+    CANCELLED:      { icon: null,                                      badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
 };
 
 const statusBadgeClass: Record<Enrollment['status'], string> = {
@@ -83,11 +77,13 @@ const statusBadgeClass: Record<Enrollment['status'], string> = {
 
 export default function Show({ enrollment, invoice }: Readonly<ShowProps>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const enrolledByName = [enrollment.enrolled_by?.firstname, enrollment.enrolled_by?.lastname].filter(Boolean).join(' ');
 
     return (
         <AppLayout>
-            <Head title="Détail inscription" />
+            <Head title={t('enrollments.show.head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center justify-between">
@@ -100,20 +96,20 @@ export default function Show({ enrollment, invoice }: Readonly<ShowProps>) {
                             <ArrowLeft className="w-5 h-5 text-gray-600" />
                         </button>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Détail de l'inscription</h1>
+                            <h1 className="text-3xl font-bold text-gray-900">{t('enrollments.show.title')}</h1>
                         </div>
                     </div>
                     <div className="flex gap-3">
                         <Button variant="outline" onClick={() => window.open(route('enrollments.receipt', enrollment.id), '_blank')} className="gap-2">
                             <Printer className="w-4 h-4" />
-                            Confirmation
+                            {t('enrollments.show.confirmation')}
                         </Button>
                         <Button onClick={() => router.get(route('enrollments.invoice', enrollment.id))} className="bg-green-600 hover:bg-green-700 gap-2">
                             <FileText className="w-4 h-4" />
-                            Suivi financier
+                            {t('enrollments.show.financial')}
                         </Button>
                         <Button onClick={() => router.get(route('enrollments.edit', enrollment.id))} className="bg-blue-600 hover:bg-blue-700">
-                            Modifier
+                            {t('common.actions.edit')}
                         </Button>
                     </div>
                 </div>
@@ -121,57 +117,57 @@ export default function Show({ enrollment, invoice }: Readonly<ShowProps>) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white rounded-lg p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 h-max">
                     <div>
-                        <p className="text-sm text-gray-500">Code d'inscription</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.code')}</p>
                         <p className="font-semibold text-gray-900 mt-1">{enrollment.enrollment_code}</p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Statut</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.status')}</p>
                         <p className="mt-1">
                             <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusBadgeClass[enrollment.status]}`}>
-                                {statusMap[enrollment.status]}
+                                {t(`enrollments.index.status.${enrollment.status.toLowerCase()}`)}
                             </span>
                         </p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">École</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.school')}</p>
                         <p className="font-medium text-gray-900 mt-1">
                             {enrollment.school ? `${enrollment.school.name} (${enrollment.school.code})` : '-'}
                         </p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Élève</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.student')}</p>
                         <p className="font-medium text-gray-900 mt-1">
                             {enrollment.student ? `${enrollment.student.firstname} ${enrollment.student.lastname}` : '-'}
                         </p>
                     </div>
 
                     <div>
-                        <p className="text-sm text-gray-500">Classe</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.class')}</p>
                         <p className="font-medium text-gray-900 mt-1">
                             {enrollment.classroom ? `${enrollment.classroom.name} (${enrollment.classroom.code})` : '-'}
                         </p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Année académique</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.academic_year')}</p>
                         <p className="font-medium text-gray-900 mt-1">{enrollment.academic_year?.year ?? '-'}</p>
                     </div>
 
                     <div>
-                        <p className="text-sm text-gray-500">Date d'inscription</p>
-                        <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.enrollment_date).toLocaleDateString('fr-FR')}</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.date')}</p>
+                        <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.enrollment_date).toLocaleDateString(dateLocale)}</p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Enregistré par</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.enrolled_by')}</p>
                         <p className="font-medium text-gray-900 mt-1">{enrolledByName || enrollment.enrolled_by?.email || '-'}</p>
                     </div>
 
                     <div>
-                        <p className="text-sm text-gray-500">Créé le</p>
-                        <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.created_at).toLocaleString('fr-FR')}</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.created_at')}</p>
+                        <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.created_at).toLocaleString(dateLocale)}</p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Modifié le</p>
-                        <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.updated_at).toLocaleString('fr-FR')}</p>
+                        <p className="text-sm text-gray-500">{t('enrollments.show.updated_at')}</p>
+                        <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.updated_at).toLocaleString(dateLocale)}</p>
                     </div>
                 </div>
 
@@ -184,29 +180,29 @@ export default function Show({ enrollment, invoice }: Readonly<ShowProps>) {
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                                 <FileText className="w-4 h-4 text-gray-400" />
-                                <p className="font-semibold text-gray-900">Facture {invoice.invoice_number}</p>
+                                <p className="font-semibold text-gray-900">{t('enrollments.show.invoice', { number: invoice.invoice_number })}</p>
                             </div>
                             {(() => {
                                 const cfg = invoiceStatusConfig[invoice.status];
                                 return (
                                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.badge}`}>
                                         {cfg.icon}
-                                        {cfg.label}
+                                        {t(`enrollments.show.inv.${invoice.status}`)}
                                     </span>
                                 );
                             })()}
                         </div>
                         <div className="grid grid-cols-3 gap-4 text-sm">
                             <div>
-                                <p className="text-gray-400 text-xs">Total</p>
+                                <p className="text-gray-400 text-xs">{t('enrollments.show.total')}</p>
                                 <p className="font-bold text-gray-900">{fmt(invoice.total)}</p>
                             </div>
                             <div>
-                                <p className="text-gray-400 text-xs">Payé</p>
+                                <p className="text-gray-400 text-xs">{t('enrollments.show.paid')}</p>
                                 <p className="font-bold text-green-600">{fmt(invoice.amount_paid)}</p>
                             </div>
                             <div>
-                                <p className="text-gray-400 text-xs">Reste</p>
+                                <p className="text-gray-400 text-xs">{t('enrollments.show.remaining')}</p>
                                 <p className={`font-bold ${invoice.amount_remaining > 0 ? 'text-red-600' : 'text-green-600'}`}>
                                     {fmt(invoice.amount_remaining)}
                                 </p>
