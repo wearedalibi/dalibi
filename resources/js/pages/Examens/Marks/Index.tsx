@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student { id: string; firstname: string; lastname: string; matricule: string; }
@@ -57,6 +58,8 @@ function scoreColor(score: number | null, max: number): string {
 }
 
 export default function Index({ evaluation, studentsWithMarks, stats }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const maxScore = Number(evaluation.template.max_score);
     const isLocked = !!evaluation.locked_at;
 
@@ -112,15 +115,15 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
     const absentNow = studentsWithMarks.filter(sm => marks[sm.student_id]?.absent).length;
 
     const statsCards = [
-        { title: 'Élèves', value: stats.total, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 ring-blue-100' },
-        { title: 'Notés', value: gradedNow, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 ring-emerald-100' },
-        { title: 'Absents', value: absentNow, icon: UserX, color: 'text-orange-600', bg: 'bg-orange-50 ring-orange-100' },
-        { title: 'Moy. sauvegardée', value: stats.average !== null ? `${stats.average}/${maxScore}` : '—', icon: TrendingUp, color: 'text-violet-600', bg: 'bg-violet-50 ring-violet-100' },
+        { title: t('examens.marks.students'), value: stats.total, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 ring-blue-100' },
+        { title: t('examens.marks.graded'), value: gradedNow, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 ring-emerald-100' },
+        { title: t('examens.marks.absent'), value: absentNow, icon: UserX, color: 'text-orange-600', bg: 'bg-orange-50 ring-orange-100' },
+        { title: t('examens.marks.avg_saved'), value: stats.average !== null ? `${stats.average}/${maxScore}` : '—', icon: TrendingUp, color: 'text-violet-600', bg: 'bg-violet-50 ring-violet-100' },
     ];
 
     return (
         <AppLayout>
-            <Head title={`Notes — ${evaluation.template.name}`} />
+            <Head title={t('examens.marks.head', { name: evaluation.template.name })} />
 
             <div className="w-full space-y-6">
 
@@ -141,11 +144,11 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                 <span>·</span>
                                 <span>{evaluation.template.evaluation_type.name}</span>
                                 <span>·</span>
-                                <span>Coeff. examen <strong>{Number(evaluation.template.coefficient).toFixed(2)}</strong></span>
+                                <span>{t('examens.marks.coeff_exam')} <strong>{Number(evaluation.template.coefficient).toFixed(2)}</strong></span>
                                 <span>·</span>
-                                <span>Coeff. matière <strong>{evaluation.class_subject.coefficient}</strong></span>
+                                <span>{t('examens.marks.coeff_subject')} <strong>{evaluation.class_subject.coefficient}</strong></span>
                                 <span>·</span>
-                                <span>Sur <strong>{maxScore}</strong></span>
+                                <span>{t('examens.marks.on')} <strong>{maxScore}</strong></span>
                             </div>
                         </div>
                     </div>
@@ -156,7 +159,7 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                             disabled={saving}
                         >
                             {saved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                            {saving ? 'Enregistrement...' : saved ? 'Enregistré !' : 'Enregistrer'}
+                            {saving ? t('examens.marks.saving') : saved ? t('examens.marks.saved') : t('common.actions.save')}
                         </Button>
                     )}
                 </div>
@@ -166,10 +169,9 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                     <div className="flex items-center gap-3 bg-red-50 ring-1 ring-red-200 rounded-2xl px-5 py-4">
                         <Lock className="w-5 h-5 text-red-500 shrink-0" />
                         <div>
-                            <p className="font-semibold text-red-800">Évaluation clôturée</p>
+                            <p className="font-semibold text-red-800">{t('examens.marks.locked_title')}</p>
                             <p className="text-sm text-red-600 mt-0.5">
-                                La saisie de notes est désactivée depuis le {new Date(evaluation.locked_at!).toLocaleDateString('fr-FR')}.
-                                Utilisez le bouton "Réclamation" pour demander une correction de note.
+                                {t('examens.marks.locked_hint', { date: new Date(evaluation.locked_at!).toLocaleDateString(dateLocale) })}
                             </p>
                         </div>
                     </div>
@@ -197,17 +199,17 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <h2 className="font-semibold text-gray-900">
-                            {isLocked ? 'Notes enregistrées (lecture seule)' : 'Saisie des notes'}
+                            {isLocked ? t('examens.marks.grid_locked') : t('examens.marks.grid_entry')}
                         </h2>
                         <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${evaluation.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                            {evaluation.status === 'completed' ? 'Terminée' : 'Planifiée'}
+                            {evaluation.status === 'completed' ? t('examens.marks.status_completed') : t('examens.marks.status_scheduled')}
                         </span>
                     </div>
 
                     {studentsWithMarks.length === 0 ? (
                         <div className="py-16 text-center text-gray-400">
                             <Users className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                            <p>Aucun élève inscrit dans cette classe.</p>
+                            <p>{t('examens.marks.no_students')}</p>
                         </div>
                     ) : (
                         <>
@@ -215,12 +217,12 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                 <TableHeader className="bg-gray-50">
                                     <TableRow>
                                         <TableHead className="w-10">#</TableHead>
-                                        <TableHead>Matricule</TableHead>
-                                        <TableHead>Élève</TableHead>
-                                        <TableHead className="w-40">Note /{maxScore}</TableHead>
-                                        {!isLocked && <TableHead className="w-24 text-center">Absent</TableHead>}
-                                        <TableHead>Appréciation</TableHead>
-                                        {isLocked && <TableHead className="w-36 text-center">Réclamation</TableHead>}
+                                        <TableHead>{t('examens.marks.col_matricule')}</TableHead>
+                                        <TableHead>{t('examens.marks.col_student')}</TableHead>
+                                        <TableHead className="w-40">{t('examens.marks.col_mark', { max: maxScore })}</TableHead>
+                                        {!isLocked && <TableHead className="w-24 text-center">{t('examens.marks.col_absent')}</TableHead>}
+                                        <TableHead>{t('examens.marks.col_comment')}</TableHead>
+                                        {isLocked && <TableHead className="w-36 text-center">{t('examens.marks.col_appeal')}</TableHead>}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -240,7 +242,7 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                                 </TableCell>
                                                 <TableCell>
                                                     {isAbs ? (
-                                                        <span className="text-xs text-orange-500 italic">Absent</span>
+                                                        <span className="text-xs text-orange-500 italic">{t('examens.marks.absent_mark')}</span>
                                                     ) : isLocked ? (
                                                         <span className={`font-mono text-sm ${scoreColor(score, maxScore)}`}>
                                                             {score !== null ? score : <span className="text-gray-300">—</span>}
@@ -278,7 +280,7 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                                         <Input
                                                             value={m?.comments ?? ''}
                                                             onChange={e => setComment(sm.student_id, e.target.value)}
-                                                            placeholder="Appréciation..."
+                                                            placeholder={t('examens.marks.comment_ph')}
                                                             className="max-w-xs text-sm"
                                                             disabled={isAbs}
                                                         />
@@ -292,7 +294,7 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                                             onClick={() => onReclamation(sm.student_id)}
                                                         >
                                                             <MessageSquareWarning className="w-3.5 h-3.5" />
-                                                            Réclamation
+                                                            {t('examens.marks.appeal')}
                                                         </Button>
                                                     </TableCell>
                                                 )}
@@ -305,15 +307,15 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                 <div className="px-6 py-4 bg-red-50/50 flex items-center gap-3 border-t border-red-100">
                                     <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
                                     <p className="text-sm text-red-600">
-                                        Évaluation clôturée — la saisie est désactivée. Cliquez sur "Réclamation" pour demander une correction.
+                                        {t('examens.marks.locked_footer')}
                                     </p>
                                 </div>
                             ) : (
                                 <div className="px-6 py-4 bg-gray-50 flex justify-between items-center border-t border-gray-100">
                                     <p className="text-sm text-gray-500">
-                                        {gradedNow} note{gradedNow > 1 ? 's' : ''} saisie{gradedNow > 1 ? 's' : ''}
-                                        {absentNow > 0 && ` · ${absentNow} absent${absentNow > 1 ? 's' : ''}`}
-                                        {' '}/ {studentsWithMarks.length} élèves
+                                        {t('examens.marks.entered_count', { count: gradedNow })}
+                                        {absentNow > 0 && ` · ${t('examens.marks.absent_count', { count: absentNow })}`}
+                                        {' '}{t('examens.marks.of_students', { total: studentsWithMarks.length })}
                                     </p>
                                     <Button
                                         className={`gap-2 ${saved ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'}`}
@@ -321,7 +323,7 @@ export default function Index({ evaluation, studentsWithMarks, stats }: Readonly
                                         disabled={saving}
                                     >
                                         {saved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                                        {saving ? 'Enregistrement...' : saved ? 'Enregistré !' : 'Enregistrer les notes'}
+                                        {saving ? t('examens.marks.saving') : saved ? t('examens.marks.saved') : t('examens.marks.save_marks')}
                                     </Button>
                                 </div>
                             )}
