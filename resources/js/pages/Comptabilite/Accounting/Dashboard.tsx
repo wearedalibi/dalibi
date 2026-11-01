@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useMoney } from '@/helpers/money';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 import { useChartTheme } from '@/lib/chart-theme';
 
@@ -83,11 +84,11 @@ interface DashboardProps {
 const pct = (paid: number, total: number) =>
     total > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0;
 
-const statusConfig: Record<InvoiceStatus, { label: string; badge: string; icon: React.ReactNode }> = {
-    ISSUED:         { label: 'Non payé',      badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',        icon: <XCircle className="w-3.5 h-3.5" /> },
-    PARTIALLY_PAID: { label: 'Partiel',       badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: <AlertCircle className="w-3.5 h-3.5" /> },
-    PAID:           { label: 'Soldé',         badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
-    CANCELLED:      { label: 'Annulé',        badge: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',        icon: <XCircle className="w-3.5 h-3.5" /> },
+const statusConfig: Record<InvoiceStatus, { badge: string; icon: React.ReactNode }> = {
+    ISSUED:         { badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',        icon: <XCircle className="w-3.5 h-3.5" /> },
+    PARTIALLY_PAID: { badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: <AlertCircle className="w-3.5 h-3.5" /> },
+    PAID:           { badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
+    CANCELLED:      { badge: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',        icon: <XCircle className="w-3.5 h-3.5" /> },
 };
 
 /* ------------------------------------------------------------------ */
@@ -169,6 +170,7 @@ export default function AccountingDashboard({
 }: Readonly<DashboardProps>) {
     const theme = useChartTheme();
     const fmt = useMoney();
+    const { t } = useTranslation();
     const [yearId,  setYearId]  = useState(filters.academic_year_id ?? '');
     const [classId, setClassId] = useState(filters.class_id ?? '');
 
@@ -200,7 +202,7 @@ export default function AccountingDashboard({
 
     return (
         <AppLayout>
-            <Head title="Comptabilité" />
+            <Head title={t('comptabilite.dashboard.head')} />
 
             <div className="space-y-7">
 
@@ -209,10 +211,10 @@ export default function AccountingDashboard({
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                            Tableau de bord comptable
+                            {t('comptabilite.dashboard.title')}
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {currentYear ? `Année scolaire ${currentYear.year}` : 'Toutes les années'}
+                            {currentYear ? t('comptabilite.dashboard.year_prefix', { year: currentYear.year }) : t('comptabilite.dashboard.all_years')}
                             {classId && ` · ${classrooms.find(c => c.id === classId)?.name ?? ''}`}
                         </p>
                     </div>
@@ -221,7 +223,7 @@ export default function AccountingDashboard({
                     <div className="flex items-center gap-2 flex-wrap">
                         <div className="flex items-center gap-1.5 text-xs text-gray-400">
                             <Filter className="w-3.5 h-3.5" />
-                            Filtrer :
+                            {t('comptabilite.dashboard.filter')}
                         </div>
                         <div className="relative">
                             <select
@@ -229,7 +231,7 @@ export default function AccountingDashboard({
                                 onChange={e => { setYearId(e.target.value); applyFilters(e.target.value); }}
                                 className="pl-3 pr-8 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-card dark:text-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Toutes les années</option>
+                                <option value="">{t('comptabilite.dashboard.all_years')}</option>
                                 {academicYears.map(y => (
                                     <option key={y.id} value={y.id}>{y.year}{y.active ? ' ✓' : ''}</option>
                                 ))}
@@ -243,7 +245,7 @@ export default function AccountingDashboard({
                                 onChange={e => { setClassId(e.target.value); applyFilters(undefined, e.target.value); }}
                                 className="pl-3 pr-8 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-card dark:text-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Toutes les classes</option>
+                                <option value="">{t('comptabilite.dashboard.all_classes')}</option>
                                 {classrooms.map(c => (
                                     <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                                 ))}
@@ -254,7 +256,7 @@ export default function AccountingDashboard({
                         {(yearId || classId) && (
                             <Button size="sm" variant="outline" onClick={() => { setYearId(''); setClassId(''); applyFilters('', ''); }}
                                 className="text-xs gap-1">
-                                <XCircle className="w-3.5 h-3.5" /> Réinitialiser
+                                <XCircle className="w-3.5 h-3.5" /> {t('comptabilite.dashboard.reset')}
                             </Button>
                         )}
                     </div>
@@ -268,10 +270,10 @@ export default function AccountingDashboard({
                         </div>
                         <div className="flex-1">
                             <p className="text-sm font-semibold text-red-700 dark:text-red-400">
-                                {toSend.length} élève{toSend.length > 1 ? 's' : ''} n'ont effectué aucun paiement
+                                {t('comptabilite.dashboard.alert_unpaid', { count: toSend.length })}
                             </p>
                             <p className="text-xs text-red-500 dark:text-red-400 mt-0.5">
-                                Ces élèves sont susceptibles d'être renvoyés si la situation n'évolue pas.
+                                {t('comptabilite.dashboard.alert_unpaid_hint')}
                             </p>
                         </div>
                     </div>
@@ -280,31 +282,31 @@ export default function AccountingDashboard({
                 {/* ── KPIs ── */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <KpiCard
-                        title="Total facturé"
+                        title={t('comptabilite.dashboard.total_billed')}
                         value={fmt(globalStats?.total_amount ?? 0)}
-                        sub={`${globalStats?.total_invoices ?? 0} factures`}
+                        sub={t('comptabilite.dashboard.invoices', { count: globalStats?.total_invoices ?? 0 })}
                         icon={Banknote}
                         color="blue"
                     />
                     <KpiCard
-                        title="Encaissé"
+                        title={t('comptabilite.dashboard.collected')}
                         value={fmt(globalStats?.total_paid ?? 0)}
-                        sub={`${collectedPct}% du total`}
+                        sub={t('comptabilite.dashboard.of_total', { pct: collectedPct })}
                         icon={CheckCircle2}
                         color="green"
-                        trend={{ value: collectedPct, label: `${collectedPct}% recouvré` }}
+                        trend={{ value: collectedPct, label: t('comptabilite.dashboard.recovered', { pct: collectedPct }) }}
                     />
                     <KpiCard
-                        title="Reste à recouvrer"
+                        title={t('comptabilite.dashboard.remaining')}
                         value={fmt(globalStats?.total_remaining ?? 0)}
-                        sub={`${(globalStats?.issued_count ?? 0) + (globalStats?.partial_count ?? 0)} dossiers ouverts`}
+                        sub={t('comptabilite.dashboard.open_files', { count: (globalStats?.issued_count ?? 0) + (globalStats?.partial_count ?? 0) })}
                         icon={Clock}
                         color="orange"
                     />
                     <KpiCard
-                        title="Soldés / En retard"
+                        title={t('comptabilite.dashboard.paid_late')}
                         value={`${globalStats?.paid_count ?? 0} / ${globalStats?.issued_count ?? 0}`}
-                        sub={`${globalStats?.partial_count ?? 0} paiements partiels`}
+                        sub={t('comptabilite.dashboard.partial_payments', { count: globalStats?.partial_count ?? 0 })}
                         icon={Users}
                         color="red"
                     />
@@ -313,7 +315,7 @@ export default function AccountingDashboard({
                 {/* ── Barre de recouvrement globale ── */}
                 <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
-                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Taux de recouvrement global</p>
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('comptabilite.dashboard.recovery_global')}</p>
                         <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">{collectedPct}%</span>
                     </div>
                     <ProgressBar
@@ -323,14 +325,14 @@ export default function AccountingDashboard({
                     />
                     <div className="flex justify-between text-xs text-gray-400 mt-2">
                         <span>0 F</span>
-                        <span>{fmt(globalStats?.total_paid ?? 0)} encaissés sur {fmt(globalStats?.total_amount ?? 0)}</span>
+                        <span>{t('comptabilite.dashboard.collected_of', { paid: fmt(globalStats?.total_paid ?? 0), total: fmt(globalStats?.total_amount ?? 0) })}</span>
                     </div>
                 </div>
 
                 {/* ── Évolution mensuelle ── */}
                 {monthlyPayments.length > 0 && (
                     <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
-                        <SectionHeader icon={<TrendingUp className="w-4 h-4" />} title="Évolution mensuelle des encaissements" />
+                        <SectionHeader icon={<TrendingUp className="w-4 h-4" />} title={t('comptabilite.dashboard.monthly')} />
                         <div className="h-72 mt-4 -ml-2">
                             <ResponsiveContainer width="100%" height="100%">
                                 <ComposedChart data={chartData} margin={{ top: 10, right: 12, left: 4, bottom: 0 }}>
@@ -341,19 +343,19 @@ export default function AccountingDashboard({
                                         tickFormatter={(v: number) => (v >= 1000 ? `${Math.round(v / 1000)}k` : String(v))}
                                     />
                                     <Tooltip
-                                        formatter={(value, name) => [fmt(Number(value)), name === 'encaisse' ? 'Encaissé du mois' : 'Cumul encaissé']}
+                                        formatter={(value, name) => [fmt(Number(value)), name === 'encaisse' ? t('comptabilite.dashboard.month_collected') : t('comptabilite.dashboard.cumul_collected')]}
                                         labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullLabel ?? ''}
                                         contentStyle={theme.tooltip.contentStyle} itemStyle={theme.tooltip.itemStyle}
                                     />
                                     <Legend
                                         formatter={(value: string) =>
-                                            value === 'encaisse' ? 'Encaissé du mois' : value === 'cumul' ? 'Cumul encaissé' : 'Total attendu'
+                                            value === 'encaisse' ? t('comptabilite.dashboard.month_collected') : value === 'cumul' ? t('comptabilite.dashboard.cumul_collected') : t('comptabilite.dashboard.expected')
                                         }
                                         wrapperStyle={{ fontSize: 12 }}
                                     />
                                     {totalExpected > 0 && (
                                         <ReferenceLine y={totalExpected} stroke={theme.status.warning} strokeDasharray="5 5"
-                                            label={{ value: 'Attendu', position: 'right', fill: theme.status.warning, fontSize: 11 }} />
+                                            label={{ value: t('comptabilite.dashboard.expected_short'), position: 'right', fill: theme.status.warning, fontSize: 11 }} />
                                     )}
                                     <Bar dataKey="encaisse" name="encaisse" fill={theme.primary} radius={[6, 6, 0, 0]} maxBarSize={44} />
                                     <Line type="monotone" dataKey="cumul" name="cumul" stroke={theme.series[2]} strokeWidth={2.5} dot={{ r: 3 }} />
@@ -369,7 +371,7 @@ export default function AccountingDashboard({
                         <div className="px-5 pt-5 pb-3">
                             <SectionHeader
                                 icon={<BookOpen className="w-4 h-4" />}
-                                title="Situation par classe"
+                                title={t('comptabilite.dashboard.by_class')}
                                 count={byClass.length}
                             />
                         </div>
@@ -377,13 +379,13 @@ export default function AccountingDashboard({
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classe</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Élèves</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Facturé</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Encaissé</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Reste</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide min-w-[140px]">Taux</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Statuts</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_class')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_students')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_billed')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_collected')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_remaining')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide min-w-[140px]">{t('comptabilite.dashboard.col_rate')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_statuses')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
@@ -451,22 +453,22 @@ export default function AccountingDashboard({
                         <div className="flex items-start justify-between gap-3">
                             <SectionHeader
                                 icon={<AlertTriangle className="w-4 h-4" />}
-                                title="Élèves avec solde impayé"
+                                title={t('comptabilite.dashboard.unpaid_title')}
                                 count={studentsUnpaidTotal}
                             />
                             {studentsUnpaidTotal > studentsUnpaid.length && (
                                 <Button variant="outline" size="sm" className="gap-1.5 shrink-0"
                                     onClick={() => router.get(route('accounting.situation'), { academic_year_id: yearId || undefined, class_id: classId || undefined })}>
-                                    <Eye className="w-3.5 h-3.5" /> Voir tout
+                                    <Eye className="w-3.5 h-3.5" /> {t('comptabilite.dashboard.view_all')}
                                 </Button>
                             )}
                         </div>
                         {studentsUnpaid.length > 0 && (
                             <p className="text-xs text-gray-400 mt-1 mb-2">
                                 {studentsUnpaidTotal > studentsUnpaid.length
-                                    ? `Top ${studentsUnpaid.length} des plus gros soldes sur ${studentsUnpaidTotal} · `
-                                    : 'Triés par montant restant décroissant · '}
-                                <span className="text-red-500 font-medium">{toSend.length} aucun paiement</span>
+                                    ? t('comptabilite.dashboard.top_n', { shown: studentsUnpaid.length, total: studentsUnpaidTotal })
+                                    : t('comptabilite.dashboard.sorted')}
+                                <span className="text-red-500 font-medium">{t('comptabilite.dashboard.no_payment_count', { count: toSend.length })}</span>
                             </p>
                         )}
                     </div>
@@ -476,21 +478,21 @@ export default function AccountingDashboard({
                             <div className="w-14 h-14 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-3">
                                 <CheckCircle2 className="w-7 h-7 text-green-500" />
                             </div>
-                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Tous les élèves sont à jour</p>
-                            <p className="text-xs text-gray-400 mt-1">Aucun solde impayé pour les filtres sélectionnés.</p>
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('comptabilite.dashboard.all_uptodate')}</p>
+                            <p className="text-xs text-gray-400 mt-1">{t('comptabilite.dashboard.all_uptodate_hint')}</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Élève</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classe</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Payé</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Reste</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Statut</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Risque</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_student')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_class')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_total')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_paid')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_remaining')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_status')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_risk')}</th>
                                         <th className="px-4 py-3"></th>
                                     </tr>
                                 </thead>
@@ -530,18 +532,18 @@ export default function AccountingDashboard({
                                                 <td className="px-4 py-3.5">
                                                     {st && (
                                                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${st.badge}`}>
-                                                            {st.icon}{st.label}
+                                                            {st.icon}{t(`comptabilite.dashboard.status.${inv!.status}`)}
                                                         </span>
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3.5">
                                                     {isHighRisk ? (
                                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                            <AlertTriangle className="w-3 h-3" /> À renvoyer
+                                                            <AlertTriangle className="w-3 h-3" /> {t('comptabilite.dashboard.to_expel')}
                                                         </span>
                                                     ) : (
                                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-                                                            <AlertCircle className="w-3 h-3" /> Partiel
+                                                            <AlertCircle className="w-3 h-3" /> {t('comptabilite.dashboard.partial')}
                                                         </span>
                                                     )}
                                                 </td>
@@ -553,7 +555,7 @@ export default function AccountingDashboard({
                                                         onClick={() => router.get(route('enrollments.invoice', e.id))}
                                                     >
                                                         <Eye className="w-3.5 h-3.5" />
-                                                        Suivi
+                                                        {t('comptabilite.dashboard.follow')}
                                                     </Button>
                                                 </td>
                                             </tr>

@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 /* ------------------------------------------------------------------ */
@@ -47,6 +48,8 @@ const todayStr = () => new Date().toISOString().slice(0, 10);
 
 export default function ExpenseCreate({ cashAccounts, categories, recent }: Readonly<Props>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
 
     const { data, setData, post, processing, errors } = useForm<ExpenseFormData>({
         description: '',
@@ -71,7 +74,7 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
 
     return (
         <AppLayout>
-            <Head title="Nouvelle dépense" />
+            <Head title={t('comptabilite.expense.head')} />
 
             <div className="space-y-6">
                 {/* En-tête */}
@@ -84,8 +87,8 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Enregistrer une dépense</h1>
-                        <p className="text-sm text-gray-500 mt-0.5">Sortie de caisse : loyer, salaires, fournitures…</p>
+                        <h1 className="text-3xl font-bold text-gray-900">{t('comptabilite.expense.title')}</h1>
+                        <p className="text-sm text-gray-500 mt-0.5">{t('comptabilite.expense.subtitle')}</p>
                     </div>
                 </div>
 
@@ -95,16 +98,16 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                     <div className="rounded-2xl bg-linear-to-br from-orange-50 to-white ring-1 ring-orange-100 p-6 shadow-sm space-y-4">
                         <div className="flex items-center gap-2 text-orange-700">
                             <TrendingDown className="h-4 w-4" />
-                            <p className="text-sm font-semibold">Détails de la dépense</p>
+                            <p className="text-sm font-semibold">{t('comptabilite.expense.details')}</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Catégorie */}
                             <div>
-                                <label htmlFor="category" className="block text-sm font-medium text-gray-900 mb-2">Catégorie *</label>
+                                <label htmlFor="category" className="block text-sm font-medium text-gray-900 mb-2">{t('comptabilite.expense.category')}</label>
                                 <Select value={data.category} onValueChange={(v) => setData('category', v)}>
                                     <SelectTrigger id="category" className={errors.category ? 'border-red-500' : ''}>
-                                        <SelectValue placeholder="Sélectionner une catégorie" />
+                                        <SelectValue placeholder={t('comptabilite.expense.select_category')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {categories.map(cat => (
@@ -117,14 +120,14 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
 
                             {/* Montant */}
                             <div>
-                                <label htmlFor="amount" className="block text-sm font-medium text-gray-900 mb-2">Montant (F) *</label>
+                                <label htmlFor="amount" className="block text-sm font-medium text-gray-900 mb-2">{t('comptabilite.expense.amount')}</label>
                                 <Input
                                     id="amount"
                                     type="number"
                                     min={1}
                                     value={data.amount}
                                     onChange={e => setData('amount', e.target.value)}
-                                    placeholder="Ex: 25000"
+                                    placeholder={t('comptabilite.expense.amount_ph')}
                                     className={errors.amount ? 'border-red-500' : ''}
                                 />
                                 {errors.amount && <p className="text-red-600 text-sm mt-1">{errors.amount}</p>}
@@ -132,13 +135,13 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
 
                             {/* Description */}
                             <div className="md:col-span-2">
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">Description *</label>
+                                <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">{t('comptabilite.expense.description')}</label>
                                 <Input
                                     id="description"
                                     type="text"
                                     value={data.description}
                                     onChange={e => setData('description', e.target.value)}
-                                    placeholder="Ex: Facture d'électricité — octobre 2026"
+                                    placeholder={t('comptabilite.expense.description_ph')}
                                     className={errors.description ? 'border-red-500' : ''}
                                 />
                                 {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}
@@ -147,7 +150,7 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                             {/* Date */}
                             <div>
                                 <label htmlFor="transaction_date" className="block text-sm font-medium text-gray-900 mb-2 flex items-center gap-1">
-                                    <CalendarDays className="w-3.5 h-3.5 text-gray-500" /> Date *
+                                    <CalendarDays className="w-3.5 h-3.5 text-gray-500" /> {t('comptabilite.expense.date')}
                                 </label>
                                 <Input
                                     id="transaction_date"
@@ -163,15 +166,15 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                             {/* Caisse */}
                             <div>
                                 <label htmlFor="cash_account_id" className="block text-sm font-medium text-gray-900 mb-2 flex items-center gap-1">
-                                    <Wallet className="w-3.5 h-3.5 text-gray-500" /> Caisse *
+                                    <Wallet className="w-3.5 h-3.5 text-gray-500" /> {t('comptabilite.expense.cash_account')}
                                 </label>
                                 <Select value={data.cash_account_id} onValueChange={(v) => setData('cash_account_id', v)}>
                                     <SelectTrigger id="cash_account_id" className={errors.cash_account_id ? 'border-red-500' : ''}>
-                                        <SelectValue placeholder="Sélectionner une caisse" />
+                                        <SelectValue placeholder={t('comptabilite.expense.select_cash')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {cashAccounts.map(ca => (
-                                            <SelectItem key={ca.id} value={ca.id}>{ca.name} — solde {fmt(ca.balance)}</SelectItem>
+                                            <SelectItem key={ca.id} value={ca.id}>{t('comptabilite.expense.balance_opt', { name: ca.name, balance: fmt(ca.balance) })}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -179,7 +182,7 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                                 {selectedAccount && amountNum > 0 && (
                                     <p className={`text-sm mt-1.5 flex items-center gap-1 ${willGoNegative ? 'text-red-600' : 'text-gray-500'}`}>
                                         {willGoNegative && <AlertTriangle className="w-3.5 h-3.5" />}
-                                        Solde après dépense : <span className="font-semibold">{fmt(projected ?? 0)}</span>
+                                        {t('comptabilite.expense.after_expense')} <span className="font-semibold">{fmt(projected ?? 0)}</span>
                                     </p>
                                 )}
                             </div>
@@ -191,7 +194,7 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                         <div className="rounded-2xl bg-linear-to-br from-slate-50 to-white ring-1 ring-slate-100 p-6 shadow-sm space-y-3">
                             <div className="flex items-center gap-2 text-slate-600">
                                 <History className="h-4 w-4" />
-                                <p className="text-sm font-semibold">Dernières dépenses</p>
+                                <p className="text-sm font-semibold">{t('comptabilite.expense.recent')}</p>
                             </div>
                             <ul className="divide-y divide-slate-100">
                                 {recent.map(r => (
@@ -200,7 +203,7 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                                             <span className="shrink-0">{categoryEmoji(r.category)}</span>
                                             <span className="truncate" title={`${categoryLabel(r.category)} — ${r.description}`}>{r.description}</span>
                                         </span>
-                                        <span className="shrink-0 text-gray-400">{new Date(r.transaction_date).toLocaleDateString('fr-FR')}</span>
+                                        <span className="shrink-0 text-gray-400">{new Date(r.transaction_date).toLocaleDateString(dateLocale)}</span>
                                         <span className="shrink-0 font-semibold text-red-600 w-28 text-right">− {fmt(r.amount)}</span>
                                     </li>
                                 ))}
@@ -211,10 +214,10 @@ export default function ExpenseCreate({ cashAccounts, categories, recent }: Read
                     {/* Actions */}
                     <div className="flex gap-3">
                         <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700">
-                            {processing ? 'Enregistrement...' : 'Enregistrer la dépense'}
+                            {processing ? t('comptabilite.expense.saving') : t('comptabilite.expense.submit')}
                         </Button>
                         <Button type="button" variant="outline" className="border-slate-200 text-gray-700" onClick={() => router.get(route('accounting.transactions'))}>
-                            Annuler
+                            {t('common.actions.cancel')}
                         </Button>
                     </div>
                 </form>

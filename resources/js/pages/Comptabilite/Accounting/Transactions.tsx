@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 /* ------------------------------------------------------------------ */
@@ -67,16 +68,16 @@ const todayStr      = () => new Date().toISOString().slice(0, 10);
 const firstOfMonth  = () => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0, 10); };
 const firstOfYear   = () => { const d = new Date(); d.setMonth(0, 1); return d.toISOString().slice(0, 10); };
 
-const txConfig: Record<TxType, { label: string; bg: string; text: string; icon: React.ReactNode }> = {
-    INCOME:  { label: 'Entrée', bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: <ArrowUpRight className="w-3.5 h-3.5" /> },
-    EXPENSE: { label: 'Sortie', bg: 'bg-red-100 dark:bg-red-900/30',    text: 'text-red-700 dark:text-red-400',    icon: <ArrowDownRight className="w-3.5 h-3.5" /> },
+const txConfig: Record<TxType, { bg: string; text: string; icon: React.ReactNode }> = {
+    INCOME:  { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: <ArrowUpRight className="w-3.5 h-3.5" /> },
+    EXPENSE: { bg: 'bg-red-100 dark:bg-red-900/30',    text: 'text-red-700 dark:text-red-400',    icon: <ArrowDownRight className="w-3.5 h-3.5" /> },
 };
 
-const refConfig: Record<ReferenceType, { label: string; color: string }> = {
-    PAYMENT:      { label: 'Paiement',   color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' },
-    SCHOLARSHIP:  { label: 'Bourse',     color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' },
-    EXPENSE:      { label: 'Dépense',    color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' },
-    CANCELLATION: { label: 'Annulation', color: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' },
+const refConfig: Record<ReferenceType, { color: string }> = {
+    PAYMENT:      { color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' },
+    SCHOLARSHIP:  { color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' },
+    EXPENSE:      { color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' },
+    CANCELLATION: { color: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' },
 };
 
 const cashTypeIcon: Record<CashType, React.ReactNode> = {
@@ -121,6 +122,8 @@ const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
 export default function Transactions({ transactions, cashAccounts, cashSummary, categories, totals, perPage, filters }: Readonly<Props>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
 
     const [type,          setType]          = useState(filters.type ?? '');
     const [refType,       setRefType]       = useState(filters.reference_type ?? '');
@@ -181,10 +184,10 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
     };
 
     const activeFilters = [
-        type          && { key: 'type',          label: type === 'INCOME' ? 'Entrées' : 'Sorties',                       clear: () => { setType('');          push({ type: '' }); } },
-        refType       && { key: 'refType',        label: refConfig[refType as ReferenceType]?.label ?? refType,            clear: () => { setRefType('');       push({ refType: '' }); } },
+        type          && { key: 'type',          label: type === 'INCOME' ? t('comptabilite.tx.income') : t('comptabilite.tx.outflows'), clear: () => { setType('');          push({ type: '' }); } },
+        refType       && { key: 'refType',        label: t(`comptabilite.tx.ref.${refType}`),                              clear: () => { setRefType('');       push({ refType: '' }); } },
         category      && { key: 'category',        label: catLabel(category) ?? category,                                   clear: () => { setCategory('');      push({ category: '' }); } },
-        cashAccountId && { key: 'cashAccountId',  label: cashAccounts.find(c => c.id === cashAccountId)?.name ?? 'Caisse', clear: () => { setCashAccountId(''); push({ cashAccountId: '' }); } },
+        cashAccountId && { key: 'cashAccountId',  label: cashAccounts.find(c => c.id === cashAccountId)?.name ?? t('comptabilite.tx.cash'), clear: () => { setCashAccountId(''); push({ cashAccountId: '' }); } },
         (dateFrom || dateTo) && { key: 'dates', label: [dateFrom, dateTo].filter(Boolean).join(' → '), clear: () => { setDateFrom(''); setDateTo(''); push({ dateFrom: '', dateTo: '' }); } },
     ].filter(Boolean) as { key: string; label: string; clear: () => void }[];
 
@@ -194,7 +197,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
 
     return (
         <AppLayout>
-            <Head title="Journal des transactions" />
+            <Head title={t('comptabilite.tx.head')} />
 
             <div className="space-y-5">
 
@@ -205,10 +208,10 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <ArrowLeftRight className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                Journal des transactions
+                                {t('comptabilite.tx.title')}
                             </h1>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                                Historique de tous les mouvements financiers
+                                {t('comptabilite.tx.subtitle')}
                             </p>
                         </div>
                         <Button
@@ -216,36 +219,36 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                             onClick={() => router.get(route('expenses.create'))}
                         >
                             <Plus className="w-4 h-4" />
-                            Nouvelle dépense
+                            {t('comptabilite.tx.new_expense')}
                         </Button>
                     </div>
 
                     {/* ── Cards stats ── */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <StatCard
-                            title="Total encaissé"
+                            title={t('comptabilite.tx.total_collected')}
                             value={fmt(totals?.total_income ?? 0)}
-                            sub={`${totals?.total_count ?? 0} transaction(s)`}
+                            sub={t('comptabilite.tx.transactions_count', { count: totals?.total_count ?? 0 })}
                             icon={TrendingUp}
                             color="green"
                         />
                         <StatCard
-                            title="Total sorties"
+                            title={t('comptabilite.tx.total_out')}
                             value={fmt(totals?.total_expense ?? 0)}
                             icon={TrendingDown}
                             color="red"
                         />
                         <StatCard
-                            title="Solde net"
+                            title={t('comptabilite.tx.net_balance')}
                             value={fmt(balance)}
-                            sub={balance >= 0 ? 'Positif' : 'Négatif'}
+                            sub={balance >= 0 ? t('comptabilite.tx.positive') : t('comptabilite.tx.negative')}
                             icon={ArrowLeftRight}
                             color={balance >= 0 ? 'blue' : 'red'}
                         />
                         <StatCard
-                            title="Transactions"
+                            title={t('comptabilite.tx.transactions')}
                             value={String(totals?.total_count ?? transactions.total)}
-                            sub="au total"
+                            sub={t('comptabilite.tx.of_total')}
                             icon={ArrowLeftRight}
                             color="gray"
                         />
@@ -254,7 +257,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                     {/* ── Soldes caisses ── */}
                     {cashSummary.length > 0 && (
                         <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 px-5 py-4 shadow-sm flex items-center gap-3 flex-wrap">
-                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">Caisses :</p>
+                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">{t('comptabilite.tx.cash_accounts')}</p>
                             {cashSummary.map(ca => (
                                 <div key={ca.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
                                     <span className="text-gray-400">{cashTypeIcon[ca.type]}</span>
@@ -271,11 +274,11 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
                             <SlidersHorizontal className="w-4 h-4 text-blue-500" />
-                            Filtres
+                            {t('comptabilite.tx.filters')}
                         </div>
                         {activeFilters.length > 0 && (
                             <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-colors">
-                                <XCircle className="w-3.5 h-3.5" /> Tout effacer
+                                <XCircle className="w-3.5 h-3.5" /> {t('comptabilite.tx.clear_all')}
                             </button>
                         )}
                     </div>
@@ -285,29 +288,29 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
 
                             <div className="flex flex-col gap-1">
-                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Type</label>
+                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('comptabilite.tx.type')}</label>
                                 <select value={type} onChange={e => { setType(e.target.value); push({ type: e.target.value }); }} className={sel}>
-                                    <option value="">Tous les types</option>
-                                    <option value="INCOME">↑ Entrées</option>
-                                    <option value="EXPENSE">↓ Sorties</option>
+                                    <option value="">{t('comptabilite.tx.all_types')}</option>
+                                    <option value="INCOME">{t('comptabilite.tx.income_arrow')}</option>
+                                    <option value="EXPENSE">{t('comptabilite.tx.expense_arrow')}</option>
                                 </select>
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Référence</label>
+                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('comptabilite.tx.reference')}</label>
                                 <select value={refType} onChange={e => { setRefType(e.target.value); push({ refType: e.target.value }); }} className={sel}>
-                                    <option value="">Toutes les références</option>
-                                    <option value="PAYMENT">Paiement écolage</option>
-                                    <option value="SCHOLARSHIP">Bourse accordée</option>
-                                    <option value="CANCELLATION">Annulation</option>
-                                    <option value="EXPENSE">Dépense manuelle</option>
+                                    <option value="">{t('comptabilite.tx.all_references')}</option>
+                                    <option value="PAYMENT">{t('comptabilite.tx.ref_payment')}</option>
+                                    <option value="SCHOLARSHIP">{t('comptabilite.tx.ref_scholarship')}</option>
+                                    <option value="CANCELLATION">{t('comptabilite.tx.ref_cancellation')}</option>
+                                    <option value="EXPENSE">{t('comptabilite.tx.ref_expense')}</option>
                                 </select>
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Catégorie (dépense)</label>
+                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('comptabilite.tx.category')}</label>
                                 <select value={category} onChange={e => { setCategory(e.target.value); push({ category: e.target.value }); }} className={sel}>
-                                    <option value="">Toutes les catégories</option>
+                                    <option value="">{t('comptabilite.tx.all_categories')}</option>
                                     {categories.map(c => (
                                         <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
                                     ))}
@@ -315,9 +318,9 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Caisse</label>
+                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('comptabilite.tx.cash')}</label>
                                 <select value={cashAccountId} onChange={e => { setCashAccountId(e.target.value); push({ cashAccountId: e.target.value }); }} className={sel}>
-                                    <option value="">Toutes les caisses</option>
+                                    <option value="">{t('comptabilite.tx.all_cash')}</option>
                                     {cashAccounts.map(ca => (
                                         <option key={ca.id} value={ca.id}>{ca.name}</option>
                                     ))}
@@ -326,7 +329,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
 
                             <div className="flex flex-col gap-1">
                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                    <CalendarDays className="w-3 h-3" /> Période
+                                    <CalendarDays className="w-3 h-3" /> {t('comptabilite.tx.period')}
                                 </label>
                                 <div className="flex items-center gap-1.5">
                                     <input
@@ -349,11 +352,11 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">Rapide :</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">{t('comptabilite.tx.quick')}</span>
                             {[
-                                { label: "Aujourd'hui",  from: todayStr(),       to: todayStr() },
-                                { label: 'Ce mois',      from: firstOfMonth(),   to: todayStr() },
-                                { label: 'Cette année',  from: firstOfYear(),    to: todayStr() },
+                                { label: t('comptabilite.tx.today'),      from: todayStr(),       to: todayStr() },
+                                { label: t('comptabilite.tx.this_month'), from: firstOfMonth(),   to: todayStr() },
+                                { label: t('comptabilite.tx.this_year'),  from: firstOfYear(),    to: todayStr() },
                             ].map(q => (
                                 <button
                                     key={q.label}
@@ -371,7 +374,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
 
                         {activeFilters.length > 0 && (
                             <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-gray-100 dark:border-gray-700">
-                                <span className="text-xs text-gray-400 shrink-0">Actifs :</span>
+                                <span className="text-xs text-gray-400 shrink-0">{t('comptabilite.tx.active')}</span>
                                 {activeFilters.map(f => (
                                     <span key={f.key} className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                         {f.label}
@@ -390,11 +393,11 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
 
                     <div className="px-5 py-3.5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between gap-4 flex-wrap">
                         <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            {transactions.total} transaction(s)
-                            {activeFilters.length > 0 && <span className="text-xs text-blue-500 ml-2">— filtrées</span>}
+                            {t('comptabilite.tx.transactions_count', { count: transactions.total })}
+                            {activeFilters.length > 0 && <span className="text-xs text-blue-500 ml-2">{t('comptabilite.tx.filtered')}</span>}
                         </p>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Lignes par page :</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{t('comptabilite.tx.per_page')}</span>
                             <select
                                 value={perPage}
                                 onChange={e => changePerPage(Number(e.target.value))}
@@ -410,10 +413,10 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                     {transactions.data.length === 0 ? (
                         <div className="px-5 py-16 text-center text-gray-400">
                             <ArrowLeftRight className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                            <p className="text-sm">Aucune transaction trouvée</p>
+                            <p className="text-sm">{t('comptabilite.tx.empty')}</p>
                             {activeFilters.length > 0 && (
                                 <button onClick={clearAll} className="mt-2 text-xs text-blue-500 hover:underline">
-                                    Effacer les filtres
+                                    {t('comptabilite.tx.clear_filters')}
                                 </button>
                             )}
                         </div>
@@ -422,12 +425,12 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-28">Type</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Description</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-32">Référence</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-36">Caisse</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-36">Montant</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-28">Date</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-28">{t('comptabilite.tx.col_type')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.tx.col_description')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-32">{t('comptabilite.tx.col_reference')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-36">{t('comptabilite.tx.col_cash')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-36">{t('comptabilite.tx.col_amount')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-28">{t('comptabilite.tx.col_date')}</th>
                                         <th className="px-4 py-3 w-12"></th>
                                     </tr>
                                 </thead>
@@ -440,7 +443,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                                             <tr key={tx.id} className={`hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors ${isManualExpense ? 'bg-orange-50/20 dark:bg-orange-900/5' : ''}`}>
                                                 <td className="px-5 py-3">
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${tc.bg} ${tc.text}`}>
-                                                        {tc.icon}{tc.label}
+                                                        {tc.icon}{t(`comptabilite.tx.txtype.${tx.type}`)}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-gray-700 dark:text-gray-300 max-w-xs">
@@ -456,12 +459,12 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                                                         <p className="truncate text-sm">{tx.description}</p>
                                                     </div>
                                                     {tx.created_by && (
-                                                        <p className="text-xs text-gray-400 mt-0.5">par {tx.created_by.name}</p>
+                                                        <p className="text-xs text-gray-400 mt-0.5">{t('comptabilite.tx.by_user', { name: tx.created_by.name })}</p>
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded ${ref.color}`}>
-                                                        {ref.label}
+                                                        {t(`comptabilite.tx.ref.${tx.reference_type}`)}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
@@ -480,7 +483,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-right text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                                                    {new Date(tx.transaction_date).toLocaleDateString('fr-FR')}
+                                                    {new Date(tx.transaction_date).toLocaleDateString(dateLocale)}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {isManualExpense && (
@@ -489,12 +492,12 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                                                                 <button
                                                                     onClick={() => setDeletingId(tx.id)}
                                                                     className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                                                    aria-label="Supprimer cette dépense"
+                                                                    aria-label={t('comptabilite.tx.delete_expense_aria')}
                                                                 >
                                                                     <Trash2 className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>Supprimer cette dépense</TooltipContent>
+                                                            <TooltipContent>{t('comptabilite.tx.delete_expense_aria')}</TooltipContent>
                                                         </Tooltip>
                                                     )}
                                                 </td>
@@ -511,7 +514,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
 
                         {transactions.total > 0 && (
                             <p className="text-xs text-gray-400 dark:text-gray-500">
-                                {transactions.from}–{transactions.to} sur {transactions.total}
+                                {t('comptabilite.tx.range', { from: transactions.from, to: transactions.to, total: transactions.total })}
                             </p>
                         )}
 
@@ -519,7 +522,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                             <div className="flex items-center gap-1.5">
                                 <Button size="sm" variant="outline" className="h-8 w-8 p-0"
                                     disabled={transactions.current_page === 1}
-                                    onClick={() => goToPage(1)} title="Première page">
+                                    onClick={() => goToPage(1)} title={t('comptabilite.tx.first_page')}>
                                     <ChevronLeft className="w-3.5 h-3.5 -mr-1" />
                                     <ChevronLeft className="w-3.5 h-3.5" />
                                 </Button>
@@ -550,7 +553,7 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
                                 </Button>
                                 <Button size="sm" variant="outline" className="h-8 w-8 p-0"
                                     disabled={transactions.current_page === transactions.last_page}
-                                    onClick={() => goToPage(transactions.last_page)} title="Dernière page">
+                                    onClick={() => goToPage(transactions.last_page)} title={t('comptabilite.tx.last_page')}>
                                     <ChevronRight className="w-3.5 h-3.5 -mr-1" />
                                     <ChevronRight className="w-3.5 h-3.5" />
                                 </Button>
@@ -565,18 +568,18 @@ export default function Transactions({ transactions, cashAccounts, cashSummary, 
             <AlertDialog open={!!deletingId} onOpenChange={() => setDeletingId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette dépense ?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('comptabilite.tx.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Le montant sera recrédité sur la caisse concernée. Cette action est irréversible.
+                            {t('comptabilite.tx.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-red-600 hover:bg-red-700"
                             onClick={() => deletingId && onDeleteExpense(deletingId)}
                         >
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
