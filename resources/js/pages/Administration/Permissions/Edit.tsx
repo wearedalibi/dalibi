@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Permission {
@@ -19,6 +20,7 @@ interface EditProps {
 }
 
 export default function Edit({ permission }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: permission.name,
         description: permission.description || '',
@@ -44,7 +46,7 @@ export default function Edit({ permission }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title={`Éditer ${permission.name}`} />
+            <Head title={t('administration.permissions.edit.head', { name: permission.name })} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -57,7 +59,7 @@ export default function Edit({ permission }: Readonly<EditProps>) {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Éditer la permission
+                            {t('administration.permissions.edit.title')}
                         </h1>
                         <p className="text-gray-600 mt-1">{permission.name}</p>
                     </div>
@@ -67,34 +69,34 @@ export default function Edit({ permission }: Readonly<EditProps>) {
                     {/* Nom de la permission */}
                     <div className="bg-white rounded-lg border p-6">
                         <label htmlFor="edit-perm-name" className="block text-sm font-medium text-gray-900 mb-2">
-                            Nom de la permission *
+                            {t('administration.permissions.edit.name')}
                         </label>
                         <Input
                             id="edit-perm-name"
                             type="text"
                             value={formData.name}
                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="Ex: view_students"
+                            placeholder={t('administration.permissions.edit.name_ph')}
                             className={errors.name ? 'border-red-500' : ''}
                         />
                         {errors.name && (
                             <p className="text-red-600 text-sm mt-1">{errors.name}</p>
                         )}
                         <p className="text-sm text-gray-500 mt-2">
-                            Utilisez des caractères minuscules et des underscores
+                            {t('administration.permissions.edit.name_hint')}
                         </p>
                     </div>
 
                     {/* Description */}
                     <div className="bg-white rounded-lg border p-6">
                         <label htmlFor="edit-perm-description" className="block text-sm font-medium text-gray-900 mb-2">
-                            Description
+                            {t('administration.permissions.edit.description')}
                         </label>
                         <textarea
                             id="edit-perm-description"
                             value={formData.description}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder="Décrivez la permission..."
+                            placeholder={t('administration.permissions.edit.description_ph')}
                             rows={4}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -107,14 +109,14 @@ export default function Edit({ permission }: Readonly<EditProps>) {
                             disabled={isSubmitting}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
+                            {isSubmitting ? t('administration.permissions.edit.updating') : t('administration.permissions.edit.update')}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => router.get(route('permissions.index'))}
                         >
-                            Annuler
+                            {t('administration.permissions.edit.cancel')}
                         </Button>
                     </div>
                 </form>
