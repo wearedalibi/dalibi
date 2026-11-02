@@ -2,9 +2,11 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { Users } from 'lucide-react';
 import { GuardianForm, type GuardianFormData } from '@/components/Guardians/guardian-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 export default function Create() {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm<GuardianFormData>({
         first_name: '',
         last_name: '',
@@ -21,13 +23,13 @@ export default function Create() {
 
     return (
         <AppLayout>
-            <Head title="Nouveau tuteur" />
+            <Head title={t('administration.guardians.create.head')} />
             <div className="w-full space-y-6">
                 <div>
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-                        <Users className="h-7 w-7 text-blue-600 shrink-0" /> Nouveau tuteur
+                        <Users className="h-7 w-7 text-blue-600 shrink-0" /> {t('administration.guardians.create.title')}
                     </h1>
-                    <p className="mt-2 text-gray-500">Créez le compte et liez-le à un ou plusieurs élèves (par matricule).</p>
+                    <p className="mt-2 text-gray-500">{t('administration.guardians.create.subtitle')}</p>
                 </div>
 
                 <GuardianForm
