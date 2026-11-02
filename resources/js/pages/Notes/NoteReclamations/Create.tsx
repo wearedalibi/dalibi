@@ -3,6 +3,7 @@ import { AlertTriangle, ArrowLeft, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student { id: string; firstname: string; lastname: string; matricule: string; }
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export default function Create({ evaluation, student, originalScore, pendingExists }: Readonly<Props>) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm({
         evaluation_id:   evaluation.id,
         student_id:      student.id,
@@ -35,7 +37,7 @@ export default function Create({ evaluation, student, originalScore, pendingExis
 
     return (
         <AppLayout>
-            <Head title="Déposer une réclamation" />
+            <Head title={t('notes.reclamations.create.head')} />
 
             <div className="w-full space-y-6">
 
@@ -44,8 +46,8 @@ export default function Create({ evaluation, student, originalScore, pendingExis
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Déposer une réclamation</h1>
-                        <p className="text-gray-500 mt-0.5">Correction d'une note sur évaluation clôturée</p>
+                        <h1 className="text-3xl font-bold text-gray-900">{t('notes.reclamations.create.head')}</h1>
+                        <p className="text-gray-500 mt-0.5">{t('notes.reclamations.create.subtitle')}</p>
                     </div>
                 </div>
 
@@ -53,17 +55,17 @@ export default function Create({ evaluation, student, originalScore, pendingExis
                 <div className="bg-red-50 ring-1 ring-red-200 rounded-2xl p-4 flex gap-3">
                     <Lock className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                     <div>
-                        <p className="font-semibold text-red-800">Évaluation clôturée</p>
+                        <p className="font-semibold text-red-800">{t('notes.reclamations.create.locked')}</p>
                         <p className="text-sm text-red-600 mt-0.5">
                             {evaluation.template.name} — {evaluation.class_subject.class.name} · {evaluation.class_subject.subject.name}
                         </p>
-                        <p className="text-xs text-red-500 mt-0.5">{evaluation.template.academic_period.name} · Sur {evaluation.template.max_score}</p>
+                        <p className="text-xs text-red-500 mt-0.5">{evaluation.template.academic_period.name} · {t('notes.reclamations.create.on_max', { max: evaluation.template.max_score })}</p>
                     </div>
                 </div>
 
                 {/* Student info */}
                 <div className="bg-blue-50 ring-1 ring-blue-100 rounded-2xl p-4">
-                    <p className="text-sm font-medium text-blue-800">Élève concerné</p>
+                    <p className="text-sm font-medium text-blue-800">{t('notes.reclamations.create.student_concerned')}</p>
                     <p className="font-bold text-blue-900 mt-0.5">{student.lastname} {student.firstname}</p>
                     <p className="text-xs text-blue-600 font-mono">{student.matricule}</p>
                 </div>
@@ -72,8 +74,8 @@ export default function Create({ evaluation, student, originalScore, pendingExis
                     <div className="bg-amber-50 ring-1 ring-amber-200 rounded-2xl p-4 flex gap-3">
                         <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                         <div>
-                            <p className="font-semibold text-amber-800">Réclamation déjà en cours</p>
-                            <p className="text-sm text-amber-600 mt-0.5">Une réclamation est déjà en attente de traitement pour cet élève.</p>
+                            <p className="font-semibold text-amber-800">{t('notes.reclamations.create.pending_exists')}</p>
+                            <p className="text-sm text-amber-600 mt-0.5">{t('notes.reclamations.create.pending_exists_hint')}</p>
                         </div>
                     </div>
                 )}
@@ -83,7 +85,7 @@ export default function Create({ evaluation, student, originalScore, pendingExis
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Note actuelle (enregistrée)</label>
+                                <label className="text-sm font-medium text-gray-700">{t('notes.reclamations.create.current_score')}</label>
                                 <div className="relative">
                                     <Input
                                         type="number" min={0} max={evaluation.template.max_score} step={0.25}
@@ -98,7 +100,7 @@ export default function Create({ evaluation, student, originalScore, pendingExis
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Note souhaitée</label>
+                                <label className="text-sm font-medium text-gray-700">{t('notes.reclamations.create.requested_score')}</label>
                                 <div className="relative">
                                     <Input
                                         type="number" min={0} max={evaluation.template.max_score} step={0.25}
@@ -113,12 +115,12 @@ export default function Create({ evaluation, student, originalScore, pendingExis
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Raison de la réclamation *</label>
+                            <label className="text-sm font-medium text-gray-700">{t('notes.reclamations.create.reason')}</label>
                             <textarea
                                 value={data.reason}
                                 onChange={e => setData('reason', e.target.value)}
                                 rows={4}
-                                placeholder="Décrivez le motif de la réclamation (erreur de saisie, absent justifié, etc.)"
+                                placeholder={t('notes.reclamations.create.reason_ph')}
                                 className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${errors.reason ? 'border-red-400' : 'border-gray-300'}`}
                             />
                             {errors.reason && <p className="text-xs text-red-500">{errors.reason}</p>}
@@ -126,10 +128,10 @@ export default function Create({ evaluation, student, originalScore, pendingExis
 
                         <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
                             <Button type="button" variant="outline" onClick={() => history.back()}>
-                                Annuler
+                                {t('common.actions.cancel')}
                             </Button>
                             <Button type="submit" className="bg-orange-600 hover:bg-orange-700" disabled={processing}>
-                                {processing ? 'Envoi...' : 'Déposer la réclamation'}
+                                {processing ? t('notes.reclamations.create.submitting') : t('notes.reclamations.create.submit')}
                             </Button>
                         </div>
                     </form>
@@ -138,7 +140,7 @@ export default function Create({ evaluation, student, originalScore, pendingExis
                 {pendingExists && (
                     <div className="flex justify-center">
                         <Button variant="outline" onClick={() => router.get(route('note-reclamations.index'))}>
-                            Voir les réclamations
+                            {t('notes.reclamations.create.view_reclamations')}
                         </Button>
                     </div>
                 )}
