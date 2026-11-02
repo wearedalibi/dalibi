@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 
 export interface StudentRef {
     matricule: string;
@@ -33,6 +34,7 @@ interface Props {
 }
 
 export function GuardianForm({ data, setData, errors, processing, mode, initialChildren = [], onSubmit, onCancel }: Readonly<Props>) {
+    const { t } = useTranslation();
     // Enfants sélectionnés (objets avec libellé) — la donnée soumise reste les matricules.
     const [selected, setSelected] = useState<StudentRef[]>(initialChildren);
     const [query, setQuery] = useState('');
@@ -80,12 +82,12 @@ export function GuardianForm({ data, setData, errors, processing, mode, initialC
             <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <Label className="text-sm">Prénom *</Label>
+                        <Label className="text-sm">{t('administration.guardians.form.first_name')}</Label>
                         <Input value={data.first_name} onChange={(e) => setData('first_name', e.target.value)} className={errors.first_name ? 'border-red-400' : ''} />
                         {errors.first_name && <p className="text-xs text-red-500">{errors.first_name}</p>}
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm">Nom *</Label>
+                        <Label className="text-sm">{t('administration.guardians.form.last_name')}</Label>
                         <Input value={data.last_name} onChange={(e) => setData('last_name', e.target.value)} className={errors.last_name ? 'border-red-400' : ''} />
                         {errors.last_name && <p className="text-xs text-red-500">{errors.last_name}</p>}
                     </div>
@@ -93,18 +95,18 @@ export function GuardianForm({ data, setData, errors, processing, mode, initialC
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <Label className="text-sm">E-mail *</Label>
+                        <Label className="text-sm">{t('administration.guardians.form.email')}</Label>
                         <Input type="email" value={data.email} onChange={(e) => setData('email', e.target.value)} className={errors.email ? 'border-red-400' : ''} />
                         {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm">Téléphone</Label>
+                        <Label className="text-sm">{t('administration.guardians.form.phone')}</Label>
                         <Input value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
                     </div>
                 </div>
 
                 <div className="space-y-1.5">
-                    <Label className="text-sm">Élèves liés</Label>
+                    <Label className="text-sm">{t('administration.guardians.form.linked_students')}</Label>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
@@ -112,14 +114,14 @@ export function GuardianForm({ data, setData, errors, processing, mode, initialC
                             onChange={(e) => { setQuery(e.target.value); setShowDropdown(true); }}
                             onFocus={() => setShowDropdown(true)}
                             onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                            placeholder="Rechercher un élève par nom ou matricule…"
+                            placeholder={t('administration.guardians.form.search_student_ph')}
                             className="pl-9"
                         />
                         {showDropdown && query.trim() && (
                             <div className="absolute z-20 mt-1 w-full bg-white rounded-lg shadow-lg max-h-56 overflow-auto ring-1 ring-gray-100">
-                                {searching && <div className="px-3 py-2 text-sm text-gray-400">Recherche…</div>}
+                                {searching && <div className="px-3 py-2 text-sm text-gray-400">{t('administration.guardians.form.searching')}</div>}
                                 {!searching && available.length === 0 && (
-                                    <div className="px-3 py-2 text-sm text-gray-400">Aucun élève trouvé.</div>
+                                    <div className="px-3 py-2 text-sm text-gray-400">{t('administration.guardians.form.no_student')}</div>
                                 )}
                                 {available.map((student) => (
                                     <button
@@ -140,27 +142,27 @@ export function GuardianForm({ data, setData, errors, processing, mode, initialC
                         {selected.map((s) => (
                             <span key={s.matricule} className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full text-xs">
                                 {s.name} <span className="text-blue-500">· {s.matricule}</span>
-                                <button type="button" onClick={() => remove(s.matricule)} aria-label={`Retirer ${s.name}`}><X className="w-3 h-3" /></button>
+                                <button type="button" onClick={() => remove(s.matricule)} aria-label={t('administration.guardians.form.remove_student', { name: s.name })}><X className="w-3 h-3" /></button>
                             </span>
                         ))}
-                        {selected.length === 0 && <span className="text-xs text-gray-400">Aucun élève lié pour l'instant.</span>}
+                        {selected.length === 0 && <span className="text-xs text-gray-400">{t('administration.guardians.form.none_linked')}</span>}
                     </div>
-                    {errors['student_matricules.0'] && <p className="text-xs text-red-500">Un matricule est introuvable.</p>}
+                    {errors['student_matricules.0'] && <p className="text-xs text-red-500">{t('administration.guardians.form.matricule_not_found')}</p>}
                 </div>
 
                 {mode === 'create' && (
                     <label className="flex items-center gap-2 text-sm">
                         <Checkbox checked={data.send_invitation} onCheckedChange={(v) => setData('send_invitation', Boolean(v))} />
-                        Envoyer l'invitation par e-mail
+                        {t('administration.guardians.form.send_invitation')}
                     </label>
                 )}
             </div>
 
             <div className="flex gap-2">
                 <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700">
-                    {mode === 'edit' ? 'Enregistrer' : 'Créer le tuteur'}
+                    {mode === 'edit' ? t('administration.guardians.form.save') : t('administration.guardians.form.create')}
                 </Button>
-                <Button type="button" variant="outline" onClick={onCancel}>Annuler</Button>
+                <Button type="button" variant="outline" onClick={onCancel}>{t('administration.guardians.form.cancel')}</Button>
             </div>
         </form>
     );

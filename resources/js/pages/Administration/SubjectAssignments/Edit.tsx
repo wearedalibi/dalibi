@@ -14,6 +14,7 @@ import type { SyntheticEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Subject {
@@ -61,6 +62,7 @@ interface EditProps {
 }
 
 export default function Edit({ assignment, subjects, teachers, academicYears, classrooms }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const getTeacherLabel = (teacher: Teacher) =>
         teacher.name ?? `${teacher.firstname ?? ''} ${teacher.lastname ?? ''}`.trim();
 
@@ -111,7 +113,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
 
     return (
         <AppLayout>
-            <Head title={`Modifier affectation - ${assignment.subject.name}`} />
+            <Head title={t('administration.subject_assignments.edit.head', { subject: assignment.subject.name })} />
 
             <div className="space-y-6">
                 {/* En-tête */}
@@ -124,7 +126,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Modifier l'affectation</h1>
+                        <h1 className="text-3xl font-bold text-gray-900">{t('administration.subject_assignments.edit.title')}</h1>
                         <p className="mt-1 text-gray-500 text-sm">
                             {assignment.subject.name} &mdash; {assignment.teacher.name ?? `${assignment.teacher.firstname ?? ''} ${assignment.teacher.lastname ?? ''}`.trim()}
                         </p>
@@ -139,11 +141,11 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                     <div className="rounded-xl bg-blue-50 border border-blue-100 shadow-sm overflow-hidden">
                         <div className="flex items-center gap-2 px-5 py-3 bg-blue-100 text-blue-800 rounded-t-xl">
                             <BookOpen className="w-4 h-4" />
-                            <span className="font-semibold text-sm">Matière</span>
+                            <span className="font-semibold text-sm">{t('administration.subject_assignments.form.subject')}</span>
                         </div>
                         <div className="p-5">
                             <label htmlFor="subject_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                Matière <span className="text-blue-500">*</span>
+                                {t('administration.subject_assignments.form.subject_required')} <span className="text-blue-500">*</span>
                             </label>
                             <select
                                 id="subject_id"
@@ -151,7 +153,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                                 onChange={(e) => setFormData((prev) => ({ ...prev, subject_id: e.target.value }))}
                                 className={errors.subject_id ? fieldError : fieldNormal}
                             >
-                                <option value="">Sélectionner une matière</option>
+                                <option value="">{t('administration.subject_assignments.form.select_subject')}</option>
                                 {subjects.map((subject) => (
                                     <option key={subject.id} value={subject.id}>{subject.name}</option>
                                 ))}
@@ -164,11 +166,11 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                     <div className="rounded-xl bg-violet-50 border border-violet-100 shadow-sm">
                         <div className="flex items-center gap-2 px-5 py-3 bg-violet-100 text-violet-800 rounded-t-xl">
                             <UserCheck className="w-4 h-4" />
-                            <span className="font-semibold text-sm">Enseignant</span>
+                            <span className="font-semibold text-sm">{t('administration.subject_assignments.form.teacher')}</span>
                         </div>
                         <div className="p-5">
                             <label htmlFor="teacher_search" className="block text-sm font-medium text-gray-700 mb-2">
-                                Enseignant <span className="text-violet-500">*</span>
+                                {t('administration.subject_assignments.form.teacher')} <span className="text-violet-500">*</span>
                             </label>
                             <div className="relative">
                                 <input
@@ -185,7 +187,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                                     }}
                                     onFocus={() => setShowTeacherDropdown(true)}
                                     onBlur={() => setTimeout(() => setShowTeacherDropdown(false), 250)}
-                                    placeholder="Rechercher un enseignant..."
+                                    placeholder={t('administration.subject_assignments.form.search_teacher_ph')}
                                     className={errors.teacher_id ? fieldError : fieldNormal}
                                 />
                                 {showTeacherDropdown && filteredTeachers.length > 0 && (
@@ -211,7 +213,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                                 )}
                                 {showTeacherDropdown && filteredTeachers.length === 0 && teacherSearch.trim() && (
                                     <div className="absolute z-20 mt-1 w-full bg-white rounded-lg shadow-lg px-3 py-2 text-sm text-gray-500 ring-1 ring-gray-100">
-                                        Aucun utilisateur trouvé.
+                                        {t('administration.subject_assignments.form.no_user')}
                                     </div>
                                 )}
                             </div>
@@ -232,11 +234,11 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                         <div className="rounded-xl bg-emerald-50 border border-emerald-100 shadow-sm overflow-hidden">
                             <div className="flex items-center gap-2 px-5 py-3 bg-emerald-100 text-emerald-800">
                                 <School className="w-4 h-4" />
-                                <span className="font-semibold text-sm">Classe</span>
+                                <span className="font-semibold text-sm">{t('administration.subject_assignments.form.class')}</span>
                             </div>
                             <div className="p-5">
                                 <label htmlFor="class_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Classe <span className="text-emerald-500">*</span>
+                                    {t('administration.subject_assignments.form.class')} <span className="text-emerald-500">*</span>
                                 </label>
                                 <select
                                     id="class_id"
@@ -244,7 +246,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                                     onChange={(e) => setFormData((prev) => ({ ...prev, class_id: e.target.value }))}
                                     className={errors.class_id ? fieldError : fieldNormal}
                                 >
-                                    <option value="">Sélectionner une classe</option>
+                                    <option value="">{t('administration.subject_assignments.form.select_class')}</option>
                                     {classrooms.map((classroom) => (
                                         <option key={classroom.id} value={classroom.id}>{classroom.name}</option>
                                     ))}
@@ -256,11 +258,11 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                         <div className="rounded-xl bg-amber-50 border border-amber-100 shadow-sm overflow-hidden">
                             <div className="flex items-center gap-2 px-5 py-3 bg-amber-100 text-amber-800">
                                 <CalendarDays className="w-4 h-4" />
-                                <span className="font-semibold text-sm">Année académique</span>
+                                <span className="font-semibold text-sm">{t('administration.subject_assignments.form.year')}</span>
                             </div>
                             <div className="p-5">
                                 <label htmlFor="academic_year_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Année académique <span className="text-amber-500">*</span>
+                                    {t('administration.subject_assignments.form.year')} <span className="text-amber-500">*</span>
                                 </label>
                                 <select
                                     id="academic_year_id"
@@ -268,7 +270,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                                     onChange={(e) => setFormData((prev) => ({ ...prev, academic_year_id: e.target.value }))}
                                     className={errors.academic_year_id ? fieldError : fieldNormal}
                                 >
-                                    <option value="">Sélectionner une année</option>
+                                    <option value="">{t('administration.subject_assignments.form.select_year')}</option>
                                     {academicYears.map((year) => (
                                         <option key={year.id} value={year.id}>{year.year}</option>
                                     ))}
@@ -282,18 +284,18 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                     <div className="rounded-xl bg-slate-50 border border-slate-100 shadow-sm overflow-hidden">
                         <div className="flex items-center gap-2 px-5 py-3 bg-slate-100 text-slate-700">
                             <FileText className="w-4 h-4" />
-                            <span className="font-semibold text-sm">Informations complémentaires</span>
+                            <span className="font-semibold text-sm">{t('administration.subject_assignments.form.extra_info')}</span>
                         </div>
                         <div className="p-5 space-y-4">
                             <div>
                                 <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Notes / commentaires
+                                    {t('administration.subject_assignments.form.notes')}
                                 </label>
                                 <textarea
                                     id="notes"
                                     value={formData.notes}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
-                                    placeholder="Notes ou commentaires..."
+                                    placeholder={t('administration.subject_assignments.form.notes_ph')}
                                     rows={3}
                                     className={errors.notes ? fieldError : fieldNormal}
                                 />
@@ -309,7 +311,7 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                                 />
                                 <label htmlFor="active" className="text-sm font-medium text-gray-700 cursor-pointer inline-flex items-center gap-1.5">
                                     <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                                    Affectation active
+                                    {t('administration.subject_assignments.form.active')}
                                 </label>
                             </div>
                         </div>
@@ -323,14 +325,14 @@ export default function Edit({ assignment, subjects, teachers, academicYears, cl
                             className="bg-blue-600 hover:bg-blue-700 gap-2"
                         >
                             <Save className="w-4 h-4" />
-                            {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                            {isSubmitting ? t('administration.subject_assignments.edit.saving') : t('administration.subject_assignments.edit.submit')}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => router.get(route('subject-assignments.index'))}
                         >
-                            Annuler
+                            {t('administration.subject_assignments.form.cancel')}
                         </Button>
                     </div>
                 </form>

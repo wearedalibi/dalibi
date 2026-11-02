@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Line { index: number; subject: string; moyenne: number | null; appreciation: string }
@@ -23,6 +24,7 @@ interface Card {
 }
 
 export default function Edit({ card }: Readonly<{ card: Card }>) {
+    const { t } = useTranslation();
     const [appreciations, setAppreciations] = useState<Record<number, string>>(
         Object.fromEntries(card.lines.map((l) => [l.index, l.appreciation])),
     );
@@ -45,7 +47,7 @@ export default function Edit({ card }: Readonly<{ card: Card }>) {
 
     return (
         <AppLayout>
-            <Head title="Éditer le bulletin" />
+            <Head title={t('notes.bulletins.edit.head')} />
             <div className="w-full space-y-6">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-4">
@@ -54,25 +56,25 @@ export default function Edit({ card }: Readonly<{ card: Card }>) {
                         </Button>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight text-gray-900">{card.student.name}</h1>
-                            <p className="mt-1 text-gray-500">{card.period.name} · Matricule <span className="font-mono">{card.student.matricule}</span></p>
+                            <p className="mt-1 text-gray-500">{card.period.name} · {t('notes.bulletins.edit.matricule_label')} <span className="font-mono">{card.student.matricule}</span></p>
                         </div>
                     </div>
                     <Button onClick={save} disabled={saving} className="bg-blue-600 hover:bg-blue-700 gap-2">
-                        <Save className="w-4 h-4" /> {saving ? 'Enregistrement…' : 'Enregistrer'}
+                        <Save className="w-4 h-4" /> {saving ? t('notes.bulletins.edit.saving') : t('common.actions.save')}
                     </Button>
                 </div>
 
                 {/* Appréciations par matière */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-100 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100">
-                        <h2 className="text-lg font-semibold text-gray-900">Appréciations par matière</h2>
+                        <h2 className="text-lg font-semibold text-gray-900">{t('notes.bulletins.edit.appreciations')}</h2>
                     </div>
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Matière</TableHead>
-                                <TableHead className="w-24 text-center">Moyenne</TableHead>
-                                <TableHead>Appréciation</TableHead>
+                                <TableHead>{t('notes.bulletins.edit.col_subject')}</TableHead>
+                                <TableHead className="w-24 text-center">{t('notes.bulletins.edit.col_average')}</TableHead>
+                                <TableHead>{t('notes.bulletins.edit.col_appreciation')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -84,7 +86,7 @@ export default function Edit({ card }: Readonly<{ card: Card }>) {
                                         <Input
                                             value={appreciations[l.index] ?? ''}
                                             onChange={(e) => setAppreciations((a) => ({ ...a, [l.index]: e.target.value }))}
-                                            placeholder="Appréciation du professeur"
+                                            placeholder={t('notes.bulletins.edit.appreciation_ph')}
                                             className="h-9"
                                         />
                                     </TableCell>
@@ -96,32 +98,32 @@ export default function Edit({ card }: Readonly<{ card: Card }>) {
 
                 {/* Discipline + observations */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-100 p-6 space-y-4">
-                    <h2 className="text-lg font-semibold text-gray-900">Discipline & décision</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">{t('notes.bulletins.edit.discipline')}</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="space-y-1.5">
-                            <Label className="text-xs text-gray-500">Retards (auto)</Label>
+                            <Label className="text-xs text-gray-500">{t('notes.bulletins.edit.lateness')}</Label>
                             <Input value={card.retards} disabled className="bg-gray-50" />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-xs text-gray-500">Absences (auto)</Label>
+                            <Label className="text-xs text-gray-500">{t('notes.bulletins.edit.absences')}</Label>
                             <Input value={card.absences} disabled className="bg-gray-50" />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-xs text-gray-500">Punitions</Label>
+                            <Label className="text-xs text-gray-500">{t('notes.bulletins.edit.punishments')}</Label>
                             <Input type="number" min={0} value={punitions} onChange={(e) => setPunitions(e.target.value)} />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-xs text-gray-500">Exclusions</Label>
+                            <Label className="text-xs text-gray-500">{t('notes.bulletins.edit.exclusions')}</Label>
                             <Input type="number" min={0} value={exclusions} onChange={(e) => setExclusions(e.target.value)} />
                         </div>
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm font-medium text-gray-700">Décision du conseil</Label>
-                        <Input value={decision} onChange={(e) => setDecision(e.target.value)} placeholder="Ex : Tableau d'honneur, Félicitations, Avertissement…" />
+                        <Label className="text-sm font-medium text-gray-700">{t('notes.bulletins.edit.decision')}</Label>
+                        <Input value={decision} onChange={(e) => setDecision(e.target.value)} placeholder={t('notes.bulletins.edit.decision_ph')} />
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm font-medium text-gray-700">Observations du Chef d'Établissement</Label>
-                        <Input value={observations} onChange={(e) => setObservations(e.target.value)} placeholder="Observations" />
+                        <Label className="text-sm font-medium text-gray-700">{t('notes.bulletins.edit.observations')}</Label>
+                        <Input value={observations} onChange={(e) => setObservations(e.target.value)} placeholder={t('notes.bulletins.edit.observations_ph')} />
                     </div>
                 </div>
             </div>

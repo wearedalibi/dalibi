@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Role {
@@ -67,6 +68,7 @@ interface IndexProps {
 }
 
 export default function Index({ users, perPage, roles, message, filters }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -98,16 +100,10 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
     };
 
     const formatGenderLabel = (gender: string) => {
-        switch (gender) {
-            case 'male':
-                return 'Masculin';
-            case 'female':
-                return 'Féminin';
-            case 'other':
-                return 'Autre';
-            default:
-                return gender;
+        if (gender === 'male' || gender === 'female' || gender === 'other') {
+            return t('administration.users.gender.' + gender);
         }
+        return gender;
     };
 
     const handleDelete = (userId: string) => {
@@ -144,21 +140,21 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
     // Stat Cards
     const statsCards = [
         {
-            title: 'Utilisateurs totaux',
+            title: t('administration.users.index.stat_total'),
             value: users.total,
             icon: Users,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Utilisateurs actifs',
+            title: t('administration.users.index.stat_active'),
             value: users.total,
             icon: CheckCircle2,
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
         {
-            title: 'Page',
+            title: t('administration.users.index.stat_page'),
             value: `${users.current_page}/${users.last_page}`,
             icon: UserIcon,
             bgColor: 'bg-purple-50',
@@ -168,25 +164,25 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
 
     return (
         <AppLayout>
-            <Head title="Utilisateurs" />
+            <Head title={t('administration.users.index.head')} />
 
             <div className="space-y-6">
                 {/* Header avec titre et bouton */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Users className="h-7 w-7 text-blue-600 shrink-0" />
-                            Utilisateurs
+                            {t('administration.users.index.head')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les utilisateurs de l'application
+                            {t('administration.users.index.subtitle')}
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         onClick={() => router.get(route('users.create'))}
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Nouvel utilisateur
+                        {t('administration.users.index.new')}
                     </Button>
                 </div>
 
@@ -231,7 +227,7 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400 group-focus-within:text-blue-600 transition" />
                                 <Input
                                     type="text"
-                                    placeholder="Rechercher un utilisateur par nom, email ou matricule..."
+                                    placeholder={t('administration.users.index.search_ph')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -253,7 +249,7 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                     onChange={(e) => setSelectedRole(e.target.value)}
                                     className="w-full h-10 px-3 border border-gray-200 rounded-md bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300"
                                 >
-                                    <option value="">Tous les rôles</option>
+                                    <option value="">{t('administration.users.index.all_roles')}</option>
                                     {roles.map((role) => (
                                         <option key={role.id} value={role.id}>
                                             {role.name}
@@ -268,10 +264,10 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                     onChange={(e) => setSelectedGender(e.target.value)}
                                     className="w-full h-10 px-3 border border-gray-200 rounded-md bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300"
                                 >
-                                    <option value="">Tous les genres</option>
-                                    <option value="male">Masculin</option>
-                                    <option value="female">Féminin</option>
-                                    <option value="other">Autre</option>
+                                    <option value="">{t('administration.users.index.all_genders')}</option>
+                                    <option value="male">{t('administration.users.gender.male')}</option>
+                                    <option value="female">{t('administration.users.gender.female')}</option>
+                                    <option value="other">{t('administration.users.gender.other')}</option>
                                 </select>
                             </div>
 
@@ -280,7 +276,7 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                 className="lg:col-span-1 bg-blue-600 hover:bg-blue-700 text-white gap-2 shrink-0 transition"
                             >
                                 <Search className="w-4 h-4" />
-                                Filtrer
+                                {t('administration.users.index.filter')}
                             </Button>
 
                             <Button
@@ -288,18 +284,18 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                 onClick={handleResetFilters}
                                 className="lg:col-span-1 border-gray-300 text-gray-700 hover:bg-gray-50"
                             >
-                                Réinitialiser
+                                {t('administration.users.index.reset')}
                             </Button>
                         </div>
 
                         {(searchQuery || selectedRole || selectedGender) && (
                             <p className="text-sm text-gray-500 mt-3">
-                                Filtres actifs
-                                {searchQuery && <span className="font-semibold text-gray-700"> • Recherche: « {searchQuery} »</span>}
-                                {selectedRole && <span className="font-semibold text-gray-700"> • Rôle sélectionné</span>}
+                                {t('administration.users.index.active_filters')}
+                                {searchQuery && <span className="font-semibold text-gray-700">{t('administration.users.index.filter_search', { search: searchQuery })}</span>}
+                                {selectedRole && <span className="font-semibold text-gray-700">{t('administration.users.index.filter_role')}</span>}
                                 {selectedGender && (
                                     <span className="font-semibold text-gray-700">
-                                        {' '}• Genre: {formatGenderLabel(selectedGender)}
+                                        {t('administration.users.index.filter_gender', { gender: formatGenderLabel(selectedGender) })}
                                     </span>
                                 )}
                             </p>
@@ -312,10 +308,10 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                     {/* Table header: count + per-page selector */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                         <p className="text-sm text-gray-600">
-                            <span className="font-semibold">{users.total}</span> utilisateur(s)
+                            {t('administration.users.index.count', { count: users.total })}
                         </p>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <span>Lignes par page :</span>
+                            <span>{t('administration.users.index.per_page')}</span>
                             <select
                                 value={perPage}
                                 onChange={(e) => changePerPage(Number(e.target.value))}
@@ -331,12 +327,12 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow className="border-b border-gray-200">
-                                    <TableHead className="font-semibold text-gray-900">Utilisateur</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Email</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Matricule</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Téléphone</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Rôles</TableHead>
-                                    <TableHead className="text-center font-semibold text-gray-900 w-24">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.users.index.col_user')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.users.index.col_email')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.users.index.col_matricule')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.users.index.col_phone')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.users.index.col_roles')}</TableHead>
+                                    <TableHead className="text-center font-semibold text-gray-900 w-24">{t('administration.users.index.col_actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -348,7 +344,7 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                         >
                                             <div className="flex flex-col items-center gap-2">
                                                 <Users className="w-12 h-12 text-gray-300" />
-                                                <p className="text-lg">Aucun utilisateur trouvé</p>
+                                                <p className="text-lg">{t('administration.users.index.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -387,26 +383,26 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                                                             </span>
                                                         ))
                                                     ) : (
-                                                        <span className="text-gray-400 text-sm">Aucun rôle</span>
+                                                        <span className="text-gray-400 text-sm">{t('administration.users.index.no_role')}</span>
                                                     )}
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 <div className="flex gap-2 justify-center">
                                                     <IconButton
-                                                        label="Voir"
+                                                        label={t('administration.users.index.view')}
                                                         icon={<Eye className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.visit(route('users.show', user.id))}
                                                     />
                                                     <IconButton
-                                                        label="Modifier"
+                                                        label={t('administration.users.index.edit')}
                                                         icon={<Pencil className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.get(route('users.edit', user.id))}
                                                     />
                                                     <IconButton
-                                                        label="Supprimer"
+                                                        label={t('administration.users.index.delete')}
                                                         icon={<Trash2 className="w-4 h-4" />}
                                                         className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                         onClick={() => setDeleteConfirm(user.id)}
@@ -425,7 +421,7 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
                 {users.last_page > 1 && (
                     <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
                         <p className="text-sm text-gray-600">
-                            {users.from}–{users.to} sur <span className="font-semibold">{users.total}</span> utilisateurs
+                            {t('administration.users.index.range', { from: users.from, to: users.to, total: users.total })}
                         </p>
                         <div className="flex items-center gap-1">
                             <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 px-2"
@@ -464,19 +460,19 @@ export default function Index({ users, perPage, roles, message, filters }: Reado
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer l'utilisateur</AlertDialogTitle>
+                        <AlertDialogTitle>{t('administration.users.index.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
+                            {t('administration.users.index.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3 justify-end">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('administration.users.index.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('administration.users.index.deleting') : t('administration.users.index.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

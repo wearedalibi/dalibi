@@ -3,6 +3,7 @@ import { ArrowLeft, Calendar, Mail, MapPin, Phone, User as UserIcon, Shield, Boo
 import { Button } from '@/components/ui/button';
 import { useMoney } from '@/helpers/money';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 import PayrollSection, { type EmployeeProfile } from './PayrollSection';
 import { type ContractType, type SalaryGradeOption } from '@/components/Employees/employee-form';
@@ -25,13 +26,11 @@ interface Slot {
     classroom?: { id: string; name: string } | null;
 }
 
-const DAYS = ['', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-const MONTHS_SHORT = ['', 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-const PAY_STATUS: Record<string, { label: string; cls: string }> = {
-    draft:     { label: 'Brouillon', cls: 'bg-gray-100 text-gray-600' },
-    validated: { label: 'Validé',    cls: 'bg-blue-100 text-blue-700' },
-    paid:      { label: 'Payé',      cls: 'bg-green-100 text-green-700' },
-    cancelled: { label: 'Annulé',    cls: 'bg-red-100 text-red-600' },
+const PAY_STATUS_CLS: Record<string, string> = {
+    draft:     'bg-gray-100 text-gray-600',
+    validated: 'bg-blue-100 text-blue-700',
+    paid:      'bg-green-100 text-green-700',
+    cancelled: 'bg-red-100 text-red-600',
 };
 
 interface Permission {
@@ -76,6 +75,10 @@ interface ShowProps {
 
 export default function Show({ user, activeYear, contractTypes, salaryGrades, canManagePayroll }: Readonly<ShowProps>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
+    const DAYS = ['', ...Array.from({ length: 7 }, (_, i) => t('administration.users.days.' + (i + 1)))];
+    const MONTHS_SHORT = ['', ...Array.from({ length: 12 }, (_, i) => t('administration.users.months_short.' + (i + 1)))];
     const yearBadge = activeYear
         ? <span className="ml-2 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">{activeYear}</span>
         : null;
@@ -84,15 +87,15 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
     const payslips = user.employee_profile?.payslips ?? [];
 
     const formatGender = (gender: string) => {
-        if (gender === 'M' || gender === 'male') return 'Masculin';
-        if (gender === 'F' || gender === 'female') return 'Féminin';
-        if (gender === 'O' || gender === 'other') return 'Autre';
+        if (gender === 'M' || gender === 'male') return t('administration.users.gender.male');
+        if (gender === 'F' || gender === 'female') return t('administration.users.gender.female');
+        if (gender === 'O' || gender === 'other') return t('administration.users.gender.other');
         return gender;
     };
 
     const formatDate = (date: string | null) => {
-        if (!date) return 'Non renseigné';
-        return new Date(date).toLocaleDateString('fr-FR', {
+        if (!date) return t('administration.users.show.not_provided');
+        return new Date(date).toLocaleDateString(dateLocale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -133,7 +136,7 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         onClick={() => router.get(route('users.edit', user.id))}
                         className="bg-blue-600 hover:bg-blue-700"
                     >
-                        Modifier
+                        {t('administration.users.show.edit')}
                     </Button>
                 </div>
 
@@ -144,19 +147,19 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         <div className="bg-white rounded-lg border p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                 <UserIcon className="w-5 h-5 text-blue-600" />
-                                Informations personnelles
+                                {t('administration.users.show.personal_info')}
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-sm text-gray-600">Prénom</p>
+                                    <p className="text-sm text-gray-600">{t('administration.users.show.firstname')}</p>
                                     <p className="font-medium text-gray-900 mt-1">{user.firstname}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600">Nom</p>
+                                    <p className="text-sm text-gray-600">{t('administration.users.show.lastname')}</p>
                                     <p className="font-medium text-gray-900 mt-1">{user.lastname}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600">Genre</p>
+                                    <p className="text-sm text-gray-600">{t('administration.users.show.gender')}</p>
                                     <p className="font-medium text-gray-900 mt-1">
                                         {formatGender(user.gender)}
                                     </p>
@@ -164,7 +167,7 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                                 <div>
                                     <p className="text-sm text-gray-600 flex items-center gap-1">
                                         <Calendar className="w-4 h-4" />
-                                        Date de naissance
+                                        {t('administration.users.show.birth_date')}
                                     </p>
                                     <p className="font-medium text-gray-900 mt-1">{formatDate(user.birth_date)}</p>
                                 </div>
@@ -175,32 +178,32 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         <div className="bg-white rounded-lg border p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                 <Mail className="w-5 h-5 text-blue-600" />
-                                Coordonnées
+                                {t('administration.users.show.contact')}
                             </h2>
                             <div className="space-y-4">
                                 <div>
                                     <p className="text-sm text-gray-600 flex items-center gap-1">
                                         <Mail className="w-4 h-4" />
-                                        Email
+                                        {t('administration.users.show.email')}
                                     </p>
                                     <p className="font-medium text-gray-900 mt-1">{user.email}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 flex items-center gap-1">
                                         <Phone className="w-4 h-4" />
-                                        Téléphone
+                                        {t('administration.users.show.phone')}
                                     </p>
                                     <p className="font-medium text-gray-900 mt-1">
-                                        {user.telephone || 'Non renseigné'}
+                                        {user.telephone || t('administration.users.show.not_provided')}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 flex items-center gap-1">
                                         <MapPin className="w-4 h-4" />
-                                        Adresse
+                                        {t('administration.users.show.address')}
                                     </p>
                                     <p className="font-medium text-gray-900 mt-1">
-                                        {user.address || 'Non renseignée'}
+                                        {user.address || t('administration.users.show.not_provided_f')}
                                     </p>
                                 </div>
                             </div>
@@ -222,19 +225,19 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         <div className="bg-white rounded-lg border p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                 <BookOpen className="w-5 h-5 text-blue-600" />
-                                Affectations matières ({affectations.length}){yearBadge}
+                                {t('administration.users.show.assignments', { count: affectations.length })}{yearBadge}
                             </h2>
                             {affectations.length === 0 ? (
-                                <p className="text-gray-500 text-sm">Aucune affectation de matière.</p>
+                                <p className="text-gray-500 text-sm">{t('administration.users.show.no_assignment')}</p>
                             ) : (
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b border-gray-100 text-left text-xs font-semibold text-gray-500 uppercase">
-                                                <th className="py-2 pr-4">Matière</th>
-                                                <th className="py-2 pr-4">Classe</th>
-                                                <th className="py-2 pr-4">Année</th>
-                                                <th className="py-2">Statut</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_subject')}</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_class')}</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_year')}</th>
+                                                <th className="py-2">{t('administration.users.show.col_status')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50">
@@ -245,8 +248,8 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                                                     <td className="py-2 pr-4 text-gray-600">{a.academic_year?.year ?? '—'}</td>
                                                     <td className="py-2">
                                                         {a.active
-                                                            ? <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">Active</span>
-                                                            : <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Inactive</span>}
+                                                            ? <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">{t('administration.users.show.active')}</span>
+                                                            : <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{t('administration.users.show.inactive')}</span>}
                                                     </td>
                                                 </tr>
                                             ))}
@@ -260,20 +263,20 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         <div className="bg-white rounded-lg border p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                 <CalendarRange className="w-5 h-5 text-blue-600" />
-                                Emploi du temps ({slots.length}){yearBadge}
+                                {t('administration.users.show.timetable', { count: slots.length })}{yearBadge}
                             </h2>
                             {slots.length === 0 ? (
-                                <p className="text-gray-500 text-sm">Aucun créneau assigné.</p>
+                                <p className="text-gray-500 text-sm">{t('administration.users.show.no_slot')}</p>
                             ) : (
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b border-gray-100 text-left text-xs font-semibold text-gray-500 uppercase">
-                                                <th className="py-2 pr-4">Jour</th>
-                                                <th className="py-2 pr-4">Créneau</th>
-                                                <th className="py-2 pr-4">Matière</th>
-                                                <th className="py-2 pr-4">Classe</th>
-                                                <th className="py-2">Salle</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_day')}</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_slot')}</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_subject')}</th>
+                                                <th className="py-2 pr-4">{t('administration.users.show.col_class')}</th>
+                                                <th className="py-2">{t('administration.users.show.col_room')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50">
@@ -297,14 +300,14 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                             <div className="bg-white rounded-lg border p-6">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                     <Receipt className="w-5 h-5 text-blue-600" />
-                                    Derniers bulletins de paie ({payslips.length})
+                                    {t('administration.users.show.payslips', { count: payslips.length })}
                                 </h2>
                                 {payslips.length === 0 ? (
-                                    <p className="text-gray-500 text-sm">Aucun bulletin généré.</p>
+                                    <p className="text-gray-500 text-sm">{t('administration.users.show.no_payslip')}</p>
                                 ) : (
                                     <div className="divide-y divide-gray-50">
                                         {payslips.map(p => {
-                                            const st = p.pay_run ? (PAY_STATUS[p.pay_run.status] ?? PAY_STATUS.draft) : null;
+                                            const stCls = p.pay_run ? (PAY_STATUS_CLS[p.pay_run.status] ?? PAY_STATUS_CLS.draft) : null;
                                             return (
                                                 <div key={p.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                                                     <div className="min-w-0">
@@ -314,9 +317,9 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                                                         <p className="text-xs text-gray-400">{p.reference}</p>
                                                     </div>
                                                     <div className="flex items-center gap-3 shrink-0">
-                                                        {st && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>}
+                                                        {stCls && p.pay_run && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${stCls}`}>{t('administration.users.pay_status.' + p.pay_run.status)}</span>}
                                                         <span className="font-semibold text-gray-900">{fmt(p.net)}</span>
-                                                        <a href={route('payslips.pdf', p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50" aria-label="Télécharger">
+                                                        <a href={route('payslips.pdf', p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50" aria-label={t('administration.users.show.download')}>
                                                             <FileDown className="w-4 h-4" />
                                                         </a>
                                                     </div>
@@ -331,26 +334,26 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         {/* Profil */}
                         {user.profile && (
                             <div className="bg-white rounded-lg border p-6">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4">Profil</h2>
+                                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('administration.users.show.profile')}</h2>
                                 <p className="text-gray-700 whitespace-pre-wrap">{user.profile}</p>
                             </div>
                         )}
 
                         {/* Timeline */}
                         <div className="bg-white rounded-lg border p-6">
-                            <h2 className="text-lg font-semibold text-gray-900 mb-4">Historique</h2>
+                            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('administration.users.show.history')}</h2>
                             <div className="space-y-3">
                                 <div className="flex items-start gap-3">
                                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                                     <div>
-                                        <p className="text-sm text-gray-600">Créé le</p>
+                                        <p className="text-sm text-gray-600">{t('administration.users.show.created_on')}</p>
                                         <p className="font-medium text-gray-900">{formatDate(user.created_at)}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2"></div>
                                     <div>
-                                        <p className="text-sm text-gray-600">Dernière modification</p>
+                                        <p className="text-sm text-gray-600">{t('administration.users.show.updated_on')}</p>
                                         <p className="font-medium text-gray-900">{formatDate(user.updated_at)}</p>
                                     </div>
                                 </div>
@@ -364,7 +367,7 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         <div className="bg-white rounded-lg border p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                 <Shield className="w-5 h-5 text-blue-600" />
-                                Rôles ({user.roles.length})
+                                {t('administration.users.show.roles', { count: user.roles.length })}
                             </h2>
                             {user.roles.length > 0 ? (
                                 <div className="space-y-2">
@@ -378,7 +381,7 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-gray-500 text-sm">Aucun rôle attribué</p>
+                                <p className="text-gray-500 text-sm">{t('administration.users.show.no_role')}</p>
                             )}
                         </div>
 
@@ -386,7 +389,7 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                         {user.roles.length > 0 && (
                             <div className="bg-white rounded-lg border p-6">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                    Permissions
+                                    {t('administration.users.show.permissions')}
                                 </h2>
                                 <div className="space-y-4">
                                     {user.roles.map((role) => (
@@ -402,7 +405,7 @@ export default function Show({ user, activeYear, contractTypes, salaryGrades, ca
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <p className="text-gray-500 text-sm ml-4">Aucune permission</p>
+                                                <p className="text-gray-500 text-sm ml-4">{t('administration.users.show.no_permission')}</p>
                                             )}
                                         </div>
                                     ))}

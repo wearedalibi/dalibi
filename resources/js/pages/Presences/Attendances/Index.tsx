@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom { id: string; name: string; code: string; }
@@ -35,15 +36,16 @@ interface Props {
 }
 
 const STATUS_CONFIG = {
-    present: { label: 'Présent',  color: 'bg-emerald-100 text-emerald-700 ring-emerald-200', dot: 'bg-emerald-500' },
-    absent:  { label: 'Absent',   color: 'bg-red-100 text-red-700 ring-red-200',             dot: 'bg-red-500' },
-    late:    { label: 'Retard',   color: 'bg-amber-100 text-amber-700 ring-amber-200',       dot: 'bg-amber-500' },
-    excused: { label: 'Excusé',   color: 'bg-blue-100 text-blue-700 ring-blue-200',          dot: 'bg-blue-500' },
+    present: { color: 'bg-emerald-100 text-emerald-700 ring-emerald-200', dot: 'bg-emerald-500' },
+    absent:  { color: 'bg-red-100 text-red-700 ring-red-200',             dot: 'bg-red-500' },
+    late:    { color: 'bg-amber-100 text-amber-700 ring-amber-200',       dot: 'bg-amber-500' },
+    excused: { color: 'bg-blue-100 text-blue-700 ring-blue-200',          dot: 'bg-blue-500' },
 } as const;
 
 type StatusKey = keyof typeof STATUS_CONFIG;
 
 export default function Index({ classrooms, periods, studentsWithStatus, existingAttendance, filters, activeYear }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [classroomId, setClassroomId] = useState(filters.classroomId ?? '');
     const [periodId, setPeriodId]       = useState(filters.periodId ?? '');
     const [date, setDate]               = useState(filters.date ?? new Date().toISOString().substring(0, 10));
@@ -117,62 +119,62 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
 
     return (
         <AppLayout>
-            <Head title="Saisie des présences" />
+            <Head title={t('presences.attendances.index.head')} />
             <div className="w-full space-y-6">
 
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><UserCheck className="h-7 w-7 text-blue-600 shrink-0" />Saisie des présences</h1>
-                        <p className="mt-2 text-lg text-gray-600">Enregistrez l'appel quotidien par classe</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><UserCheck className="h-7 w-7 text-blue-600 shrink-0" />{t('presences.attendances.index.head')}</h1>
+                        <p className="mt-2 text-lg text-gray-600">{t('presences.attendances.index.subtitle')}</p>
                     </div>
                     <Button variant="outline" className="gap-2" onClick={() => router.get(route('attendances.stats'))}>
-                        <ChevronRight className="w-4 h-4" /> Statistiques
+                        <ChevronRight className="w-4 h-4" /> {t('presences.attendances.index.stats')}
                     </Button>
                 </div>
 
                 {/* Filtres */}
                 <div className="rounded-2xl bg-slate-50/70 ring-1 ring-slate-200 shadow-sm p-4 flex flex-wrap gap-3 items-end">
                     <div className="flex-1 min-w-44">
-                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">Classe</label>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('presences.attendances.index.class')}</label>
                         <Select value={classroomId || 'none'} onValueChange={v => {
                             const val = v === 'none' ? '' : v;
                             setClassroomId(val);
                             applyFilters({ classroomId: val });
                         }}>
-                            <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={t('presences.attendances.index.select')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none">— Classe —</SelectItem>
+                                <SelectItem value="none">{t('presences.attendances.index.class_dash')}</SelectItem>
                                 {classrooms.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.code})</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="min-w-44">
-                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">Période</label>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('presences.attendances.index.period')}</label>
                         <Select value={periodId || 'none'} onValueChange={v => {
                             const val = v === 'none' ? '' : v;
                             setPeriodId(val);
                             applyFilters({ periodId: val });
                         }}>
-                            <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={t('presences.attendances.index.select')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none">— Période —</SelectItem>
+                                <SelectItem value="none">{t('presences.attendances.index.period_dash')}</SelectItem>
                                 {periods.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="min-w-36">
-                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">Date</label>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('presences.attendances.index.date')}</label>
                         <Input type="date" value={date} onChange={e => { setDate(e.target.value); applyFilters({ date: e.target.value }); }} />
                     </div>
                     <div className="min-w-36">
-                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">Session</label>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('presences.attendances.index.session_label')}</label>
                         <Select value={session} onValueChange={v => { setSession(v); applyFilters({ session: v }); }}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="journee">Journée entière</SelectItem>
-                                <SelectItem value="matin">Matin</SelectItem>
-                                <SelectItem value="apres-midi">Après-midi</SelectItem>
+                                <SelectItem value="journee">{t('presences.session.journee')}</SelectItem>
+                                <SelectItem value="matin">{t('presences.session.matin')}</SelectItem>
+                                <SelectItem value="apres-midi">{t('presences.session.apres_midi')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -182,7 +184,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                 {(!classroomId || !periodId) && (
                     <div className="flex items-center gap-3 bg-amber-50 ring-1 ring-amber-200 rounded-2xl px-5 py-4">
                         <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
-                        <p className="text-sm text-amber-800">Sélectionnez une classe et une période pour commencer l'appel.</p>
+                        <p className="text-sm text-amber-800">{t('presences.attendances.index.need_filters')}</p>
                     </div>
                 )}
 
@@ -190,7 +192,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                 {existingAttendance && (
                     <div className="flex items-center gap-3 bg-emerald-50 ring-1 ring-emerald-200 rounded-2xl px-5 py-3">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                        <p className="text-sm text-emerald-800 font-medium">Appel déjà enregistré pour ce créneau — vous pouvez le modifier.</p>
+                        <p className="text-sm text-emerald-800 font-medium">{t('presences.attendances.index.existing')}</p>
                     </div>
                 )}
 
@@ -201,7 +203,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                             {(['present', 'absent', 'late', 'excused'] as StatusKey[]).map(s => (
                                 <div key={s} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl ring-1 text-sm font-medium ${STATUS_CONFIG[s].color}`}>
                                     <span className={`w-2 h-2 rounded-full ${STATUS_CONFIG[s].dot}`} />
-                                    {STATUS_CONFIG[s].label} :&nbsp;
+                                    {t('presences.status.' + s)} :&nbsp;
                                     <strong>{s === 'present' ? presentCount : s === 'absent' ? absentCount : s === 'late' ? lateCount : excusedCount}</strong>
                                     /{total}
                                 </div>
@@ -209,10 +211,10 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                         </div>
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" className="gap-1 text-xs text-emerald-700 border-emerald-200" onClick={() => setAll('present')}>
-                                <UserCheck className="w-3.5 h-3.5" /> Tous présents
+                                <UserCheck className="w-3.5 h-3.5" /> {t('presences.attendances.index.all_present')}
                             </Button>
                             <Button variant="outline" size="sm" className="gap-1 text-xs text-red-600 border-red-200" onClick={() => setAll('absent')}>
-                                <UserX className="w-3.5 h-3.5" /> Tous absents
+                                <UserX className="w-3.5 h-3.5" /> {t('presences.attendances.index.all_absent')}
                             </Button>
                         </div>
                     </div>
@@ -223,7 +225,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                     studentsWithStatus.length === 0 ? (
                         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 py-20 text-center text-gray-400">
                             <UserX className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                            <p>Aucun élève inscrit dans cette classe pour l'année active.</p>
+                            <p>{t('presences.attendances.index.empty')}</p>
                         </div>
                     ) : (
                         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
@@ -231,11 +233,11 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                                 <TableHeader className="bg-gray-50">
                                     <TableRow>
                                         <TableHead className="w-8">#</TableHead>
-                                        <TableHead>Matricule</TableHead>
-                                        <TableHead>Élève</TableHead>
-                                        <TableHead>Statut</TableHead>
-                                        <TableHead className="w-32">Retard (min)</TableHead>
-                                        <TableHead>Observation</TableHead>
+                                        <TableHead>{t('presences.attendances.index.col_matricule')}</TableHead>
+                                        <TableHead>{t('presences.attendances.index.col_student')}</TableHead>
+                                        <TableHead>{t('presences.attendances.index.col_status')}</TableHead>
+                                        <TableHead className="w-32">{t('presences.attendances.index.col_late')}</TableHead>
+                                        <TableHead>{t('presences.attendances.index.col_comment')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -254,7 +256,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                                                     {s.student.lastname} {s.student.firstname}
                                                     {s.has_permission && (
                                                         <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
-                                                            Permission {s.permission_dates}
+                                                            {t('presences.attendances.index.permission', { dates: s.permission_dates ?? '' })}
                                                         </span>
                                                     )}
                                                 </TableCell>
@@ -270,7 +272,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                                                                         : 'bg-gray-50 text-gray-500 ring-gray-200 hover:ring-gray-300'
                                                                 }`}
                                                             >
-                                                                {STATUS_CONFIG[st].label}
+                                                                {t('presences.status.' + st)}
                                                             </button>
                                                         ))}
                                                     </div>
@@ -290,7 +292,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                                                     <Input
                                                         value={rec?.comment ?? ''}
                                                         onChange={e => { setRecords(r => ({ ...r, [s.student_id]: { ...r[s.student_id], comment: e.target.value } })); setSaved(false); }}
-                                                        placeholder="Observation..."
+                                                        placeholder={t('presences.attendances.index.comment_ph')}
                                                         className="text-sm h-7 max-w-xs"
                                                     />
                                                 </TableCell>
@@ -304,7 +306,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                                 <Input
                                     value={notes}
                                     onChange={e => { setNotes(e.target.value); setSaved(false); }}
-                                    placeholder="Remarques générales sur l'appel..."
+                                    placeholder={t('presences.attendances.index.notes_ph')}
                                     className="max-w-sm text-sm"
                                 />
                                 <Button
@@ -313,7 +315,7 @@ export default function Index({ classrooms, periods, studentsWithStatus, existin
                                     disabled={saving}
                                 >
                                     {saved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                                    {saving ? 'Enregistrement...' : saved ? 'Enregistré !' : 'Enregistrer l\'appel'}
+                                    {saving ? t('presences.attendances.index.saving') : saved ? t('presences.attendances.index.saved') : t('presences.attendances.index.save')}
                                 </Button>
                             </div>
                         </div>

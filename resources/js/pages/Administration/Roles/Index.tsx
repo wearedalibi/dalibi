@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Role {
@@ -51,6 +52,7 @@ interface IndexProps {
 }
 
 export default function Index({ roles, message, filters }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -86,7 +88,7 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
     // Stat Cards
     const statsCards = [
         {
-            title: 'Rôles totaux',
+            title: t('administration.roles.index.stat_total'),
             value: roles.total,
             icon: Shield,
             bgColor: 'bg-blue-50',
@@ -94,8 +96,8 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
             borderColor: 'border-blue-200',
         },
         {
-            title: 'Moyenne de permissions',
-            value: roles.total > 0 
+            title: t('administration.roles.index.stat_avg_permissions'),
+            value: roles.total > 0
                 ? (roles.data.reduce((sum, role) => sum + role.permissions_count, 0) / roles.data.length).toFixed(0)
                 : 0,
             icon: CheckCircle2,
@@ -104,7 +106,7 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
             borderColor: 'border-green-200',
         },
         {
-            title: 'Page',
+            title: t('administration.roles.index.stat_page'),
             value: `${roles.current_page}/${roles.last_page}`,
             icon: Users,
             bgColor: 'bg-purple-50',
@@ -115,25 +117,25 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
 
     return (
         <AppLayout>
-            <Head title="Rôles" />
+            <Head title={t('administration.roles.index.head')} />
 
             <div className="space-y-6">
                 {/* Header avec titre et bouton */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Shield className="h-7 w-7 text-blue-600 shrink-0" />
-                            Rôles et Permissions
+                            {t('administration.roles.index.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les rôles et leurs permissions
+                            {t('administration.roles.index.subtitle')}
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         onClick={() => router.get(route('roles.create'))}
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Nouveau rôle
+                        {t('administration.roles.index.new')}
                     </Button>
                 </div>
 
@@ -178,7 +180,7 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400 group-focus-within:text-blue-600 transition" />
                                 <Input
                                     type="text"
-                                    placeholder="Rechercher un rôle par nom ou description..."
+                                    placeholder={t('administration.roles.index.search_ph')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -198,12 +200,12 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                                 className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shrink-0 transition"
                             >
                                 <Search className="w-4 h-4" />
-                                Rechercher
+                                {t('administration.roles.index.search')}
                             </Button>
                         </div>
                         {searchQuery && (
                             <p className="text-sm text-gray-500 mt-3">
-                                Résultats pour : <span className="font-semibold text-gray-700">« {searchQuery} »</span>
+                                {t('administration.roles.index.results_for')} <span className="font-semibold text-gray-700">« {searchQuery} »</span>
                             </p>
                         )}
                     </div>
@@ -215,10 +217,10 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow className="border-b border-gray-200">
-                                    <TableHead className="font-semibold text-gray-900">Nom</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Description</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Permissions</TableHead>
-                                    <TableHead className="text-center font-semibold text-gray-900 w-24">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.roles.index.col_name')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.roles.index.col_description')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('administration.roles.index.col_permissions')}</TableHead>
+                                    <TableHead className="text-center font-semibold text-gray-900 w-24">{t('administration.roles.index.col_actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -230,7 +232,7 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                                         >
                                             <div className="flex flex-col items-center gap-2">
                                                 <Shield className="w-12 h-12 text-gray-300" />
-                                                <p className="text-lg">Aucun rôle trouvé</p>
+                                                <p className="text-lg">{t('administration.roles.index.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -256,19 +258,19 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                                             <TableCell className="text-center">
                                                 <div className="flex gap-2 justify-center">
                                                     <IconButton
-                                                        label="Voir"
+                                                        label={t('administration.roles.index.view')}
                                                         icon={<Eye className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.visit(route('roles.show', role.id))}
                                                     />
                                                     <IconButton
-                                                        label="Modifier"
+                                                        label={t('administration.roles.index.edit')}
                                                         icon={<Pencil className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.get(route('roles.edit', role.id))}
                                                     />
                                                     <IconButton
-                                                        label="Supprimer"
+                                                        label={t('administration.roles.index.delete')}
                                                         icon={<Trash2 className="w-4 h-4" />}
                                                         className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                         onClick={() => setDeleteConfirm(role.id)}
@@ -288,7 +290,7 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-600">
-                                Affichage <span className="font-semibold">{roles.from}</span> à <span className="font-semibold">{roles.to}</span> sur <span className="font-semibold">{roles.total}</span> rôles
+                                {t('administration.roles.index.range', { from: roles.from, to: roles.to, total: roles.total })}
                             </p>
                             <div className="flex items-center gap-2">
                                 <Button
@@ -302,7 +304,7 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                                     className="border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <ChevronLeft className="w-4 h-4 mr-1" />
-                                    Précédent
+                                    {t('administration.roles.index.previous')}
                                 </Button>
                                 <div className="flex gap-1">
                                     {Array.from({ length: Math.min(5, roles.last_page) }, (_, i) => {
@@ -340,12 +342,12 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
                                     }, { preserveScroll: true })}
                                     className="border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Suivant
+                                    {t('administration.roles.index.next')}
                                     <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             </div>
                             <p className="text-sm text-gray-600">
-                                Page <span className="font-semibold">{roles.current_page}</span> sur <span className="font-semibold">{roles.last_page}</span>
+                                {t('administration.roles.index.page_of', { current: roles.current_page, last: roles.last_page })}
                             </p>
                         </div>
                     </div>
@@ -356,19 +358,19 @@ export default function Index({ roles, message, filters }: Readonly<IndexProps>)
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer le rôle</AlertDialogTitle>
+                        <AlertDialogTitle>{t('administration.roles.index.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer ce rôle ? Cette action est irréversible.
+                            {t('administration.roles.index.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3 justify-end">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('administration.roles.index.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('administration.roles.index.deleting') : t('administration.roles.index.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

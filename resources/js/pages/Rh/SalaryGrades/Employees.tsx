@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { useMoney } from '@/helpers/money';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Employee {
@@ -23,6 +24,7 @@ interface Props {
 
 export default function Employees({ grade, employees, assignedIds }: Readonly<Props>) {
     const fmt = useMoney();
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const { data, setData, put, processing } = useForm<{ employee_ids: string[] }>({ employee_ids: assignedIds });
 
@@ -57,7 +59,7 @@ export default function Employees({ grade, employees, assignedIds }: Readonly<Pr
 
     return (
         <AppLayout>
-            <Head title={`Affecter — ${grade.name}`} />
+            <Head title={t('rh.salary_grades.employees.head', { name: grade.name })} />
             <form onSubmit={submit} className="space-y-5 max-w-4xl">
                 {/* En-tête */}
                 <div className="flex items-center gap-4">
@@ -66,9 +68,9 @@ export default function Employees({ grade, employees, assignedIds }: Readonly<Pr
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                            <Users className="w-7 h-7 text-blue-600" /> Affecter des employés
+                            <Users className="w-7 h-7 text-blue-600" /> {t('rh.salary_grades.employees.title')}
                         </h1>
-                        <p className="text-sm text-gray-500 mt-0.5">Grille <strong>{grade.name}</strong> — salaire de base {fmt(grade.base_amount)}.</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{t('rh.salary_grades.employees.subtitle', { name: grade.name, base: fmt(grade.base_amount) })}</p>
                     </div>
                 </div>
 
@@ -76,9 +78,9 @@ export default function Employees({ grade, employees, assignedIds }: Readonly<Pr
                 <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 flex-wrap">
                     <div className="relative flex-1 min-w-56">
                         <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un employé…" className="pl-9" />
+                        <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('rh.salary_grades.employees.search_ph')} className="pl-9" />
                     </div>
-                    <span className="text-sm text-gray-500"><strong>{data.employee_ids.length}</strong> sélectionné(s)</span>
+                    <span className="text-sm text-gray-500">{t('rh.salary_grades.employees.selected', { count: data.employee_ids.length })}</span>
                 </div>
 
                 {/* Liste */}
@@ -86,13 +88,13 @@ export default function Employees({ grade, employees, assignedIds }: Readonly<Pr
                     {employees.length === 0 ? (
                         <div className="px-5 py-16 text-center text-gray-400">
                             <Users className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                            <p className="text-sm">Aucun employé actif</p>
+                            <p className="text-sm">{t('rh.salary_grades.employees.empty')}</p>
                         </div>
                     ) : (
                         <>
                             <label className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 bg-gray-50 cursor-pointer">
                                 <Checkbox checked={allFilteredSelected} onCheckedChange={toggleAllFiltered} />
-                                <span className="text-sm font-medium text-gray-600">Tout sélectionner{search ? ' (résultats filtrés)' : ''}</span>
+                                <span className="text-sm font-medium text-gray-600">{t('rh.salary_grades.employees.select_all')}{search ? t('rh.salary_grades.employees.select_all_filtered') : ''}</span>
                             </label>
                             <div className="divide-y divide-gray-50 max-h-[55vh] overflow-y-auto">
                                 {filtered.map(emp => {
@@ -106,13 +108,13 @@ export default function Employees({ grade, employees, assignedIds }: Readonly<Pr
                                             </div>
                                             {emp.current_grade && (
                                                 <span className={`text-xs px-2 py-0.5 rounded-full ${onOtherGrade ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-600'}`}>
-                                                    {onOtherGrade ? `Actuel : ${emp.current_grade.name}` : 'Sur cette grille'}
+                                                    {onOtherGrade ? t('rh.salary_grades.employees.current', { name: emp.current_grade.name }) : t('rh.salary_grades.employees.on_this_grade')}
                                                 </span>
                                             )}
                                         </label>
                                     );
                                 })}
-                                {filtered.length === 0 && <p className="px-5 py-8 text-center text-sm text-gray-400">Aucun résultat.</p>}
+                                {filtered.length === 0 && <p className="px-5 py-8 text-center text-sm text-gray-400">{t('rh.salary_grades.employees.no_result')}</p>}
                             </div>
                         </>
                     )}
@@ -120,14 +122,14 @@ export default function Employees({ grade, employees, assignedIds }: Readonly<Pr
 
                 {movingCount > 0 && (
                     <p className="text-sm text-amber-600 flex items-center gap-1.5">
-                        <AlertTriangle className="w-4 h-4" /> {movingCount} employé(s) seront déplacés depuis une autre grille.
+                        <AlertTriangle className="w-4 h-4" /> {t('rh.salary_grades.employees.moving', { count: movingCount })}
                     </p>
                 )}
-                <p className="text-xs text-gray-400">Les employés décochés qui étaient sur cette grille en seront détachés (repli sur leur salaire manuel).</p>
+                <p className="text-xs text-gray-400">{t('rh.salary_grades.employees.detach_note')}</p>
 
                 <div className="flex gap-3">
-                    <Button type="submit" disabled={processing} className="gap-2 bg-blue-600 hover:bg-blue-700"><Save className="w-4 h-4" /> {processing ? 'Enregistrement...' : 'Enregistrer les affectations'}</Button>
-                    <Button type="button" variant="outline" className="border-slate-200 text-gray-700" onClick={() => router.get(route('salary-grades.index'))}>Annuler</Button>
+                    <Button type="submit" disabled={processing} className="gap-2 bg-blue-600 hover:bg-blue-700"><Save className="w-4 h-4" /> {processing ? t('rh.salary_grades.employees.saving') : t('rh.salary_grades.employees.save')}</Button>
+                    <Button type="button" variant="outline" className="border-slate-200 text-gray-700" onClick={() => router.get(route('salary-grades.index'))}>{t('rh.salary_grades.employees.cancel')}</Button>
                 </div>
             </form>
         </AppLayout>

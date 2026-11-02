@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Subject {
@@ -80,6 +81,7 @@ interface IndexProps {
 }
 
 export default function Index({ assignments, academicYears, classrooms, filters }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -130,21 +132,21 @@ export default function Index({ assignments, academicYears, classrooms, filters 
 
     const statsCards = [
         {
-            title: 'Affectations totales',
+            title: t('administration.subject_assignments.index.stat_total'),
             value: assignments.total,
             icon: BookOpen,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Affectations actives',
+            title: t('administration.subject_assignments.index.stat_active'),
             value: activeAssignments,
             icon: CheckCircle2,
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
         {
-            title: 'Page',
+            title: t('administration.subject_assignments.index.stat_page'),
             value: `${assignments.current_page}/${assignments.last_page}`,
             icon: Users,
             bgColor: 'bg-purple-50',
@@ -154,17 +156,17 @@ export default function Index({ assignments, academicYears, classrooms, filters 
 
     return (
         <AppLayout>
-            <Head title="Affectations de matières" />
+            <Head title={t('administration.subject_assignments.index.head')} />
 
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ClipboardList className="h-7 w-7 text-blue-600 shrink-0" />
-                            Affectations de matières
+                            {t('administration.subject_assignments.index.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les affectations des enseignants aux matières et classes
+                            {t('administration.subject_assignments.index.subtitle')}
                         </p>
                     </div>
                     <div className="flex gap-3 shrink-0">
@@ -174,14 +176,14 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                             className="gap-2"
                         >
                             <BarChart3 className="w-5 h-5" />
-                            Statistiques des affectations
+                            {t('administration.subject_assignments.index.statistics')}
                         </Button>
                         <Button
                             onClick={() => router.get(route('subject-assignments.create'))}
                             className="gap-2 bg-blue-600 hover:bg-blue-700"
                         >
                             <Plus className="w-5 h-5" />
-                            Nouvelle affectation
+                            {t('administration.subject_assignments.index.new')}
                         </Button>
                     </div>
                 </div>
@@ -218,12 +220,12 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                     <div className="flex flex-wrap gap-3 items-center">
                         <select
                             id="filter_year"
-                            aria-label="Filtrer par année"
+                            aria-label={t('administration.subject_assignments.index.filter_year')}
                             value={yearFilter}
                             onChange={(e) => handleYearChange(e.target.value)}
                             className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         >
-                            <option value="">Toutes les années</option>
+                            <option value="">{t('administration.subject_assignments.index.all_years')}</option>
                             {academicYears.map((year) => (
                                 <option key={year.id} value={year.id}>{year.year}</option>
                             ))}
@@ -231,12 +233,12 @@ export default function Index({ assignments, academicYears, classrooms, filters 
 
                         <select
                             id="filter_class"
-                            aria-label="Filtrer par classe"
+                            aria-label={t('administration.subject_assignments.index.filter_class')}
                             value={classFilter}
                             onChange={(e) => handleClassChange(e.target.value)}
                             className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         >
-                            <option value="">Toutes les classes</option>
+                            <option value="">{t('administration.subject_assignments.index.all_classes')}</option>
                             {classrooms.map((classroom) => (
                                 <option key={classroom.id} value={classroom.id}>{classroom.name}</option>
                             ))}
@@ -246,7 +248,7 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Rechercher par matière, enseignant ou classe..."
+                                placeholder={t('administration.subject_assignments.index.search_ph')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={(e) => {
@@ -274,12 +276,12 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow className="border-b border-gray-200">
-                                <TableHead className="font-semibold text-gray-900">Matière</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Enseignant</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Classe</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Année</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Statut</TableHead>
-                                <TableHead className="text-center font-semibold text-gray-900 w-28">Actions</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.index.col_subject')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.index.col_teacher')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.index.col_class')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.index.col_year')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.index.col_status')}</TableHead>
+                                <TableHead className="text-center font-semibold text-gray-900 w-28">{t('administration.subject_assignments.index.col_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -288,7 +290,7 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                                     <TableCell colSpan={6} className="text-center py-12">
                                         <div className="flex flex-col items-center gap-2">
                                             <BookOpen className="w-12 h-12 text-gray-300" />
-                                            <p className="text-gray-500 font-medium">Aucune affectation trouvée</p>
+                                            <p className="text-gray-500 font-medium">{t('administration.subject_assignments.index.empty')}</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -323,30 +325,30 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                                             {assignment.active ? (
                                                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                                     <CheckCircle2 className="w-4 h-4" />
-                                                    Active
+                                                    {t('administration.subject_assignments.active')}
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                                                    Inactive
+                                                    {t('administration.subject_assignments.inactive')}
                                                 </span>
                                             )}
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <div className="flex gap-2 justify-center">
                                                 <IconButton
-                                                    label="Voir"
+                                                    label={t('administration.subject_assignments.index.view')}
                                                     icon={<Eye className="w-4 h-4" />}
                                                     onClick={() => router.get(route('subject-assignments.show', assignment.id))}
                                                     className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                 />
                                                 <IconButton
-                                                    label="Modifier"
+                                                    label={t('administration.subject_assignments.index.edit')}
                                                     icon={<Pencil className="w-4 h-4" />}
                                                     onClick={() => router.get(route('subject-assignments.edit', assignment.id))}
                                                     className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                 />
                                                 <IconButton
-                                                    label="Supprimer"
+                                                    label={t('administration.subject_assignments.index.delete')}
                                                     icon={<Trash2 className="w-4 h-4" />}
                                                     onClick={() => setDeleteConfirm(assignment.id)}
                                                     className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
@@ -365,7 +367,7 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                 {assignments.last_page > 1 && (
                     <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-4">
                         <div className="text-sm text-gray-600">
-                            Affichage de {assignments.from} à {assignments.to} sur {assignments.total} résultats
+                            {t('administration.subject_assignments.index.range', { from: assignments.from, to: assignments.to, total: assignments.total })}
                         </div>
                         <div className="flex items-center gap-2">
                             <Button
@@ -381,7 +383,7 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                                 className="gap-1"
                             >
                                 <ChevronLeft className="w-4 h-4" />
-                                Précédent
+                                {t('administration.subject_assignments.index.previous')}
                             </Button>
 
                             <div className="flex gap-1">
@@ -428,7 +430,7 @@ export default function Index({ assignments, academicYears, classrooms, filters 
                                 disabled={assignments.current_page === assignments.last_page}
                                 className="gap-1"
                             >
-                                Suivant
+                                {t('administration.subject_assignments.index.next')}
                                 <ChevronRight className="w-4 h-4" />
                             </Button>
                         </div>
@@ -440,19 +442,19 @@ export default function Index({ assignments, academicYears, classrooms, filters 
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('administration.subject_assignments.index.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette affectation ? Cette action est irréversible.
+                            {t('administration.subject_assignments.index.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-3">
-                        <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeleting}>{t('administration.subject_assignments.index.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('administration.subject_assignments.index.deleting') : t('administration.subject_assignments.index.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
