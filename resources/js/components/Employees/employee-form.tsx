@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from '@/helpers/i18n';
 
 export interface UserOption { id: string; name: string; email: string | null; }
 export interface ContractType { value: string; label: string; }
@@ -29,16 +30,16 @@ export interface EmployeeFormData {
 }
 
 const PAYMENT_METHODS = [
-    { value: 'CASH', label: 'Espèces' },
-    { value: 'MOBILE_MONEY', label: 'Mobile Money' },
-    { value: 'BANK_TRANSFER', label: 'Virement bancaire' },
-    { value: 'CHEQUE', label: 'Chèque' },
+    { value: 'CASH', key: 'method_cash' },
+    { value: 'MOBILE_MONEY', key: 'method_mobile_money' },
+    { value: 'BANK_TRANSFER', key: 'method_bank_transfer' },
+    { value: 'CHEQUE', key: 'method_cheque' },
 ];
 
 const STATUSES = [
-    { value: 'active', label: 'Actif' },
-    { value: 'suspended', label: 'Suspendu' },
-    { value: 'terminated', label: 'Sorti des effectifs' },
+    { value: 'active', key: 'status_active' },
+    { value: 'suspended', key: 'status_suspended' },
+    { value: 'terminated', key: 'status_terminated' },
 ];
 
 interface Props {
@@ -60,14 +61,16 @@ function Err({ msg }: { msg?: string }) {
 }
 
 export function EmployeeForm({ mode, data, errors, processing, contractTypes, salaryGrades = [], users = [], employeeName, onSubmit, onCancel, setData }: Readonly<Props>) {
+    const { t } = useTranslation();
+    const ef = (k: string, params?: Record<string, string | number>) => t('administration.users.employee_form.' + k, params);
     const selectedGrade = salaryGrades.find(g => g.id === data.salary_grade_id) ?? null;
     const isMoMo = data.payment_method === 'MOBILE_MONEY';
     const isBank = data.payment_method === 'BANK_TRANSFER' || data.payment_method === 'CHEQUE';
 
-    let submitLabel = 'Mettre à jour';
-    if (processing && mode === 'create') submitLabel = 'Enregistrement...';
-    else if (processing) submitLabel = 'Mise à jour...';
-    else if (mode === 'create') submitLabel = "Enregistrer l'employé";
+    let submitLabel = ef('update');
+    if (processing && mode === 'create') submitLabel = ef('saving');
+    else if (processing) submitLabel = ef('updating');
+    else if (mode === 'create') submitLabel = ef('create');
 
     return (
         <form onSubmit={onSubmit} className="space-y-6 max-w-4xl">
@@ -76,16 +79,16 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
             <div className="rounded-2xl bg-linear-to-br from-blue-50 to-white ring-1 ring-blue-100 p-6 shadow-sm space-y-4">
                 <div className="flex items-center gap-2 text-blue-700">
                     <UserCircle className="h-4 w-4" />
-                    <p className="text-sm font-semibold">Identité &amp; poste</p>
+                    <p className="text-sm font-semibold">{ef('identity')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {mode === 'create' ? (
                         <div>
-                            <label className="block text-sm font-medium text-gray-900 mb-2">Utilisateur associé *</label>
+                            <label className="block text-sm font-medium text-gray-900 mb-2">{ef('user')}</label>
                             <Select value={data.user_id} onValueChange={(v) => setData('user_id', v)}>
                                 <SelectTrigger className={errors.user_id ? 'border-red-500' : ''}>
-                                    <SelectValue placeholder="Sélectionner un utilisateur" />
+                                    <SelectValue placeholder={ef('select_user')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {users.map(u => (
@@ -97,34 +100,34 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
                         </div>
                     ) : (
                         <div>
-                            <label className="block text-sm font-medium text-gray-900 mb-2">Employé</label>
+                            <label className="block text-sm font-medium text-gray-900 mb-2">{ef('employee')}</label>
                             <Input value={employeeName ?? ''} disabled />
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Matricule employé</label>
-                        <Input value={data.employee_number} onChange={e => setData('employee_number', e.target.value)} placeholder="Auto si vide" className={errors.employee_number ? 'border-red-500' : ''} />
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('employee_number')}</label>
+                        <Input value={data.employee_number} onChange={e => setData('employee_number', e.target.value)} placeholder={ef('employee_number_ph')} className={errors.employee_number ? 'border-red-500' : ''} />
                         <Err msg={errors.employee_number} />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Poste *</label>
-                        <Input value={data.job_title} onChange={e => setData('job_title', e.target.value)} placeholder="Ex: Enseignant, Surveillant…" className={errors.job_title ? 'border-red-500' : ''} />
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('job')}</label>
+                        <Input value={data.job_title} onChange={e => setData('job_title', e.target.value)} placeholder={ef('job_ph')} className={errors.job_title ? 'border-red-500' : ''} />
                         <Err msg={errors.job_title} />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Département / service</label>
-                        <Input value={data.department} onChange={e => setData('department', e.target.value)} placeholder="Ex: Primaire, Administration…" />
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('department')}</label>
+                        <Input value={data.department} onChange={e => setData('department', e.target.value)} placeholder={ef('department_ph')} />
                         <Err msg={errors.department} />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Type de contrat *</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('contract')}</label>
                         <Select value={data.contract_type} onValueChange={(v) => setData('contract_type', v)}>
                             <SelectTrigger className={errors.contract_type ? 'border-red-500' : ''}>
-                                <SelectValue placeholder="Sélectionner" />
+                                <SelectValue placeholder={ef('select')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {contractTypes.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
@@ -134,13 +137,13 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Statut *</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('status')}</label>
                         <Select value={data.status} onValueChange={(v) => setData('status', v)}>
                             <SelectTrigger className={errors.status ? 'border-red-500' : ''}>
-                                <SelectValue placeholder="Sélectionner" />
+                                <SelectValue placeholder={ef('select')} />
                             </SelectTrigger>
                             <SelectContent>
-                                {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                                {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{ef(s.key)}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <Err msg={errors.status} />
@@ -152,39 +155,39 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
             <div className="rounded-2xl bg-linear-to-br from-emerald-50 to-white ring-1 ring-emerald-100 p-6 shadow-sm space-y-4">
                 <div className="flex items-center gap-2 text-emerald-700">
                     <Wallet className="h-4 w-4" />
-                    <p className="text-sm font-semibold">Rémunération &amp; paiement</p>
+                    <p className="text-sm font-semibold">{ef('remuneration')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Grille salariale</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('grade')}</label>
                         <Select value={data.salary_grade_id || 'none'} onValueChange={(v) => setData('salary_grade_id', v === 'none' ? '' : v)}>
-                            <SelectTrigger><SelectValue placeholder="Aucune (salaire saisi manuellement)" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={ef('no_grade_ph')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none">Aucune (hors grille)</SelectItem>
+                                <SelectItem value="none">{ef('no_grade')}</SelectItem>
                                 {salaryGrades.map(g => <SelectItem key={g.id} value={g.id}>{g.name} — {g.base_amount.toLocaleString('fr-FR')} F</SelectItem>)}
                             </SelectContent>
                         </Select>
-                        {selectedGrade && <p className="text-xs text-emerald-600 mt-1">Salaire de base : {selectedGrade.base_amount.toLocaleString('fr-FR')} F (issu de la grille)</p>}
+                        {selectedGrade && <p className="text-xs text-emerald-600 mt-1">{ef('grade_base', { amount: `${selectedGrade.base_amount.toLocaleString('fr-FR')} F` })}</p>}
                         <Err msg={errors.salary_grade_id} />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-900 mb-2">
-                            {selectedGrade ? 'Salaire de base (ignoré, grille active)' : 'Salaire de base mensuel (F) *'}
+                            {selectedGrade ? ef('base_ignored') : ef('base')}
                         </label>
-                        <Input type="number" min={0} value={data.base_salary} onChange={e => setData('base_salary', e.target.value)} placeholder="Ex: 120000" disabled={!!selectedGrade} className={errors.base_salary ? 'border-red-500' : ''} />
+                        <Input type="number" min={0} value={data.base_salary} onChange={e => setData('base_salary', e.target.value)} placeholder={ef('base_ph')} disabled={!!selectedGrade} className={errors.base_salary ? 'border-red-500' : ''} />
                         <Err msg={errors.base_salary} />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Méthode de paiement *</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('payment_method')}</label>
                         <Select value={data.payment_method} onValueChange={(v) => setData('payment_method', v)}>
                             <SelectTrigger className={errors.payment_method ? 'border-red-500' : ''}>
-                                <SelectValue placeholder="Sélectionner" />
+                                <SelectValue placeholder={ef('select')} />
                             </SelectTrigger>
                             <SelectContent>
-                                {PAYMENT_METHODS.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                                {PAYMENT_METHODS.map(p => <SelectItem key={p.value} value={p.value}>{ef(p.key)}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <Err msg={errors.payment_method} />
@@ -192,8 +195,8 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
 
                     {isMoMo && (
                         <div>
-                            <label className="block text-sm font-medium text-gray-900 mb-2">Numéro Mobile Money</label>
-                            <Input value={data.momo_number} onChange={e => setData('momo_number', e.target.value)} placeholder="Ex: +228 90 00 00 00" />
+                            <label className="block text-sm font-medium text-gray-900 mb-2">{ef('momo_number')}</label>
+                            <Input value={data.momo_number} onChange={e => setData('momo_number', e.target.value)} placeholder={ef('momo_number_ph')} />
                             <Err msg={errors.momo_number} />
                         </div>
                     )}
@@ -201,12 +204,12 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
                     {isBank && (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-gray-900 mb-2">Banque</label>
-                                <Input value={data.bank_name} onChange={e => setData('bank_name', e.target.value)} placeholder="Ex: Ecobank" />
+                                <label className="block text-sm font-medium text-gray-900 mb-2">{ef('bank_name')}</label>
+                                <Input value={data.bank_name} onChange={e => setData('bank_name', e.target.value)} placeholder={ef('bank_name_ph')} />
                                 <Err msg={errors.bank_name} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-900 mb-2">N° de compte</label>
+                                <label className="block text-sm font-medium text-gray-900 mb-2">{ef('bank_account')}</label>
                                 <Input value={data.bank_account} onChange={e => setData('bank_account', e.target.value)} />
                                 <Err msg={errors.bank_account} />
                             </div>
@@ -214,8 +217,8 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">N° CNSS</label>
-                        <Input value={data.cnss_number} onChange={e => setData('cnss_number', e.target.value)} placeholder="Sécurité sociale" />
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('cnss_number')}</label>
+                        <Input value={data.cnss_number} onChange={e => setData('cnss_number', e.target.value)} placeholder={ef('cnss_number_ph')} />
                         <Err msg={errors.cnss_number} />
                     </div>
                 </div>
@@ -225,22 +228,22 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
             <div className="rounded-2xl bg-linear-to-br from-slate-50 to-white ring-1 ring-slate-100 p-6 shadow-sm space-y-4">
                 <div className="flex items-center gap-2 text-slate-600">
                     <CalendarDays className="h-4 w-4" />
-                    <p className="text-sm font-semibold">Contrat &amp; notes</p>
+                    <p className="text-sm font-semibold">{ef('contract_notes')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Date d'embauche</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('hire_date')}</label>
                         <Input type="date" value={data.hire_date} onChange={e => setData('hire_date', e.target.value)} className={errors.hire_date ? 'border-red-500' : ''} />
                         <Err msg={errors.hire_date} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Date de fin (si applicable)</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('end_date')}</label>
                         <Input type="date" value={data.end_date} onChange={e => setData('end_date', e.target.value)} className={errors.end_date ? 'border-red-500' : ''} />
                         <Err msg={errors.end_date} />
                     </div>
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-900 mb-2">Notes</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">{ef('notes')}</label>
                         <textarea value={data.notes} onChange={e => setData('notes', e.target.value)} rows={3} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         <Err msg={errors.notes} />
                     </div>
@@ -249,7 +252,7 @@ export function EmployeeForm({ mode, data, errors, processing, contractTypes, sa
 
             <div className="flex gap-3">
                 <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700">{submitLabel}</Button>
-                <Button type="button" variant="outline" className="border-slate-200 text-gray-700" onClick={onCancel}>Annuler</Button>
+                <Button type="button" variant="outline" className="border-slate-200 text-gray-700" onClick={onCancel}>{ef('cancel')}</Button>
             </div>
         </form>
     );
