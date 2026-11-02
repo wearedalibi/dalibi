@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom { id: string; name: string; code: string; }
@@ -45,6 +46,8 @@ interface Props {
 }
 
 export default function Index({ classrooms, evaluations, periods, filters, activeYear }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [classroomId, setClassroomId] = useState(filters.classroomId ?? '');
     const [periodId, setPeriodId]       = useState(filters.periodId ?? '');
     const [editingId, setEditingId]     = useState<string | null>(null);
@@ -109,16 +112,16 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
 
     return (
         <AppLayout>
-            <Head title="Planning des examens" />
+            <Head title={t('examens.planning.head')} />
 
             <div className="w-full space-y-6">
 
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><CalendarRange className="h-7 w-7 text-blue-600 shrink-0" />Planning des examens</h1>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><CalendarRange className="h-7 w-7 text-blue-600 shrink-0" />{t('examens.planning.title')}</h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Planifiez et visualisez les dates d'examens par classe
+                            {t('examens.planning.subtitle')}
                         </p>
                     </div>
                     {classroomId && (
@@ -127,7 +130,7 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                             onClick={() => window.open(exportUrl(), '_blank')}
                         >
                             <Download className="w-4 h-4" />
-                            Exporter / Imprimer
+                            {t('examens.planning.export')}
                         </Button>
                     )}
                 </div>
@@ -135,13 +138,13 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                 {/* Filtres */}
                 <div className="rounded-2xl bg-slate-50/70 ring-1 ring-slate-200 shadow-sm p-4 flex flex-wrap gap-3 items-end">
                     <div className="flex-1 min-w-56">
-                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">Classe</label>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('examens.planning.class')}</label>
                         <Select value={classroomId || 'all'} onValueChange={onClassChange}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une classe" />
+                                <SelectValue placeholder={t('examens.planning.select_class')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">— Toutes les classes —</SelectItem>
+                                <SelectItem value="all">{t('examens.planning.all_classes')}</SelectItem>
                                 {classrooms.map(c => (
                                     <SelectItem key={c.id} value={c.id}>
                                         {c.name} ({c.code})
@@ -153,13 +156,13 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
 
                     {periods.length > 0 && (
                         <div className="min-w-48">
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Période</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('examens.planning.period')}</label>
                             <Select value={periodId || 'all'} onValueChange={onPeriodChange}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Toutes les périodes" />
+                                    <SelectValue placeholder={t('examens.planning.all_periods')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Toutes les périodes</SelectItem>
+                                    <SelectItem value="all">{t('examens.planning.all_periods')}</SelectItem>
                                     {periods.map(p => (
                                         <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                                     ))}
@@ -174,7 +177,7 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                     <div className="flex items-center gap-3 bg-amber-50 ring-1 ring-amber-200 rounded-2xl px-5 py-4">
                         <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
                         <p className="text-sm text-amber-800 font-medium">
-                            {noDateCount} évaluation{noDateCount > 1 ? 's' : ''} sans date planifiée. Cliquez sur <Pencil className="inline w-3 h-3" /> pour les planifier.
+                            {t('examens.planning.no_date_alert_1', { count: noDateCount })} <Pencil className="inline w-3 h-3" /> {t('examens.planning.no_date_alert_2')}
                         </p>
                     </div>
                 )}
@@ -183,9 +186,9 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                 {!classroomId ? (
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 py-20 text-center text-gray-400">
                         <Calendar className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                        <p className="text-lg font-medium">Sélectionnez une classe pour afficher son planning</p>
+                        <p className="text-lg font-medium">{t('examens.planning.select_prompt')}</p>
                         {classrooms.length === 0 && (
-                            <p className="mt-2 text-sm">Aucune classe avec des évaluations déployées pour l'année active.</p>
+                            <p className="mt-2 text-sm">{t('examens.planning.no_classes')}</p>
                         )}
                     </div>
                 ) : (
@@ -195,7 +198,7 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                                 <ListChecks className="w-5 h-5 text-blue-500" />
                                 {selectedClassroom ? `${selectedClassroom.name} (${selectedClassroom.code})` : ''}
                                 <span className="ml-2 bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
-                                    {evaluations.length} évaluation{evaluations.length > 1 ? 's' : ''}
+                                    {t('examens.planning.count', { count: evaluations.length })}
                                 </span>
                             </h2>
                             <span className="text-xs text-gray-400">{activeYear?.year}</span>
@@ -204,21 +207,21 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                         {evaluations.length === 0 ? (
                             <div className="py-16 text-center text-gray-400">
                                 <ClipboardList className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                <p>Aucune évaluation pour cette classe{periodId ? ' et cette période' : ''}.</p>
+                                <p>{t('examens.planning.empty_base')}{periodId ? t('examens.planning.and_period') : ''}.</p>
                             </div>
                         ) : (
                             <Table>
                                 <TableHeader className="bg-gray-50">
                                     <TableRow>
-                                        <TableHead>Matière</TableHead>
-                                        <TableHead>Modèle</TableHead>
-                                        <TableHead>Période</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead className="text-center">Coeff.</TableHead>
-                                        <TableHead className="w-64">Date &amp; heure</TableHead>
-                                        <TableHead>Statut</TableHead>
-                                        <TableHead className="text-center">Progression</TableHead>
-                                        <TableHead className="text-center w-24">Actions</TableHead>
+                                        <TableHead>{t('examens.planning.col_subject')}</TableHead>
+                                        <TableHead>{t('examens.planning.col_template')}</TableHead>
+                                        <TableHead>{t('examens.planning.col_period')}</TableHead>
+                                        <TableHead>{t('examens.planning.col_type')}</TableHead>
+                                        <TableHead className="text-center">{t('examens.planning.col_coeff')}</TableHead>
+                                        <TableHead className="w-64">{t('examens.planning.col_datetime')}</TableHead>
+                                        <TableHead>{t('examens.planning.col_status')}</TableHead>
+                                        <TableHead className="text-center">{t('examens.planning.col_progress')}</TableHead>
+                                        <TableHead className="text-center w-24">{t('examens.planning.col_actions')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -255,19 +258,19 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                                                                 onChange={e => setEditTime(e.target.value)}
                                                                 disabled={!editDate}
                                                                 className="h-7 text-xs w-24"
-                                                                title={editDate ? 'Heure' : 'Renseignez d\'abord la date'}
+                                                                title={editDate ? t('examens.planning.time') : t('examens.planning.date_first')}
                                                             />
                                                             <button
                                                                 onClick={() => saveDate(ev.id)}
                                                                 className="text-emerald-600 hover:text-emerald-700"
-                                                                title="Valider"
+                                                                title={t('examens.planning.validate')}
                                                             >
                                                                 <CheckCircle2 className="w-4 h-4" />
                                                             </button>
                                                             <button
                                                                 onClick={cancelEdit}
                                                                 className="text-gray-400 hover:text-gray-600"
-                                                                title="Annuler"
+                                                                title={t('common.actions.cancel')}
                                                             >
                                                                 <X className="w-4 h-4" />
                                                             </button>
@@ -283,7 +286,7 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                                                                 <span className="flex items-center gap-2">
                                                                     <span className="inline-flex items-center gap-1">
                                                                         <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                                                                        {new Date(ev.date).toLocaleDateString('fr-FR')}
+                                                                        {new Date(ev.date).toLocaleDateString(dateLocale)}
                                                                     </span>
                                                                     {ev.start_time && (
                                                                         <span className="inline-flex items-center gap-1 text-blue-600 font-medium">
@@ -293,7 +296,7 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                                                                     )}
                                                                 </span>
                                                             ) : (
-                                                                <span className="italic text-xs">Non planifiée</span>
+                                                                <span className="italic text-xs">{t('examens.planning.not_scheduled')}</span>
                                                             )}
                                                             <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
                                                         </button>
@@ -306,7 +309,7 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                                                             : 'bg-amber-100 text-amber-700'
                                                     }`}>
                                                         {ev.status === 'completed' && <CheckCircle2 className="w-3 h-3" />}
-                                                        {ev.status === 'completed' ? 'Terminée' : 'Planifiée'}
+                                                        {ev.status === 'completed' ? t('examens.planning.status_completed') : t('examens.planning.status_scheduled')}
                                                     </span>
                                                 </TableCell>
                                                 <TableCell>
@@ -325,14 +328,14 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                                                         <button
                                                             onClick={() => startEdit(ev)}
                                                             className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition"
-                                                            title="Modifier / reporter"
+                                                            title={t('examens.planning.edit_reschedule')}
                                                         >
                                                             <Pencil className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => setDeleteTarget(ev)}
                                                             className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition"
-                                                            title="Supprimer"
+                                                            title={t('common.actions.delete')}
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
@@ -352,14 +355,14 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
             <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette planification ?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('examens.planning.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
                             {deleteTarget && (
                                 <>
-                                    L'évaluation « {deleteTarget.template.name} » en {deleteTarget.class_subject.subject.name} sera retirée du planning.
+                                    {t('examens.planning.delete_desc_1', { template: deleteTarget.template.name, subject: deleteTarget.class_subject.subject.name })}
                                     {deleteTarget.marks_count > 0 && (
                                         <span className="block mt-2 text-red-600 font-medium">
-                                            ⚠ {deleteTarget.graded_count} note(s) saisie(s) seront également supprimées. Cette action est irréversible.
+                                            ⚠ {t('examens.planning.delete_desc_warn', { count: deleteTarget.graded_count })}
                                         </span>
                                     )}
                                 </>
@@ -367,9 +370,9 @@ export default function Index({ classrooms, evaluations, periods, filters, activ
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={confirmDelete}>
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
