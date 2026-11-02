@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student { id: string; firstname: string; lastname: string; matricule: string; }
@@ -38,14 +39,14 @@ interface Props {
 }
 
 const STATUS = {
-    pending:  { label: 'En attente', color: 'bg-amber-100 text-amber-700',   icon: Clock },
-    approved: { label: 'Approuvée',  color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle2 },
-    rejected: { label: 'Rejetée',    color: 'bg-red-100 text-red-700',       icon: XCircle },
+    pending:  { color: 'bg-amber-100 text-amber-700',   icon: Clock },
+    approved: { color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle2 },
+    rejected: { color: 'bg-red-100 text-red-700',       icon: XCircle },
 } as const;
 
-const REASON: Record<string, string> = { medical: 'Médical', familial: 'Familial', autre: 'Autre' };
-
 export default function Index({ permissions, stats, filters }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [search, setSearch]     = useState(filters.search ?? '');
     const [status, setStatus]     = useState(filters.status ?? 'all');
     const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -67,27 +68,27 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
 
     return (
         <AppLayout>
-            <Head title="Demandes de permission" />
+            <Head title={t('presences.permissions.index.head')} />
             <div className="w-full space-y-6">
 
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ShieldCheck className="h-7 w-7 text-blue-600 shrink-0" />Demandes de permission</h1>
-                        <p className="mt-2 text-lg text-gray-600">Gérez les demandes d'absence justifiée</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ShieldCheck className="h-7 w-7 text-blue-600 shrink-0" />{t('presences.permissions.index.head')}</h1>
+                        <p className="mt-2 text-lg text-gray-600">{t('presences.permissions.index.subtitle')}</p>
                     </div>
                     <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => router.get(route('absence-permissions.create'))}>
-                        <Plus className="w-4 h-4" /> Nouvelle demande
+                        <Plus className="w-4 h-4" /> {t('presences.permissions.index.new')}
                     </Button>
                 </div>
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { label: 'Total',      value: stats.total,    icon: Clock,        color: 'text-gray-600',    bg: 'bg-gray-50 ring-gray-100',       filter: 'all' },
-                        { label: 'En attente', value: stats.pending,  icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50 ring-amber-100',     filter: 'pending' },
-                        { label: 'Approuvées', value: stats.approved, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 ring-emerald-100', filter: 'approved' },
-                        { label: 'Rejetées',   value: stats.rejected, icon: XCircle,      color: 'text-red-600',     bg: 'bg-red-50 ring-red-100',         filter: 'rejected' },
+                        { label: t('presences.permissions.index.total'),    value: stats.total,    icon: Clock,        color: 'text-gray-600',    bg: 'bg-gray-50 ring-gray-100',       filter: 'all' },
+                        { label: t('presences.permissions.index.pending'),  value: stats.pending,  icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50 ring-amber-100',     filter: 'pending' },
+                        { label: t('presences.permissions.index.approved'), value: stats.approved, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 ring-emerald-100', filter: 'approved' },
+                        { label: t('presences.permissions.index.rejected'), value: stats.rejected, icon: XCircle,      color: 'text-red-600',     bg: 'bg-red-50 ring-red-100',         filter: 'rejected' },
                     ].map(card => {
                         const Icon = card.icon;
                         return (
@@ -112,7 +113,7 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && apply()}
-                            placeholder="Nom ou matricule de l'élève..."
+                            placeholder={t('presences.permissions.index.search_ph')}
                             className="pl-9"
                         />
                         {search && (
@@ -122,15 +123,15 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                         )}
                     </div>
                     <Select value={status} onValueChange={v => { setStatus(v); apply({ status: v }); }}>
-                        <SelectTrigger className="w-44"><SelectValue placeholder="Statut" /></SelectTrigger>
+                        <SelectTrigger className="w-44"><SelectValue placeholder={t('presences.permissions.index.col_status')} /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Tous les statuts</SelectItem>
-                            <SelectItem value="pending">En attente</SelectItem>
-                            <SelectItem value="approved">Approuvées</SelectItem>
-                            <SelectItem value="rejected">Rejetées</SelectItem>
+                            <SelectItem value="all">{t('presences.permissions.index.all_statuses')}</SelectItem>
+                            <SelectItem value="pending">{t('presences.permissions.index.pending')}</SelectItem>
+                            <SelectItem value="approved">{t('presences.permissions.index.approved')}</SelectItem>
+                            <SelectItem value="rejected">{t('presences.permissions.index.rejected')}</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">Filtrer</Button>
+                    <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">{t('presences.permissions.index.filter')}</Button>
                 </div>
 
                 {/* Table */}
@@ -138,13 +139,13 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Élève</TableHead>
-                                <TableHead>Motif</TableHead>
-                                <TableHead>Période</TableHead>
-                                <TableHead>Durée</TableHead>
-                                <TableHead>Demandé par</TableHead>
-                                <TableHead>Statut</TableHead>
-                                <TableHead className="text-center w-28">Actions</TableHead>
+                                <TableHead>{t('presences.permissions.index.col_student')}</TableHead>
+                                <TableHead>{t('presences.permissions.index.col_reason')}</TableHead>
+                                <TableHead>{t('presences.permissions.index.col_period')}</TableHead>
+                                <TableHead>{t('presences.permissions.index.col_duration')}</TableHead>
+                                <TableHead>{t('presences.permissions.index.col_requested_by')}</TableHead>
+                                <TableHead>{t('presences.permissions.index.col_status')}</TableHead>
+                                <TableHead className="text-center w-28">{t('presences.permissions.index.col_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -152,7 +153,7 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                                 <TableRow>
                                     <TableCell colSpan={7} className="py-16 text-center text-gray-400">
                                         <Clock className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                                        Aucune demande de permission.
+                                        {t('presences.permissions.index.empty')}
                                     </TableCell>
                                 </TableRow>
                             ) : permissions.data.map(p => {
@@ -165,16 +166,16 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                                             <div className="font-medium text-gray-900 text-sm">{p.student.lastname} {p.student.firstname}</div>
                                             <div className="text-xs text-gray-400 font-mono">{p.student.matricule}</div>
                                         </TableCell>
-                                        <TableCell className="text-sm text-gray-600">{REASON[p.reason] ?? p.reason}</TableCell>
+                                        <TableCell className="text-sm text-gray-600">{t('presences.reason.' + p.reason)}</TableCell>
                                         <TableCell className="text-sm text-gray-600">
-                                            {new Date(p.start_date).toLocaleDateString('fr-FR')} → {new Date(p.end_date).toLocaleDateString('fr-FR')}
+                                            {new Date(p.start_date).toLocaleDateString(dateLocale)} → {new Date(p.end_date).toLocaleDateString(dateLocale)}
                                         </TableCell>
-                                        <TableCell className="text-sm font-medium text-gray-700">{days} jour{days > 1 ? 's' : ''}</TableCell>
+                                        <TableCell className="text-sm font-medium text-gray-700">{t(days > 1 ? 'presences.permissions.index.day_other' : 'presences.permissions.index.day_one', { count: days })}</TableCell>
                                         <TableCell className="text-sm text-gray-500">{p.requested_by?.name ?? '—'}</TableCell>
                                         <TableCell>
                                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.color}`}>
                                                 <Icon className="w-3 h-3" />
-                                                {cfg.label}
+                                                {t('presences.permissions.status.' + p.status)}
                                             </span>
                                         </TableCell>
                                         <TableCell>
@@ -183,7 +184,7 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                                                     variant="outline" size="sm" className="text-xs gap-1"
                                                     onClick={() => router.get(route('absence-permissions.show', p.id))}
                                                 >
-                                                    {p.status === 'pending' ? 'Réviser' : 'Voir'}
+                                                    {p.status === 'pending' ? t('presences.permissions.index.review') : t('presences.permissions.index.view')}
                                                 </Button>
                                                 {p.status !== 'approved' && (
                                                     <Button
@@ -203,19 +204,19 @@ export default function Index({ permissions, stats, filters }: Readonly<Props>) 
                     </Table>
                 </div>
 
-                <p className="text-sm text-gray-400 text-right">{permissions.total} demande(s) au total</p>
+                <p className="text-sm text-gray-400 text-right">{t('presences.permissions.index.total_count', { count: permissions.total })}</p>
             </div>
 
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
-                        <AlertDialogDescription>Cette action est irréversible.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('presences.permissions.index.delete_title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('presences.permissions.index.delete_desc')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && onDelete(deleteId)}>
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
