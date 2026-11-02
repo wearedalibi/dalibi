@@ -10,6 +10,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Teacher {
@@ -50,6 +51,7 @@ interface StatisticsProps {
 }
 
 export default function Statistics({ teachers, academicYears, filters, teacher, assignments, summary }: Readonly<StatisticsProps>) {
+    const { t } = useTranslation();
     const yearId = filters.academic_year_id ?? '';
     const teacherId = filters.teacher_id ?? '';
 
@@ -66,15 +68,15 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
         : '';
 
     const statsCards = [
-        { title: 'Affectations', value: summary.total, icon: BookOpen, bg: 'bg-blue-50', text: 'text-blue-600' },
-        { title: 'Actives', value: summary.active, icon: CheckCircle2, bg: 'bg-green-50', text: 'text-green-600' },
-        { title: 'Matières', value: summary.subjects, icon: GraduationCap, bg: 'bg-purple-50', text: 'text-purple-600' },
-        { title: 'Classes', value: summary.classes, icon: Users, bg: 'bg-orange-50', text: 'text-orange-600' },
+        { title: t('administration.subject_assignments.statistics.kpi_assignments'), value: summary.total, icon: BookOpen, bg: 'bg-blue-50', text: 'text-blue-600' },
+        { title: t('administration.subject_assignments.statistics.kpi_active'), value: summary.active, icon: CheckCircle2, bg: 'bg-green-50', text: 'text-green-600' },
+        { title: t('administration.subject_assignments.statistics.kpi_subjects'), value: summary.subjects, icon: GraduationCap, bg: 'bg-purple-50', text: 'text-purple-600' },
+        { title: t('administration.subject_assignments.statistics.kpi_classes'), value: summary.classes, icon: Users, bg: 'bg-orange-50', text: 'text-orange-600' },
     ];
 
     return (
         <AppLayout>
-            <Head title="Statistiques des affectations" />
+            <Head title={t('administration.subject_assignments.statistics.head')} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -90,9 +92,9 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
                                 <BarChart3 className="h-7 w-7 text-blue-600 shrink-0" />
-                                Statistiques des affectations
+                                {t('administration.subject_assignments.statistics.title')}
                             </h1>
-                            <p className="mt-1 text-gray-600">Affectations d'un enseignant pour une année académique</p>
+                            <p className="mt-1 text-gray-600">{t('administration.subject_assignments.statistics.subtitle')}</p>
                         </div>
                     </div>
                     <Button
@@ -101,7 +103,7 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                         className="gap-2 bg-blue-600 hover:bg-blue-700 shrink-0 disabled:opacity-40"
                     >
                         <Download className="w-4 h-4" />
-                        Exporter (PDF)
+                        {t('administration.subject_assignments.statistics.export')}
                     </Button>
                 </div>
 
@@ -109,7 +111,7 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                 <div className="bg-white rounded-lg shadow-sm p-4">
                     <div className="flex flex-wrap gap-3 items-center">
                         <div>
-                            <label htmlFor="stat_year" className="block text-xs font-medium text-gray-500 mb-1">Année académique</label>
+                            <label htmlFor="stat_year" className="block text-xs font-medium text-gray-500 mb-1">{t('administration.subject_assignments.statistics.year')}</label>
                             <select
                                 id="stat_year"
                                 value={yearId}
@@ -122,14 +124,14 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                             </select>
                         </div>
                         <div className="min-w-[260px]">
-                            <label htmlFor="stat_teacher" className="block text-xs font-medium text-gray-500 mb-1">Enseignant</label>
+                            <label htmlFor="stat_teacher" className="block text-xs font-medium text-gray-500 mb-1">{t('administration.subject_assignments.statistics.teacher')}</label>
                             <select
                                 id="stat_teacher"
                                 value={teacherId}
                                 onChange={(e) => apply({ teacher_id: e.target.value })}
                                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
-                                <option value="">— Sélectionner un enseignant —</option>
+                                <option value="">{t('administration.subject_assignments.statistics.select_teacher')}</option>
                                 {teachers.map((t) => (
                                     <option key={t.id} value={t.id}>{t.firstname} {t.lastname}</option>
                                 ))}
@@ -141,7 +143,7 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                 {!teacherId ? (
                     <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                         <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500 font-medium">Sélectionnez un enseignant pour voir ses affectations.</p>
+                        <p className="text-gray-500 font-medium">{t('administration.subject_assignments.statistics.select_prompt')}</p>
                     </div>
                 ) : (
                     <>
@@ -179,9 +181,9 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                                 <Table>
                                     <TableHeader className="bg-gray-50">
                                         <TableRow className="border-b border-gray-200">
-                                            <TableHead className="font-semibold text-gray-900">Matière</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Classe</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Statut</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.statistics.col_subject')}</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.statistics.col_class')}</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('administration.subject_assignments.statistics.col_status')}</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -190,7 +192,7 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                                                 <TableCell colSpan={3} className="text-center py-12">
                                                     <div className="flex flex-col items-center gap-2">
                                                         <BookOpen className="w-12 h-12 text-gray-300" />
-                                                        <p className="text-gray-500 font-medium">Aucune affectation pour cet enseignant sur cette année.</p>
+                                                        <p className="text-gray-500 font-medium">{t('administration.subject_assignments.statistics.empty')}</p>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -203,11 +205,11 @@ export default function Statistics({ teachers, academicYears, filters, teacher, 
                                                         {a.active ? (
                                                             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                                                 <CheckCircle2 className="w-4 h-4" />
-                                                                Active
+                                                                {t('administration.subject_assignments.active')}
                                                             </span>
                                                         ) : (
                                                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                                                                Inactive
+                                                                {t('administration.subject_assignments.inactive')}
                                                             </span>
                                                         )}
                                                     </TableCell>
