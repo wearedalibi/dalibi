@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Permission {
@@ -17,6 +18,7 @@ interface CreateProps {
 }
 
 export default function Create({ permissions }: Readonly<CreateProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -52,7 +54,7 @@ export default function Create({ permissions }: Readonly<CreateProps>) {
 
     return (
         <AppLayout>
-            <Head title="Créer un rôle" />
+            <Head title={t('administration.roles.create.head')} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -65,7 +67,7 @@ export default function Create({ permissions }: Readonly<CreateProps>) {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Créer un nouveau rôle
+                            {t('administration.roles.create.title')}
                         </h1>
                     </div>
                 </div>
@@ -77,14 +79,14 @@ export default function Create({ permissions }: Readonly<CreateProps>) {
                             {/* Nom du rôle */}
                             <div className="bg-white rounded-lg border p-6">
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Nom du rôle *
+                                    {t('administration.roles.create.name')}
                                 </label>
                                 <Input
                                     id="name"
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                    placeholder="Ex: Administrateur"
+                                    placeholder={t('administration.roles.create.name_ph')}
                                     className={errors.name ? 'border-red-500' : ''}
                                 />
                                 {errors.name && (
@@ -95,13 +97,13 @@ export default function Create({ permissions }: Readonly<CreateProps>) {
                             {/* Description */}
                             <div className="bg-white rounded-lg border p-6">
                                 <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Description
+                                    {t('administration.roles.create.description')}
                                 </label>
                                 <textarea
                                     id="description"
                                     value={formData.description}
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                    placeholder="Décrivez le rôle..."
+                                    placeholder={t('administration.roles.create.description_ph')}
                                     rows={4}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
@@ -114,14 +116,14 @@ export default function Create({ permissions }: Readonly<CreateProps>) {
                                     disabled={isSubmitting}
                                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                                 >
-                                    {isSubmitting ? 'Création...' : 'Créer'}
+                                    {isSubmitting ? t('administration.roles.create.creating') : t('administration.roles.create.create')}
                                 </Button>
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.get(route('roles.index'))}
                                 >
-                                    Annuler
+                                    {t('administration.roles.create.cancel')}
                                 </Button>
                             </div>
                         </div>
@@ -130,7 +132,7 @@ export default function Create({ permissions }: Readonly<CreateProps>) {
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-lg border p-6">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                    Permissions ({formData.permissions.length})
+                                    {t('administration.roles.create.permissions', { count: formData.permissions.length })}
                                 </h2>
                                 {errors.permissions && (
                                     <p className="text-red-600 text-sm mb-4">{errors.permissions}</p>
