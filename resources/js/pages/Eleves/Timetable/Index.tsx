@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Option { id: string; name: string; code?: string; }
@@ -43,6 +44,7 @@ const emptyForm = {
 };
 
 export default function Index({ classrooms, subjects, teachers, slots, days, filters, canManage }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [classId, setClassId] = useState(filters.class_id ?? '');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState(false);
@@ -91,16 +93,16 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
 
     return (
         <AppLayout>
-            <Head title="Emploi du temps" />
+            <Head title={t('timetable.head')} />
             <div className="w-full space-y-6">
 
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><CalendarRange className="h-7 w-7 text-blue-600 shrink-0" />Emploi du temps</h1>
-                        <p className="mt-2 text-gray-500">Organisez les créneaux de cours par classe pour l'année active.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><CalendarRange className="h-7 w-7 text-blue-600 shrink-0" />{t('timetable.title')}</h1>
+                        <p className="mt-2 text-gray-500">{t('timetable.subtitle')}</p>
                     </div>
                     <Button variant="outline" className="gap-2 shrink-0" onClick={() => router.get(route('timetable.teacher'))}>
-                        <User className="w-4 h-4" /> Vue par enseignant
+                        <User className="w-4 h-4" /> {t('timetable.teacher_view')}
                     </Button>
                 </div>
 
@@ -109,7 +111,7 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
                     <div className="rounded-2xl bg-slate-50/70 ring-1 ring-slate-200 shadow-sm p-4 flex items-center gap-3 flex-1 min-w-64 max-w-md">
                         <CalendarRange className="w-5 h-5 text-gray-400" />
                         <Select value={classId} onValueChange={selectClass}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choisir une classe" /></SelectTrigger>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder={t('timetable.choose_class')} /></SelectTrigger>
                             <SelectContent>
                                 {classrooms.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
@@ -117,7 +119,7 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
                     </div>
                     {classId && (
                         <Button variant="outline" className="gap-2" onClick={() => window.open(route('timetable.export', classId), '_blank')}>
-                            <Download className="w-4 h-4" /> Exporter en PDF
+                            <Download className="w-4 h-4" /> {t('timetable.export_pdf')}
                         </Button>
                     )}
                 </div>
@@ -125,7 +127,7 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
                 {!classId ? (
                     <div className="rounded-2xl ring-1 ring-dashed ring-gray-200 p-12 text-center text-gray-400">
                         <CalendarRange className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                        Sélectionnez une classe pour afficher son emploi du temps.
+                        {t('timetable.select_class_prompt')}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -136,7 +138,7 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="text-sm font-semibold text-gray-900">{days[day]}</h3>
                                         {canManage && (
-                                            <button onClick={() => openCreate(day)} className="text-blue-500 hover:text-blue-700" title="Ajouter un créneau">
+                                            <button onClick={() => openCreate(day)} className="text-blue-500 hover:text-blue-700" title={t('timetable.add_slot')}>
                                                 <Plus className="w-4 h-4" />
                                             </button>
                                         )}
@@ -157,7 +159,7 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
                                                         </div>
                                                     )}
                                                 </div>
-                                                <p className="text-sm font-medium text-gray-900 mt-1">{slot.subject_name ?? 'Matière'}</p>
+                                                <p className="text-sm font-medium text-gray-900 mt-1">{slot.subject_name ?? t('timetable.subject_fallback')}</p>
                                                 {slot.teacher_name && <p className="text-xs text-gray-500 inline-flex items-center gap-1 mt-0.5"><User className="w-3 h-3" />{slot.teacher_name}</p>}
                                                 {slot.room && <p className="text-xs text-gray-400 inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{slot.room}</p>}
                                             </div>
@@ -173,10 +175,10 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
             {/* Dialog créneau */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>{editing ? 'Modifier le créneau' : 'Nouveau créneau'}</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>{editing ? t('timetable.edit_slot') : t('timetable.new_slot')}</DialogTitle></DialogHeader>
                     <form onSubmit={submit} className="space-y-4 py-2">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Jour *</label>
+                            <label className="text-sm font-medium text-gray-700">{t('timetable.day')} *</label>
                             <Select value={String(data.day_of_week)} onValueChange={v => setData('day_of_week', Number(v))}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -187,20 +189,20 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
 
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Début *</label>
+                                <label className="text-sm font-medium text-gray-700">{t('timetable.start')} *</label>
                                 <Input type="time" value={data.start_time} onChange={e => setData('start_time', e.target.value)} />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Fin *</label>
+                                <label className="text-sm font-medium text-gray-700">{t('timetable.end')} *</label>
                                 <Input type="time" value={data.end_time} onChange={e => setData('end_time', e.target.value)} className={errors.end_time ? 'border-red-400' : ''} />
                                 {errors.end_time && <p className="text-xs text-red-500">{errors.end_time}</p>}
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Matière</label>
+                            <label className="text-sm font-medium text-gray-700">{t('timetable.subject')}</label>
                             <Select value={data.subject_id || 'none'} onValueChange={v => setData('subject_id', v === 'none' ? '' : v)}>
-                                <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('timetable.choose')} /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="none">—</SelectItem>
                                     {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
@@ -209,24 +211,24 @@ export default function Index({ classrooms, subjects, teachers, slots, days, fil
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Enseignant</label>
+                            <label className="text-sm font-medium text-gray-700">{t('timetable.teacher')}</label>
                             <Select value={data.teacher_id || 'none'} onValueChange={v => setData('teacher_id', v === 'none' ? '' : v)}>
-                                <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('timetable.choose')} /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="none">—</SelectItem>
-                                    {teachers.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                                    {teachers.map(tc => <SelectItem key={tc.id} value={tc.id}>{tc.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Salle</label>
-                            <Input value={data.room} onChange={e => setData('room', e.target.value)} placeholder="Ex: Salle 12" />
+                            <label className="text-sm font-medium text-gray-700">{t('timetable.room')}</label>
+                            <Input value={data.room} onChange={e => setData('room', e.target.value)} placeholder={t('timetable.room_ph')} />
                         </div>
 
                         <div className="flex justify-end gap-2 pt-2">
-                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Annuler</Button>
-                            <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700">{editing ? 'Mettre à jour' : 'Ajouter'}</Button>
+                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t('timetable.cancel')}</Button>
+                            <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700">{editing ? t('timetable.update') : t('timetable.add')}</Button>
                         </div>
                     </form>
                 </DialogContent>
