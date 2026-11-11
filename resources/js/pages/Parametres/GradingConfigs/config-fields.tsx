@@ -2,6 +2,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTranslation } from '@/helpers/i18n';
 
 export interface School { id: string; name: string }
 export interface ClassroomType { id: string; name: string; period_system: string }
@@ -19,12 +20,7 @@ export interface GradingConfigForm {
     mentions: MentionRow[];
 }
 
-const PRECISION_OPTIONS = [
-    { value: '0', label: 'Entier (ex : 12)' },
-    { value: '1', label: '1 décimale (ex : 12,5)' },
-    { value: '2', label: '2 décimales (ex : 12,50)' },
-    { value: '3', label: '3 décimales (ex : 12,500)' },
-];
+const PRECISION_VALUES = ['0', '1', '2', '3'] as const;
 
 const ALL = '__all__';
 
@@ -37,6 +33,7 @@ interface Props {
 }
 
 export default function GradingConfigFields({ data, setData, errors, schools, classroomTypes }: Readonly<Props>) {
+    const { t } = useTranslation();
     const classTotal = (parseFloat(data.class_weight) || 0) + (parseFloat(data.comp_weight) || 0);
     const pct = (w: string) => (classTotal > 0 ? Math.round(((parseFloat(w) || 0) / classTotal) * 100) : 0);
 
@@ -52,10 +49,10 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
             {/* École + type de classe */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Établissement *</label>
+                    <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.school_label')}</label>
                     <Select value={data.school_id} onValueChange={(v) => setData('school_id', v)}>
                         <SelectTrigger className={errors.school_id ? 'border-red-400' : ''}>
-                            <SelectValue placeholder="Sélectionner un établissement" />
+                            <SelectValue placeholder={t('parametres.grading_configs.school_ph')} />
                         </SelectTrigger>
                         <SelectContent>
                             {schools.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
@@ -65,7 +62,7 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Type de classe</label>
+                    <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.class_type_label')}</label>
                     <Select
                         value={data.classroom_type_id || ALL}
                         onValueChange={(v) => setData('classroom_type_id', v === ALL ? '' : v)}
@@ -74,25 +71,25 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value={ALL}>Toutes les classes (défaut école)</SelectItem>
-                            {classroomTypes.map((t) => (
-                                <SelectItem key={t.id} value={t.id}>
-                                    {t.name} ({t.period_system})
+                            <SelectItem value={ALL}>{t('parametres.grading_configs.all_classes')}</SelectItem>
+                            {classroomTypes.map((ct) => (
+                                <SelectItem key={ct.id} value={ct.id}>
+                                    {ct.name} ({ct.period_system})
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <p className="text-xs text-gray-400">Laissez « Toutes les classes » pour une formule par défaut de l'école.</p>
+                    <p className="text-xs text-gray-400">{t('parametres.grading_configs.class_type_hint')}</p>
                 </div>
             </div>
 
             {/* Nom */}
             <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Nom *</label>
+                <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.name_label')}</label>
                 <Input
                     value={data.name}
                     onChange={(e) => setData('name', e.target.value)}
-                    placeholder="ex : Formule standard 2025"
+                    placeholder={t('parametres.grading_configs.name_ph')}
                     className={errors.name ? 'border-red-400' : ''}
                 />
                 {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
@@ -100,7 +97,7 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Seuil de passage</label>
+                    <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.passing_label')}</label>
                     <div className="relative">
                         <Input
                             type="number" min={0} max={100} step={0.5}
@@ -114,7 +111,7 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Note maximale par défaut</label>
+                    <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.max_label')}</label>
                     <Input
                         type="number" min={1} max={100} step={1}
                         value={data.default_max_score}
@@ -126,15 +123,15 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
 
             {/* Pondération Classe / Composition */}
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Pondération Note de classe / Composition</label>
+                <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.weight_label')}</label>
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                        <span className="text-xs text-gray-500">Note de classe (contrôle continu)</span>
+                        <span className="text-xs text-gray-500">{t('parametres.grading_configs.class_weight_label')}</span>
                         <Input type="number" min={0} max={10} step={0.5} value={data.class_weight}
                             onChange={(e) => setData('class_weight', e.target.value)} />
                     </div>
                     <div className="space-y-1">
-                        <span className="text-xs text-gray-500">Composition</span>
+                        <span className="text-xs text-gray-500">{t('parametres.grading_configs.comp_weight_label')}</span>
                         <Input type="number" min={0} max={10} step={0.5} value={data.comp_weight}
                             onChange={(e) => setData('comp_weight', e.target.value)} />
                     </div>
@@ -143,24 +140,24 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
                     <div className="flex gap-2 mt-1">
                         <div className="flex-1 text-center">
                             <div className="text-lg font-bold text-blue-600">{pct(data.class_weight)}%</div>
-                            <div className="text-xs text-gray-400">Classe</div>
+                            <div className="text-xs text-gray-400">{t('parametres.grading_configs.pct_class')}</div>
                         </div>
                         <div className="flex-1 text-center">
                             <div className="text-lg font-bold text-blue-600">{pct(data.comp_weight)}%</div>
-                            <div className="text-xs text-gray-400">Composition</div>
+                            <div className="text-xs text-gray-400">{t('parametres.grading_configs.pct_comp')}</div>
                         </div>
                     </div>
                 )}
-                <p className="text-xs text-gray-400">Moyenne matière = (Classe × {data.class_weight || 0} + Composition × {data.comp_weight || 0}) / {classTotal || 1}.</p>
+                <p className="text-xs text-gray-400">{t('parametres.grading_configs.formula', { cw: data.class_weight || 0, pw: data.comp_weight || 0, total: classTotal || 1 })}</p>
             </div>
 
             {/* Arrondi */}
             <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Précision d'arrondi</label>
+                <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.precision_label')}</label>
                 <Select value={data.round_precision} onValueChange={(v) => setData('round_precision', v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        {PRECISION_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                        {PRECISION_VALUES.map((v) => <SelectItem key={v} value={v}>{t(`parametres.grading_configs.precision_${v}`)}</SelectItem>)}
                     </SelectContent>
                 </Select>
             </div>
@@ -168,16 +165,16 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
             {/* Mentions */}
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">Mentions (seuils)</label>
+                    <label className="text-sm font-medium text-gray-700">{t('parametres.grading_configs.mentions_label')}</label>
                     <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addMention}>
-                        <Plus className="w-3.5 h-3.5" /> Ajouter
+                        <Plus className="w-3.5 h-3.5" /> {t('parametres.grading_configs.add')}
                     </Button>
                 </div>
                 <div className="space-y-2">
-                    {data.mentions.length === 0 && <p className="text-xs text-gray-400">Aucune mention configurée.</p>}
+                    {data.mentions.length === 0 && <p className="text-xs text-gray-400">{t('parametres.grading_configs.no_mentions')}</p>}
                     {data.mentions.map((m, i) => (
                         <div key={i} className="flex items-center gap-2">
-                            <Input value={m.label} placeholder="Libellé (ex : Félicitations)"
+                            <Input value={m.label} placeholder={t('parametres.grading_configs.mention_label_ph')}
                                 onChange={(e) => setMention(i, { label: e.target.value })} className="flex-1" />
                             <span className="text-xs text-gray-400">≥</span>
                             <Input type="number" min={0} max={20} step={0.5} value={m.min}
@@ -189,7 +186,7 @@ export default function GradingConfigFields({ data, setData, errors, schools, cl
                         </div>
                     ))}
                 </div>
-                <p className="text-xs text-gray-400">La mention retenue est celle dont le seuil est le plus élevé et inférieur ou égal à la moyenne.</p>
+                <p className="text-xs text-gray-400">{t('parametres.grading_configs.mentions_hint')}</p>
             </div>
         </>
     );
