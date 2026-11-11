@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { SchoolForm, type SchoolFormData, type CurrencyOption } from '@/components/Schools/school-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 const initialValues: SchoolFormData = {
@@ -25,6 +26,7 @@ const initialValues: SchoolFormData = {
 interface ClassroomTypeOption { id: string; name: string; period_system: string; }
 
 export default function Create({ classroomTypes = [], currencies = [] }: Readonly<{ classroomTypes?: ClassroomTypeOption[]; currencies?: CurrencyOption[] }>) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm<SchoolFormData>(initialValues);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -34,12 +36,12 @@ export default function Create({ classroomTypes = [], currencies = [] }: Readonl
 
     return (
         <AppLayout>
-            <Head title="Nouvelle école" />
+            <Head title={t('parametres.schools.create_head')} />
 
             <div className="w-full space-y-6">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-gray-900">Configurer l'école</h1>
-                    <p className="mt-2 text-gray-600">Renseignez les informations de l'établissement.</p>
+                    <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.schools.create_title')}</h1>
+                    <p className="mt-2 text-gray-600">{t('parametres.schools.create_subtitle')}</p>
                 </div>
 
                 <SchoolForm

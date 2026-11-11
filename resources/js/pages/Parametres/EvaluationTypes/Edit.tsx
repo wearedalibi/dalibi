@@ -5,6 +5,7 @@ import {
     type EvaluationTypeFormData,
 } from '@/components/EvaluationTypes/evaluation-type-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface EvaluationType {
@@ -19,6 +20,7 @@ interface EditProps {
 }
 
 export default function Edit({ evaluationType }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm<EvaluationTypeFormData>({
         name: evaluationType.name,
         category: evaluationType.category || 'continu',
@@ -32,7 +34,7 @@ export default function Edit({ evaluationType }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title="Modifier type d'évaluation" />
+            <Head title={t('parametres.evaluation_types.edit_head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center gap-4">
@@ -40,8 +42,8 @@ export default function Edit({ evaluationType }: Readonly<EditProps>) {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Éditer un type d'évaluation</h1>
-                        <p className="mt-2 text-gray-600">Mettez à jour les informations de {evaluationType.name}.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.evaluation_types.edit_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('parametres.evaluation_types.edit_subtitle', { name: evaluationType.name })}</p>
                     </div>
                 </div>
 

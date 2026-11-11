@@ -2,6 +2,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 import GradingConfigFields, { type ClassroomType, type GradingConfigForm, type MentionRow, type School } from './config-fields';
 
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export default function Edit({ config, schools, classroomTypes, defaultMentions }: Readonly<Props>) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm<GradingConfigForm>({
         school_id:         config.school_id,
         classroom_type_id: config.classroom_type_id ?? '',
@@ -46,7 +48,7 @@ export default function Edit({ config, schools, classroomTypes, defaultMentions 
 
     return (
         <AppLayout>
-            <Head title={`Modifier — ${config.name}`} />
+            <Head title={t('parametres.grading_configs.edit_head', { name: config.name })} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center gap-4">
@@ -54,7 +56,7 @@ export default function Edit({ config, schools, classroomTypes, defaultMentions 
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Modifier la configuration</h1>
+                        <h1 className="text-3xl font-bold text-gray-900">{t('parametres.grading_configs.edit_title')}</h1>
                         <p className="text-gray-500 mt-0.5">{config.name} — {config.school.name}</p>
                     </div>
                 </div>
@@ -64,10 +66,10 @@ export default function Edit({ config, schools, classroomTypes, defaultMentions 
 
                     <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
                         <Button type="button" variant="outline" onClick={() => router.get(route('grading-configs.index'))}>
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                         <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={processing}>
-                            {processing ? 'Enregistrement...' : 'Enregistrer'}
+                            {processing ? t('parametres.grading_configs.saving') : t('parametres.common.save')}
                         </Button>
                     </div>
                 </form>

@@ -2,6 +2,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 import GradingConfigFields, { type ClassroomType, type GradingConfigForm, type MentionRow, type School } from './config-fields';
 
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function Create({ schools, classroomTypes, defaultMentions, preselectedSchoolId }: Readonly<Props>) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm<GradingConfigForm>({
         school_id:         preselectedSchoolId ?? '',
         classroom_type_id: '',
@@ -32,7 +34,7 @@ export default function Create({ schools, classroomTypes, defaultMentions, prese
 
     return (
         <AppLayout>
-            <Head title="Nouvelle configuration de calcul" />
+            <Head title={t('parametres.grading_configs.create_head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center gap-4">
@@ -40,8 +42,8 @@ export default function Create({ schools, classroomTypes, defaultMentions, prese
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Nouvelle configuration</h1>
-                        <p className="text-gray-500 mt-0.5">Définissez la formule de calcul des moyennes (par type de classe)</p>
+                        <h1 className="text-3xl font-bold text-gray-900">{t('parametres.grading_configs.create_title')}</h1>
+                        <p className="text-gray-500 mt-0.5">{t('parametres.grading_configs.create_subtitle')}</p>
                     </div>
                 </div>
 
@@ -50,10 +52,10 @@ export default function Create({ schools, classroomTypes, defaultMentions, prese
 
                     <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
                         <Button type="button" variant="outline" onClick={() => router.get(route('grading-configs.index'))}>
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                         <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={processing}>
-                            {processing ? 'Création...' : 'Créer la configuration'}
+                            {processing ? t('parametres.common.creating') : t('parametres.grading_configs.submit_create')}
                         </Button>
                     </div>
                 </form>
