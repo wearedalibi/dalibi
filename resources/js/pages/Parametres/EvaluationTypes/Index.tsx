@@ -15,6 +15,7 @@ import { IconButton } from '@/components/icon-button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface EvaluationType {
@@ -42,6 +43,8 @@ interface IndexProps {
 }
 
 export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [search, setSearch] = useState(filters.search || '');
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -63,7 +66,7 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
 
     const statsCards = [
         {
-            title: 'Types totaux',
+            title: t('parametres.evaluation_types.stat_total'),
             value: evaluationTypes.total,
             icon: Tag,
             cardClass: 'bg-linear-to-br from-blue-50/70 to-white ring-1 ring-blue-100',
@@ -71,7 +74,7 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
             textColor: 'text-blue-600',
         },
         {
-            title: 'Résultats affichés',
+            title: t('parametres.evaluation_types.stat_shown'),
             value: evaluationTypes.data.length,
             icon: Eye,
             cardClass: 'bg-linear-to-br from-emerald-50/70 to-white ring-1 ring-emerald-100',
@@ -79,7 +82,7 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
             textColor: 'text-emerald-600',
         },
         {
-            title: 'Page',
+            title: t('parametres.evaluation_types.stat_page'),
             value: `${evaluationTypes.current_page}/${evaluationTypes.last_page}`,
             icon: Plus,
             cardClass: 'bg-linear-to-br from-violet-50/70 to-white ring-1 ring-violet-100',
@@ -90,17 +93,17 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
 
     return (
         <AppLayout>
-            <Head title="Types d'évaluation" />
+            <Head title={t('parametres.evaluation_types.head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Tag className="h-7 w-7 text-blue-600 shrink-0" />Types d'évaluation</h1>
-                        <p className="mt-2 text-lg text-gray-600">Gérez les types d'évaluation</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Tag className="h-7 w-7 text-blue-600 shrink-0" />{t('parametres.evaluation_types.title')}</h1>
+                        <p className="mt-2 text-lg text-gray-600">{t('parametres.evaluation_types.subtitle')}</p>
                     </div>
                     <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => router.get(route('evaluation-types.create'))}>
                         <Plus className="w-5 h-5" />
-                        Nouveau type
+                        {t('parametres.evaluation_types.new')}
                     </Button>
                 </div>
 
@@ -131,7 +134,7 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-                                placeholder="Rechercher un type..."
+                                placeholder={t('parametres.evaluation_types.search_ph')}
                                 className="pl-10 pr-10"
                             />
                             {search && (
@@ -140,7 +143,7 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
                                 </button>
                             )}
                         </div>
-                        <Button onClick={onSearch} className="bg-blue-600 hover:bg-blue-700">Rechercher</Button>
+                        <Button onClick={onSearch} className="bg-blue-600 hover:bg-blue-700">{t('parametres.common.search')}</Button>
                     </div>
                 </div>
 
@@ -148,10 +151,10 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow className="border-b border-gray-200">
-                                <TableHead>Nom</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Créé le</TableHead>
-                                <TableHead className="text-center w-28">Actions</TableHead>
+                                <TableHead>{t('parametres.evaluation_types.th_name')}</TableHead>
+                                <TableHead>{t('parametres.evaluation_types.th_description')}</TableHead>
+                                <TableHead>{t('parametres.evaluation_types.th_created')}</TableHead>
+                                <TableHead className="text-center w-28">{t('parametres.common.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -160,7 +163,7 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
                                     <TableCell colSpan={4} className="py-12 text-center text-gray-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <Tag className="w-12 h-12 text-gray-300" />
-                                            <p className="text-lg">Aucun type trouvé</p>
+                                            <p className="text-lg">{t('parametres.evaluation_types.empty')}</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -170,13 +173,13 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
                                         <TableCell className="font-medium text-gray-900">{item.name}</TableCell>
                                         <TableCell className="text-gray-600">{item.description || '—'}</TableCell>
                                         <TableCell className="text-gray-600">
-                                            {new Date(item.created_at).toLocaleDateString('fr-FR')}
+                                            {new Date(item.created_at).toLocaleDateString(dateLocale)}
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex justify-center gap-2">
-                                                <IconButton label="Voir" icon={<Eye className="w-4 h-4" />} className="border-gray-300" onClick={() => router.get(route('evaluation-types.show', item.id))} />
-                                                <IconButton label="Modifier" icon={<Pencil className="w-4 h-4" />} className="border-gray-300" onClick={() => router.get(route('evaluation-types.edit', item.id))} />
-                                                <IconButton label="Supprimer" icon={<Trash2 className="w-4 h-4" />} className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => setDeleteId(item.id)} />
+                                                <IconButton label={t('parametres.common.view')} icon={<Eye className="w-4 h-4" />} className="border-gray-300" onClick={() => router.get(route('evaluation-types.show', item.id))} />
+                                                <IconButton label={t('parametres.common.edit')} icon={<Pencil className="w-4 h-4" />} className="border-gray-300" onClick={() => router.get(route('evaluation-types.edit', item.id))} />
+                                                <IconButton label={t('parametres.common.delete')} icon={<Trash2 className="w-4 h-4" />} className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => setDeleteId(item.id)} />
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -190,15 +193,15 @@ export default function Index({ evaluationTypes, filters }: Readonly<IndexProps>
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer ce type ?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.evaluation_types.delete_q')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette action est irréversible.
+                            {t('parametres.common.irreversible')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && onDelete(deleteId)}>
-                            Supprimer
+                            {t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
