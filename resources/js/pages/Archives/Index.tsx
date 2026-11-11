@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Tag { id: string; name: string; color: string; }
@@ -39,6 +40,7 @@ const ALL = 'all';
 const fmtSize = (b: number) => b > 1048576 ? `${(b / 1048576).toFixed(1)} Mo` : `${Math.max(1, Math.round(b / 1024))} Ko`;
 
 export default function Index({ documents, tags, categories, classrooms, filters, stats }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [search, setSearch] = useState(filters.search || '');
     const [category, setCategory] = useState(filters.category || ALL);
     const [selectedTags, setSelectedTags] = useState<string[]>(filters.tags || []);
@@ -55,7 +57,7 @@ export default function Index({ documents, tags, categories, classrooms, filters
     };
 
     const toggleTag = (id: string) => {
-        const next = selectedTags.includes(id) ? selectedTags.filter(t => t !== id) : [...selectedTags, id];
+        const next = selectedTags.includes(id) ? selectedTags.filter(x => x !== id) : [...selectedTags, id];
         setSelectedTags(next);
         apply({ tags: next });
     };
@@ -74,7 +76,7 @@ export default function Index({ documents, tags, categories, classrooms, filters
         setEditing(d);
         setData({
             title: d.title, description: d.description ?? '', category: d.category,
-            file: null as File | null, tags: d.tags.map(t => t.name),
+            file: null as File | null, tags: d.tags.map(x => x.name),
             retention_until: d.retention_until ?? '',
             link_type: '', link_classroom_id: '', link_student_matricule: '',
         });
@@ -94,7 +96,7 @@ export default function Index({ documents, tags, categories, classrooms, filters
         if (n && !data.tags.includes(n)) setData('tags', [...data.tags, n]);
         setTagInput('');
     };
-    const removeTag = (name: string) => setData('tags', data.tags.filter(t => t !== name));
+    const removeTag = (name: string) => setData('tags', data.tags.filter(x => x !== name));
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -106,23 +108,23 @@ export default function Index({ documents, tags, categories, classrooms, filters
 
     return (
         <AppLayout>
-            <Head title="Archives documentaires" />
+            <Head title={t('archives.head')} />
             <div className="w-full space-y-6">
 
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
-                            <Archive className="w-8 h-8 text-blue-600" /> Archives documentaires
+                            <Archive className="w-8 h-8 text-blue-600" /> {t('archives.title')}
                         </h1>
-                        <p className="mt-2 text-gray-500">{stats.total} document(s) archivé(s){stats.trashed > 0 ? ` · ${stats.trashed} en corbeille` : ''}.</p>
+                        <p className="mt-2 text-gray-500">{t('archives.subtitle_docs', { count: stats.total })}{stats.trashed > 0 ? t('archives.trashed_suffix', { count: stats.trashed }) : ''}.</p>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={() => apply({ trashed: filters.trashed ? 0 : 1 })}
                             className={filters.trashed ? 'border-amber-300 text-amber-600' : ''}>
-                            <Trash2 className="w-4 h-4 mr-2" /> {filters.trashed ? 'Voir actifs' : 'Corbeille'}
+                            <Trash2 className="w-4 h-4 mr-2" /> {filters.trashed ? t('archives.view_active') : t('archives.trash')}
                         </Button>
                         <Button onClick={openCreate} className="bg-blue-600 hover:bg-blue-700 gap-2">
-                            <Plus className="w-4 h-4" /> Archiver un document
+                            <Plus className="w-4 h-4" /> {t('archives.archive_doc')}
                         </Button>
                     </div>
                 </div>
@@ -131,26 +133,26 @@ export default function Index({ documents, tags, categories, classrooms, filters
                 <div className="rounded-2xl bg-slate-50/70 ring-1 ring-slate-200 p-4 space-y-3">
                     <div className="flex flex-wrap gap-3 items-end">
                         <div className="relative flex-1 min-w-52">
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Recherche</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('archives.search')}</label>
                             <Search className="absolute left-3 top-9 w-4 h-4 text-gray-400" />
-                            <Input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && apply()} placeholder="Titre, référence…" className="pl-9 bg-white" />
+                            <Input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && apply()} placeholder={t('archives.search_ph')} className="pl-9 bg-white" />
                         </div>
                         <div className="min-w-44">
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Catégorie</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('archives.category')}</label>
                             <Select value={category} onValueChange={v => { setCategory(v); apply({ category: v === ALL ? '' : v }); }}>
                                 <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value={ALL}>Toutes</SelectItem>
+                                    <SelectItem value={ALL}>{t('archives.all_categories')}</SelectItem>
                                     {Object.entries(categories).map(([k, l]) => <SelectItem key={k} value={k}>{l}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="min-w-36">
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Du</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('archives.from')}</label>
                             <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} onBlur={() => apply()} className="bg-white" />
                         </div>
                         <div className="min-w-36">
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Au</label>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('archives.to')}</label>
                             <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} onBlur={() => apply()} className="bg-white" />
                         </div>
                     </div>
@@ -169,7 +171,7 @@ export default function Index({ documents, tags, categories, classrooms, filters
                             })}
                             {activeFilters > 0 && (
                                 <button onClick={resetFilters} className="text-xs text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 ml-2">
-                                    <X className="w-3 h-3" /> Réinitialiser ({activeFilters})
+                                    <X className="w-3 h-3" /> {t('archives.reset')} ({activeFilters})
                                 </button>
                             )}
                         </div>
@@ -181,20 +183,20 @@ export default function Index({ documents, tags, categories, classrooms, filters
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Référence</TableHead>
-                                <TableHead>Document</TableHead>
-                                <TableHead>Tags</TableHead>
-                                <TableHead>Lié à</TableHead>
-                                <TableHead>Taille</TableHead>
-                                <TableHead>Archivé</TableHead>
-                                <TableHead className="text-center w-32">Actions</TableHead>
+                                <TableHead>{t('archives.th_reference')}</TableHead>
+                                <TableHead>{t('archives.th_document')}</TableHead>
+                                <TableHead>{t('archives.th_tags')}</TableHead>
+                                <TableHead>{t('archives.th_linked')}</TableHead>
+                                <TableHead>{t('archives.th_size')}</TableHead>
+                                <TableHead>{t('archives.th_archived')}</TableHead>
+                                <TableHead className="text-center w-32">{t('archives.th_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {documents.data.length === 0 ? (
                                 <TableRow><TableCell colSpan={7} className="py-16 text-center text-gray-400">
                                     <Archive className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                    {filters.trashed ? 'Corbeille vide.' : 'Aucun document archivé.'}
+                                    {filters.trashed ? t('archives.empty_trash') : t('archives.empty')}
                                 </TableCell></TableRow>
                             ) : documents.data.map(d => (
                                 <TableRow key={d.id} className="hover:bg-gray-50">
@@ -217,16 +219,16 @@ export default function Index({ documents, tags, categories, classrooms, filters
                                         <div className="flex justify-center gap-1.5">
                                             {filters.trashed ? (
                                                 <>
-                                                    <IconButton label="Restaurer" icon={<RotateCcw className="w-3.5 h-3.5" />} className="gap-1 text-xs" onClick={() => router.post(route('archives.restore', d.id), {}, { preserveScroll: true })} />
-                                                    <IconButton label="Supprimer définitivement" icon={<Trash2 className="w-3.5 h-3.5" />} className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => setDeleteDoc(d)} />
+                                                    <IconButton label={t('archives.restore')} icon={<RotateCcw className="w-3.5 h-3.5" />} className="gap-1 text-xs" onClick={() => router.post(route('archives.restore', d.id), {}, { preserveScroll: true })} />
+                                                    <IconButton label={t('archives.delete_forever')} icon={<Trash2 className="w-3.5 h-3.5" />} className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => setDeleteDoc(d)} />
                                                 </>
                                             ) : (
                                                 <>
                                                     <a href={route('archives.download', d.id)}>
-                                                        <IconButton label="Télécharger" icon={<Download className="w-3.5 h-3.5" />} className="text-xs" />
+                                                        <IconButton label={t('archives.download')} icon={<Download className="w-3.5 h-3.5" />} className="text-xs" />
                                                     </a>
-                                                    <IconButton label="Modifier" icon={<Pencil className="w-3.5 h-3.5" />} onClick={() => openEdit(d)} />
-                                                    <IconButton label="Supprimer" icon={<Trash2 className="w-3.5 h-3.5" />} className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => router.delete(route('archives.destroy', d.id), { preserveScroll: true })} />
+                                                    <IconButton label={t('archives.edit')} icon={<Pencil className="w-3.5 h-3.5" />} onClick={() => openEdit(d)} />
+                                                    <IconButton label={t('archives.delete')} icon={<Trash2 className="w-3.5 h-3.5" />} className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => router.delete(route('archives.destroy', d.id), { preserveScroll: true })} />
                                                 </>
                                             )}
                                         </div>
@@ -239,9 +241,9 @@ export default function Index({ documents, tags, categories, classrooms, filters
 
                 {documents.last_page > 1 && (
                     <div className="flex justify-center gap-2">
-                        <Button variant="outline" size="sm" disabled={documents.current_page <= 1} onClick={() => apply({ page: documents.current_page - 1 })}>Précédent</Button>
-                        <span className="text-sm text-gray-500 self-center">Page {documents.current_page} / {documents.last_page}</span>
-                        <Button variant="outline" size="sm" disabled={documents.current_page >= documents.last_page} onClick={() => apply({ page: documents.current_page + 1 })}>Suivant</Button>
+                        <Button variant="outline" size="sm" disabled={documents.current_page <= 1} onClick={() => apply({ page: documents.current_page - 1 })}>{t('archives.prev')}</Button>
+                        <span className="text-sm text-gray-500 self-center">{t('archives.page_of', { current: documents.current_page, last: documents.last_page })}</span>
+                        <Button variant="outline" size="sm" disabled={documents.current_page >= documents.last_page} onClick={() => apply({ page: documents.current_page + 1 })}>{t('archives.next')}</Button>
                     </div>
                 )}
             </div>
@@ -250,38 +252,38 @@ export default function Index({ documents, tags, categories, classrooms, filters
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>{editing ? 'Modifier le document' : 'Archiver un document'}</DialogTitle>
+                        <DialogTitle>{editing ? t('archives.edit_title') : t('archives.create_title')}</DialogTitle>
                         <DialogDescription>
-                            {editing ? 'Mettez à jour les métadonnées et les tags.' : 'Ajoutez un fichier au coffre documentaire avec ses métadonnées et tags.'}
+                            {editing ? t('archives.edit_desc') : t('archives.create_desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submit} className="space-y-4 py-1">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Titre *</label>
+                            <label className="text-sm font-medium text-gray-700">{t('archives.f_title')} *</label>
                             <Input value={data.title} onChange={e => setData('title', e.target.value)} className={errors.title ? 'border-red-400' : ''} />
                             {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Catégorie *</label>
+                                <label className="text-sm font-medium text-gray-700">{t('archives.f_category')} *</label>
                                 <Select value={data.category} onValueChange={v => setData('category', v)}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>{Object.entries(categories).map(([k, l]) => <SelectItem key={k} value={k}>{l}</SelectItem>)}</SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Conservation jusqu'au</label>
+                                <label className="text-sm font-medium text-gray-700">{t('archives.retention')}</label>
                                 <Input type="date" value={data.retention_until} onChange={e => setData('retention_until', e.target.value)} />
                             </div>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Description</label>
+                            <label className="text-sm font-medium text-gray-700">{t('archives.description')}</label>
                             <textarea value={data.description} onChange={e => setData('description', e.target.value)} rows={2}
                                 className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         </div>
                         {!editing && (
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Fichier *</label>
+                                <label className="text-sm font-medium text-gray-700">{t('archives.file')} *</label>
                                 <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.jpg,.jpeg,.png,.webp,.zip"
                                     onChange={e => setData('file', e.target.files?.[0] ?? null)}
                                     className="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-blue-700 file:text-sm hover:file:bg-blue-100" />
@@ -290,21 +292,21 @@ export default function Index({ documents, tags, categories, classrooms, filters
                         )}
                         {/* Tags */}
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Tags</label>
+                            <label className="text-sm font-medium text-gray-700">{t('archives.tags')}</label>
                             <div className="flex flex-wrap gap-1.5 mb-1">
-                                {data.tags.map(t => (
-                                    <span key={t} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                                        {t}<button type="button" onClick={() => removeTag(t)}><X className="w-3 h-3" /></button>
+                                {data.tags.map(tg => (
+                                    <span key={tg} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                                        {tg}<button type="button" onClick={() => removeTag(tg)}><X className="w-3 h-3" /></button>
                                     </span>
                                 ))}
                             </div>
                             <Input value={tagInput} onChange={e => setTagInput(e.target.value)}
                                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(tagInput); } }}
-                                placeholder="Ajouter un tag puis Entrée…" />
+                                placeholder={t('archives.add_tag_ph')} />
                             {tags.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mt-1">
-                                    {tags.filter(t => !data.tags.includes(t.name)).slice(0, 12).map(t => (
-                                        <button key={t.id} type="button" onClick={() => addTag(t.name)} className="text-[11px] px-1.5 py-0.5 rounded-full border text-gray-600" style={{ borderColor: t.color }}>+ {t.name}</button>
+                                    {tags.filter(tg => !data.tags.includes(tg.name)).slice(0, 12).map(tg => (
+                                        <button key={tg.id} type="button" onClick={() => addTag(tg.name)} className="text-[11px] px-1.5 py-0.5 rounded-full border text-gray-600" style={{ borderColor: tg.color }}>+ {tg.name}</button>
                                     ))}
                                 </div>
                             )}
@@ -312,37 +314,37 @@ export default function Index({ documents, tags, categories, classrooms, filters
                         {/* Liaison */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Lié à</label>
+                                <label className="text-sm font-medium text-gray-700">{t('archives.linked_to')}</label>
                                 <Select value={data.link_type || 'none'} onValueChange={v => setData('link_type', v === 'none' ? '' : v)}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">Aucun</SelectItem>
-                                        <SelectItem value="classroom">Classe</SelectItem>
-                                        <SelectItem value="student">Élève (matricule)</SelectItem>
+                                        <SelectItem value="none">{t('archives.link_none')}</SelectItem>
+                                        <SelectItem value="classroom">{t('archives.link_classroom')}</SelectItem>
+                                        <SelectItem value="student">{t('archives.link_student')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             {data.link_type === 'classroom' && (
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">Classe</label>
+                                    <label className="text-sm font-medium text-gray-700">{t('archives.classroom')}</label>
                                     <Select value={data.link_classroom_id} onValueChange={v => setData('link_classroom_id', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                                        <SelectTrigger><SelectValue placeholder={t('archives.choose')} /></SelectTrigger>
                                         <SelectContent>{classrooms.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                                     </Select>
                                 </div>
                             )}
                             {data.link_type === 'student' && (
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">Matricule élève</label>
+                                    <label className="text-sm font-medium text-gray-700">{t('archives.student_matricule')}</label>
                                     <Input value={data.link_student_matricule} onChange={e => setData('link_student_matricule', e.target.value)} className={errors.link_student_matricule ? 'border-red-400' : ''} />
                                     {errors.link_student_matricule && <p className="text-xs text-red-500">{errors.link_student_matricule}</p>}
                                 </div>
                             )}
                         </div>
                         <div className="flex justify-end gap-2 pt-2">
-                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Annuler</Button>
+                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t('archives.cancel')}</Button>
                             <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700 gap-2">
-                                <Upload className="w-4 h-4" /> {editing ? 'Enregistrer' : 'Archiver'}
+                                <Upload className="w-4 h-4" /> {editing ? t('archives.save') : t('archives.archive')}
                             </Button>
                         </div>
                     </form>
@@ -352,13 +354,13 @@ export default function Index({ documents, tags, categories, classrooms, filters
             <AlertDialog open={!!deleteDoc} onOpenChange={() => setDeleteDoc(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer définitivement ?</AlertDialogTitle>
-                        <AlertDialogDescription>Le fichier « {deleteDoc?.title} » sera supprimé du stockage. Cette action est irréversible.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('archives.delete_forever_q')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('archives.delete_forever_desc', { title: deleteDoc?.title ?? '' })}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('archives.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteDoc && router.delete(route('archives.force-delete', deleteDoc.id), { preserveScroll: true, onSuccess: () => setDeleteDoc(null) })}>
-                            Supprimer définitivement
+                            {t('archives.delete_forever')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
