@@ -3,6 +3,7 @@ import { ArrowLeft, CalendarRange, Clock, Download, MapPin, User, BookOpen } fro
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Option { id: string; name: string; }
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export default function Teacher({ teachers, teacher, slots, days, filters }: Readonly<Props>) {
+    const { t } = useTranslation();
     const teacherId = filters.teacher_id ?? '';
     const dayKeys = Object.keys(days).map(Number);
 
@@ -41,7 +43,7 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
 
     return (
         <AppLayout>
-            <Head title="Emploi du temps — par enseignant" />
+            <Head title={t('timetable.head_teacher')} />
             <div className="w-full space-y-6">
 
                 {/* Header */}
@@ -57,9 +59,9 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
                                 <CalendarRange className="h-7 w-7 text-blue-600 shrink-0" />
-                                Emploi du temps — par enseignant
+                                {t('timetable.head_teacher')}
                             </h1>
-                            <p className="mt-1 text-gray-500">Programmation d'un enseignant pour l'année active, toutes classes confondues.</p>
+                            <p className="mt-1 text-gray-500">{t('timetable.subtitle_teacher')}</p>
                         </div>
                     </div>
                     <Button
@@ -67,7 +69,7 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
                         disabled={!teacherId || slots.length === 0}
                         className="gap-2 bg-blue-600 hover:bg-blue-700 shrink-0 disabled:opacity-40"
                     >
-                        <Download className="w-4 h-4" /> Exporter en PDF
+                        <Download className="w-4 h-4" /> {t('timetable.export_pdf')}
                     </Button>
                 </div>
 
@@ -75,9 +77,9 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
                 <div className="rounded-2xl bg-slate-50/70 ring-1 ring-slate-200 shadow-sm p-4 flex items-center gap-3 max-w-md">
                     <User className="w-5 h-5 text-gray-400" />
                     <Select value={teacherId} onValueChange={selectTeacher}>
-                        <SelectTrigger className="bg-white"><SelectValue placeholder="Choisir un enseignant" /></SelectTrigger>
+                        <SelectTrigger className="bg-white"><SelectValue placeholder={t('timetable.choose_teacher')} /></SelectTrigger>
                         <SelectContent>
-                            {teachers.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                            {teachers.map(tc => <SelectItem key={tc.id} value={tc.id}>{tc.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -85,7 +87,7 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
                 {!teacherId ? (
                     <div className="rounded-2xl ring-1 ring-dashed ring-gray-200 p-12 text-center text-gray-400">
                         <User className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                        Sélectionnez un enseignant pour afficher son emploi du temps.
+                        {t('timetable.select_teacher_prompt')}
                     </div>
                 ) : (
                     <>
@@ -97,16 +99,16 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
                                 </div>
                                 <span className="font-semibold text-gray-900">{teacher.name}</span>
                                 <span className="text-gray-400">·</span>
-                                <span className="text-gray-600">{slots.length} créneau{slots.length > 1 ? 'x' : ''}</span>
+                                <span className="text-gray-600">{slots.length} {slots.length > 1 ? t('timetable.slot_other') : t('timetable.slot_one')}</span>
                                 <span className="text-gray-400">·</span>
-                                <span className="text-gray-600">{distinctClasses} classe{distinctClasses > 1 ? 's' : ''}</span>
+                                <span className="text-gray-600">{distinctClasses} {distinctClasses > 1 ? t('timetable.class_other') : t('timetable.class_one')}</span>
                             </div>
                         )}
 
                         {slots.length === 0 ? (
                             <div className="rounded-2xl ring-1 ring-dashed ring-gray-200 p-12 text-center text-gray-400">
                                 <CalendarRange className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                Aucun créneau pour cet enseignant sur l'année active.
+                                {t('timetable.no_slots_teacher')}
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -123,7 +125,7 @@ export default function Teacher({ teachers, teacher, slots, days, filters }: Rea
                                                         <span className="text-xs font-semibold text-blue-700 inline-flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />{slot.start_time}–{slot.end_time}
                                                         </span>
-                                                        <p className="text-sm font-medium text-gray-900 mt-1">{slot.subject_name ?? 'Matière'}</p>
+                                                        <p className="text-sm font-medium text-gray-900 mt-1">{slot.subject_name ?? t('timetable.subject_fallback')}</p>
                                                         {slot.class_name && <p className="text-xs text-gray-500 inline-flex items-center gap-1 mt-0.5"><BookOpen className="w-3 h-3" />{slot.class_name}</p>}
                                                         {slot.room && <p className="text-xs text-gray-400 inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{slot.room}</p>}
                                                     </div>
