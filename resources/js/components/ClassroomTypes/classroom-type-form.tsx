@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/helpers/i18n';
 
 export interface ClassroomTypeFormData {
     name: string;
@@ -31,14 +32,15 @@ export function ClassroomTypeForm({
     onSubmit,
     setData,
 }: Readonly<ClassroomTypeFormProps>) {
-    let submitLabel = 'Mettre à jour';
+    const { t } = useTranslation();
+    let submitLabel = t('parametres.common.update');
 
     if (processing && mode === 'create') {
-        submitLabel = 'Création...';
+        submitLabel = t('parametres.common.creating');
     } else if (processing) {
-        submitLabel = 'Mise à jour...';
+        submitLabel = t('parametres.common.updating');
     } else if (mode === 'create') {
-        submitLabel = 'Créer le type';
+        submitLabel = t('parametres.classroom_types.submit_create');
     }
 
     return (
@@ -48,25 +50,25 @@ export function ClassroomTypeForm({
                     <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
                         <Tag className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Informations du type</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.classroom_types.form_section')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">Nom *</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classroom_types.name_label')}</label>
                         <Input
                             id="name"
                             value={data.name}
                             onChange={(event) => setData('name', event.target.value)}
                             disabled={processing}
                             className={errors.name ? 'border-red-500 bg-red-50/40' : 'border-gray-200 bg-white focus-visible:ring-blue-500'}
-                            placeholder="Ex: Classe générale"
+                            placeholder={t('parametres.classroom_types.name_ph')}
                         />
                         {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">Description</label>
+                        <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classroom_types.description_label')}</label>
                         <Textarea
                             id="description"
                             rows={4}
@@ -74,7 +76,7 @@ export function ClassroomTypeForm({
                             onChange={(event) => setData('description', event.target.value)}
                             disabled={processing}
                             className={errors.description ? 'border-red-500 bg-red-50/40' : 'border-gray-200 bg-white focus-visible:ring-blue-500'}
-                            placeholder="Description du type de classe..."
+                            placeholder={t('parametres.classroom_types.description_ph')}
                         />
                         {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description}</p>}
                     </div>
@@ -82,16 +84,16 @@ export function ClassroomTypeForm({
                     <div>
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <CalendarRange className="w-4 h-4 text-blue-600" />
-                            Système de périodes *
+                            {t('parametres.classroom_types.period_label')}
                         </label>
                         <Select value={data.period_system} onValueChange={(v) => setData('period_system', v as 'trimestre' | 'semestre')} disabled={processing}>
                             <SelectTrigger className={errors.period_system ? 'border-red-500' : ''}><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="trimestre">Trimestre (3 périodes)</SelectItem>
-                                <SelectItem value="semestre">Semestre (2 périodes)</SelectItem>
+                                <SelectItem value="trimestre">{t('parametres.classroom_types.period_trimestre')}</SelectItem>
+                                <SelectItem value="semestre">{t('parametres.classroom_types.period_semestre')}</SelectItem>
                             </SelectContent>
                         </Select>
-                        <p className="text-xs text-gray-400 mt-1">Détermine le découpage de l'année (bulletins, évaluations) pour ce type de classe.</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('parametres.classroom_types.period_hint')}</p>
                         {errors.period_system && <p className="text-sm text-red-600 mt-1">{errors.period_system}</p>}
                     </div>
                 </div>
@@ -102,7 +104,7 @@ export function ClassroomTypeForm({
                     <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Statut</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.classroom_types.status_section')}</h3>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -111,13 +113,13 @@ export function ClassroomTypeForm({
                         checked={data.active}
                         onCheckedChange={(checked) => setData('active', checked === true)}
                     />
-                    <label htmlFor="active" className="text-sm font-medium text-gray-700">Type actif</label>
+                    <label htmlFor="active" className="text-sm font-medium text-gray-700">{t('parametres.classroom_types.active_label')}</label>
                 </div>
             </div>
 
             <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={processing} className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50">
-                    Annuler
+                    {t('parametres.common.cancel')}
                 </Button>
                 <Button type="submit" disabled={processing} className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm">
                     <Save className="w-4 h-4" />
