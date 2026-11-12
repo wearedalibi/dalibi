@@ -23,6 +23,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Scholarship {
@@ -53,6 +54,8 @@ interface IndexProps {
 }
 
 export default function Index({ scholarships, message, filters }: Readonly<IndexProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const fmtMoney = useMoney();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -91,21 +94,21 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
 
     const statsCards = [
         {
-            title: 'Bourses totales',
+            title: t('parametres.scholarships.stat_total'),
             value: scholarships.total,
             icon: Percent,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Bourses en %',
+            title: t('parametres.scholarships.stat_percentage'),
             value: percentageCount,
             icon: Percent,
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
         {
-            title: 'Montants fixes',
+            title: t('parametres.scholarships.stat_fixed'),
             value: fixedCount,
             icon: Wallet,
             bgColor: 'bg-purple-50',
@@ -123,7 +126,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
     };
 
     const formatDate = (date: string) => {
-        return new Intl.DateTimeFormat('fr-FR', {
+        return new Intl.DateTimeFormat(dateLocale, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -132,16 +135,16 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
 
     return (
         <AppLayout>
-            <Head title="Bourses" />
+            <Head title={t('parametres.scholarships.head')} />
 
             <div className="space-y-6">
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Percent className="h-7 w-7 text-blue-600 shrink-0" />
-                            Bourses
+                            {t('parametres.scholarships.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les réductions de frais de scolarité
+                            {t('parametres.scholarships.subtitle')}
                         </p>
                     </div>
                     <Button
@@ -149,7 +152,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Nouvelle bourse
+                        {t('parametres.scholarships.new')}
                     </Button>
                 </div>
 
@@ -191,7 +194,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400 group-focus-within:text-blue-600 transition" />
                                 <Input
                                     type="text"
-                                    placeholder="Rechercher une bourse..."
+                                    placeholder={t('parametres.scholarships.search_ph')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -211,12 +214,12 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                 className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shrink-0 transition"
                             >
                                 <Search className="w-4 h-4" />
-                                Rechercher
+                                {t('parametres.common.search')}
                             </Button>
                         </div>
                         {searchQuery && (
                             <p className="text-sm text-gray-500 mt-3">
-                                Résultats pour : <span className="font-semibold text-gray-700">« {searchQuery} »</span>
+                                {t('parametres.scholarships.search_results')} <span className="font-semibold text-gray-700">« {searchQuery} »</span>
                             </p>
                         )}
                     </div>
@@ -227,11 +230,11 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow className="border-b border-gray-200">
-                                    <TableHead className="font-semibold text-gray-900">Nom</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Type</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Valeur</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Date de création</TableHead>
-                                    <TableHead className="text-center font-semibold text-gray-900 w-24">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.scholarships.th_name')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.scholarships.th_type')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.scholarships.th_value')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.scholarships.th_created')}</TableHead>
+                                    <TableHead className="text-center font-semibold text-gray-900 w-24">{t('parametres.common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -243,7 +246,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                         >
                                             <div className="flex flex-col items-center gap-2">
                                                 <Percent className="w-12 h-12 text-gray-300" />
-                                                <p className="text-lg">Aucune bourse trouvée</p>
+                                                <p className="text-lg">{t('parametres.scholarships.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -260,7 +263,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                             </TableCell>
                                             <TableCell>
                                                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                                    {scholarship.type === 'percentage' ? 'Pourcentage' : 'Montant fixe'}
+                                                    {scholarship.type === 'percentage' ? t('parametres.scholarships.type_percentage') : t('parametres.scholarships.type_fixed')}
                                                 </span>
                                             </TableCell>
                                             <TableCell className="font-medium text-gray-900">
@@ -272,19 +275,19 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                             <TableCell className="text-center">
                                                 <div className="flex gap-2 justify-center">
                                                     <IconButton
-                                                        label="Voir"
+                                                        label={t('parametres.common.view')}
                                                         icon={<Eye className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.visit(route('scholarships.show', scholarship.id))}
                                                     />
                                                     <IconButton
-                                                        label="Modifier"
+                                                        label={t('parametres.common.edit')}
                                                         icon={<Pencil className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.get(route('scholarships.edit', scholarship.id))}
                                                     />
                                                     <IconButton
-                                                        label="Supprimer"
+                                                        label={t('parametres.common.delete')}
                                                         icon={<Trash2 className="w-4 h-4" />}
                                                         className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                         onClick={() => setDeleteConfirm(scholarship.id)}
@@ -303,7 +306,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-600">
-                                Affichage <span className="font-semibold">{scholarships.from}</span> à <span className="font-semibold">{scholarships.to}</span> sur <span className="font-semibold">{scholarships.total}</span> bourses
+                                {t('parametres.scholarships.page_showing')} <span className="font-semibold">{scholarships.from}</span> {t('parametres.scholarships.page_to')} <span className="font-semibold">{scholarships.to}</span> {t('parametres.scholarships.page_of')} <span className="font-semibold">{scholarships.total}</span> {t('parametres.scholarships.page_unit')}
                             </p>
                             <div className="flex items-center gap-2">
                                 <Button
@@ -317,7 +320,7 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                     className="border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <ChevronLeft className="w-4 h-4 mr-1" />
-                                    Précédent
+                                    {t('parametres.common.prev')}
                                 </Button>
                                 <div className="flex gap-1">
                                     {Array.from({ length: Math.min(5, scholarships.last_page) }, (_, i) => {
@@ -355,12 +358,12 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
                                     }, { preserveScroll: true })}
                                     className="border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Suivant
+                                    {t('parametres.common.next')}
                                     <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             </div>
                             <p className="text-sm text-gray-600">
-                                Page <span className="font-semibold">{scholarships.current_page}</span> sur <span className="font-semibold">{scholarships.last_page}</span>
+                                {t('parametres.scholarships.page_label')} <span className="font-semibold">{scholarships.current_page}</span> {t('parametres.scholarships.page_of')} <span className="font-semibold">{scholarships.last_page}</span>
                             </p>
                         </div>
                     </div>
@@ -370,19 +373,19 @@ export default function Index({ scholarships, message, filters }: Readonly<Index
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer la bourse</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.scholarships.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette bourse ? Cette action est irréversible.
+                            {t('parametres.scholarships.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3 justify-end">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.scholarships.deleting') : t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

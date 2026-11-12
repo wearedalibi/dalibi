@@ -11,11 +11,13 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 type ScholarshipType = 'percentage' | 'fixed';
 
 export default function Create() {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -43,7 +45,7 @@ export default function Create() {
 
     return (
         <AppLayout>
-            <Head title="Créer une bourse" />
+            <Head title={t('parametres.scholarships.create_head')} />
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -55,25 +57,25 @@ export default function Create() {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Créer une nouvelle bourse
+                            {t('parametres.scholarships.create_title')}
                         </h1>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Informations de la bourse</h2>
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('parametres.scholarships.form_section')}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Nom *
+                                    {t('parametres.scholarships.name_label')}
                                 </label>
                                 <Input
                                     id="name"
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                                    placeholder="Ex: Bourse d'excellence"
+                                    placeholder={t('parametres.scholarships.name_ph')}
                                     className={errors.name ? 'border-red-500' : ''}
                                 />
                                 {errors.name && (
@@ -83,18 +85,18 @@ export default function Create() {
 
                             <div>
                                 <label htmlFor="type" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Type *
+                                    {t('parametres.scholarships.type_label')}
                                 </label>
                                 <Select
                                     value={formData.type}
                                     onValueChange={(value: ScholarshipType) => setFormData((prev) => ({ ...prev, type: value }))}
                                 >
                                     <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
-                                        <SelectValue placeholder="Sélectionner un type" />
+                                        <SelectValue placeholder={t('parametres.scholarships.type_ph')} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="fixed">Montant fixe</SelectItem>
-                                        <SelectItem value="percentage">Pourcentage</SelectItem>
+                                        <SelectItem value="fixed">{t('parametres.scholarships.type_fixed')}</SelectItem>
+                                        <SelectItem value="percentage">{t('parametres.scholarships.type_percentage')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 {errors.type && (
@@ -104,7 +106,7 @@ export default function Create() {
 
                             <div>
                                 <label htmlFor="value" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Valeur {formData.type === 'percentage' ? '(%)' : '(montant)'} *
+                                    {formData.type === 'percentage' ? t('parametres.scholarships.value_label_pct') : t('parametres.scholarships.value_label_fixed')}
                                 </label>
                                 <Input
                                     id="value"
@@ -113,7 +115,7 @@ export default function Create() {
                                     min="0"
                                     value={formData.value}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, value: e.target.value }))}
-                                    placeholder={formData.type === 'percentage' ? 'Ex: 15' : 'Ex: 100.00'}
+                                    placeholder={formData.type === 'percentage' ? t('parametres.scholarships.value_ph_pct') : t('parametres.scholarships.value_ph_fixed')}
                                     className={errors.value ? 'border-red-500' : ''}
                                 />
                                 {errors.value && (
@@ -123,13 +125,13 @@ export default function Create() {
 
                             <div className="md:col-span-2">
                                 <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Description
+                                    {t('parametres.scholarships.description')}
                                 </label>
                                 <textarea
                                     id="description"
                                     value={formData.description}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                                    placeholder="Décrivez la bourse..."
+                                    placeholder={t('parametres.scholarships.description_ph')}
                                     rows={4}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
@@ -146,14 +148,14 @@ export default function Create() {
                             disabled={isSubmitting}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            {isSubmitting ? 'Création...' : 'Créer la bourse'}
+                            {isSubmitting ? t('parametres.common.creating') : t('parametres.scholarships.submit_create')}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => router.get(route('scholarships.index'))}
                         >
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                     </div>
                 </form>
