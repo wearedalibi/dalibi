@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface FeeCategorie {
@@ -17,6 +18,7 @@ interface EditProps {
 }
 
 export default function Edit({ feeCategorie }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: feeCategorie.name,
         description: feeCategorie.description || '',
@@ -40,7 +42,7 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title="Modifier la catégorie de frais" />
+            <Head title={t('parametres.fee_categories.edit_head')} />
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -52,7 +54,7 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Modifier la catégorie de frais</h1>
+                        <h1 className="text-3xl font-bold text-gray-900">{t('parametres.fee_categories.edit_title')}</h1>
                     </div>
                 </div>
 
@@ -61,11 +63,11 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
                         <div className="rounded-2xl bg-linear-to-br from-amber-50 to-white ring-1 ring-amber-100 p-6 shadow-sm space-y-4">
                             <div className="flex items-center gap-2 text-amber-700">
                                 <Tag className="h-4 w-4" />
-                                <p className="text-sm font-semibold">Identité de la catégorie</p>
+                                <p className="text-sm font-semibold">{t('parametres.fee_categories.identity')}</p>
                             </div>
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Nom *
+                                    {t('parametres.fee_categories.name_label')}
                                 </label>
                                 <Input
                                     id="name"
@@ -73,7 +75,7 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
                                     value={formData.name}
                                     onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
                                     className={`${errors.name ? 'border-red-500 bg-white/90' : 'border-slate-200 bg-white/90'}`}
-                                    placeholder="Ex: Frais de scolarité, Frais de cantine..."
+                                    placeholder={t('parametres.fee_categories.name_ph')}
                                 />
                                 {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
                             </div>
@@ -82,11 +84,11 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
                         <div className="rounded-2xl bg-linear-to-br from-cyan-50 to-white ring-1 ring-cyan-100 p-6 shadow-sm space-y-4">
                             <div className="flex items-center gap-2 text-cyan-700">
                                 <FileText className="h-4 w-4" />
-                                <p className="text-sm font-semibold">Description</p>
+                                <p className="text-sm font-semibold">{t('parametres.fee_categories.description')}</p>
                             </div>
                             <div>
                                 <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Description
+                                    {t('parametres.fee_categories.description')}
                                 </label>
                                 <textarea
                                     id="description"
@@ -95,7 +97,7 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
                                     className={`w-full px-3 py-2 rounded-lg bg-white/90 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
                                         errors.description ? 'border border-red-500' : 'border border-slate-200'
                                     }`}
-                                    placeholder="Décrivez cette catégorie de frais..."
+                                    placeholder={t('parametres.fee_categories.description_ph')}
                                     rows={4}
                                 />
                                 {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}
@@ -105,7 +107,7 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
 
                     <div className="flex gap-3">
                         <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
-                            {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
+                            {isSubmitting ? t('parametres.common.updating') : t('parametres.common.update')}
                         </Button>
                         <Button
                             type="button"
@@ -113,7 +115,7 @@ export default function Edit({ feeCategorie }: Readonly<EditProps>) {
                             className="border-slate-200 text-gray-700"
                             onClick={() => router.get(route('fee-categories.index'))}
                         >
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                     </div>
                 </form>

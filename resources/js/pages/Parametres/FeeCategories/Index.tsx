@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface FeeCategorie {
@@ -50,6 +51,8 @@ interface IndexProps {
 }
 
 export default function Index({ feeCategories, message, filters }: Readonly<IndexProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -90,25 +93,25 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
 
     return (
         <AppLayout>
-            <Head title="Catégories de frais" />
+            <Head title={t('parametres.fee_categories.head')} />
 
             <div className="space-y-6">
                 {/* Header avec titre et bouton */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Percent className="h-7 w-7 text-blue-600 shrink-0" />
-                            Catégories de frais
+                            {t('parametres.fee_categories.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les catégories de frais scolaires
+                            {t('parametres.fee_categories.subtitle')}
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         onClick={() => router.get(route('fee-categories.create'))}
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Nouvelle catégorie
+                        {t('parametres.fee_categories.new')}
                     </Button>
                 </div>
 
@@ -116,7 +119,7 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                 <div className="bg-linear-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 ring-1 ring-blue-100 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm font-medium text-gray-600">Catégories totales</p>
+                            <p className="text-sm font-medium text-gray-600">{t('parametres.fee_categories.stat_total')}</p>
                             <p className="text-3xl font-bold text-gray-900 mt-2">{feeCategories.total}</p>
                         </div>
                         <Tag className="w-12 h-12 text-blue-600 opacity-20" />
@@ -129,7 +132,7 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                         <div className="flex-1 relative">
                             <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                             <Input
-                                placeholder="Rechercher par nom ou description..."
+                                placeholder={t('parametres.fee_categories.search_ph')}
                                 className="pl-10 border-slate-200 focus:border-blue-500"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -166,10 +169,10 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                     <Table>
                         <TableHeader className="bg-gray-50 border-b border-slate-200">
                             <TableRow>
-                                <TableHead className="text-gray-700 font-semibold">Nom</TableHead>
-                                <TableHead className="text-gray-700 font-semibold">Description</TableHead>
-                                <TableHead className="text-gray-700 font-semibold">Date de création</TableHead>
-                                <TableHead className="text-gray-700 font-semibold text-right">Actions</TableHead>
+                                <TableHead className="text-gray-700 font-semibold">{t('parametres.fee_categories.th_name')}</TableHead>
+                                <TableHead className="text-gray-700 font-semibold">{t('parametres.fee_categories.th_description')}</TableHead>
+                                <TableHead className="text-gray-700 font-semibold">{t('parametres.fee_categories.th_created')}</TableHead>
+                                <TableHead className="text-gray-700 font-semibold text-right">{t('parametres.common.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -181,24 +184,24 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                                             {category.description || '-'}
                                         </TableCell>
                                         <TableCell className="text-gray-600">
-                                            {new Date(category.created_at).toLocaleDateString('fr-FR')}
+                                            {new Date(category.created_at).toLocaleDateString(dateLocale)}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <IconButton
-                                                    label="Voir"
+                                                    label={t('parametres.common.view')}
                                                     icon={<Eye className="w-4 h-4" />}
                                                     className="border-slate-200 text-gray-700 hover:bg-gray-100"
                                                     onClick={() => router.get(route('fee-categories.show', category.id))}
                                                 />
                                                 <IconButton
-                                                    label="Modifier"
+                                                    label={t('parametres.common.edit')}
                                                     icon={<Pencil className="w-4 h-4" />}
                                                     className="border-slate-200 text-gray-700 hover:bg-gray-100"
                                                     onClick={() => router.get(route('fee-categories.edit', category.id))}
                                                 />
                                                 <IconButton
-                                                    label="Supprimer"
+                                                    label={t('parametres.common.delete')}
                                                     icon={<Trash2 className="w-4 h-4" />}
                                                     className="border-slate-200 text-gray-700 hover:bg-red-50 hover:text-red-600"
                                                     onClick={() => setDeleteConfirm(category.id)}
@@ -210,7 +213,7 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={4} className="text-center py-8">
-                                        <p className="text-gray-600 font-medium">Aucune catégorie trouvée</p>
+                                        <p className="text-gray-600 font-medium">{t('parametres.fee_categories.empty')}</p>
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -222,7 +225,7 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                 {feeCategories.last_page > 1 && (
                     <div className="flex items-center justify-between">
                         <p className="text-sm text-gray-600">
-                            Affichage {feeCategories.from} à {feeCategories.to} sur {feeCategories.total}
+                            {t('parametres.common.showing', { from: feeCategories.from, to: feeCategories.to, total: feeCategories.total })}
                         </p>
                         <div className="flex gap-2">
                             <Button
@@ -257,19 +260,19 @@ export default function Index({ feeCategories, message, filters }: Readonly<Inde
                 <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer la catégorie</AlertDialogTitle>
+                            <AlertDialogTitle>{t('parametres.fee_categories.delete_title')}</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir supprimer cette catégorie?
+                                {t('parametres.fee_categories.delete_desc')}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-3">
-                            <AlertDialogCancel className="border-slate-200">Annuler</AlertDialogCancel>
+                            <AlertDialogCancel className="border-slate-200">{t('parametres.common.cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                                 disabled={isDeleting}
                                 className="bg-red-600 hover:bg-red-700"
                             >
-                                {isDeleting ? 'Suppression...' : 'Supprimer'}
+                                {isDeleting ? t('parametres.fee_categories.deleting') : t('parametres.common.delete')}
                             </AlertDialogAction>
                         </div>
                     </AlertDialogContent>

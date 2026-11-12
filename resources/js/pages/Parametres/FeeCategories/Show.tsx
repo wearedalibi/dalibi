@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface FeeCategorie {
@@ -27,6 +28,8 @@ interface ShowProps {
 }
 
 export default function Show({ feeCategorie }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [deleteConfirm, setDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -45,7 +48,7 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
 
     return (
         <AppLayout>
-            <Head title={`Catégorie: ${feeCategorie.name}`} />
+            <Head title={t('parametres.fee_categories.show_head', { name: feeCategorie.name })} />
 
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -58,7 +61,7 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                             <ArrowLeft className="w-5 h-5 text-gray-600" />
                         </button>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Détail de la catégorie</h1>
+                            <h1 className="text-3xl font-bold text-gray-900">{t('parametres.fee_categories.show_title')}</h1>
                         </div>
                     </div>
                     <div className="flex gap-3">
@@ -67,7 +70,7 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                             className="gap-2 bg-blue-600 hover:bg-blue-700"
                         >
                             <Pencil className="w-4 h-4" />
-                            Modifier
+                            {t('parametres.common.edit')}
                         </Button>
                         <Button
                             onClick={() => setDeleteConfirm(true)}
@@ -75,7 +78,7 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                             className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
                         >
                             <Trash2 className="w-4 h-4" />
-                            Supprimer
+                            {t('parametres.common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -84,13 +87,13 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                     {/* Informations principales */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="rounded-xl bg-white/80 ring-1 ring-amber-100 p-4">
-                            <div className="text-sm font-medium text-amber-700 mb-2 flex items-center gap-2"><Tag className="h-4 w-4" />Nom</div>
+                            <div className="text-sm font-medium text-amber-700 mb-2 flex items-center gap-2"><Tag className="h-4 w-4" />{t('parametres.fee_categories.name')}</div>
                             <p className="text-lg font-semibold text-gray-900">{feeCategorie.name}</p>
                         </div>
                         <div className="rounded-xl bg-white/80 ring-1 ring-amber-100 p-4">
-                            <div className="text-sm font-medium text-amber-700 mb-2 flex items-center gap-2"><CalendarDays className="h-4 w-4" />Créée le</div>
+                            <div className="text-sm font-medium text-amber-700 mb-2 flex items-center gap-2"><CalendarDays className="h-4 w-4" />{t('parametres.fee_categories.created_on')}</div>
                             <p className="text-lg font-semibold text-gray-900">
-                                {new Date(feeCategorie.created_at).toLocaleDateString('fr-FR', {
+                                {new Date(feeCategorie.created_at).toLocaleDateString(dateLocale, {
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric',
@@ -103,9 +106,9 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
 
                     {/* Description */}
                     <div className="rounded-xl bg-white/80 ring-1 ring-cyan-100 p-4">
-                        <div className="text-sm font-medium text-cyan-700 mb-2 flex items-center gap-2"><FileText className="h-4 w-4" />Description</div>
+                        <div className="text-sm font-medium text-cyan-700 mb-2 flex items-center gap-2"><FileText className="h-4 w-4" />{t('parametres.fee_categories.description')}</div>
                         <p className="text-gray-900 whitespace-pre-wrap bg-white rounded p-4 border border-slate-200">
-                            {feeCategorie.description || 'Aucune description fournie'}
+                            {feeCategorie.description || t('parametres.fee_categories.show_no_description')}
                         </p>
                     </div>
 
@@ -113,9 +116,9 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                     <div className="pt-4 border-t border-slate-200">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <div className="block text-sm font-medium text-gray-600 mb-2">Dernière modification</div>
+                                <div className="block text-sm font-medium text-gray-600 mb-2">{t('parametres.fee_categories.updated_on')}</div>
                                 <p className="text-sm text-gray-900">
-                                    {new Date(feeCategorie.updated_at).toLocaleDateString('fr-FR', {
+                                    {new Date(feeCategorie.updated_at).toLocaleDateString(dateLocale, {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric',
@@ -125,7 +128,7 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                                 </p>
                             </div>
                             <div>
-                                <div className="block text-sm font-medium text-gray-600 mb-2">ID</div>
+                                <div className="block text-sm font-medium text-gray-600 mb-2">{t('parametres.fee_categories.id')}</div>
                                 <p className="text-sm text-gray-600 font-mono">{feeCategorie.id}</p>
                             </div>
                         </div>
@@ -136,19 +139,19 @@ export default function Show({ feeCategorie }: Readonly<ShowProps>) {
                 <AlertDialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer la catégorie</AlertDialogTitle>
+                            <AlertDialogTitle>{t('parametres.fee_categories.delete_title')}</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir supprimer cette catégorie de frais?
+                                {t('parametres.fee_categories.delete_desc_show')}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-3">
-                            <AlertDialogCancel className="border-slate-200">Annuler</AlertDialogCancel>
+                            <AlertDialogCancel className="border-slate-200">{t('parametres.common.cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleDelete}
                                 disabled={isDeleting}
                                 className="bg-red-600 hover:bg-red-700"
                             >
-                                {isDeleting ? 'Suppression...' : 'Supprimer'}
+                                {isDeleting ? t('parametres.fee_categories.deleting') : t('parametres.common.delete')}
                             </AlertDialogAction>
                         </div>
                     </AlertDialogContent>
