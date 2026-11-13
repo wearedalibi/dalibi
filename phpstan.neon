@@ -1,0 +1,19 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+
+    paths:
+        - app
+        - routes
+        - database
+
+    # Larastan a besoin de connaître le répertoire des vues pour analyser les
+    # vues Blade référencées depuis le code.
+    # viewDirectories:
+    #     - resources/views
+
+    # Ignore les faux positifs connus liés à la magie Laravel ici si besoin.
+    ignoreErrors: []
