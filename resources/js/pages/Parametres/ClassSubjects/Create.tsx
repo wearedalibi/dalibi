@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom {
@@ -41,6 +42,7 @@ interface CreateProps {
 }
 
 export default function Create({ classrooms, subjects, academicYears }: Readonly<CreateProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         class_id: '',
         academic_year_id: '',
@@ -106,21 +108,21 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
         const newErrors: Record<string, string> = {};
 
         if (!formData.class_id) {
-            newErrors.class_id = 'La classe est requise.';
+            newErrors.class_id = t('parametres.class_subjects.err_class_required');
         }
 
         if (!formData.academic_year_id) {
-            newErrors.academic_year_id = 'L\'année académique est requise.';
+            newErrors.academic_year_id = t('parametres.class_subjects.err_year_required');
         }
 
         if (selectedSubjects.length === 0) {
-            newErrors.subjects = 'Veuillez sélectionner au moins une matière.';
+            newErrors.subjects = t('parametres.class_subjects.err_subjects_required');
         }
 
         selectedSubjects.forEach((subjectId) => {
             const coefficient = normalizeCoefficient(coefficients[subjectId] ?? '');
             if (!Number.isFinite(coefficient) || coefficient <= 0) {
-                newErrors[`coefficient_${subjectId}`] = 'Coefficient invalide (doit être > 0).';
+                newErrors[`coefficient_${subjectId}`] = t('parametres.class_subjects.err_coef_invalid');
             }
         });
 
@@ -153,7 +155,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
 
     return (
         <AppLayout>
-            <Head title="Assigner des matières à une classe" />
+            <Head title={t('parametres.class_subjects.create_head')} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -166,10 +168,10 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Assigner des matières à une classe
+                            {t('parametres.class_subjects.create_title')}
                         </h1>
                         <p className="text-gray-600 mt-1">
-                            Sélectionnez une classe, une année académique et les matières à enseigner
+                            {t('parametres.class_subjects.create_subtitle')}
                         </p>
                     </div>
                 </div>
@@ -178,13 +180,13 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                     {/* Class and Year Selection */}
                     <div className="bg-white rounded-lg p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Sélection de base
+                            {t('parametres.class_subjects.section_base')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Classe */}
                             <div>
                                 <label htmlFor="class_id" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Classe *
+                                    {t('parametres.class_subjects.label_class')} *
                                 </label>
                                 <Select
                                     value={formData.class_id}
@@ -200,7 +202,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                                             errors.class_id ? 'border-red-500' : ''
                                         }
                                     >
-                                        <SelectValue placeholder="Sélectionnez une classe" />
+                                        <SelectValue placeholder={t('parametres.class_subjects.class_ph')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {classrooms.map((classroom) => (
@@ -223,7 +225,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                             {/* Année Académique */}
                             <div>
                                 <label htmlFor="academic_year_id" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Année académique *
+                                    {t('parametres.class_subjects.label_year')} *
                                 </label>
                                 <Select
                                     value={formData.academic_year_id}
@@ -241,7 +243,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                                                 : ''
                                         }
                                     >
-                                        <SelectValue placeholder="Sélectionnez une année académique" />
+                                        <SelectValue placeholder={t('parametres.class_subjects.year_ph')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {academicYears.map((year) => (
@@ -263,20 +265,20 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                     {/* Subject Selection with Search */}
                     <div className="bg-white rounded-lg p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Sélection des matières et coefficients
+                            {t('parametres.class_subjects.section_subjects')}
                         </h2>
 
                         {/* Search Box */}
                         <div className="mb-4">
                             <label htmlFor="search" className="block text-sm font-medium text-gray-900 mb-2">
-                                Rechercher les matières
+                                {t('parametres.class_subjects.search_subjects')}
                             </label>
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <Input
                                     id="search"
                                     type="text"
-                                    placeholder="Rechercher par nom ou code..."
+                                    placeholder={t('parametres.class_subjects.search_subjects_ph')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="pl-10"
@@ -294,7 +296,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                                             key={subjectId}
                                             className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
                                         >
-                                            {subject?.name} · Coef {coefficients[subjectId] ?? '1'}
+                                            {subject?.name} · {t('parametres.class_subjects.coef')} {coefficients[subjectId] ?? '1'}
                                             <button
                                                 type="button"
                                                 onClick={() =>
@@ -331,7 +333,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                                                 {subject.name}
                                             </p>
                                             <p className="text-xs text-gray-500">
-                                                Code: {subject.code}
+                                                {t('parametres.class_subjects.code')}: {subject.code}
                                             </p>
                                         </button>
                                         {selectedSubjects.includes(subject.id) && (
@@ -341,14 +343,14 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                                                     inputMode="decimal"
                                                     value={coefficients[subject.id] ?? '1'}
                                                     onChange={(e) => updateCoefficient(subject.id, e.target.value)}
-                                                    placeholder="Coef"
+                                                    placeholder={t('parametres.class_subjects.coef_ph')}
                                                     className={`w-20 ${errors[`coefficient_${subject.id}`] ? 'border-red-500' : ''}`}
                                                 />
                                                 <Select value={groups[subject.id] ?? 'obligatoire'} onValueChange={(v) => updateGroup(subject.id, v)}>
                                                     <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="obligatoire">Obligatoire</SelectItem>
-                                                        <SelectItem value="facultatif">Facultatif</SelectItem>
+                                                        <SelectItem value="obligatoire">{t('parametres.class_subjects.group_required')}</SelectItem>
+                                                        <SelectItem value="facultatif">{t('parametres.class_subjects.group_optional')}</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -357,7 +359,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                                 ))
                             ) : (
                                 <p className="text-center text-gray-500 py-4">
-                                    Aucune matière trouvée
+                                    {t('parametres.class_subjects.no_subjects')}
                                 </p>
                             )}
                         </div>
@@ -387,7 +389,7 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                     {/* Summary */}
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <p className="text-sm text-blue-900">
-                            <span className="font-semibold">{selectedSubjects.length}</span> matière(s) sélectionnée(s) avec coefficient
+                            {t('parametres.class_subjects.selected_count', { n: selectedSubjects.length })}
                         </p>
                     </div>
 
@@ -398,14 +400,14 @@ export default function Create({ classrooms, subjects, academicYears }: Readonly
                             disabled={isSubmitting}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            {isSubmitting ? 'Attribution en cours...' : 'Attribuer les matières'}
+                            {isSubmitting ? t('parametres.class_subjects.creating') : t('parametres.class_subjects.submit_create')}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => router.get(route('class-subjects.index'))}
                         >
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                     </div>
                 </form>

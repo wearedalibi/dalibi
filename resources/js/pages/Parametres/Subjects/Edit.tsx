@@ -5,6 +5,7 @@ import {
     type SubjectFormData,
 } from '@/components/Subjects/subject-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Subject {
@@ -23,6 +24,7 @@ interface EditProps {
 }
 
 export default function Edit({ subject, parents = [] }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm<SubjectFormData>({
         name: subject.name,
         code: subject.code,
@@ -37,7 +39,7 @@ export default function Edit({ subject, parents = [] }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title={`Éditer ${subject.name}`} />
+            <Head title={t('parametres.subjects.edit_head', { name: subject.name })} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center gap-4">
@@ -49,8 +51,8 @@ export default function Edit({ subject, parents = [] }: Readonly<EditProps>) {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Éditer une matière</h1>
-                        <p className="mt-2 text-gray-600">Mettez à jour les informations de {subject.name}.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.subjects.edit_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('parametres.subjects.edit_subtitle', { name: subject.name })}</p>
                     </div>
                 </div>
 

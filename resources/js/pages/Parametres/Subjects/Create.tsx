@@ -5,6 +5,7 @@ import {
     type SubjectFormData,
 } from '@/components/Subjects/subject-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 const initialValues: SubjectFormData = {
@@ -17,6 +18,7 @@ const initialValues: SubjectFormData = {
 interface ParentSubject { id: string; name: string }
 
 export default function Create({ parents = [] }: Readonly<{ parents?: ParentSubject[] }>) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm<SubjectFormData>(initialValues);
 
     const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -26,7 +28,7 @@ export default function Create({ parents = [] }: Readonly<{ parents?: ParentSubj
 
     return (
         <AppLayout>
-            <Head title="Créer une matière" />
+            <Head title={t('parametres.subjects.create_head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center gap-4">
@@ -38,8 +40,8 @@ export default function Create({ parents = [] }: Readonly<{ parents?: ParentSubj
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Créer une matière</h1>
-                        <p className="mt-2 text-gray-600">Renseignez les informations de la matière.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.subjects.create_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('parametres.subjects.create_subtitle')}</p>
                     </div>
                 </div>
 

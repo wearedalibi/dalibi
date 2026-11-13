@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom {
@@ -73,6 +74,7 @@ interface IndexProps {
 }
 
 export default function Index({ classSubjects, message, filters }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -131,14 +133,14 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
 
     const statsCards = [
         {
-            title: 'Attributions',
+            title: t('parametres.class_subjects.stat_assignments'),
             value: classSubjects.total,
             icon: BookOpen,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Classes couvertes',
+            title: t('parametres.class_subjects.stat_classes'),
             value: new Set(classSubjects.data.map(cs => cs.class.id)).size,
             icon: CheckCircle2,
             bgColor: 'bg-green-50',
@@ -162,25 +164,25 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
 
     return (
         <AppLayout>
-            <Head title="Attribution des matières aux classes" />
+            <Head title={t('parametres.class_subjects.head')} />
 
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><BookOpen className="h-7 w-7 text-blue-600 shrink-0" />
-                            Attribution des matières aux classes
+                            {t('parametres.class_subjects.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez l'attribution des matières à chaque classe
+                            {t('parametres.class_subjects.subtitle')}
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         onClick={() => router.get(route('class-subjects.create'))}
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Ajouter une attribution
+                        {t('parametres.class_subjects.new')}
                     </Button>
                 </div>
 
@@ -222,7 +224,7 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400 group-focus-within:text-blue-600 transition" />
                                 <Input
                                     type="text"
-                                    placeholder="Rechercher une classe ou matière..."
+                                    placeholder={t('parametres.class_subjects.search_ph')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -242,12 +244,12 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                 className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shrink-0 transition"
                             >
                                 <Search className="w-4 h-4" />
-                                Rechercher
+                                {t('parametres.common.search')}
                             </Button>
                         </div>
                         {searchQuery && (
                             <p className="text-sm text-gray-500 mt-3">
-                                Résultats pour : <span className="font-semibold text-gray-700">« {searchQuery} »</span>
+                                {t('parametres.class_subjects.search_results')} <span className="font-semibold text-gray-700">« {searchQuery} »</span>
                             </p>
                         )}
                     </div>
@@ -259,10 +261,10 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow className="border-b border-gray-200">
-                                    <TableHead className="font-semibold text-gray-900">Classe</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Matières attribuées</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Année académique</TableHead>
-                                    <TableHead className="text-center font-semibold text-gray-900 w-24">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.class_subjects.th_class')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.class_subjects.th_subjects')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('parametres.class_subjects.th_year')}</TableHead>
+                                    <TableHead className="text-center font-semibold text-gray-900 w-24">{t('parametres.common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -284,7 +286,7 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                                             key={subject.id}
                                                             className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getSubjectBadgeClass(subject.name)}`}
                                                         >
-                                                            {subject.name} · Coef {subject.coefficient}
+                                                            {subject.name} · {t('parametres.class_subjects.coef')} {subject.coefficient}
                                                         </span>
                                                     ))}
                                                 </div>
@@ -295,19 +297,19 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                             <TableCell className="text-center">
                                                 <div className="flex gap-2 justify-center">
                                                     <IconButton
-                                                        label="Voir"
+                                                        label={t('parametres.common.view')}
                                                         icon={<Eye className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.visit(route('class-subjects.show', group.firstId))}
                                                     />
                                                     <IconButton
-                                                        label="Modifier"
+                                                        label={t('parametres.common.edit')}
                                                         icon={<Pencil className="w-4 h-4" />}
                                                         className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                                         onClick={() => router.get(route('class-subjects.edit', group.firstId))}
                                                     />
                                                     <IconButton
-                                                        label="Supprimer"
+                                                        label={t('parametres.common.delete')}
                                                         icon={<Trash2 className="w-4 h-4" />}
                                                         className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                         onClick={() => setDeleteConfirm(group.firstId)}
@@ -324,7 +326,7 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                         >
                                             <div className="flex flex-col items-center gap-2">
                                                 <BookOpen className="w-12 h-12 text-gray-300" />
-                                                <p className="text-lg">Aucune attribution trouvée</p>
+                                                <p className="text-lg">{t('parametres.class_subjects.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -339,7 +341,7 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-600">
-                                Affichage <span className="font-semibold">{classSubjects.from}</span> à <span className="font-semibold">{classSubjects.to}</span> sur <span className="font-semibold">{classSubjects.total}</span> attributions
+                                {t('parametres.class_subjects.showing', { from: classSubjects.from, to: classSubjects.to, total: classSubjects.total })}
                             </p>
                             <div className="flex items-center gap-2">
                                 <Button
@@ -355,7 +357,7 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                     className="border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <ChevronLeft className="w-4 h-4 mr-1" />
-                                    Précédent
+                                    {t('parametres.common.prev')}
                                 </Button>
                                 <div className="flex gap-1">
                                     {Array.from({ length: Math.min(5, classSubjects.last_page) }, (_, i) => {
@@ -397,12 +399,12 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                                     }, { preserveScroll: true })}
                                     className="border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Suivant
+                                    {t('parametres.common.next')}
                                     <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             </div>
                             <p className="text-sm text-gray-600">
-                                Page <span className="font-semibold">{classSubjects.current_page}</span> sur <span className="font-semibold">{classSubjects.last_page}</span>
+                                {t('parametres.class_subjects.page_of', { current: classSubjects.current_page, last: classSubjects.last_page })}
                             </p>
                         </div>
                     </div>
@@ -413,14 +415,13 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.class_subjects.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette attribution ? Cette action
-                            est irréversible.
+                            {t('parametres.class_subjects.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3 justify-end">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => {
                                 if (deleteConfirm) {
@@ -430,7 +431,7 @@ export default function Index({ classSubjects, message, filters }: Readonly<Inde
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.class_subjects.deleting') : t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

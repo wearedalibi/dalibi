@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface AcademicYear {
@@ -63,6 +64,8 @@ interface IndexProps {
 }
 
 export default function Index({ academicPeriods, filters }: Readonly<IndexProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -99,21 +102,21 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
 
     const statsCards = [
         {
-            title: 'Périodes totales',
+            title: t('parametres.academic_periods.stat_total'),
             value: academicPeriods.total,
             icon: Calendar,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Périodes actives',
+            title: t('parametres.academic_periods.stat_active'),
             value: currentPeriods,
             icon: CheckCircle2,
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
         {
-            title: 'Page',
+            title: t('parametres.academic_periods.stat_page'),
             value: `${academicPeriods.current_page}/${academicPeriods.last_page}`,
             icon: Clock,
             bgColor: 'bg-purple-50',
@@ -122,7 +125,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
     ];
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        return new Date(dateString).toLocaleDateString(dateLocale, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
@@ -130,22 +133,22 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
     };
 
     const getTypeLabel = (type: string) => {
-        return type === 'trimestre' ? 'Trimestre' : 'Semestre';
+        return type === 'trimestre' ? t('parametres.academic_periods.type_trimester') : t('parametres.academic_periods.type_semester');
     };
 
     return (
         <AppLayout>
-            <Head title="Périodes académiques" />
+            <Head title={t('parametres.academic_periods.head')} />
 
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Clock className="h-7 w-7 text-blue-600 shrink-0" />
-                            Périodes académiques
+                            {t('parametres.academic_periods.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les périodes académiques (trimestres et semestres)
+                            {t('parametres.academic_periods.subtitle')}
                         </p>
                     </div>
                     <Button 
@@ -153,7 +156,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Nouvelle période
+                        {t('parametres.academic_periods.new')}
                     </Button>
                 </div>
 
@@ -191,7 +194,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Rechercher une période..."
+                                placeholder={t('parametres.academic_periods.search_ph')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={(e) => {
@@ -214,7 +217,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                             onClick={handleSearch}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            Rechercher
+                            {t('parametres.common.search')}
                         </Button>
                     </div>
                 </div>
@@ -224,13 +227,13 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-gray-50">
-                                <TableHead className="font-semibold text-gray-900">Nom</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Année</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Type</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Ordre</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Période</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Statut</TableHead>
-                                <TableHead className="text-right font-semibold text-gray-900">Actions</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_periods.th_name')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_periods.th_year')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_periods.th_type')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_periods.th_order')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_periods.th_period')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_periods.th_status')}</TableHead>
+                                <TableHead className="text-right font-semibold text-gray-900">{t('parametres.common.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -239,7 +242,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                                     <TableCell colSpan={7} className="text-center py-12">
                                         <div className="flex flex-col items-center gap-2">
                                             <Clock className="w-12 h-12 text-gray-300" />
-                                            <p className="text-gray-500 font-medium">Aucune période académique trouvée</p>
+                                            <p className="text-gray-500 font-medium">{t('parametres.academic_periods.empty')}</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -287,32 +290,32 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                                             {period.is_current ? (
                                                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                                     <CheckCircle2 className="w-4 h-4" />
-                                                    Active
+                                                    {t('parametres.academic_periods.status_active')}
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                                                    Inactive
+                                                    {t('parametres.academic_periods.status_inactive')}
                                                 </span>
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <IconButton
-                                                    label="Voir"
+                                                    label={t('parametres.common.view')}
                                                     variant="ghost"
                                                     icon={<Eye className="w-4 h-4" />}
                                                     onClick={() => router.get(route('academic-periods.show', period.id))}
                                                     className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                                 />
                                                 <IconButton
-                                                    label="Modifier"
+                                                    label={t('parametres.common.edit')}
                                                     variant="ghost"
                                                     icon={<Pencil className="w-4 h-4" />}
                                                     onClick={() => router.get(route('academic-periods.edit', period.id))}
                                                     className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
                                                 />
                                                 <IconButton
-                                                    label="Supprimer"
+                                                    label={t('parametres.common.delete')}
                                                     variant="ghost"
                                                     icon={<Trash2 className="w-4 h-4" />}
                                                     onClick={() => setDeleteConfirm(period.id)}
@@ -331,7 +334,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                 {academicPeriods.last_page > 1 && (
                     <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-4 border border-gray-200">
                         <div className="text-sm text-gray-600">
-                            Affichage de {academicPeriods.from} à {academicPeriods.to} sur {academicPeriods.total} résultats
+                            {t('parametres.common.showing', { from: academicPeriods.from, to: academicPeriods.to, total: academicPeriods.total })}
                         </div>
                         <div className="flex items-center gap-2">
                             <Button
@@ -347,7 +350,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                                 className="gap-1"
                             >
                                 <ChevronLeft className="w-4 h-4" />
-                                Précédent
+                                {t('parametres.common.prev')}
                             </Button>
 
                             <div className="flex gap-1">
@@ -394,7 +397,7 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
                                 disabled={academicPeriods.current_page === academicPeriods.last_page}
                                 className="gap-1"
                             >
-                                Suivant
+                                {t('parametres.common.next')}
                                 <ChevronRight className="w-4 h-4" />
                             </Button>
                         </div>
@@ -406,19 +409,19 @@ export default function Index({ academicPeriods, filters }: Readonly<IndexProps>
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.academic_periods.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette période académique ? Cette action est irréversible.
+                            {t('parametres.academic_periods.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-3">
-                        <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeleting}>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.academic_periods.deleting') : t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

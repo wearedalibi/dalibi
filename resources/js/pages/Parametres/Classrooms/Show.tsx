@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface ClassroomType {
@@ -47,6 +48,8 @@ interface ShowProps {
 }
 
 export default function Show({ classroom, academicYears, subjectAssignments }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [selectedYearId, setSelectedYearId] = useState<string>(
         academicYears.find((year) => year.active)?.id || academicYears[0]?.id || ''
     );
@@ -80,7 +83,7 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                                         {classroom.name}
                                     </h1>
                                     <p className="text-sm text-gray-600 mt-1">
-                                        Code: <span className="font-semibold">{classroom.code}</span>
+                                        {t('parametres.classrooms.show_code')}: <span className="font-semibold">{classroom.code}</span>
                                     </p>
                                 </div>
                             </div>
@@ -93,14 +96,14 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                             onClick={() => router.visit(route('classrooms.subject-assignments.create', classroom.id))}
                         >
                             <BookOpen className="w-4 h-4 mr-2" />
-                            Attribuer des matières
+                            {t('parametres.classrooms.assign_subjects')}
                         </Button>
                         <Button
                             className="bg-blue-600 hover:bg-blue-700"
                             onClick={() => router.visit(route('classrooms.edit', classroom.id))}
                         >
                             <Edit className="w-4 h-4 mr-2" />
-                            Modifier
+                            {t('parametres.common.edit')}
                         </Button>
                     </div>
                 </div>
@@ -108,24 +111,24 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                 {/* Informations cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                        <p className="text-sm font-medium text-gray-600">Capacité</p>
+                        <p className="text-sm font-medium text-gray-600">{t('parametres.classrooms.show_capacity')}</p>
                         <p className="text-3xl font-bold text-gray-900 mt-2">
                             {classroom.capacity}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">places disponibles</p>
+                        <p className="text-xs text-gray-500 mt-1">{t('parametres.classrooms.show_capacity_hint')}</p>
                     </div>
 
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                        <p className="text-sm font-medium text-gray-600">Type de classe</p>
+                        <p className="text-sm font-medium text-gray-600">{t('parametres.classrooms.show_type')}</p>
                         <p className="text-2xl font-bold text-gray-900 mt-2">
                             {classroom.type?.name || '—'}
                         </p>
                     </div>
 
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                        <p className="text-sm font-medium text-gray-600 mb-3">Créée le</p>
+                        <p className="text-sm font-medium text-gray-600 mb-3">{t('parametres.classrooms.show_created_on')}</p>
                         <p className="text-sm text-gray-600">
-                            {new Date(classroom.created_at).toLocaleDateString('fr-FR', {
+                            {new Date(classroom.created_at).toLocaleDateString(dateLocale, {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
@@ -133,9 +136,9 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                                 minute: '2-digit',
                             })}
                         </p>
-                        <p className="text-sm font-medium text-gray-600 mt-4 mb-2">Modifiée le</p>
+                        <p className="text-sm font-medium text-gray-600 mt-4 mb-2">{t('parametres.classrooms.show_updated_on')}</p>
                         <p className="text-sm text-gray-600">
-                            {new Date(classroom.updated_at).toLocaleDateString('fr-FR', {
+                            {new Date(classroom.updated_at).toLocaleDateString(dateLocale, {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
@@ -152,17 +155,17 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                         <div className="flex items-center justify-between">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-900">
-                                    Matières et Coefficients
+                                    {t('parametres.classrooms.subjects_title')}
                                 </h2>
                                 <p className="text-sm text-gray-600 mt-1">
-                                    {currentAssignments.length} matière(s) • Total des coefficients: {totalCoefficients.toFixed(2)}
+                                    {t('parametres.classrooms.subjects_summary', { n: currentAssignments.length, total: totalCoefficients.toFixed(2) })}
                                 </p>
                             </div>
                             {academicYears.length > 0 && (
                                 <div className="w-64">
                                     <Select value={selectedYearId} onValueChange={setSelectedYearId}>
                                         <SelectTrigger className="border-gray-200">
-                                            <SelectValue placeholder="Sélectionner une année" />
+                                            <SelectValue placeholder={t('parametres.classrooms.select_year_ph')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {academicYears.map((year) => (
@@ -194,12 +197,12 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                                                     {assignment.subject.name}
                                                 </p>
                                                 <p className="text-xs text-gray-500">
-                                                    Code: {assignment.subject.code}
+                                                    {t('parametres.classrooms.show_code')}: {assignment.subject.code}
                                                 </p>
                                             </div>
                                         </div>
                                         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-amber-100 text-amber-800">
-                                            Coef. {assignment.coefficient}
+                                            {t('parametres.classrooms.coef')} {assignment.coefficient}
                                         </span>
                                     </div>
                                 ))}
@@ -210,13 +213,13 @@ export default function Show({ classroom, academicYears, subjectAssignments }: R
                             <div className="text-center">
                                 <BookOpen className="mx-auto h-12 w-12 text-gray-300" />
                                 <p className="mt-4 text-lg text-gray-500">
-                                    Aucune matière assignée pour cette année académique
+                                    {t('parametres.classrooms.no_assignments')}
                                 </p>
                                 <Button
                                     className="mt-4 bg-blue-600 hover:bg-blue-700"
                                     onClick={() => router.visit(route('classrooms.subject-assignments.create', classroom.id))}
                                 >
-                                    Attribuer des matières
+                                    {t('parametres.classrooms.assign_subjects')}
                                 </Button>
                             </div>
                         </div>

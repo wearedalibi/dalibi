@@ -12,6 +12,7 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 type Align = 'left' | 'center' | 'right';
@@ -60,6 +61,7 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `el-${Date.now()}-$
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
 export default function HeaderDesigner({ header, preset: initialPreset, presets, default: fallback, watermarkImageUrl, variables, canvasWidth, school }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [preset, setPreset] = useState<string>(initialPreset ?? 'ministeriel');
     const [elements, setElements] = useState<El[]>(header.layout.elements ?? []);
     const [height, setHeight] = useState<number>(header.layout.height ?? 130);
@@ -92,7 +94,7 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
 
     const addElement = (preset: Partial<El>) => {
         const el: El = {
-            id: uid(), type: 'text', x: 24, y: 20, w: 240, content: 'Texte',
+            id: uid(), type: 'text', x: 24, y: 20, w: 240, content: t('parametres.documents.hd_block_text'),
             fontSize: 13, bold: false, italic: false, align: 'left', color: '#1a1a1a', ...preset,
         };
         setElements((els) => [...els, el]);
@@ -166,37 +168,37 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
 
     return (
         <AppLayout>
-            <Head title="En-tête des documents" />
+            <Head title={t('parametres.documents.hd_head')} />
             <div className="w-full space-y-6">
 
                 {/* En-tête de page */}
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-                            <LayoutTemplate className="h-7 w-7 text-blue-600 shrink-0" /> En-tête des documents
+                            <LayoutTemplate className="h-7 w-7 text-blue-600 shrink-0" /> {t('parametres.documents.hd_title')}
                         </h1>
-                        <p className="mt-2 text-gray-500">Composez l'en-tête utilisé pour les certificats, attestations et bulletins. Glissez les blocs pour les positionner.</p>
+                        <p className="mt-2 text-gray-500">{t('parametres.documents.hd_subtitle')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" className="gap-2" onClick={resetDefault}>
-                            <RotateCcw className="w-4 h-4" /> Réinitialiser
+                            <RotateCcw className="w-4 h-4" /> {t('parametres.documents.hd_reset')}
                         </Button>
                         <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={save} disabled={saving}>
-                            <Save className="w-4 h-4" /> {saving ? 'Enregistrement…' : 'Enregistrer'}
+                            <Save className="w-4 h-4" /> {saving ? t('parametres.documents.hd_saving') : t('parametres.common.save')}
                         </Button>
                     </div>
                 </div>
 
                 {/* Préréglage d'en-tête */}
                 <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 flex flex-wrap items-center gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Modèle d'en-tête</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">{t('parametres.documents.hd_preset_label')}</p>
                     <Select value={preset} onValueChange={setPreset}>
                         <SelectTrigger className="w-72"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             {Object.entries(presets).map(([k, label]) => <SelectItem key={k} value={k}>{label}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    <p className="text-xs text-gray-400">Le filigrane s'applique aux deux modèles.</p>
+                    <p className="text-xs text-gray-400">{t('parametres.documents.hd_watermark_both')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
@@ -204,33 +206,33 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                     <div className="space-y-4">
                         {preset !== 'personnalise' && (
                             <div className="rounded-2xl bg-blue-50/60 p-5 ring-1 ring-blue-100 text-sm text-gray-700 space-y-2">
-                                <p className="font-semibold text-gray-900">En-tête ministériel (officiel)</p>
-                                <p>L'en-tête à trois colonnes (Ministère &amp; établissement · logo · République &amp; devise) est généré automatiquement à partir des informations de l'école. Le glisser-déposer est désactivé pour ce modèle.</p>
-                                <p className="text-xs text-gray-500">Pour modifier le ministère, le nom, le logo ou la devise, rendez-vous dans les réglages de l'école.</p>
+                                <p className="font-semibold text-gray-900">{t('parametres.documents.hd_ministerial_title')}</p>
+                                <p>{t('parametres.documents.hd_ministerial_p1')}</p>
+                                <p className="text-xs text-gray-500">{t('parametres.documents.hd_ministerial_p2')}</p>
                             </div>
                         )}
                         {preset === 'personnalise' && (<>
                         {/* Palette */}
                         <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Ajouter un bloc</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">{t('parametres.documents.hd_add_block')}</p>
                             <div className="flex flex-wrap gap-2">
                                 <Button size="sm" variant="outline" className="gap-1.5" onClick={() => school.logo_url ? addElement({ type: 'logo', content: '', w: 70 }) : undefined} disabled={!school.logo_url}>
-                                    <ImageIcon className="w-4 h-4" /> Logo
+                                    <ImageIcon className="w-4 h-4" /> {t('parametres.documents.hd_block_logo')}
                                 </Button>
                                 <Button size="sm" variant="outline" className="gap-1.5" onClick={() => addElement({ content: '{{ecole.nom}}', fontSize: 16, bold: true, align: 'center', w: 360 })}>
-                                    <Plus className="w-4 h-4" /> Nom
+                                    <Plus className="w-4 h-4" /> {t('parametres.documents.hd_block_name')}
                                 </Button>
                                 <Button size="sm" variant="outline" className="gap-1.5" onClick={() => addElement({ content: '{{ecole.devise}}', fontSize: 11, italic: true, align: 'center', w: 360, color: '#444444' })}>
-                                    <Plus className="w-4 h-4" /> Devise
+                                    <Plus className="w-4 h-4" /> {t('parametres.documents.hd_block_motto')}
                                 </Button>
                                 <Button size="sm" variant="outline" className="gap-1.5" onClick={() => addElement({ content: '{{ecole.terme}}', fontSize: 13, bold: true, align: 'center', w: 360 })}>
-                                    <Plus className="w-4 h-4" /> Terme
+                                    <Plus className="w-4 h-4" /> {t('parametres.documents.hd_block_term')}
                                 </Button>
                                 <Button size="sm" variant="outline" className="gap-1.5" onClick={() => addElement({ content: '{{ecole.bp}} – {{ecole.ville}} – {{ecole.telephone}}', fontSize: 10, align: 'center', w: 420, color: '#555555' })}>
-                                    <Plus className="w-4 h-4" /> Coordonnées
+                                    <Plus className="w-4 h-4" /> {t('parametres.documents.hd_block_contact')}
                                 </Button>
-                                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => addElement({ content: 'Texte libre' })}>
-                                    <Type className="w-4 h-4" /> Texte
+                                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => addElement({ content: t('parametres.documents.hd_default_text') })}>
+                                    <Type className="w-4 h-4" /> {t('parametres.documents.hd_block_text')}
                                 </Button>
                             </div>
                         </div>
@@ -238,9 +240,9 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                         {/* Canvas */}
                         <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
                             <div className="flex items-center justify-between mb-3">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Aperçu (largeur A4)</p>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">{t('parametres.documents.hd_canvas_title')}</p>
                                 <div className="flex items-center gap-2">
-                                    <Label className="text-xs text-gray-500">Hauteur</Label>
+                                    <Label className="text-xs text-gray-500">{t('parametres.documents.hd_height')}</Label>
                                     <Input type="number" value={height} min={60} max={400}
                                         onChange={(e) => setHeight(clamp(Number(e.target.value) || 130, 60, 400))}
                                         className="h-8 w-20" />
@@ -273,7 +275,7 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                                     ))}
                                 </div>
                             </div>
-                            <p className="mt-2 text-xs text-gray-400">Cliquez un bloc pour le modifier, glissez-le pour le déplacer.</p>
+                            <p className="mt-2 text-xs text-gray-400">{t('parametres.documents.hd_canvas_hint')}</p>
                         </div>
                         </>)}
                     </div>
@@ -282,29 +284,29 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                     <div className="space-y-4">
                         {preset === 'personnalise' && (
                         <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Propriétés du bloc</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">{t('parametres.documents.hd_block_props')}</p>
                             {!selected ? (
-                                <p className="text-sm text-gray-400">Sélectionnez un bloc dans l'aperçu.</p>
+                                <p className="text-sm text-gray-400">{t('parametres.documents.hd_select_block')}</p>
                             ) : selected.type === 'logo' ? (
                                 <div className="space-y-3">
                                     <div className="space-y-1.5">
-                                        <Label className="text-xs">Taille (px)</Label>
+                                        <Label className="text-xs">{t('parametres.documents.hd_size_px')}</Label>
                                         <Input type="number" value={selected.w} min={20} max={300}
                                             onChange={(e) => update(selected.id, { w: clamp(Number(e.target.value) || 70, 20, 300) })} className="h-9" />
                                     </div>
                                     <Button variant="outline" size="sm" className="w-full gap-1.5 border-red-200 text-red-500 hover:bg-red-50" onClick={removeSelected}>
-                                        <Trash2 className="w-3.5 h-3.5" /> Supprimer
+                                        <Trash2 className="w-3.5 h-3.5" /> {t('parametres.documents.hd_delete')}
                                     </Button>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
                                     <div className="space-y-1.5">
-                                        <Label className="text-xs">Contenu</Label>
+                                        <Label className="text-xs">{t('parametres.documents.hd_content')}</Label>
                                         <textarea value={selected.content} rows={2}
                                             onChange={(e) => update(selected.id, { content: e.target.value })}
                                             className="w-full rounded-md border border-gray-300 px-2.5 py-1.5 text-sm" />
                                         <Select onValueChange={(v) => update(selected.id, { content: `${selected.content} {{${v}}}` })}>
-                                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Insérer une variable…" /></SelectTrigger>
+                                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={t('parametres.documents.hd_insert_var_ph')} /></SelectTrigger>
                                             <SelectContent>
                                                 {flatVariables.map(([key, label]) => (
                                                     <SelectItem key={key} value={key} className="text-xs">{label}</SelectItem>
@@ -314,12 +316,12 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="space-y-1.5">
-                                            <Label className="text-xs">Taille</Label>
+                                            <Label className="text-xs">{t('parametres.documents.hd_size')}</Label>
                                             <Input type="number" value={selected.fontSize} min={6} max={48}
                                                 onChange={(e) => update(selected.id, { fontSize: clamp(Number(e.target.value) || 12, 6, 48) })} className="h-9" />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <Label className="text-xs">Largeur</Label>
+                                            <Label className="text-xs">{t('parametres.documents.hd_width')}</Label>
                                             <Input type="number" value={selected.w} min={40} max={canvasWidth}
                                                 onChange={(e) => update(selected.id, { w: clamp(Number(e.target.value) || 200, 40, canvasWidth) })} className="h-9" />
                                         </div>
@@ -338,10 +340,10 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                                             ))}
                                         </div>
                                         <input type="color" value={selected.color} onChange={(e) => update(selected.id, { color: e.target.value })}
-                                            className="h-9 w-9 rounded-md border border-gray-200 p-0.5" aria-label="Couleur" />
+                                            className="h-9 w-9 rounded-md border border-gray-200 p-0.5" aria-label={t('parametres.documents.hd_color')} />
                                     </div>
                                     <Button variant="outline" size="sm" className="w-full gap-1.5 border-red-200 text-red-500 hover:bg-red-50" onClick={removeSelected}>
-                                        <Trash2 className="w-3.5 h-3.5" /> Supprimer le bloc
+                                        <Trash2 className="w-3.5 h-3.5" /> {t('parametres.documents.hd_delete_block')}
                                     </Button>
                                 </div>
                             )}
@@ -351,10 +353,10 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                         {/* Filigrane */}
                         <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
                             <div className="flex items-center justify-between mb-3">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Filigrane</p>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">{t('parametres.documents.hd_watermark')}</p>
                                 <label className="flex items-center gap-2 text-sm">
                                     <Checkbox checked={watermark.enabled} onCheckedChange={(v) => setWatermark({ ...watermark, enabled: Boolean(v) })} />
-                                    Activer
+                                    {t('parametres.documents.hd_enable')}
                                 </label>
                             </div>
 
@@ -362,17 +364,17 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                                 <Select value={watermark.type} onValueChange={(v: 'text' | 'image') => setWatermark({ ...watermark, type: v })}>
                                     <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="text">Texte</SelectItem>
-                                        <SelectItem value="image">Image / logo</SelectItem>
+                                        <SelectItem value="text">{t('parametres.documents.hd_wm_text')}</SelectItem>
+                                        <SelectItem value="image">{t('parametres.documents.hd_wm_image')}</SelectItem>
                                     </SelectContent>
                                 </Select>
 
                                 {watermark.type === 'text' ? (
                                     <div className="flex items-center gap-2">
-                                        <Input value={watermark.text} placeholder="Texte du filigrane"
+                                        <Input value={watermark.text} placeholder={t('parametres.documents.hd_wm_text_ph')}
                                             onChange={(e) => setWatermark({ ...watermark, text: e.target.value })} className="h-9" />
                                         <input type="color" value={watermark.color} onChange={(e) => setWatermark({ ...watermark, color: e.target.value })}
-                                            className="h-9 w-9 rounded-md border border-gray-200 p-0.5" aria-label="Couleur" />
+                                            className="h-9 w-9 rounded-md border border-gray-200 p-0.5" aria-label={t('parametres.documents.hd_color')} />
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
@@ -382,17 +384,17 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
                                 )}
 
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs">Opacité : {watermark.opacity}%</Label>
+                                    <Label className="text-xs">{t('parametres.documents.hd_opacity', { n: watermark.opacity })}</Label>
                                     <input type="range" min={2} max={50} value={watermark.opacity}
                                         onChange={(e) => setWatermark({ ...watermark, opacity: Number(e.target.value) })} className="w-full" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs">Taille : {watermark.size}</Label>
+                                    <Label className="text-xs">{t('parametres.documents.hd_wm_size', { n: watermark.size })}</Label>
                                     <input type="range" min={20} max={120} value={watermark.size}
                                         onChange={(e) => setWatermark({ ...watermark, size: Number(e.target.value) })} className="w-full" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs">Rotation : {watermark.rotation}°</Label>
+                                    <Label className="text-xs">{t('parametres.documents.hd_rotation', { n: watermark.rotation })}</Label>
                                     <input type="range" min={-90} max={90} value={watermark.rotation}
                                         onChange={(e) => setWatermark({ ...watermark, rotation: Number(e.target.value) })} className="w-full" />
                                 </div>
@@ -401,7 +403,7 @@ export default function HeaderDesigner({ header, preset: initialPreset, presets,
 
                         <div className="rounded-2xl bg-blue-50/60 p-4 ring-1 ring-blue-100 text-xs text-blue-800 flex gap-2">
                             <Tag className="w-4 h-4 shrink-0 mt-0.5" />
-                            Les variables comme <code className="font-mono">{'{{ecole.nom}}'}</code> sont remplacées à la génération de chaque document.
+                            {t('parametres.documents.hd_var_note_before')} <code className="font-mono">{'{{ecole.nom}}'}</code> {t('parametres.documents.hd_var_note_after')}
                         </div>
                     </div>
                 </div>
