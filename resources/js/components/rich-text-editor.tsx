@@ -6,6 +6,7 @@ import {
     Italic, List, ListOrdered, Redo, Undo,
 } from 'lucide-react';
 import { useEffect } from 'react';
+import { useTranslation } from '@/helpers/i18n';
 
 interface Props {
     value: string;
@@ -31,6 +32,8 @@ export function RichTextEditor({ value, onChange, onReady }: Readonly<Props>) {
     // TipTap `useEditor` est incompatible avec le React Compiler (refs mutables) :
     // cette directive désactive sa mémoïsation pour ce composant.
     'use no memo';
+
+    const { t } = useTranslation();
 
     const editor = useEditor({
         extensions: [
@@ -65,21 +68,21 @@ export function RichTextEditor({ value, onChange, onReady }: Readonly<Props>) {
     return (
         <div className="rounded-xl ring-1 ring-gray-200 bg-white overflow-hidden">
             <div className="flex flex-wrap items-center gap-1 border-b border-gray-100 bg-gray-50/60 px-2 py-1.5">
-                <ToolbarButton title="Gras" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}><Bold className="w-4 h-4" /></ToolbarButton>
-                <ToolbarButton title="Italique" active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}><Italic className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.bold')} active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}><Bold className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.italic')} active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}><Italic className="w-4 h-4" /></ToolbarButton>
                 <div className="w-px h-5 bg-gray-200 mx-1" />
-                <ToolbarButton title="Titre 1" active={editor.isActive('heading', { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><Heading1 className="w-4 h-4" /></ToolbarButton>
-                <ToolbarButton title="Titre 2" active={editor.isActive('heading', { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Heading2 className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.heading1')} active={editor.isActive('heading', { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><Heading1 className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.heading2')} active={editor.isActive('heading', { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Heading2 className="w-4 h-4" /></ToolbarButton>
                 <div className="w-px h-5 bg-gray-200 mx-1" />
-                <ToolbarButton title="Liste à puces" active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()}><List className="w-4 h-4" /></ToolbarButton>
-                <ToolbarButton title="Liste numérotée" active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()}><ListOrdered className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.bullet_list')} active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()}><List className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.numbered_list')} active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()}><ListOrdered className="w-4 h-4" /></ToolbarButton>
                 <div className="w-px h-5 bg-gray-200 mx-1" />
-                <ToolbarButton title="Aligner à gauche" active={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()}><AlignLeft className="w-4 h-4" /></ToolbarButton>
-                <ToolbarButton title="Centrer" active={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()}><AlignCenter className="w-4 h-4" /></ToolbarButton>
-                <ToolbarButton title="Aligner à droite" active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()}><AlignRight className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.align_left')} active={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()}><AlignLeft className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.align_center')} active={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()}><AlignCenter className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.align_right')} active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()}><AlignRight className="w-4 h-4" /></ToolbarButton>
                 <div className="w-px h-5 bg-gray-200 mx-1" />
-                <ToolbarButton title="Annuler" onClick={() => editor.chain().focus().undo().run()}><Undo className="w-4 h-4" /></ToolbarButton>
-                <ToolbarButton title="Rétablir" onClick={() => editor.chain().focus().redo().run()}><Redo className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.undo')} onClick={() => editor.chain().focus().undo().run()}><Undo className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton title={t('common.editor.redo')} onClick={() => editor.chain().focus().redo().run()}><Redo className="w-4 h-4" /></ToolbarButton>
             </div>
             <EditorContent editor={editor} />
         </div>
