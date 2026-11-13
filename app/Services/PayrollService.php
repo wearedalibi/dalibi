@@ -382,6 +382,8 @@ final class PayrollService
 
     private function refreshTotals(PayRun $run): void
     {
+        // Agrégat sans GROUP BY : toujours une ligne, colonnes calculées.
+        /** @var object{g: int|float|string, d: int|float|string, n: int|float|string} $sums */
         $sums = $run->payslips()->selectRaw('
             coalesce(sum(gross), 0) as g,
             coalesce(sum(total_deductions), 0) as d,

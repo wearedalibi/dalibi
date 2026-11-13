@@ -232,9 +232,12 @@ class ArchiveController extends Controller
             return null;
         }
 
-        return match ($d->documentable_type) {
-            Student::class => 'Élève : '.$d->documentable->name,
-            Classroom::class => 'Classe : '.$d->documentable->name,
+        $linked = $d->documentable;
+
+        return match (true) {
+            // Un élève n'a pas de colonne « name » : on compose nom + prénom.
+            $linked instanceof Student => 'Élève : '.trim($linked->firstname.' '.$linked->lastname),
+            $linked instanceof Classroom => 'Classe : '.$linked->name,
             default => null,
         };
     }

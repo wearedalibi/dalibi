@@ -307,6 +307,8 @@ class DashboardController extends Controller
                 ->first(['id', 'name']);
 
             // Bulletins figés (locked_at) de l'année (et de la période courante le cas échéant).
+            // Agrégat sans GROUP BY : toujours une ligne, colonnes calculées.
+            /** @var object{validated: int|string, avg_general: float|int|string|null} $rc */
             $rc = ReportCard::query()
                 ->whereNotNull('locked_at')
                 ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))

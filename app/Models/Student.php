@@ -28,9 +28,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property-read Pivot&object{relationship: string} $pivot Pivot guardian_student (chargé via belongsToMany).
+ */
 class Student extends Model implements AuthenticatableContract
 {
     use Auditable, AuthenticatableTrait, HasApiTokens, HasFactory, HasResetToken, HasUuids, SoftDeletes;

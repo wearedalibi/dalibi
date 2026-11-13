@@ -18,6 +18,9 @@ abstract class ApiController extends Controller
      */
     protected function accessibleStudents(Request $request): Collection
     {
+        // Ces routes API authentifient un élève ou un tuteur (gardes Sanctum
+        // dédiées), jamais le User par défaut supposé par l'analyse statique.
+        /** @var Student|Guardian|null $user */
         $user = $request->user();
 
         if ($user instanceof Student) {
@@ -38,6 +41,7 @@ abstract class ApiController extends Controller
      */
     protected function resolveStudent(Request $request, string $studentId): Student
     {
+        /** @var Student|Guardian|null $user */
         $user = $request->user();
 
         if ($user instanceof Student) {

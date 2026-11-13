@@ -17,7 +17,7 @@ class CalendarEventResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'type' => $this->type,
-            'start_date' => $this->start_date?->format('Y-m-d'),
+            'start_date' => $this->start_date->format('Y-m-d'),
             'end_date' => $this->end_date?->format('Y-m-d'),
             'all_day' => $this->all_day,
             'start_time' => $this->start_time,

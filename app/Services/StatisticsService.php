@@ -395,6 +395,9 @@ final class StatisticsService
             ->sortByDesc('absence_rate')
             ->values();
 
+        // GROUP BY + HAVING : un ->count() SQL compterait les lignes par groupe,
+        // pas le nombre de groupes. On matérialise puis on compte en mémoire.
+        // @phpstan-ignore larastan.noUnnecessaryCollectionCall
         $chronic = (clone $base)
             ->where('ar.status', 'absent')
             ->groupBy('ar.student_id')

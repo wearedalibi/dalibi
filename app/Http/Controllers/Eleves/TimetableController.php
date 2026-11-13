@@ -211,15 +211,19 @@ class TimetableController extends Controller
      */
     private function buildScheduleGrid(Collection $slots): array
     {
-        $range = fn ($s) => substr($s->start_time, 0, 5).'-'.substr($s->end_time, 0, 5);
+        $range = fn (TimetableSlot $s): string => substr($s->start_time, 0, 5).'-'.substr($s->end_time, 0, 5);
 
+        /** @var array<string, array<int, TimetableSlot>> $grid */
         $grid = [];
         foreach ($slots as $slot) {
             $grid[$range($slot)][$slot->day_of_week] = $slot;
         }
 
+        /** @var Collection<int, string> $timeRanges */
+        $timeRanges = $slots->map($range)->unique()->sort()->values();
+
         return [
-            'timeRanges' => $slots->map($range)->unique()->sort()->values(),
+            'timeRanges' => $timeRanges,
             'grid' => $grid,
         ];
     }

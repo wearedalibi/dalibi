@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property-read int|null $registrations_count Agrégat withCount('registrations').
+ * @property-read int|null $admis_count         Agrégat withCount alias (status = 'admis').
+ */
 class OfficialExam extends Model
 {
     use HasUuids;

@@ -39,6 +39,8 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
+        // Portail parent/élève : le principal authentifié est un tuteur ou un élève.
+        /** @var Guardian|Student $user */
         $user = $request->user();
         $type = $user instanceof Guardian ? 'guardian' : 'student';
 
@@ -47,7 +49,9 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        /** @var Guardian|Student $user */
+        $user = $request->user();
+        $user->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Déconnecté.']);
     }
