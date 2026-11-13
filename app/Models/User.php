@@ -112,13 +112,21 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeProfile::class);
     }
 
-    /** Affectations matières où l'utilisateur est l'enseignant. */
+    /**
+     * Affectations matières où l'utilisateur est l'enseignant.
+     *
+     * @return HasMany<SubjectAssignment, $this>
+     */
     public function subjectAssignments(): HasMany
     {
         return $this->hasMany(SubjectAssignment::class, 'teacher_id');
     }
 
-    /** Créneaux d'emploi du temps où l'utilisateur est l'enseignant. */
+    /**
+     * Créneaux d'emploi du temps où l'utilisateur est l'enseignant.
+     *
+     * @return HasMany<TimetableSlot, $this>
+     */
     public function timetableSlots(): HasMany
     {
         return $this->hasMany(TimetableSlot::class, 'teacher_id');

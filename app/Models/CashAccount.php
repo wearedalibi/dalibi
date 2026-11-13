@@ -28,11 +28,17 @@ class CashAccount extends Model
     /* Relations */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * @return HasMany<AccountingTransaction, $this>
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(AccountingTransaction::class);
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

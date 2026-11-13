@@ -48,6 +48,8 @@ class AcademicYear extends Model
 
     /**
      * Get all student scholarships for this academic year.
+     *
+     * @return HasMany<StudentScholarship, $this>
      */
     public function studentScholarships(): HasMany
     {

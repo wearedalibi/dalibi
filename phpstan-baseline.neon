@@ -7,64 +7,10 @@ parameters:
 			path: app/Console/Commands/GenerateStudentMatricule.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$natricule\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/GenerateStudentMatricule.php
-
-		-
 			message: '#^Call to an undefined method App\\Models\\Student\:\:generateRegistrationNumber\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: app/Console/Commands/GenerateStudentMatricule.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:generateMatricule\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Console/Commands/GenerateStudentMatricule.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Administration/AuditLogController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Administration/AuditLogController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Administration/GuardianController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Administration/GuardianController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Administration/GuardianController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Administration/GuardianController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Administration/SubjectAssignmentController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
@@ -127,73 +73,13 @@ parameters:
 			path: app/Http/Controllers/Api/V1/ChildrenController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classroom_type_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$class of method App\\Services\\GradingService\:\:classRanking\(\) expects App\\Models\\Classroom, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/DashboardController.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Api/V1/DashboardController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classroom_type_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$comments\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$score\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/GradeController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\ClassSubject\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/V1/GradeController.php
-
-		-
-			message: '#^Parameter \#1 \$class of method App\\Services\\GradingService\:\:classRanking\(\) expects App\\Models\\Classroom, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$color\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Archives/ArchiveController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Archives/ArchiveController.php
@@ -201,18 +87,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 2
 			path: app/Http/Controllers/Archives/ArchiveController.php
 
 		-
 			message: '#^Constant App\\Http\\Controllers\\Archives\\ArchiveController\:\:TYPES is unused\.$#'
 			identifier: classConstant.unused
-			count: 1
-			path: app/Http/Controllers/Archives/ArchiveController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Archives/ArchiveController.php
 
@@ -235,118 +115,10 @@ parameters:
 			path: app/Http/Controllers/Comptabilite/CashAccountController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount\.$#'
-			identifier: property.notFound
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$enrollment\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$invoice\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$paid_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Parameter \#1 \$invoice of method App\\Services\\InvoiceService\:\:recordPayment\(\) expects App\\Models\\Invoice, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Http\\Controllers\\Comptabilite\\InvoiceController\:\:officialHeader\(\) expects App\\Models\\School\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount_paid\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount_remaining\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$invoice_number\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Enrollment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>amount_paid" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
@@ -409,80 +181,8 @@ parameters:
 			path: app/Http/Controllers/Dashboard/DashboardController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$class\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$code\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$enrollment\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 8
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subject\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Enrollment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Evaluation\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Payment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\SubjectAssignment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\TimetableSlot\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Dashboard/DashboardController.php
 
@@ -535,102 +235,6 @@ parameters:
 			path: app/Http/Controllers/Eleves/EnrollmentController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount_paid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/EnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount_remaining\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/EnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/EnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/EnrollmentController.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Services\\DocumentRenderer\:\:headerHtml\(\) expects App\\Models\\School, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Eleves/EnrollmentController.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Services\\DocumentRenderer\:\:resolveVariables\(\) expects App\\Models\\School, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Eleves/EnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/PromotionController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Eleves/PromotionController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/PromotionController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Enrollment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Eleves/PromotionController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$gender\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Enrollment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -643,61 +247,7 @@ parameters:
 			path: app/Http/Controllers/Eleves/RosterController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$code\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$mime\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 6
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$original_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$size\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$uploadedBy\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$year\.$#'
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Http/Controllers/Eleves/StudentController.php
@@ -721,13 +271,7 @@ parameters:
 			path: app/Http/Controllers/Eleves/StudentController.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Enrollment\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\StudentDocument\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Eleves/StudentController.php
@@ -819,17 +363,11 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 3
 			path: app/Http/Controllers/Eleves/TimetableController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Eleves/TimetableController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Http/Controllers/Eleves/TimetableController.php
@@ -859,18 +397,6 @@ parameters:
 			path: app/Http/Controllers/Eleves/TimetableController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$class_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Examens/MarkController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$max_score\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/MarkController.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>absent" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -889,67 +415,7 @@ parameters:
 			path: app/Http/Controllers/Examens/OfficialExamController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$average\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$mention\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$registration_number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$serie\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$student\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$student_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\OfficialExam\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Examens/OfficialExamController.php
@@ -973,42 +439,6 @@ parameters:
 			path: app/Http/Controllers/Notes/BulletinController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classroom_type_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Notes/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$comments\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Notes/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$score\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Notes/GradeController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\ClassSubject\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Notes/GradeController.php
-
-		-
-			message: '#^Parameter \#1 \$class of method App\\Services\\GradingService\:\:classRanking\(\) expects App\\Models\\Classroom, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Notes/GradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$template\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Notes/NoteReclamationController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\Notes\\NoteReclamationController\:\:create\(\) should return Inertia\\Response but returns Illuminate\\Http\\RedirectResponse\.$#'
 			identifier: return.type
 			count: 1
@@ -1021,13 +451,7 @@ parameters:
 			path: app/Http/Controllers/Notes/NoteReclamationController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Paie/PayslipController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Parametres/BackupController.php
@@ -1063,60 +487,6 @@ parameters:
 			path: app/Http/Controllers/Parametres/BulletinTemplateController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$academicYear\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/ClassroomController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$coefficient\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/ClassroomController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/ClassroomController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subject\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/ClassroomController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Parametres/ClassroomController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Parametres/ClassroomController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$layout\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$preset\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$watermark\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
-
-		-
 			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\School\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1129,39 +499,15 @@ parameters:
 			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
 			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
 
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Pagination\\AbstractPaginator\<int,App\\Models\\DocumentIssuance\>\:\:through\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Services\\DocumentRenderer\:\:resolveVariables\(\) expects App\\Models\\School, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
 
 		-
@@ -1193,30 +539,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Rh/EmployeeAllowanceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Rh/SalaryGradeController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Rh/SalaryGradeController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\EmployeeProfile\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Rh/SalaryGradeController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,array\<string, array\<string, mixed\>\|string\|null\>\>\:\:sortBy\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Rh/SalaryGradeController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee_number\.$#'
@@ -1405,36 +727,6 @@ parameters:
 			path: app/Models/CashAccount.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$marks\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/ClassSubject.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$template\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/ClassSubject.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$base_amount\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/EmployeeProfile.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/EmployeeProfile.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/EmployeeProfile.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>base_amount" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -1507,12 +799,6 @@ parameters:
 			path: app/Models/ReportCard.php
 
 		-
-			message: '#^Method App\\Models\\School\:\:activeGradingConfig\(\) should return App\\Models\\GradingConfig\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/School.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditExcluded\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1579,18 +865,6 @@ parameters:
 			path: app/Observers/UserObserver.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$class_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/EvaluationPolicy.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subject_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/EvaluationPolicy.php
-
-		-
 			message: '#^Result of && is always false\.$#'
 			identifier: booleanAnd.alwaysFalse
 			count: 1
@@ -1601,30 +875,6 @@ parameters:
 			identifier: identical.alwaysFalse
 			count: 1
 			path: app/Rules/UniqueMatricule.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$enrollment\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/AccountingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/AccountingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/AccountingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/AccountingService.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
@@ -1651,44 +901,14 @@ parameters:
 			path: app/Services/BackupService.php
 
 		-
-			message: '#^Parameter \#2 \$student of method App\\Services\\DocumentRenderer\:\:resolveVariables\(\) expects App\\Models\\Student\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/BulletinRenderer.php
-
-		-
 			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: app/Services/BulletinRenderer.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$documentHeader\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/DocumentRenderer.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$watermark\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/DocumentRenderer.php
-
-		-
 			message: '#^Match arm comparison between ''female'' and ''female'' is always true\.$#'
 			identifier: match.alwaysTrue
-			count: 1
-			path: app/Services/DocumentRenderer.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Services\\DocumentRenderer\:\:logoDataUri\(\) expects App\\Models\\School\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Services/DocumentRenderer.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Services\\DocumentRenderer\:\:renderWatermark\(\) expects App\\Models\\School\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Services/DocumentRenderer.php
 
@@ -1705,164 +925,32 @@ parameters:
 			path: app/Services/DocumentRenderer.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$absent\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$academic_period_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$coefficient\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$evaluationType\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$evaluation_type_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$marks\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$max_score\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$score\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$student_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/GradingService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$template\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/GradingService.php
-
-		-
 			message: '#^Parameter \#1 \$rows of method App\\Services\\GradingService\:\:assignRanks\(\) expects Illuminate\\Support\\Collection\<int, array\{student_id\: mixed, average\: float\|null\}\>, Illuminate\\Support\\Collection\<int, array\{student_id\: string, average\: float\|null\}\> given\.$#'
 			identifier: argument.type
 			count: 2
 			path: app/Services/GradingService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/InvoiceService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/InvoiceService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$value\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/InvoiceService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$d\.$#'
+			message: '#^Access to an undefined property App\\Models\\Payslip\:\:\$d\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/PayrollService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$g\.$#'
+			message: '#^Access to an undefined property App\\Models\\Payslip\:\:\$g\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/PayrollService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			message: '#^Access to an undefined property App\\Models\\Payslip\:\:\$n\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/PayrollService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$label\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$n\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reason\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:appliesTo\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:computeAmount\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Parameter \#1 \$payslip of method App\\Services\\AccountingService\:\:cancelPayrollTransaction\(\) expects App\\Models\\Payslip, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Parameter \#1 \$payslip of method App\\Services\\AccountingService\:\:recordPayrollTransaction\(\) expects App\\Models\\Payslip, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Parameter \#1 \$run of method App\\Services\\PayrollService\:\:refreshTotals\(\) expects App\\Models\\PayRun, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
+			message: '#^Offset ''amount'' on array\{code\: mixed, label\: mixed, type\: mixed, amount\: float, reason\?\: string\|null, origin\: non\-falsy\-string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Services/PayrollService.php
 
@@ -1871,30 +959,6 @@ parameters:
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parent\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/ReportCardBuilder.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$period_system\.$#'
@@ -2009,24 +1073,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 3
 			path: database/seeders/DefaultUsersSeeder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
 
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'

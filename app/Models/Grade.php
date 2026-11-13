@@ -41,6 +41,8 @@ class Grade extends Model
 
     /**
      * Get the student for this grade.
+     *
+     * @return BelongsTo<Student, $this>
      */
     public function student(): BelongsTo
     {
@@ -49,6 +51,8 @@ class Grade extends Model
 
     /**
      * Get the class subject for this grade.
+     *
+     * @return BelongsTo<ClassSubject, $this>
      */
     public function classSubject(): BelongsTo
     {
@@ -57,6 +61,8 @@ class Grade extends Model
 
     /**
      * Get the academic period for this grade.
+     *
+     * @return BelongsTo<AcademicPeriod, $this>
      */
     public function academicPeriod(): BelongsTo
     {

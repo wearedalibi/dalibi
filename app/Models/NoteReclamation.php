@@ -31,21 +31,33 @@ class NoteReclamation extends Model
         'reviewed_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Evaluation, $this>
+     */
     public function evaluation(): BelongsTo
     {
         return $this->belongsTo(Evaluation::class);
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function requestedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requested_by');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');

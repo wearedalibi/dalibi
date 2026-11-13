@@ -37,21 +37,33 @@ class OfficialExam extends Model
         'termine' => 'Terminé',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<AcademicYear, $this>
+     */
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
     }
 
+    /**
+     * @return BelongsTo<Classroom, $this>
+     */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class, 'class_id');
     }
 
+    /**
+     * @return HasMany<OfficialExamRegistration, $this>
+     */
     public function registrations(): HasMany
     {
         return $this->hasMany(OfficialExamRegistration::class);

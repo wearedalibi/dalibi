@@ -45,11 +45,17 @@ class BulletinTemplate extends Model
         'moyenne' => 'Moyenne de période',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<ClassroomType, $this>
+     */
     public function classroomType(): BelongsTo
     {
         return $this->belongsTo(ClassroomType::class, 'classroom_type_id');

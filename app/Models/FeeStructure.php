@@ -38,6 +38,8 @@ class FeeStructure extends Model
 
     /**
      * Get the academic year that owns the fee structure.
+     *
+     * @return BelongsTo<AcademicYear, $this>
      */
     public function academicYear(): BelongsTo
     {
@@ -46,6 +48,8 @@ class FeeStructure extends Model
 
     /**
      * Get the fee category that owns the fee structure.
+     *
+     * @return BelongsTo<FeeCategorie, $this>
      */
     public function feeCategory(): BelongsTo
     {
@@ -54,6 +58,8 @@ class FeeStructure extends Model
 
     /**
      * Get the classroom that owns the fee structure.
+     *
+     * @return BelongsTo<Classroom, $this>
      */
     public function classroom(): BelongsTo
     {

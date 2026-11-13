@@ -37,22 +37,35 @@ class EmployeeProfile extends Model
         'end_date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<Payslip, $this>
+     */
     public function payslips(): HasMany
     {
         return $this->hasMany(Payslip::class);
     }
 
+    /**
+     * @return BelongsTo<SalaryGrade, $this>
+     */
     public function salaryGrade(): BelongsTo
     {
         return $this->belongsTo(SalaryGrade::class);
     }
 
-    /** Primes / retenues récurrentes propres à l'employé (tracées). */
+    /**
+     * Primes / retenues récurrentes propres à l'employé (tracées).
+     *
+     * @return HasMany<EmployeeAllowance, $this>
+     */
     public function allowances(): HasMany
     {
         return $this->hasMany(EmployeeAllowance::class);

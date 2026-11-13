@@ -55,13 +55,19 @@ class ClassroomType extends Model
 
     /**
      * Get all classrooms with this type.
+     *
+     * @return HasMany<Classroom, $this>
      */
     public function classrooms(): HasMany
     {
         return $this->hasMany(Classroom::class, 'classroom_type_id');
     }
 
-    /** Écoles qui proposent ce type de classe. */
+    /**
+     * Écoles qui proposent ce type de classe.
+     *
+     * @return BelongsToMany<School, $this>
+     */
     public function schools(): BelongsToMany
     {
         return $this->belongsToMany(School::class, 'class_type_school');

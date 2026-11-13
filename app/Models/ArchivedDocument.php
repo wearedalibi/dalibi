@@ -37,11 +37,17 @@ class ArchivedDocument extends Model
         'autre' => 'Autre',
     ];
 
+    /**
+     * @return BelongsToMany<DocumentTag, $this>
+     */
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(DocumentTag::class, 'archived_document_tag');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function archivedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'archived_by');

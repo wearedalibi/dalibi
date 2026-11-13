@@ -32,21 +32,33 @@ class ReportCard extends Model
         'locked_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<AcademicPeriod, $this>
+     */
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(AcademicPeriod::class);
     }
 
+    /**
+     * @return BelongsTo<Classroom, $this>
+     */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class, 'class_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function generatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'generated_by');

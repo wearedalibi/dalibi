@@ -34,6 +34,9 @@ class StudentMedicalInfo extends Model
         'emergency_contact_phone',
     ];
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

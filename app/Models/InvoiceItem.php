@@ -24,6 +24,9 @@ class InvoiceItem extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Invoice, $this>
+     */
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);

@@ -49,6 +49,8 @@ class AcademicPeriod extends Model
 
     /**
      * Get the academic year that owns the period.
+     *
+     * @return BelongsTo<AcademicYear, $this>
      */
     public function academicYear(): BelongsTo
     {
@@ -57,6 +59,8 @@ class AcademicPeriod extends Model
 
     /**
      * Get the class type this period is scoped to (null = toutes les classes).
+     *
+     * @return BelongsTo<ClassroomType, $this>
      */
     public function classType(): BelongsTo
     {
@@ -65,6 +69,8 @@ class AcademicPeriod extends Model
 
     /**
      * Get evaluations attached to this academic period.
+     *
+     * @return HasMany<Evaluation, $this>
      */
     public function evaluations(): HasMany
     {

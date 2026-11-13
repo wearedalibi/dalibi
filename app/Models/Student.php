@@ -68,13 +68,18 @@ class Student extends Model implements AuthenticatableContract
         'reset_token',
     ];
 
-    /** Tuteurs liés à cet élève. */
+    /** Tuteurs liés à cet élève. * @return BelongsToMany<Guardian, $this>
+     */
     public function guardians(): BelongsToMany
     {
         return $this->belongsToMany(Guardian::class, 'guardian_student')->withPivot('relationship');
     }
 
-    /** Inscriptions de l'élève. */
+    /**
+     * Inscriptions de l'élève.
+     *
+     * @return HasMany<Enrollment, $this>
+     */
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
@@ -82,6 +87,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Get the user account for this student.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -90,6 +97,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Get all attendances for this student.
+     *
+     * @return HasMany<Attendance, $this>
      */
     public function attendances(): HasMany
     {
@@ -98,6 +107,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Get all grades for this student.
+     *
+     * @return HasMany<Grade, $this>
      */
     public function grades(): HasMany
     {
@@ -106,6 +117,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Informations administratives de l'élève.
+     *
+     * @return HasOne<StudentInformation, $this>
      */
     public function information(): HasOne
     {
@@ -114,6 +127,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Informations parentales de l'élève.
+     *
+     * @return HasOne<StudentParent, $this>
      */
     public function parentInfo(): HasOne
     {
@@ -122,6 +137,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Informations médicales de l'élève.
+     *
+     * @return HasOne<StudentMedicalInfo, $this>
      */
     public function medicalInfo(): HasOne
     {
@@ -130,6 +147,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Get all scholarships for this student.
+     *
+     * @return HasMany<StudentScholarship, $this>
      */
     public function scholarships(): HasMany
     {
@@ -138,6 +157,8 @@ class Student extends Model implements AuthenticatableContract
 
     /**
      * Get all documents (pièces justificatives) for this student.
+     *
+     * @return HasMany<StudentDocument, $this>
      */
     public function documents(): HasMany
     {
