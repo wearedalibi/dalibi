@@ -52,6 +52,43 @@ jobs:
       - name: Lancer la suite de tests
         run: php artisan test
 
+  static-analysis:
+    name: Analyse statique (PHPStan)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, sqlite3, mbstring, zip, gd, intl, bcmath
+          coverage: none
+
+      # `.env` doit exister AVANT composer install : le script post-autoload-dump
+      # (`package:discover`) boote l'application.
+      - name: Préparer l'environnement
+        run: |
+          cp .env.example .env
+          touch database/database.sqlite
+
+      - name: Cache des dépendances Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Installer les dépendances
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Générer la clé applicative
+        run: php artisan key:generate
+
+      - name: Lancer PHPStan
+        run: composer analyse
+
   frontend:
     name: Front (types & build)
     runs-on: ubuntu-latest
