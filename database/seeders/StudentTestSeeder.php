@@ -54,10 +54,12 @@ class StudentTestSeeder extends Seeder
         $classroomIds = Classroom::query()->pluck('id')->all();
         $enrolledBy = User::query()->value('id');
 
-        $canEnroll = $school && $academicYear && $classroomIds !== [];
+        // $academicYear est toujours résolu (créé au besoin) ; seules l'école et
+        // les classes peuvent manquer sur une base vide.
+        $canEnroll = $school && $classroomIds !== [];
         if (! $canEnroll) {
             $this->command->warn(
-                'Élèves créés sans inscription : école, année académique active ou classes manquantes.'
+                'Élèves créés sans inscription : école ou classes manquantes.'
             );
         }
 
@@ -162,7 +164,7 @@ class StudentTestSeeder extends Seeder
      * Année académique active : on réutilise l'existante, sinon on crée
      * l'année scolaire courante (développement uniquement).
      */
-    private function resolveAcademicYear(): ?AcademicYear
+    private function resolveAcademicYear(): AcademicYear
     {
         $active = AcademicYear::query()->where('active', true)->first()
             ?? AcademicYear::query()->latest('start_date')->first();

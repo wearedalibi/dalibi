@@ -229,6 +229,9 @@ final class BackupService
                 $zip->addFile($local, "{$prefix}/{$rel}");
             } else {
                 $t = tempnam(sys_get_temp_dir(), 'med_');
+                if ($t === false) {
+                    continue; // impossible de créer le fichier temporaire : on saute ce média
+                }
                 file_put_contents($t, $disk->get($rel));
                 $temps[] = $t;
                 $zip->addFile($t, "{$prefix}/{$rel}");
@@ -269,7 +272,7 @@ final class BackupService
      * (json[.gz], sql[.gz] ou dump PostgreSQL). Une sauvegarde de sécurité
      * (JSON) est générée au préalable.
      *
-     * @return array{format:string, tables:int, rows?:int}
+     * @return array{format:string, tables:int, rows?:int, media?:int}
      */
     public function restore(UploadedFile $file, ?string $onlyTable = null): array
     {
@@ -496,10 +499,8 @@ final class BackupService
 
             $total = 0;
             foreach (array_chunk($rows, 500) as $chunk) {
-                if (! empty($chunk)) {
-                    DB::transaction(fn () => DB::table($table)->insert($chunk));
-                    $total += count($chunk);
-                }
+                DB::transaction(fn () => DB::table($table)->insert($chunk));
+                $total += count($chunk);
             }
 
             return $total;

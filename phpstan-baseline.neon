@@ -55,18 +55,6 @@ parameters:
 			path: app/Http/Controllers/Archives/ArchiveController.php
 
 		-
-			message: '#^Constant App\\Http\\Controllers\\Archives\\ArchiveController\:\:TYPES is unused\.$#'
-			identifier: classConstant.unused
-			count: 1
-			path: app/Http/Controllers/Archives/ArchiveController.php
-
-		-
-			message: '#^Method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\CashAccount\>\:\:withSum\(\) invoked with 3 parameters, 2 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Http/Controllers/Comptabilite/CashAccountController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\ReportCard\:\:\$avg_general\.$#'
 			identifier: property.notFound
 			count: 1
@@ -193,12 +181,6 @@ parameters:
 			path: app/Http/Controllers/Examens/OfficialExamController.php
 
 		-
-			message: '#^Offset ''media'' on array\{format\: string, tables\: int, rows\?\: int\} in isset\(\) does not exist\.$#'
-			identifier: isset.offset
-			count: 1
-			path: app/Http/Controllers/Parametres/BackupController.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -221,30 +203,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Models/User.php
-
-		-
-			message: '#^Cannot access property \$natricule on class\-string\|object\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Parameter &\$temps by\-ref type of method App\\Services\\BackupService\:\:addDiskToZip\(\) expects array\<int, string\>, array\<int, bool\|string\> given\.$#'
-			identifier: parameterByRef.type
-			count: 1
-			path: app/Services/BackupService.php
-
-		-
-			message: '#^Variable \$chunk in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.variable
-			count: 1
-			path: app/Services/BackupService.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: app/Services/BulletinRenderer.php
 
 		-
 			message: '#^Match arm comparison between ''female'' and ''female'' is always true\.$#'
@@ -277,22 +235,16 @@ parameters:
 			path: app/Services/PayrollService.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
 			message: '#^Called ''count'' on Laravel collection, but could have been retrieved as a query\.$#'
 			identifier: larastan.noUnnecessaryCollectionCall
 			count: 1
 			path: app/Services/StatisticsService.php
 
 		-
-			message: '#^Offset int\<20, max\> does not exist on array\{''zéro'', ''un'', ''deux'', ''trois'', ''quatre'', ''cinq'', ''six'', ''sept'', \.\.\.\}\.$#'
-			identifier: offsetAccess.notFound
+			message: '#^Call to function method_exists\(\) with App\\Models\\User and ''generateMatricule'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
-			path: app/Support/FrenchNumberSpeller.php
+			path: app/Traits/HasMatricule.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\IndexDefinition\:\:index\(\)\.$#'
@@ -305,9 +257,3 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: database/migrations/2026_06_14_000011_add_locked_at_to_evaluations_table.php
-
-		-
-			message: '#^Method Database\\Seeders\\StudentTestSeeder\:\:resolveAcademicYear\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: database/seeders/StudentTestSeeder.php

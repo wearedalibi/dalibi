@@ -15,7 +15,7 @@ trait HasMatricule
     public static function bootHasMatricule()
     {
         // Générer le matricule avant la création si absent
-        static::creating(function ($model) {
+        static::creating(function (self $model) {
             if (empty($model->natricule) && method_exists($model, 'generateMatricule')) {
                 $model->natricule = $model->generateMatricule();
             }

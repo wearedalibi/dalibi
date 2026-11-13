@@ -235,7 +235,7 @@ final class BulletinRenderer
     private function footBlock(array $p, array $options): string
     {
         $average = $this->num($p['average'] ?? null);
-        $rank = isset($p['rank']) && $p['rank'] !== null ? e($this->ordinal((int) $p['rank'])) : '—';
+        $rank = isset($p['rank']) ? e($this->ordinal((int) $p['rank'])) : '—';
         $effectif = e((string) ($p['effectif'] ?? ''));
         $mention = e($p['mention'] ?? '—');
         $obs = e($p['observations'] ?? '');

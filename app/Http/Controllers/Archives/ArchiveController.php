@@ -16,8 +16,6 @@ use Inertia\Response;
 
 class ArchiveController extends Controller
 {
-    private const TYPES = ['student' => Student::class, 'classroom' => Classroom::class];
-
     private function authorizeManage(Request $request): void
     {
         // Socle de sécurité : les routes portent déjà la permission fine (create/edit/

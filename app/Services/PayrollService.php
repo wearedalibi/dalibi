@@ -197,7 +197,7 @@ final class PayrollService
         $tax = 0.0;
         $prev = 0.0;
         foreach ($brackets as $b) {
-            $cap = isset($b['up_to']) && $b['up_to'] !== null ? (float) $b['up_to'] : INF;
+            $cap = isset($b['up_to']) ? (float) $b['up_to'] : INF;
             $rate = (float) ($b['rate'] ?? 0);
             if ($taxable <= $prev) {
                 break;
