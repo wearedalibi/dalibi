@@ -44,4 +44,17 @@ return [
         'per_page' => 'Rows per page',
         'page' => 'Page',
     ],
+    'editor' => [
+        'bold' => 'Bold',
+        'italic' => 'Italic',
+        'heading1' => 'Heading 1',
+        'heading2' => 'Heading 2',
+        'bullet_list' => 'Bulleted list',
+        'numbered_list' => 'Numbered list',
+        'align_left' => 'Align left',
+        'align_center' => 'Center',
+        'align_right' => 'Align right',
+        'undo' => 'Undo',
+        'redo' => 'Redo',
+    ],
 ];

@@ -44,4 +44,17 @@ return [
         'per_page' => 'Lignes par page',
         'page' => 'Page',
     ],
+    'editor' => [
+        'bold' => 'Gras',
+        'italic' => 'Italique',
+        'heading1' => 'Titre 1',
+        'heading2' => 'Titre 2',
+        'bullet_list' => 'Liste à puces',
+        'numbered_list' => 'Liste numérotée',
+        'align_left' => 'Aligner à gauche',
+        'align_center' => 'Centrer',
+        'align_right' => 'Aligner à droite',
+        'undo' => 'Annuler',
+        'redo' => 'Rétablir',
+    ],
 ];

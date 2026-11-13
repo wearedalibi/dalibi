@@ -3,11 +3,13 @@
  * utilitaires Tailwind fill et stroke). Une illustration par statut HTTP.
  */
 
+import { useTranslation } from '@/helpers/i18n';
+
 const wrap = 'w-full max-w-[240px] mx-auto h-auto';
 
-function NotFound() {
+function NotFound({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Page introuvable" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-blue-100 dark:fill-blue-950/50" />
             <circle cx="104" cy="70" r="54" className="fill-blue-50 dark:fill-blue-950/40" />
             <circle cx="96" cy="66" r="34" className="fill-white dark:fill-[#161615] stroke-blue-500 dark:stroke-blue-400" strokeWidth="7" />
@@ -17,9 +19,9 @@ function NotFound() {
     );
 }
 
-function Forbidden() {
+function Forbidden({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Accès refusé" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-amber-100 dark:fill-amber-950/50" />
             <circle cx="110" cy="70" r="54" className="fill-amber-50 dark:fill-amber-950/40" />
             <path d="M92 66 v-13 a18 18 0 0 1 36 0 v13" className="fill-none stroke-amber-500 dark:stroke-amber-400" strokeWidth="8" strokeLinecap="round" />
@@ -30,9 +32,9 @@ function Forbidden() {
     );
 }
 
-function Expired() {
+function Expired({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Session expirée" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-violet-100 dark:fill-violet-950/50" />
             <circle cx="110" cy="72" r="54" className="fill-violet-50 dark:fill-violet-950/40" />
             <circle cx="110" cy="72" r="40" className="fill-white dark:fill-[#161615] stroke-violet-500 dark:stroke-violet-400" strokeWidth="7" />
@@ -43,9 +45,9 @@ function Expired() {
     );
 }
 
-function TooMany() {
+function TooMany({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Trop de requêtes" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-orange-100 dark:fill-orange-950/50" />
             <circle cx="110" cy="72" r="54" className="fill-orange-50 dark:fill-orange-950/40" />
             <line x1="70" y1="66" x2="150" y2="66" className="stroke-orange-300 dark:stroke-orange-800" strokeWidth="3" strokeDasharray="4 6" />
@@ -56,9 +58,9 @@ function TooMany() {
     );
 }
 
-function ServerError() {
+function ServerError({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Erreur serveur" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-red-100 dark:fill-red-950/50" />
             <circle cx="104" cy="72" r="54" className="fill-red-50 dark:fill-red-950/40" />
             <rect x="70" y="44" width="76" height="34" rx="7" className="fill-white dark:fill-[#161615] stroke-red-500 dark:stroke-red-400" strokeWidth="5" />
@@ -74,9 +76,9 @@ function ServerError() {
     );
 }
 
-function Maintenance() {
+function Maintenance({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Maintenance" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-teal-100 dark:fill-teal-950/50" />
             <circle cx="110" cy="72" r="54" className="fill-teal-50 dark:fill-teal-950/40" />
             <g className="fill-teal-500 dark:fill-teal-400">
@@ -90,9 +92,9 @@ function Maintenance() {
     );
 }
 
-function Generic() {
+function Generic({ label }: Readonly<{ label: string }>) {
     return (
-        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label="Erreur" fill="none">
+        <svg viewBox="0 0 220 170" className={wrap} role="img" aria-label={label} fill="none">
             <ellipse cx="110" cy="150" rx="72" ry="10" className="fill-gray-200 dark:fill-gray-800" />
             <circle cx="110" cy="72" r="54" className="fill-gray-100 dark:fill-gray-800/60" />
             <path d="M110 38 l40 70 h-80 z" className="fill-none stroke-gray-500 dark:stroke-gray-400" strokeWidth="7" strokeLinejoin="round" />
@@ -103,13 +105,14 @@ function Generic() {
 }
 
 export function ErrorArt({ status }: Readonly<{ status: number }>) {
+    const { t } = useTranslation();
     switch (status) {
-        case 403: return <Forbidden />;
-        case 404: return <NotFound />;
-        case 419: return <Expired />;
-        case 429: return <TooMany />;
-        case 500: return <ServerError />;
-        case 503: return <Maintenance />;
-        default: return <Generic />;
+        case 403: return <Forbidden label={t('errors.403.title')} />;
+        case 404: return <NotFound label={t('errors.404.title')} />;
+        case 419: return <Expired label={t('errors.419.title')} />;
+        case 429: return <TooMany label={t('errors.429.title')} />;
+        case 500: return <ServerError label={t('errors.500.title')} />;
+        case 503: return <Maintenance label={t('errors.503.title')} />;
+        default: return <Generic label={t('errors.fallback.title')} />;
     }
 }
