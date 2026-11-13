@@ -38,6 +38,9 @@ class StudentParent extends Model
         'email',
     ];
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

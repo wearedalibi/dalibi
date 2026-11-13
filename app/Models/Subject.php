@@ -35,19 +35,29 @@ class Subject extends Model
 
     /**
      * Get all class subjects for this subject.
+     *
+     * @return HasMany<ClassSubject, $this>
      */
     public function classSubjects(): HasMany
     {
         return $this->hasMany(ClassSubject::class);
     }
 
-    /** Matière parente (si cette matière est une sous-matière). */
+    /**
+     * Matière parente (si cette matière est une sous-matière).
+     *
+     * @return BelongsTo<self, $this>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    /** Sous-matières. */
+    /**
+     * Sous-matières.
+     *
+     * @return HasMany<self, $this>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');

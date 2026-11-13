@@ -15,7 +15,7 @@ class CashAccountController extends Controller
     public function index(): Response
     {
         $accounts = CashAccount::withCount('payments')
-            ->withSum('transactions as total_income', 'amount', fn ($q) => $q->where('type', 'INCOME'))
+            ->withSum(['transactions as total_income' => fn ($q) => $q->where('type', 'INCOME')], 'amount')
             ->orderBy('type')
             ->orderBy('name')
             ->get();

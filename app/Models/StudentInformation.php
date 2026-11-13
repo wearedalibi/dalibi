@@ -39,6 +39,9 @@ class StudentInformation extends Model
         'birth_certificate_issue_date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

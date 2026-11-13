@@ -24,16 +24,25 @@ class DocumentIssuance extends Model
         'issued_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<DocumentTemplate, $this>
+     */
     public function template(): BelongsTo
     {
         return $this->belongsTo(DocumentTemplate::class, 'template_id');
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function issuedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'issued_by');

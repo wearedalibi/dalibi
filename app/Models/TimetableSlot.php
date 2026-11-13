@@ -28,16 +28,25 @@ class TimetableSlot extends Model
         6 => 'Samedi',
     ];
 
+    /**
+     * @return BelongsTo<Classroom, $this>
+     */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class, 'class_id');
     }
 
+    /**
+     * @return BelongsTo<Subject, $this>
+     */
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');

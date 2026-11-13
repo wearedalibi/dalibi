@@ -61,7 +61,7 @@ class MarkController extends Controller
                 'student' => $enrollment->student,
                 'mark_id' => $mark?->id,
                 'score' => $mark?->score !== null ? (float) $mark->score : null,
-                'absent' => $mark?->absent ?? false,
+                'absent' => $mark->absent ?? false,
                 'comments' => $mark?->comments,
             ];
         })->values();
@@ -97,7 +97,7 @@ class MarkController extends Controller
             return back()->withErrors(['locked' => $decision->message()]);
         }
 
-        $maxScore = (float) ($evaluation->template?->max_score ?? 20);
+        $maxScore = (float) ($evaluation->template->max_score ?? 20);
 
         // L'élève noté doit être inscrit (activement) dans la classe de l'évaluation :
         // `exists:students,id` seul laisserait noter un élève d'une autre classe.

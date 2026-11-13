@@ -34,11 +34,17 @@ class AccountingTransaction extends Model
     /* Relations */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * @return BelongsTo<CashAccount, $this>
+     */
     public function cashAccount(): BelongsTo
     {
         return $this->belongsTo(CashAccount::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

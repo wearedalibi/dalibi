@@ -112,7 +112,7 @@ final class AccountingService
         $studentName = $student
             ? "{$student->firstname} {$student->lastname}"
             : 'Élève inconnu';
-        $scholarshipName = $scholarship?->name ?? 'Bourse';
+        $scholarshipName = $scholarship->name ?? 'Bourse';
 
         return AccountingTransaction::create([
             'type' => 'EXPENSE',

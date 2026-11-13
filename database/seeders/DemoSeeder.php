@@ -251,7 +251,7 @@ class DemoSeeder extends Seeder
     /** Cycle d'une classe, tel que référencé par self::CURRICULUM. */
     private function cycleOf(Classroom $class): string
     {
-        $type = Str::lower($class->type?->name ?? '');
+        $type = Str::lower($class->type->name ?? '');
 
         return match (true) {
             str_contains($type, 'primaire'), str_contains($type, 'maternelle') => 'primaire',

@@ -219,7 +219,7 @@ class StudentController extends Controller
                 'reference_number' => $i->reference_number,
                 'template_name' => $i->template?->name,
                 'issued_by' => $i->issuedBy?->name,
-                'issued_at' => $i->issued_at?->format('d/m/Y H:i'),
+                'issued_at' => $i->issued_at->format('d/m/Y H:i'),
             ]);
 
         // Inscription de l'année active (pour la réaffectation de classe)
@@ -244,7 +244,7 @@ class StudentController extends Controller
                 'class_id' => $currentEnrollment->class_id,
                 'class_name' => $currentEnrollment->classroom?->name,
                 'class_code' => $currentEnrollment->classroom?->code,
-                'year' => $activeYear?->year,
+                'year' => $activeYear->year,
             ] : null,
             'classrooms' => Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']),
             'documents' => $student->documents()->with('uploadedBy:id,firstname,lastname')->latest()->get()->map(fn ($d) => [
@@ -271,13 +271,13 @@ class StudentController extends Controller
         ]);
 
         $activeYear = AcademicYear::where('active', true)->first(['id']);
-        abort_unless($activeYear, 422, 'Aucune année académique active.');
+        abort_unless($activeYear !== null, 422, 'Aucune année académique active.');
 
         $enrollment = Enrollment::where('student_id', $student->id)
             ->where('academic_year_id', $activeYear->id)
             ->first();
 
-        abort_unless($enrollment, 422, 'Cet élève n\'a pas d\'inscription pour l\'année active.');
+        abort_unless($enrollment !== null, 422, 'Cet élève n\'a pas d\'inscription pour l\'année active.');
 
         $enrollment->update(['class_id' => $validated['class_id']]);
 
@@ -305,9 +305,9 @@ class StudentController extends Controller
                     'code' => $enrollment->classroom?->code,
                 ],
                 'academic_year' => $enrollment->academicYear?->year,
-                'enrollment_date' => $enrollment->enrollment_date?->format('Y-m-d'),
+                'enrollment_date' => $enrollment->enrollment_date->format('Y-m-d'),
                 'enrollment_code' => $enrollment->enrollment_code,
-                'status' => $enrollment->invoice?->status ?? 'NONE',
+                'status' => $enrollment->invoice->status ?? 'NONE',
                 'academic_status' => $enrollment->academic_status ?? 'en_cours',
                 'academic_status_label' => Enrollment::ACADEMIC_STATUSES[$enrollment->academic_status ?? 'en_cours'] ?? '—',
                 'status_reason' => $enrollment->status_reason,

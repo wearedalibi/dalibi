@@ -28,11 +28,17 @@ class CashAccount extends Model
     /* Relations */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * @return HasMany<AccountingTransaction, $this>
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(AccountingTransaction::class);
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
@@ -44,11 +50,11 @@ class CashAccount extends Model
 
     public function typeLabel(): string
     {
+        // Colonne enum en base : les trois valeurs couvrent tous les cas.
         return match ($this->type) {
             'CASH' => 'Espèces',
             'MOBILE_MONEY' => 'Mobile Money',
             'BANK' => 'Banque',
-            default => $this->type,
         };
     }
 }

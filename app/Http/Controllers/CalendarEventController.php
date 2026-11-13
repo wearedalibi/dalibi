@@ -28,7 +28,7 @@ class CalendarEventController extends Controller
                 'title' => $e->title,
                 'description' => $e->description,
                 'type' => $e->type,
-                'start_date' => $e->start_date?->format('Y-m-d'),
+                'start_date' => $e->start_date->format('Y-m-d'),
                 'end_date' => $e->end_date?->format('Y-m-d'),
                 'all_day' => $e->all_day,
                 'start_time' => $e->start_time,

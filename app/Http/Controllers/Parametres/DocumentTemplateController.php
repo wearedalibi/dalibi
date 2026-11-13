@@ -83,7 +83,7 @@ class DocumentTemplateController extends Controller
                 'student_name' => $i->student ? $i->student->lastname.' '.$i->student->firstname : '—',
                 'student_matricule' => $i->student?->matricule,
                 'issued_by' => $i->issuedBy?->name,
-                'issued_at' => $i->issued_at?->format('d/m/Y H:i'),
+                'issued_at' => $i->issued_at->format('d/m/Y H:i'),
             ]);
 
         return Inertia::render('Parametres/Documents/Registry', [

@@ -29,11 +29,17 @@ class Payslip extends Model
         'payload' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<PayRun, $this>
+     */
     public function payRun(): BelongsTo
     {
         return $this->belongsTo(PayRun::class);
     }
 
+    /**
+     * @return BelongsTo<EmployeeProfile, $this>
+     */
     public function employeeProfile(): BelongsTo
     {
         return $this->belongsTo(EmployeeProfile::class);

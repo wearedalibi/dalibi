@@ -39,6 +39,8 @@ class EvaluationType extends Model
 
     /**
      * Get all evaluations for this type.
+     *
+     * @return HasMany<Evaluation, $this>
      */
     public function evaluations(): HasMany
     {

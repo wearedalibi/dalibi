@@ -27,6 +27,9 @@ class SalaryGrade extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return HasMany<EmployeeProfile, $this>
+     */
     public function employeeProfiles(): HasMany
     {
         return $this->hasMany(EmployeeProfile::class);

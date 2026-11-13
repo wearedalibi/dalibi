@@ -21,8 +21,8 @@ class BulletinTemplateController extends Controller
         $template = BulletinTemplate::where('school_id', $school->id)
             ->whereNull('classroom_type_id')->first();
 
-        $columns = $template?->columns ?? BulletinTemplate::defaultColumns();
-        $options = $template?->options ?? BulletinTemplate::defaultOptions();
+        $columns = $template->columns ?? BulletinTemplate::defaultColumns();
+        $options = $template->options ?? BulletinTemplate::defaultOptions();
 
         return Inertia::render('Parametres/BulletinTemplates/Edit', [
             'columns' => $columns,
@@ -87,7 +87,7 @@ class BulletinTemplateController extends Controller
     private function activeSchool(): School
     {
         $school = School::query()->first();
-        abort_unless($school, 404, 'Aucune école configurée.');
+        abort_unless($school !== null, 404, 'Aucune école configurée.');
 
         return $school;
     }

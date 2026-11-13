@@ -91,8 +91,8 @@ class SubjectAssignmentController extends Controller
         $assignments = $selected
             ? $this->teacherAssignments($teacherId, $yearFilter)->map(fn ($a) => [
                 'id' => $a->id,
-                'subject' => $a->subject?->name ?? '—',
-                'classroom' => $a->classroom?->name ?? '—',
+                'subject' => $a->subject->name ?? '—',
+                'classroom' => $a->classroom->name ?? '—',
                 'active' => (bool) $a->active,
             ])
             : collect();
@@ -143,7 +143,7 @@ class SubjectAssignmentController extends Controller
             'assignments' => $this->teacherAssignments($teacher->id, $yearId),
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->stream('affectations-'.Str::slug(trim($teacher->firstname.' '.$teacher->lastname).'-'.($year?->year ?? '')).'.pdf');
+        return $pdf->stream('affectations-'.Str::slug(trim($teacher->firstname.' '.$teacher->lastname).'-'.($year->year ?? '')).'.pdf');
     }
 
     /** Identifiant de l'année académique active (la plus récente marquée active). */
@@ -170,7 +170,7 @@ class SubjectAssignmentController extends Controller
             ->where('teacher_id', $teacherId)
             ->where('academic_year_id', $yearId)
             ->get()
-            ->sortBy(fn ($a) => ($a->subject?->name ?? '').' '.($a->classroom?->name ?? ''))
+            ->sortBy(fn ($a) => ($a->subject->name ?? '').' '.($a->classroom->name ?? ''))
             ->values();
     }
 

@@ -169,7 +169,7 @@ class InvoiceController extends Controller
                 'valid' => true,
                 'receipt_number' => $receipt->receipt_number,
                 'amount' => (float) $receipt->payment->amount,
-                'paid_at' => $receipt->payment->paid_at?->format('d/m/Y'),
+                'paid_at' => $receipt->payment->paid_at->format('d/m/Y'),
                 'student' => $receipt->payment->invoice?->enrollment?->student
                     ? $receipt->payment->invoice->enrollment->student->lastname.' '.$receipt->payment->invoice->enrollment->student->firstname
                     : null,

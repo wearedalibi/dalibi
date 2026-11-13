@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('evaluations', function (Blueprint $table) {
             $table->timestamp('locked_at')->nullable()->after('status');
-            $table->foreignUuid('locked_by')->nullable()->constrained('users')->nullOnDelete()->after('locked_at');
+            $table->foreignUuid('locked_by')->nullable()->after('locked_at')->constrained('users')->nullOnDelete();
         });
     }
 

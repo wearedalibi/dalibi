@@ -24,16 +24,25 @@ class AttendanceRecord extends Model
         'minutes_late' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Attendance, $this>
+     */
     public function attendance(): BelongsTo
     {
         return $this->belongsTo(Attendance::class);
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<AbsencePermission, $this>
+     */
     public function permission(): BelongsTo
     {
         return $this->belongsTo(AbsencePermission::class, 'permission_id');

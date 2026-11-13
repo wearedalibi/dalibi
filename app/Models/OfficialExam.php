@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property-read int|null $registrations_count Agrégat withCount('registrations').
+ * @property-read int|null $admis_count         Agrégat withCount alias (status = 'admis').
+ */
 class OfficialExam extends Model
 {
     use HasUuids;
@@ -37,21 +41,33 @@ class OfficialExam extends Model
         'termine' => 'Terminé',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<AcademicYear, $this>
+     */
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
     }
 
+    /**
+     * @return BelongsTo<Classroom, $this>
+     */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class, 'class_id');
     }
 
+    /**
+     * @return HasMany<OfficialExamRegistration, $this>
+     */
     public function registrations(): HasMany
     {
         return $this->hasMany(OfficialExamRegistration::class);

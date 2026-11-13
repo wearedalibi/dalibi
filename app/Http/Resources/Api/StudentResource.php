@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Student
+ */
 class StudentResource extends JsonResource
 {
     public function toArray(Request $request): array

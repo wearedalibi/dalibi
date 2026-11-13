@@ -3,7 +3,6 @@
 namespace App\Concerns;
 
 use App\Models\AuditLog;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Enregistre automatiquement les créations / modifications / suppressions
@@ -16,9 +15,9 @@ trait Auditable
 {
     public static function bootAuditable(): void
     {
-        static::created(fn (Model $model) => $model->recordAudit('created', null, $model->auditableAttributes()));
+        static::created(fn (self $model) => $model->recordAudit('created', null, $model->auditableAttributes()));
 
-        static::updated(function (Model $model): void {
+        static::updated(function (self $model): void {
             $changed = array_keys($model->getChanges());
             $keys = array_diff($changed, $model->auditExcluded());
             if ($keys === []) {
@@ -31,7 +30,7 @@ trait Auditable
             $model->recordAudit('updated', $old, $new);
         });
 
-        static::deleted(fn (Model $model) => $model->recordAudit('deleted', $model->auditableAttributes(), null));
+        static::deleted(fn (self $model) => $model->recordAudit('deleted', $model->auditableAttributes(), null));
     }
 
     /** Champs exclus du journal (secrets et bruit). */

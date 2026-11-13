@@ -32,6 +32,9 @@ class DocumentHeader extends Model
     /** Largeur de référence du canevas = largeur utile d'une page A4 portrait (px @96dpi). */
     public const CANVAS_WIDTH = 760;
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);

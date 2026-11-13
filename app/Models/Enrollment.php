@@ -79,31 +79,49 @@ class Enrollment extends Model
     /** Statuts considérés comme « scolarité active » (présents à l'appel). */
     public const ACTIVE_ACADEMIC_STATUSES = ['en_cours', 'valide', 'non_valide'];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<Classroom, $this>
+     */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class, 'class_id');
     }
 
+    /**
+     * @return BelongsTo<AcademicYear, $this>
+     */
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class, 'academic_year_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function enrolledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'enrolled_by');
     }
 
+    /**
+     * @return HasOne<Invoice, $this>
+     */
     public function invoice(): HasOne
     {
         return $this->hasOne(Invoice::class);

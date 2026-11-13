@@ -86,6 +86,9 @@ class EnrollmentController extends Controller
             ->where('invoices.status', '!=', 'CANCELLED');
         $applyFilters($aggQuery);
 
+        // Agrégat sans GROUP BY : renvoie toujours exactement une ligne de synthèse
+        // dont les colonnes sont calculées (invisibles à l'analyse statique).
+        /** @var object{billed: int|float|string, collected: int|float|string, remaining: int|float|string, unpaid_count: int|float|string, unpaid_amount: int|float|string} $agg */
         $agg = $aggQuery->selectRaw('
             COALESCE(SUM(invoices.total), 0) as billed,
             COALESCE(SUM(invoices.amount_paid), 0) as collected,

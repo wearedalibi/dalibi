@@ -40,6 +40,8 @@ class SubjectAssignment extends Model
 
     /**
      * Get the subject for this assignment.
+     *
+     * @return BelongsTo<Subject, $this>
      */
     public function subject(): BelongsTo
     {
@@ -48,6 +50,8 @@ class SubjectAssignment extends Model
 
     /**
      * Get the teacher (user) for this assignment.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function teacher(): BelongsTo
     {
@@ -56,6 +60,8 @@ class SubjectAssignment extends Model
 
     /**
      * Get the academic year for this assignment.
+     *
+     * @return BelongsTo<AcademicYear, $this>
      */
     public function academicYear(): BelongsTo
     {
@@ -64,6 +70,8 @@ class SubjectAssignment extends Model
 
     /**
      * Get the class (classroom) for this assignment.
+     *
+     * @return BelongsTo<Classroom, $this>
      */
     public function classroom(): BelongsTo
     {

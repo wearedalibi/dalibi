@@ -82,11 +82,17 @@ class DocumentTemplate extends Model
         ],
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return HasMany<DocumentIssuance, $this>
+     */
     public function issuances(): HasMany
     {
         return $this->hasMany(DocumentIssuance::class, 'template_id');

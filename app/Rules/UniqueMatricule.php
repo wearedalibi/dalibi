@@ -11,9 +11,9 @@ class UniqueMatricule implements ValidationRule
 {
     protected MatriculeService $matriculeService;
 
-    protected ?int $ignoreId = null;
+    protected ?string $ignoreId = null;
 
-    public function __construct(?int $ignoreId = null)
+    public function __construct(?string $ignoreId = null)
     {
         $this->matriculeService = app(MatriculeService::class);
         $this->ignoreId = $ignoreId;

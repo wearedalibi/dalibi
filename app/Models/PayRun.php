@@ -46,16 +46,25 @@ class PayRun extends Model
         'paid_at' => 'datetime',
     ];
 
+    /**
+     * @return HasMany<Payslip, $this>
+     */
     public function payslips(): HasMany
     {
         return $this->hasMany(Payslip::class);
     }
 
+    /**
+     * @return BelongsTo<CashAccount, $this>
+     */
     public function cashAccount(): BelongsTo
     {
         return $this->belongsTo(CashAccount::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

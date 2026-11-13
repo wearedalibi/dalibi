@@ -13,6 +13,9 @@ class DocumentTag extends Model
 
     protected $fillable = ['name', 'slug', 'color'];
 
+    /**
+     * @return BelongsToMany<ArchivedDocument, $this>
+     */
     public function documents(): BelongsToMany
     {
         return $this->belongsToMany(ArchivedDocument::class, 'archived_document_tag');

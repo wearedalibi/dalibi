@@ -34,21 +34,33 @@ class EvaluationTemplate extends Model
         'date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<AcademicPeriod, $this>
+     */
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(AcademicPeriod::class);
     }
 
+    /**
+     * @return BelongsTo<ClassroomType, $this>
+     */
     public function classType(): BelongsTo
     {
         return $this->belongsTo(ClassroomType::class, 'class_type_id');
     }
 
+    /**
+     * @return BelongsTo<EvaluationType, $this>
+     */
     public function evaluationType(): BelongsTo
     {
         return $this->belongsTo(EvaluationType::class);
     }
 
+    /**
+     * @return HasMany<Evaluation, $this>
+     */
     public function evaluations(): HasMany
     {
         return $this->hasMany(Evaluation::class);

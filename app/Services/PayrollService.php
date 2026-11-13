@@ -137,7 +137,7 @@ final class PayrollService
         $grossEarnings = 0.0;
         foreach ($lines as $l) {
             if (($l['type'] ?? '') !== SalaryComponent::DEDUCTION) {
-                $grossEarnings += (float) ($l['amount'] ?? 0);
+                $grossEarnings += (float) ($l['amount']);
             }
         }
         $statutory = $this->statutory($grossEarnings, $settings);
@@ -197,7 +197,7 @@ final class PayrollService
         $tax = 0.0;
         $prev = 0.0;
         foreach ($brackets as $b) {
-            $cap = isset($b['up_to']) && $b['up_to'] !== null ? (float) $b['up_to'] : INF;
+            $cap = isset($b['up_to']) ? (float) $b['up_to'] : INF;
             $rate = (float) ($b['rate'] ?? 0);
             if ($taxable <= $prev) {
                 break;
@@ -382,6 +382,8 @@ final class PayrollService
 
     private function refreshTotals(PayRun $run): void
     {
+        // Agrégat sans GROUP BY : toujours une ligne, colonnes calculées.
+        /** @var object{g: int|float|string, d: int|float|string, n: int|float|string} $sums */
         $sums = $run->payslips()->selectRaw('
             coalesce(sum(gross), 0) as g,
             coalesce(sum(total_deductions), 0) as d,
