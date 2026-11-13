@@ -34,14 +34,14 @@ class StudentTestSeeder extends Seeder
     {
         // Garde-fou : données fictives interdites en production.
         if (app()->environment('production')) {
-            $this->command->warn('StudentTestSeeder ignoré : données fictives interdites en production.');
+            $this->command?->warn('StudentTestSeeder ignoré : données fictives interdites en production.');
 
             return;
         }
 
         // Idempotent : on ne régénère pas de faux élèves si la base en contient déjà.
         if (Student::query()->exists()) {
-            $this->command->warn('StudentTestSeeder ignoré : des élèves existent déjà.');
+            $this->command?->warn('StudentTestSeeder ignoré : des élèves existent déjà.');
 
             return;
         }
@@ -58,7 +58,7 @@ class StudentTestSeeder extends Seeder
         // les classes peuvent manquer sur une base vide.
         $canEnroll = $school && $classroomIds !== [];
         if (! $canEnroll) {
-            $this->command->warn(
+            $this->command?->warn(
                 'Élèves créés sans inscription : école ou classes manquantes.'
             );
         }
@@ -155,7 +155,7 @@ class StudentTestSeeder extends Seeder
             }
         }
 
-        $this->command->info(
+        $this->command?->info(
             self::COUNT.' élèves de test créés'.($canEnroll ? ' et inscrits.' : ' (sans inscription).')
         );
     }

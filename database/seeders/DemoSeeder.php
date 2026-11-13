@@ -162,7 +162,7 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         if (app()->environment('production')) {
-            $this->command->warn('DemoSeeder ignoré : données de démonstration interdites en production.');
+            $this->command?->warn('DemoSeeder ignoré : données de démonstration interdites en production.');
 
             return;
         }
@@ -195,8 +195,8 @@ class DemoSeeder extends Seeder
         $this->step('Bulletins', fn () => $this->seedReportCards());
         $this->step('Années passées (comparaisons)', fn () => $this->seedHistory());
 
-        $this->command->newLine();
-        $this->command->info('Jeu de démonstration prêt.');
+        $this->command?->newLine();
+        $this->command?->info('Jeu de démonstration prêt.');
     }
 
     /* ------------------------------------------------------------------ */
@@ -214,7 +214,7 @@ class DemoSeeder extends Seeder
             ?? AcademicYear::query()->latest('start_date')->first();
 
         if (! $school || ! $year) {
-            $this->command->error('DemoSeeder : école ou année académique manquante. Lancez db:seed au préalable.');
+            $this->command?->error('DemoSeeder : école ou année académique manquante. Lancez db:seed au préalable.');
 
             return false;
         }
@@ -228,7 +228,7 @@ class DemoSeeder extends Seeder
             ->get();
 
         if ($this->periods->isEmpty()) {
-            $this->command->error('DemoSeeder : aucune période académique pour l\'année active.');
+            $this->command?->error('DemoSeeder : aucune période académique pour l\'année active.');
 
             return false;
         }
@@ -240,7 +240,7 @@ class DemoSeeder extends Seeder
             ->get();
 
         if ($this->classes->isEmpty()) {
-            $this->command->error('DemoSeeder : aucune classe active (ClassroomSeeder).');
+            $this->command?->error('DemoSeeder : aucune classe active (ClassroomSeeder).');
 
             return false;
         }
@@ -272,7 +272,7 @@ class DemoSeeder extends Seeder
 
     private function step(string $label, callable $work): void
     {
-        $this->command->line("  <fg=gray>-</> {$label}...");
+        $this->command?->line("  <fg=gray>-</> {$label}...");
         $work();
     }
 
@@ -295,7 +295,7 @@ class DemoSeeder extends Seeder
         $path = database_path('data/togo-localites.json');
 
         if (! is_file($path)) {
-            $this->command->warn('togo-localites.json introuvable : les élèves seront créés sans origine géographique.');
+            $this->command?->warn('togo-localites.json introuvable : les élèves seront créés sans origine géographique.');
 
             return $this->localites = [];
         }
