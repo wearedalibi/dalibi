@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Access to an undefined property App\\Models\\Student\:\:\$registration_number\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/GenerateStudentMatricule.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\Student\:\:generateRegistrationNumber\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Console/Commands/GenerateStudentMatricule.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 4
