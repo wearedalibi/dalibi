@@ -98,11 +98,13 @@ class User extends Authenticatable
 
     /**
      * Get the user's full name
+     *
+     * @return Attribute<string, never>
      */
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn () => "{$this->firstname} {$this->lastname}",
+            get: fn (): string => "{$this->firstname} {$this->lastname}",
         );
     }
 

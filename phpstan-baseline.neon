@@ -49,12 +49,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/ChildrenController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Archives/ArchiveController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 2
@@ -63,12 +57,6 @@ parameters:
 		-
 			message: '#^Constant App\\Http\\Controllers\\Archives\\ArchiveController\:\:TYPES is unused\.$#'
 			identifier: classConstant.unused
-			count: 1
-			path: app/Http/Controllers/Archives/ArchiveController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Pagination\\AbstractPaginator\<int,App\\Models\\ArchivedDocument\>\:\:through\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Archives/ArchiveController.php
 
@@ -121,12 +109,6 @@ parameters:
 			path: app/Http/Controllers/Eleves/EnrollmentController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
 			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\AcademicYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -135,18 +117,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\Enrollment\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\DocumentIssuance\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\StudentDocument\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Eleves/StudentController.php
 
@@ -217,32 +187,8 @@ parameters:
 			path: app/Http/Controllers/Eleves/StudentStatsController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Eleves/TimetableController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Eleves/TimetableController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\Eleves\\TimetableController\:\:buildScheduleGrid\(\) should return array\{timeRanges\: Illuminate\\Support\\Collection\<int, string\>, grid\: array\<string, array\<int, App\\Models\\TimetableSlot\>\>\} but returns array\{timeRanges\: Illuminate\\Support\\Collection\<int, non\-falsy\-string\>, grid\: array\<non\-falsy\-string, non\-empty\-array\<int\<0, max\>, App\\Models\\TimetableSlot\>\>\}\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Eleves/TimetableController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\TimetableSlot\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Eleves/TimetableController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\User\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Eleves/TimetableController.php
 
@@ -277,20 +223,8 @@ parameters:
 			path: app/Http/Controllers/Notes/NoteReclamationController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/BackupController.php
-
-		-
 			message: '#^Offset ''media'' on array\{format\: string, tables\: int, rows\?\: int\} in isset\(\) does not exist\.$#'
 			identifier: isset.offset
-			count: 1
-			path: app/Http/Controllers/Parametres/BackupController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Backup\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Parametres/BackupController.php
 
@@ -305,18 +239,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Pagination\\AbstractPaginator\<int,App\\Models\\DocumentIssuance\>\:\:through\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\FeeStructure\:\:\$installments\.$#'
@@ -355,134 +277,14 @@ parameters:
 			path: app/Http/Controllers/Rh/UserPayrollController.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$all_day\.$#'
-			identifier: property.notFound
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$end_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$end_time\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$start_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$start_time\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/CalendarEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ReportCardResource\:\:\$average\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/ReportCardResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ReportCardResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/ReportCardResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ReportCardResource\:\:\$locked_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/ReportCardResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ReportCardResource\:\:\$mention\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/ReportCardResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ReportCardResource\:\:\$rank\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/ReportCardResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ReportCardResource\:\:\$reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/ReportCardResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$enrollments\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$firstname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$gender\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$lastname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\StudentResource\:\:\$pivot\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Call to an undefined method App\\Http\\Resources\\Api\\StudentResource\:\:relationLoaded\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: app/Http/Resources/Api/StudentResource.php
 

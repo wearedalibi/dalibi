@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\CalendarEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin CalendarEvent
+ */
 class CalendarEventResource extends JsonResource
 {
     public function toArray(Request $request): array
