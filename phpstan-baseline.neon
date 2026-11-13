@@ -109,18 +109,6 @@ parameters:
 			path: app/Http/Controllers/Eleves/EnrollmentController.php
 
 		-
-			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\AcademicYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\Enrollment\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\Enrollment\:\:\$birth_date\.$#'
 			identifier: property.notFound
 			count: 1
@@ -205,12 +193,6 @@ parameters:
 			path: app/Http/Controllers/Examens/OfficialExamController.php
 
 		-
-			message: '#^Parameter \#1 \$rows of method App\\Services\\GradingService\:\:rank\(\) expects Illuminate\\Support\\Collection\<int, array\{student_id\: mixed, average\: float\|null\}\>, Illuminate\\Support\\Collection\<int, array\{student_id\: string, average\: float\|null\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Notes/BulletinController.php
-
-		-
 			message: '#^Parameter \#2 \$type of static method App\\Models\\GradingConfig\:\:resolveOrDefault\(\) expects App\\Models\\ClassroomType\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -221,18 +203,6 @@ parameters:
 			identifier: isset.offset
 			count: 1
 			path: app/Http/Controllers/Parametres/BackupController.php
-
-		-
-			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\School\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Parametres/BulletinTemplateController.php
-
-		-
-			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\School\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -325,12 +295,6 @@ parameters:
 			path: app/Services/DocumentRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$rows of method App\\Services\\GradingService\:\:assignRanks\(\) expects Illuminate\\Support\\Collection\<int, array\{student_id\: mixed, average\: float\|null\}\>, Illuminate\\Support\\Collection\<int, array\{student_id\: string, average\: float\|null\}\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Services/GradingService.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\Payslip\:\:\$d\.$#'
 			identifier: property.notFound
 			count: 1
@@ -364,12 +328,6 @@ parameters:
 			message: '#^Offset ''by_type'' on array\{classe\: float\|null, compo\: float\|null, moy\: float\|null, by_type\: array\<float\|null\>\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Parameter \#1 \$rows of method App\\Services\\GradingService\:\:rank\(\) expects Illuminate\\Support\\Collection\<int, array\{student_id\: mixed, average\: float\|null\}\>, Illuminate\\Support\\Collection\<int, array\{student_id\: string, average\: float\|null\}\> given\.$#'
-			identifier: argument.type
-			count: 4
 			path: app/Services/ReportCardBuilder.php
 
 		-

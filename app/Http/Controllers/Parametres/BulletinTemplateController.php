@@ -87,7 +87,7 @@ class BulletinTemplateController extends Controller
     private function activeSchool(): School
     {
         $school = School::query()->first();
-        abort_unless($school, 404, 'Aucune école configurée.');
+        abort_unless($school !== null, 404, 'Aucune école configurée.');
 
         return $school;
     }

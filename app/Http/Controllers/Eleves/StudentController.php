@@ -271,13 +271,13 @@ class StudentController extends Controller
         ]);
 
         $activeYear = AcademicYear::where('active', true)->first(['id']);
-        abort_unless($activeYear, 422, 'Aucune année académique active.');
+        abort_unless($activeYear !== null, 422, 'Aucune année académique active.');
 
         $enrollment = Enrollment::where('student_id', $student->id)
             ->where('academic_year_id', $activeYear->id)
             ->first();
 
-        abort_unless($enrollment, 422, 'Cet élève n\'a pas d\'inscription pour l\'année active.');
+        abort_unless($enrollment !== null, 422, 'Cet élève n\'a pas d\'inscription pour l\'année active.');
 
         $enrollment->update(['class_id' => $validated['class_id']]);
 
