@@ -30,6 +30,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface AcademicYear {
@@ -95,6 +96,7 @@ interface IndexProps {
 }
 
 export default function Index({ feeStructures, academicYears, feeCategories, classrooms, stats, message, filters }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -183,17 +185,17 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
 
     return (
         <AppLayout>
-            <Head title="Structures de frais" />
+            <Head title={t('parametres.fee_structures.head')} />
 
             <div className="space-y-6">
                 {/* Header avec titre et bouton */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><DollarSign className="h-7 w-7 text-blue-600 shrink-0" />
-                            Structures de frais
+                            {t('parametres.fee_structures.title')}
                         </h1>
                         <p className="mt-3 text-base text-gray-600">
-                            Gérez les montants des frais par catégorie, classe et année académique
+                            {t('parametres.fee_structures.subtitle')}
                         </p>
                     </div>
                     <div className="flex gap-3">
@@ -203,14 +205,14 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                             className="border-indigo-300 text-indigo-600 hover:bg-indigo-50"
                         >
                             <Copy className="h-4 w-4 mr-2" />
-                            Répliquer une année
+                            {t('parametres.fee_structures.replicate_year')}
                         </Button>
                         <Button
                             onClick={() => router.visit(route('fee-structures.create'))}
                             className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                             <Plus className="h-4 w-4 mr-2" />
-                            Nouvelle structure
+                            {t('parametres.fee_structures.new')}
                         </Button>
                     </div>
                 </div>
@@ -230,7 +232,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                 <DollarSign className="h-6 w-6 text-blue-600" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Montant total</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.fee_structures.stat_total')}</p>
                                 <p className="text-2xl font-bold text-blue-700">{formatMoney(stats.amount_total)}</p>
                             </div>
                         </div>
@@ -241,7 +243,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                 <TrendingUp className="h-6 w-6 text-emerald-600" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Montant moyen</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.fee_structures.stat_average')}</p>
                                 <p className="text-2xl font-bold text-emerald-700">{formatMoney(stats.amount_avg)}</p>
                             </div>
                         </div>
@@ -252,7 +254,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                 <School className="h-6 w-6 text-amber-600" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Classes couvertes</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.fee_structures.stat_classes')}</p>
                                 <p className="text-2xl font-bold text-amber-700">{stats.classes_covered}</p>
                             </div>
                         </div>
@@ -263,7 +265,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                 <Layers className="h-6 w-6 text-violet-600" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Catégories couvertes</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.fee_structures.stat_categories')}</p>
                                 <p className="text-2xl font-bold text-violet-700">{stats.categories_covered}</p>
                             </div>
                         </div>
@@ -274,9 +276,9 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                 <TrendingUp className="h-6 w-6 text-rose-600" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Écart min/max</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.fee_structures.stat_gap')}</p>
                                 <p className="text-2xl font-bold text-rose-700">{formatMoney(stats.amount_range)}</p>
-                                <p className="text-xs text-gray-500">Min {formatMoney(stats.amount_min)} | Max {formatMoney(stats.amount_max)}</p>
+                                <p className="text-xs text-gray-500">{t('parametres.fee_structures.stat_gap_detail', { min: formatMoney(stats.amount_min), max: formatMoney(stats.amount_max) })}</p>
                             </div>
                         </div>
                     </div>
@@ -289,7 +291,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Rechercher par catégorie, classe ou année..."
+                                placeholder={t('parametres.fee_structures.search_ph')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={handleKeyPress}
@@ -298,21 +300,21 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                         </div>
                         <Select value={academicYearId} onValueChange={setAcademicYearId}>
                             <SelectTrigger className="border-slate-200">
-                                <SelectValue placeholder="Année académique" />
+                                <SelectValue placeholder={t('parametres.fee_structures.filter_year')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Toutes les années</SelectItem>
+                                <SelectItem value="all">{t('parametres.fee_structures.filter_all_years')}</SelectItem>
                                 {academicYears.map((year) => (
-                                    <SelectItem key={year.id} value={year.id}>{year.year}{year.active ? ' (active)' : ''}</SelectItem>
+                                    <SelectItem key={year.id} value={year.id}>{year.year}{year.active ? t('parametres.fee_structures.active_suffix') : ''}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                         <Select value={feeCategoryId} onValueChange={setFeeCategoryId}>
                             <SelectTrigger className="border-slate-200">
-                                <SelectValue placeholder="Catégorie" />
+                                <SelectValue placeholder={t('parametres.fee_structures.filter_category')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Toutes les catégories</SelectItem>
+                                <SelectItem value="all">{t('parametres.fee_structures.filter_all_categories')}</SelectItem>
                                 {feeCategories.map((category) => (
                                     <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
                                 ))}
@@ -320,10 +322,10 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                         </Select>
                         <Select value={classId} onValueChange={setClassId}>
                             <SelectTrigger className="border-slate-200">
-                                <SelectValue placeholder="Classe" />
+                                <SelectValue placeholder={t('parametres.fee_structures.filter_class')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Toutes les classes</SelectItem>
+                                <SelectItem value="all">{t('parametres.fee_structures.filter_all_classes')}</SelectItem>
                                 {classrooms.map((classroom) => (
                                     <SelectItem key={classroom.id} value={classroom.id}>{classroom.name} ({classroom.code})</SelectItem>
                                 ))}
@@ -332,7 +334,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                         <Input
                             type="number"
                             min="0"
-                            placeholder="Montant min"
+                            placeholder={t('parametres.fee_structures.filter_amount_min')}
                             value={minAmount}
                             onChange={(e) => setMinAmount(e.target.value)}
                             className="border-slate-200"
@@ -340,7 +342,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                         <Input
                             type="number"
                             min="0"
-                            placeholder="Montant max"
+                            placeholder={t('parametres.fee_structures.filter_amount_max')}
                             value={maxAmount}
                             onChange={(e) => setMaxAmount(e.target.value)}
                             className="border-slate-200"
@@ -352,7 +354,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                             className="bg-blue-600 hover:bg-blue-700"
                         >
                             <Search className="h-4 w-4 mr-2" />
-                            Rechercher
+                            {t('parametres.fee_structures.search')}
                         </Button>
                         <Button
                             variant="outline"
@@ -360,10 +362,10 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                             className="border-slate-200"
                         >
                             <X className="h-4 w-4 mr-2" />
-                            Réinitialiser
+                            {t('parametres.fee_structures.reset')}
                         </Button>
                         <div className="text-sm text-gray-600 self-center">
-                            {stats.count} structure(s) filtrée(s) | Max: {formatMoney(stats.amount_max)}
+                            {t('parametres.fee_structures.filtered_count', { count: stats.count, max: formatMoney(stats.amount_max) })}
                         </div>
                     </div>
                 </div>
@@ -374,11 +376,11 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow className="border-b border-gray-200">
-                                <TableHead className="font-semibold text-gray-900">Année académique</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Catégorie</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Classe</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Montant</TableHead>
-                                <TableHead className="font-semibold text-gray-900 text-center">Actions</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.fee_structures.col_year')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.fee_structures.col_category')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.fee_structures.col_class')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.fee_structures.col_amount')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900 text-center">{t('parametres.fee_structures.col_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -387,7 +389,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                     <TableCell colSpan={5} className="text-center py-12 text-gray-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <DollarSign className="w-12 h-12 text-gray-300" />
-                                            <p className="text-lg">Aucune structure de frais trouvée</p>
+                                            <p className="text-lg">{t('parametres.fee_structures.empty')}</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -456,7 +458,7 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                     {feeStructures.last_page > 1 && (
                         <div className="flex items-center justify-between border-t border-gray-100 bg-white px-6 py-4">
                             <div className="text-sm text-gray-600">
-                                Affichage de {feeStructures.from} à {feeStructures.to} sur {feeStructures.total} résultats
+                                {t('parametres.fee_structures.pagination', { from: feeStructures.from, to: feeStructures.to, total: feeStructures.total })}
                             </div>
                             <div className="flex gap-2">
                                 <Button
@@ -493,19 +495,19 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.fee_structures.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette structure de frais ? Cette action est irréversible.
+                            {t('parametres.fee_structures.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-3">
-                        <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeleting}>{t('parametres.fee_structures.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.fee_structures.deleting') : t('parametres.fee_structures.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
@@ -515,24 +517,23 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
             <Dialog open={replicateOpen} onOpenChange={setReplicateOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Répliquer les structures de frais</DialogTitle>
+                        <DialogTitle>{t('parametres.fee_structures.replicate_title')}</DialogTitle>
                         <DialogDescription>
-                            Copie toutes les structures (et leurs tranches) d'une année vers l'année active.
-                            Les combinaisons catégorie / classe déjà présentes sont ignorées.
+                            {t('parametres.fee_structures.replicate_desc')}
                         </DialogDescription>
                     </DialogHeader>
 
                     {activeYear ? (
                         <div className="space-y-4 py-2">
                             <div className="rounded-lg bg-indigo-50 ring-1 ring-indigo-100 p-3 text-sm">
-                                <span className="text-gray-600">Année cible (active) :</span>
+                                <span className="text-gray-600">{t('parametres.fee_structures.replicate_target')}</span>
                                 <span className="font-semibold text-indigo-700 ml-2">{activeYear.year}</span>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700">Année source *</label>
+                                <label className="text-sm font-medium text-gray-700">{t('parametres.fee_structures.replicate_source')}</label>
                                 <Select value={sourceYearId} onValueChange={setSourceYearId}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Choisir l'année à copier" />
+                                        <SelectValue placeholder={t('parametres.fee_structures.replicate_source_ph')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {academicYears.filter((y) => y.id !== activeYear.id).map((y) => (
@@ -542,20 +543,20 @@ export default function Index({ feeStructures, academicYears, feeCategories, cla
                                 </Select>
                             </div>
                             <div className="flex justify-end gap-2 pt-2">
-                                <Button variant="outline" onClick={() => setReplicateOpen(false)}>Annuler</Button>
+                                <Button variant="outline" onClick={() => setReplicateOpen(false)}>{t('parametres.fee_structures.cancel')}</Button>
                                 <Button
                                     onClick={handleReplicate}
                                     disabled={!sourceYearId || replicating}
                                     className="bg-indigo-600 hover:bg-indigo-700"
                                 >
                                     <Copy className="h-4 w-4 mr-2" />
-                                    {replicating ? 'Réplication...' : 'Répliquer'}
+                                    {replicating ? t('parametres.fee_structures.replicating') : t('parametres.fee_structures.replicate')}
                                 </Button>
                             </div>
                         </div>
                     ) : (
                         <p className="text-sm text-red-600 py-4">
-                            Aucune année académique active. Activez une année avant de répliquer.
+                            {t('parametres.fee_structures.replicate_no_active')}
                         </p>
                     )}
                 </DialogContent>
