@@ -4,6 +4,30 @@ Toutes les évolutions notables de **Dalibi** sont consignées ici.
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le versionnage
 respecte [SemVer](https://semver.org/lang/fr/).
 
+## [1.0.2] — 2026-11-13
+
+### Ajouté
+- **Internationalisation (i18n)** : bascule complète **français / anglais** de l'ensemble
+  des modules (interface, écrans et composants partagés), avec fichiers de langue dédiés
+  et partage des traductions côté client via Inertia.
+
+### Sécurité
+- Montée des dépendances résorbant **67 avis de sécurité** (`composer audit` désormais
+  vierge), dont le **bypass d'authentification TokenGuard** de Laravel
+  ([CVE-2026-114509](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2026-114509),
+  critique — pertinent pour l'auth par jeton du portail) : Laravel 12.72, Symfony 7.4.23,
+  Guzzle 7.16, CommonMark 2.10, dompdf 3.1.6, ainsi que les montées majeures
+  phpoffice/phpspreadsheet 5 et maatwebsite/excel 4.
+
+### Qualité & documentation
+- **Analyse statique** : intégration de **PHPStan / Larastan niveau 5** avec étape CI
+  dédiée, puis résorption **intégrale de la dette** (463 → 0 erreur, sans fichier
+  *baseline*) — typage générique des relations Eloquent, formes des résultats d'agrégats,
+  authentification multi-modèle du portail (élève / tuteur).
+- Corrections de **bugs réels** mis au jour par l'analyse : contrainte `withSum` ignorée
+  sur les totaux de caisse, libellé d'archive d'élève vide, positionnement de colonne en
+  migration, comparaison d'identifiant UUID, accès nullsafe rétablis sur les seeders.
+
 ## [1.0.1] — 2026-10-11
 
 ### Ajouté
