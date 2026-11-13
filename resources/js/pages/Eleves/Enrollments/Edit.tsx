@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface School {
@@ -57,6 +58,7 @@ const normalizeDate = (value?: string | null): string => {
 };
 
 export default function Edit({ enrollment, schools, students, classrooms, academicYears }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         school_id: enrollment.school_id,
         student_id: enrollment.student_id,
@@ -85,7 +87,7 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
 
     return (
         <AppLayout>
-            <Head title="Modifier inscription" />
+            <Head title={t('enrollments.edit.head')} />
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -97,21 +99,21 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Modifier l'inscription</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('enrollments.edit.title')}</h1>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="w-full space-y-6">
                     <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         <div>
-                            <label htmlFor="school_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">École *</label>
+                            <label htmlFor="school_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.school')}</label>
                             <select
                                 id="school_id"
                                 value={formData.school_id}
                                 onChange={(event) => setFormData((prev) => ({ ...prev, school_id: event.target.value }))}
                                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.school_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                             >
-                                <option value="">Sélectionner une école</option>
+                                <option value="">{t('enrollments.form.select_school')}</option>
                                 {schools.map((school) => (
                                     <option key={school.id} value={school.id}>
                                         {school.name} ({school.code})
@@ -122,14 +124,14 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         </div>
 
                         <div>
-                            <label htmlFor="student_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Élève *</label>
+                            <label htmlFor="student_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.student')}</label>
                             <select
                                 id="student_id"
                                 value={formData.student_id}
                                 onChange={(event) => setFormData((prev) => ({ ...prev, student_id: event.target.value }))}
                                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.student_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                             >
-                                <option value="">Sélectionner un élève</option>
+                                <option value="">{t('enrollments.form.select_student')}</option>
                                 {students.map((student) => (
                                     <option key={student.id} value={student.id}>
                                         {student.firstname} {student.lastname} {student.matricule ? `(${student.matricule})` : ''}
@@ -140,14 +142,14 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         </div>
 
                         <div>
-                            <label htmlFor="class_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Classe *</label>
+                            <label htmlFor="class_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.class')}</label>
                             <select
                                 id="class_id"
                                 value={formData.class_id}
                                 onChange={(event) => setFormData((prev) => ({ ...prev, class_id: event.target.value }))}
                                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.class_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                             >
-                                <option value="">Sélectionner une classe</option>
+                                <option value="">{t('enrollments.form.select_class')}</option>
                                 {classrooms.map((classroom) => (
                                     <option key={classroom.id} value={classroom.id}>
                                         {classroom.name} ({classroom.code})
@@ -158,17 +160,17 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         </div>
 
                         <div>
-                            <label htmlFor="academic_year_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Année académique *</label>
+                            <label htmlFor="academic_year_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.academic_year')}</label>
                             <select
                                 id="academic_year_id"
                                 value={formData.academic_year_id}
                                 onChange={(event) => setFormData((prev) => ({ ...prev, academic_year_id: event.target.value }))}
                                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.academic_year_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                             >
-                                <option value="">Sélectionner une année</option>
+                                <option value="">{t('enrollments.form.select_year')}</option>
                                 {academicYears.map((academicYear) => (
                                     <option key={academicYear.id} value={academicYear.id}>
-                                        {academicYear.year}{academicYear.active ? ' (active)' : ''}
+                                        {academicYear.year}{academicYear.active ? ` (${t('enrollments.form.active_suffix')})` : ''}
                                     </option>
                                 ))}
                             </select>
@@ -176,7 +178,7 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         </div>
 
                         <div>
-                            <label htmlFor="enrollment_code" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Code d'inscription</label>
+                            <label htmlFor="enrollment_code" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.code')}</label>
                             <Input
                                 id="enrollment_code"
                                 value={formData.enrollment_code}
@@ -187,7 +189,7 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         </div>
 
                         <div>
-                            <label htmlFor="enrollment_date" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Date d'inscription *</label>
+                            <label htmlFor="enrollment_date" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.date')}</label>
                             <Input
                                 id="enrollment_date"
                                 type="date"
@@ -199,16 +201,16 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
                         </div>
 
                         <div>
-                            <label htmlFor="status" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Statut *</label>
+                            <label htmlFor="status" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('enrollments.form.status')}</label>
                             <select
                                 id="status"
                                 value={formData.status}
                                 onChange={(event) => setFormData((prev) => ({ ...prev, status: event.target.value as Enrollment['status'] }))}
                                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.status ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                             >
-                                <option value="PENDING">En attente</option>
-                                <option value="ACTIVE">Actif</option>
-                                <option value="CANCELLED">Annulé</option>
+                                <option value="PENDING">{t('enrollments.index.status.pending')}</option>
+                                <option value="ACTIVE">{t('enrollments.index.status.active')}</option>
+                                <option value="CANCELLED">{t('enrollments.index.status.cancelled')}</option>
                             </select>
                             {errors.status && <p className="text-red-600 text-sm mt-1">{errors.status}</p>}
                         </div>
@@ -216,10 +218,10 @@ export default function Edit({ enrollment, schools, students, classrooms, academ
 
                     <div className="flex gap-3">
                         <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700 text-white">
-                            {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+                            {isSubmitting ? t('enrollments.form.saving') : t('common.actions.save')}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.get(route('enrollments.index'))}>
-                            Annuler
+                            {t('common.actions.cancel')}
                         </Button>
                     </div>
                 </form>

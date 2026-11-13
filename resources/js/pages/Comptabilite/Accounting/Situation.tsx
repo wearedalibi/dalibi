@@ -8,6 +8,7 @@ import {
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 /* ------------------------------------------------------------------ */
@@ -72,11 +73,11 @@ interface Props {
 const pct = (paid: number, total: number) =>
     total > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0;
 
-const statusConfig: Record<InvoiceStatus, { label: string; bg: string; text: string; icon: React.ReactNode }> = {
-    PAID:           { label: 'Soldé',    bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
-    PARTIALLY_PAID: { label: 'Partiel',  bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-400', icon: <AlertCircle className="w-3.5 h-3.5" /> },
-    ISSUED:         { label: 'Non payé', bg: 'bg-red-100 dark:bg-red-900/30',    text: 'text-red-700 dark:text-red-400',    icon: <XCircle className="w-3.5 h-3.5" /> },
-    CANCELLED:      { label: 'Annulé',   bg: 'bg-gray-100 dark:bg-gray-700',      text: 'text-gray-500 dark:text-gray-400',  icon: <XCircle className="w-3.5 h-3.5" /> },
+const statusConfig: Record<InvoiceStatus, { bg: string; text: string; icon: React.ReactNode }> = {
+    PAID:           { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
+    PARTIALLY_PAID: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-400', icon: <AlertCircle className="w-3.5 h-3.5" /> },
+    ISSUED:         { bg: 'bg-red-100 dark:bg-red-900/30',    text: 'text-red-700 dark:text-red-400',    icon: <XCircle className="w-3.5 h-3.5" /> },
+    CANCELLED:      { bg: 'bg-gray-100 dark:bg-gray-700',      text: 'text-gray-500 dark:text-gray-400',  icon: <XCircle className="w-3.5 h-3.5" /> },
 };
 
 /* ------------------------------------------------------------------ */
@@ -124,6 +125,7 @@ export default function Situation({
     academicYears, classrooms, filters, globalStats, byClass, students,
 }: Readonly<Props>) {
     const fmt = useMoney();
+    const { t } = useTranslation();
     const [yearId,  setYearId]  = useState(filters.academic_year_id ?? '');
     const [classId, setClassId] = useState(filters.class_id ?? '');
 
@@ -159,7 +161,7 @@ export default function Situation({
 
     return (
         <AppLayout>
-            <Head title="Situation par classe" />
+            <Head title={t('comptabilite.situation.head')} />
 
             <div className="space-y-6">
 
@@ -168,11 +170,11 @@ export default function Situation({
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <PieChart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                            Situation par classe
+                            {t('comptabilite.situation.title')}
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {currentYear ? `Année ${currentYear.year}` : 'Toutes les années'}
-                            {selectedClass ? ` · Classe ${selectedClass.name}` : ' · Toutes les classes'}
+                            {currentYear ? t('comptabilite.situation.year', { year: currentYear.year }) : t('comptabilite.dashboard.all_years')}
+                            {selectedClass ? ` · ${t('comptabilite.situation.class_prefix', { name: selectedClass.name })}` : ` · ${t('comptabilite.situation.all_classes_suffix')}`}
                         </p>
                     </div>
 
@@ -180,7 +182,7 @@ export default function Situation({
                     <div className="flex items-center gap-2 flex-wrap">
                         <div className="flex items-center gap-1.5 text-xs text-gray-400">
                             <Filter className="w-3.5 h-3.5" />
-                            Filtrer :
+                            {t('comptabilite.dashboard.filter')}
                         </div>
 
                         <div className="relative">
@@ -189,7 +191,7 @@ export default function Situation({
                                 onChange={e => { setYearId(e.target.value); applyFilters(e.target.value); }}
                                 className={sel}
                             >
-                                <option value="">Toutes les années</option>
+                                <option value="">{t('comptabilite.dashboard.all_years')}</option>
                                 {academicYears.map(y => (
                                     <option key={y.id} value={y.id}>{y.year}{y.active ? ' ✓' : ''}</option>
                                 ))}
@@ -203,7 +205,7 @@ export default function Situation({
                                 onChange={e => { setClassId(e.target.value); applyFilters(undefined, e.target.value); }}
                                 className={sel}
                             >
-                                <option value="">Toutes les classes</option>
+                                <option value="">{t('comptabilite.dashboard.all_classes')}</option>
                                 {classrooms.map(c => (
                                     <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                                 ))}
@@ -214,7 +216,7 @@ export default function Situation({
                         {(yearId || classId) && (
                             <Button size="sm" variant="outline" className="text-xs gap-1"
                                 onClick={() => { setYearId(''); setClassId(''); applyFilters('', ''); }}>
-                                <XCircle className="w-3.5 h-3.5" /> Réinitialiser
+                                <XCircle className="w-3.5 h-3.5" /> {t('comptabilite.dashboard.reset')}
                             </Button>
                         )}
                     </div>
@@ -223,30 +225,30 @@ export default function Situation({
                 {/* ── KPI cards ── */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <StatCard
-                        title="Élèves concernés"
+                        title={t('comptabilite.situation.students_concerned')}
                         value={String(globalStats.total_students)}
-                        sub={`${byClass.length} classe(s)`}
+                        sub={t('comptabilite.situation.classes_count', { count: byClass.length })}
                         icon={Users}
                         color="blue"
                     />
                     <StatCard
-                        title="Total encaissé"
+                        title={t('comptabilite.situation.total_collected')}
                         value={fmt(globalStats.amount_paid)}
-                        sub={`${pct(globalStats.amount_paid, globalStats.total_amount)}% du facturé`}
+                        sub={t('comptabilite.situation.of_billed', { pct: pct(globalStats.amount_paid, globalStats.total_amount) })}
                         icon={TrendingUp}
                         color="green"
                     />
                     <StatCard
-                        title="Reste à recouvrer"
+                        title={t('comptabilite.situation.remaining')}
                         value={fmt(globalStats.amount_remaining)}
-                        sub={`${unpaidStudentsInView} dossier(s) en attente`}
+                        sub={t('comptabilite.situation.pending_files', { count: unpaidStudentsInView })}
                         icon={TrendingDown}
                         color="orange"
                     />
                     <StatCard
-                        title="Soldés / Non payés"
+                        title={t('comptabilite.situation.paid_unpaid')}
                         value={`${globalStats.paid_count} / ${globalStats.issued_count}`}
-                        sub={`${globalStats.partial_count} paiement(s) partiel(s)`}
+                        sub={t('comptabilite.situation.partial_count', { count: globalStats.partial_count })}
                         icon={PieChart}
                         color="red"
                     />
@@ -256,7 +258,7 @@ export default function Situation({
                 {globalStats.total_amount > 0 && (
                     <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
                         <div className="flex items-center justify-between mb-3">
-                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Taux de recouvrement global</p>
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('comptabilite.dashboard.recovery_global')}</p>
                             <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
                                 {pct(globalStats.amount_paid, globalStats.total_amount)}%
                             </span>
@@ -271,7 +273,7 @@ export default function Situation({
                         </div>
                         <div className="flex justify-between text-xs text-gray-400 mt-2">
                             <span>0 F</span>
-                            <span>{fmt(globalStats.amount_paid)} sur {fmt(globalStats.total_amount)}</span>
+                            <span>{t('comptabilite.situation.collected_of_short', { paid: fmt(globalStats.amount_paid), total: fmt(globalStats.total_amount) })}</span>
                         </div>
                     </div>
                 )}
@@ -283,7 +285,7 @@ export default function Situation({
                             <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400">
                                 <BookOpen className="w-4 h-4" />
                             </div>
-                            <h2 className="font-semibold text-gray-900 dark:text-white">Résumé par classe</h2>
+                            <h2 className="font-semibold text-gray-900 dark:text-white">{t('comptabilite.situation.summary_by_class')}</h2>
                             <span className="text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-full">
                                 {byClass.length}
                             </span>
@@ -293,21 +295,21 @@ export default function Situation({
                     {byClass.length === 0 ? (
                         <div className="px-5 py-12 text-center text-gray-400">
                             <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                            <p className="text-sm">Aucune donnée pour les filtres sélectionnés</p>
+                            <p className="text-sm">{t('comptabilite.situation.no_data')}</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Classe</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Élèves</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Facturé</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Encaissé</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Reste</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide min-w-[140px]">Taux</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Statuts</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Export</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_class')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_students')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_billed')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_collected')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_remaining')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide min-w-[140px]">{t('comptabilite.dashboard.col_rate')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_statuses')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.situation.col_export')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
@@ -335,7 +337,7 @@ export default function Situation({
                                                             <p className="text-xs text-gray-400">{c.class_code}</p>
                                                         </div>
                                                         {isActive && (
-                                                            <span className="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">sélectionnée</span>
+                                                            <span className="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">{t('comptabilite.situation.selected')}</span>
                                                         )}
                                                     </div>
                                                 </td>
@@ -373,16 +375,16 @@ export default function Situation({
                                                         <a
                                                             href={route('accounting.situation.export') + `?class_id=${c.class_id}${yearId ? `&academic_year_id=${yearId}` : ''}&type=all`}
                                                             className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                                            title="Exporter tout"
+                                                            title={t('comptabilite.situation.export_all_title')}
                                                         >
-                                                            <Download className="w-3 h-3" /> Tout
+                                                            <Download className="w-3 h-3" /> {t('comptabilite.situation.export_all')}
                                                         </a>
                                                         <a
                                                             href={route('accounting.situation.export') + `?class_id=${c.class_id}${yearId ? `&academic_year_id=${yearId}` : ''}&type=unpaid`}
                                                             className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
-                                                            title="Exporter impayés"
+                                                            title={t('comptabilite.situation.export_unpaid_title')}
                                                         >
-                                                            <Download className="w-3 h-3" /> Impayés
+                                                            <Download className="w-3 h-3" /> {t('comptabilite.situation.export_unpaid')}
                                                         </a>
                                                     </div>
                                                 </td>
@@ -407,10 +409,10 @@ export default function Situation({
                                 </div>
                                 <div>
                                     <h2 className="font-semibold text-gray-900 dark:text-white">
-                                        Élèves — {selectedClass?.name}
+                                        {t('comptabilite.situation.students_of', { name: selectedClass?.name ?? '' })}
                                     </h2>
                                     <p className="text-xs text-gray-400 mt-0.5">
-                                        {students.length} élève(s) · {highRiskCount} sans aucun paiement
+                                        {t('comptabilite.situation.students_sub', { count: students.length, risk: highRiskCount })}
                                     </p>
                                 </div>
                             </div>
@@ -422,14 +424,14 @@ export default function Situation({
                                     className="inline-flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
                                 >
                                     <Download className="w-4 h-4" />
-                                    Exporter tout
+                                    {t('comptabilite.situation.export_all_title')}
                                 </a>
                                 <a
                                     href={buildExportUrl('unpaid')}
                                     className="inline-flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors font-medium"
                                 >
                                     <Download className="w-4 h-4" />
-                                    Exporter impayés
+                                    {t('comptabilite.situation.export_unpaid_title')}
                                 </a>
                             </div>
                         </div>
@@ -438,13 +440,13 @@ export default function Situation({
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Élève</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">N° Facture</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Payé</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Reste</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide min-w-[120px]">Progression</th>
-                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Statut</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_student')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.situation.col_invoice')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_total')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_paid')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_remaining')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide min-w-[120px]">{t('comptabilite.situation.col_progress')}</th>
+                                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('comptabilite.dashboard.col_status')}</th>
                                         <th className="px-4 py-3"></th>
                                     </tr>
                                 </thead>
@@ -488,7 +490,7 @@ export default function Situation({
                                                 </td>
                                                 <td className="px-4 py-3.5 text-right font-bold text-red-500 dark:text-red-400">
                                                     {s.amount_remaining > 0 ? fmt(s.amount_remaining) : (
-                                                        <span className="text-green-600 dark:text-green-400">Soldé</span>
+                                                        <span className="text-green-600 dark:text-green-400">{t('comptabilite.situation.settled')}</span>
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3.5 min-w-[120px]">
@@ -499,7 +501,7 @@ export default function Situation({
                                                 </td>
                                                 <td className="px-4 py-3.5">
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${st.bg} ${st.text}`}>
-                                                        {st.icon}{st.label}
+                                                        {st.icon}{t(`comptabilite.dashboard.status.${s.status}`)}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3.5">
@@ -510,7 +512,7 @@ export default function Situation({
                                                         onClick={() => router.get(route('enrollments.invoice', s.enrollment_id))}
                                                     >
                                                         <Eye className="w-3.5 h-3.5" />
-                                                        Suivi
+                                                        {t('comptabilite.dashboard.follow')}
                                                     </Button>
                                                 </td>
                                             </tr>
@@ -522,7 +524,7 @@ export default function Situation({
                                 <tfoot>
                                     <tr className="border-t-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 font-semibold">
                                         <td className="px-5 py-3 text-xs text-gray-500 dark:text-gray-400" colSpan={2}>
-                                            {students.length} élève(s)
+                                            {t('comptabilite.situation.total_students_foot', { count: students.length })}
                                         </td>
                                         <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">
                                             {fmt(students.reduce((acc, s) => acc + s.total, 0))}
@@ -545,7 +547,7 @@ export default function Situation({
                 {classId && students.length === 0 && (
                     <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm px-5 py-12 text-center text-gray-400">
                         <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-green-400 opacity-60" />
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Aucun élève dans cette classe</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('comptabilite.situation.empty_class')}</p>
                     </div>
                 )}
 

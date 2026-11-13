@@ -77,7 +77,7 @@ class AttendanceController extends Controller
                     'student_id' => $enrollment->student_id,
                     'student' => $enrollment->student,
                     'record_id' => $record?->id,
-                    'status' => $record?->status ?? ($permission ? 'excused' : 'present'),
+                    'status' => $record->status ?? ($permission ? 'excused' : 'present'),
                     'minutes_late' => $record?->minutes_late,
                     'comment' => $record?->comment,
                     'has_permission' => (bool) $permission,

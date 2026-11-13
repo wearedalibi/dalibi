@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Template {
@@ -34,6 +35,8 @@ interface Props {
 }
 
 export default function Index({ templates, periods, activeYear, filters }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [search, setSearch]     = useState(filters.search ?? '');
     const [periodId, setPeriodId] = useState(filters.period_id ?? 'all');
     const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -54,20 +57,20 @@ export default function Index({ templates, periods, activeYear, filters }: Reado
 
     return (
         <AppLayout>
-            <Head title="Modèles d'évaluation" />
+            <Head title={t('examens.templates.index.head')} />
 
             <div className="w-full space-y-6">
 
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ListChecks className="h-7 w-7 text-blue-600 shrink-0" />Modèles d'évaluation</h1>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ListChecks className="h-7 w-7 text-blue-600 shrink-0" />{t('examens.templates.index.title')}</h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            {activeYear ? `Année : ${activeYear.year}` : 'Définissez les examens globaux avant de les déployer par classe'}
+                            {activeYear ? t('examens.templates.index.year', { year: activeYear.year }) : t('examens.templates.index.subtitle_default')}
                         </p>
                     </div>
                     <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => router.get(route('evaluation-templates.create'))}>
-                        <Plus className="w-5 h-5" /> Nouveau modèle
+                        <Plus className="w-5 h-5" /> {t('examens.templates.index.new')}
                     </Button>
                 </div>
 
@@ -79,7 +82,7 @@ export default function Index({ templates, periods, activeYear, filters }: Reado
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && apply()}
-                            placeholder="Rechercher un modèle..."
+                            placeholder={t('examens.templates.index.search_ph')}
                             className="pl-9"
                         />
                         {search && (
@@ -90,14 +93,14 @@ export default function Index({ templates, periods, activeYear, filters }: Reado
                     </div>
                     <Select value={periodId} onValueChange={v => { setPeriodId(v); apply({ period_id: v }); }}>
                         <SelectTrigger className="w-52">
-                            <SelectValue placeholder="Période" />
+                            <SelectValue placeholder={t('examens.templates.index.period')} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Toutes les périodes</SelectItem>
+                            <SelectItem value="all">{t('examens.templates.index.all_periods')}</SelectItem>
                             {periods.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">Filtrer</Button>
+                    <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">{t('examens.templates.index.filter')}</Button>
                 </div>
 
                 {/* Table */}
@@ -105,14 +108,14 @@ export default function Index({ templates, periods, activeYear, filters }: Reado
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Nom du modèle</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Période</TableHead>
-                                <TableHead className="text-center">Coeff.</TableHead>
-                                <TableHead className="text-center">Barème</TableHead>
-                                <TableHead>Date indicative</TableHead>
-                                <TableHead className="text-center">Déployé</TableHead>
-                                <TableHead className="text-center w-32">Actions</TableHead>
+                                <TableHead>{t('examens.templates.index.col_name')}</TableHead>
+                                <TableHead>{t('examens.templates.index.col_type')}</TableHead>
+                                <TableHead>{t('examens.templates.index.col_period')}</TableHead>
+                                <TableHead className="text-center">{t('examens.templates.index.col_coeff')}</TableHead>
+                                <TableHead className="text-center">{t('examens.templates.index.col_scale')}</TableHead>
+                                <TableHead>{t('examens.templates.index.col_date')}</TableHead>
+                                <TableHead className="text-center">{t('examens.templates.index.col_deployed')}</TableHead>
+                                <TableHead className="text-center w-32">{t('examens.templates.index.col_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -120,34 +123,34 @@ export default function Index({ templates, periods, activeYear, filters }: Reado
                                 <TableRow>
                                     <TableCell colSpan={8} className="py-16 text-center text-gray-400">
                                         <Layers className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                        Aucun modèle d'évaluation. Créez-en un pour commencer.
+                                        {t('examens.templates.index.empty')}
                                     </TableCell>
                                 </TableRow>
-                            ) : templates.data.map(t => (
-                                <TableRow key={t.id} className="hover:bg-blue-50/30 transition-colors">
-                                    <TableCell className="font-semibold text-gray-900">{t.name}</TableCell>
-                                    <TableCell className="text-gray-600">{t.evaluation_type?.name}</TableCell>
-                                    <TableCell className="text-gray-600">{t.academic_period?.name}</TableCell>
-                                    <TableCell className="text-center font-mono">{Number(t.coefficient).toFixed(2)}</TableCell>
-                                    <TableCell className="text-center font-mono">/{Number(t.max_score).toFixed(0)}</TableCell>
+                            ) : templates.data.map(tpl => (
+                                <TableRow key={tpl.id} className="hover:bg-blue-50/30 transition-colors">
+                                    <TableCell className="font-semibold text-gray-900">{tpl.name}</TableCell>
+                                    <TableCell className="text-gray-600">{tpl.evaluation_type?.name}</TableCell>
+                                    <TableCell className="text-gray-600">{tpl.academic_period?.name}</TableCell>
+                                    <TableCell className="text-center font-mono">{Number(tpl.coefficient).toFixed(2)}</TableCell>
+                                    <TableCell className="text-center font-mono">/{Number(tpl.max_score).toFixed(0)}</TableCell>
                                     <TableCell className="text-gray-500 text-sm">
-                                        {t.date ? new Date(t.date).toLocaleDateString('fr-FR') : '—'}
+                                        {tpl.date ? new Date(tpl.date).toLocaleDateString(dateLocale) : '—'}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                            t.evaluations_count > 0
+                                            tpl.evaluations_count > 0
                                                 ? 'bg-emerald-100 text-emerald-700'
                                                 : 'bg-gray-100 text-gray-500'
                                         }`}>
                                             <Layers className="w-3 h-3" />
-                                            {t.evaluations_count} classe{t.evaluations_count > 1 ? 's' : ''}
+                                            {t('examens.templates.index.classes_count', { count: tpl.evaluations_count })}
                                         </span>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex justify-center gap-1.5">
-                                            <IconButton label="Voir" icon={<Eye className="w-4 h-4" />} onClick={() => router.get(route('evaluation-templates.show', t.id))} />
-                                            <IconButton label="Modifier" icon={<Pencil className="w-4 h-4" />} onClick={() => router.get(route('evaluation-templates.edit', t.id))} />
-                                            <IconButton label="Supprimer" icon={<Trash2 className="w-4 h-4" />} className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => setDeleteId(t.id)} />
+                                            <IconButton label={t('common.actions.view')} icon={<Eye className="w-4 h-4" />} onClick={() => router.get(route('evaluation-templates.show', tpl.id))} />
+                                            <IconButton label={t('common.actions.edit')} icon={<Pencil className="w-4 h-4" />} onClick={() => router.get(route('evaluation-templates.edit', tpl.id))} />
+                                            <IconButton label={t('common.actions.delete')} icon={<Trash2 className="w-4 h-4" />} className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => setDeleteId(tpl.id)} />
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -156,21 +159,21 @@ export default function Index({ templates, periods, activeYear, filters }: Reado
                     </Table>
                 </div>
 
-                <p className="text-sm text-gray-400 text-right">{templates.total} modèle(s) au total</p>
+                <p className="text-sm text-gray-400 text-right">{t('examens.templates.index.total', { count: templates.total })}</p>
             </div>
 
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer ce modèle ?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('examens.templates.index.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Toutes les évaluations et notes associées seront supprimées. Action irréversible.
+                            {t('examens.templates.index.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && onDelete(deleteId)}>
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

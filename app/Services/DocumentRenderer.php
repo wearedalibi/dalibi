@@ -90,16 +90,21 @@ final class DocumentRenderer
         ];
 
         if ($student) {
+            // $student peut être un modèle NON persisté (aperçu/test) : les colonnes
+            // NOT NULL en base peuvent alors être nulles. On lit via getAttribute()
+            // (type mixed) pour conserver les gardes défensives.
+            $birthDate = $student->getAttribute('birth_date');
+
             $vars += [
                 'eleve.nom_complet' => trim(($student->lastname ?? '').' '.($student->firstname ?? '')),
                 'eleve.nom' => $student->lastname ?? '',
                 'eleve.prenom' => $student->firstname ?? '',
                 'eleve.matricule' => $student->matricule ?? '',
-                'eleve.date_naissance' => $student->birth_date
-                    ? Carbon::parse($student->birth_date)->locale('fr')->isoFormat('D MMMM YYYY')
+                'eleve.date_naissance' => $birthDate
+                    ? Carbon::parse($birthDate)->locale('fr')->isoFormat('D MMMM YYYY')
                     : '',
                 'eleve.lieu_naissance' => $student->place_of_birth ?? '',
-                'eleve.sexe' => match ($student->gender) {
+                'eleve.sexe' => match ($student->getAttribute('gender')) {
                     'male' => 'Masculin',
                     'female' => 'Féminin',
                     default => '',
@@ -198,7 +203,7 @@ final class DocumentRenderer
     protected function renderHeader(DocumentTemplate $template, array $variables): string
     {
         $header = $template->school?->documentHeader;
-        $preset = $header?->preset ?? 'ministeriel';
+        $preset = $header->preset ?? 'ministeriel';
 
         // Préréglage « personnalisé » : canevas glisser-déposer (si des éléments existent).
         // Sinon on rend le gabarit officiel ministériel (défaut).

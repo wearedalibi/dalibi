@@ -45,6 +45,8 @@ class Classroom extends Model
 
     /**
      * Get the classroom type for this classroom.
+     *
+     * @return BelongsTo<ClassroomType, $this>
      */
     public function type(): BelongsTo
     {
@@ -53,6 +55,8 @@ class Classroom extends Model
 
     /**
      * Alias for type() relationship.
+     *
+     * @return BelongsTo<ClassroomType, $this>
      */
     public function classroomType(): BelongsTo
     {
@@ -61,6 +65,8 @@ class Classroom extends Model
 
     /**
      * Get all attendances for this class.
+     *
+     * @return HasMany<Attendance, $this>
      */
     public function attendances(): HasMany
     {
@@ -69,6 +75,8 @@ class Classroom extends Model
 
     /**
      * Get all class subjects for this class.
+     *
+     * @return HasMany<ClassSubject, $this>
      */
     public function classSubjects(): HasMany
     {
@@ -77,6 +85,8 @@ class Classroom extends Model
 
     /**
      * Get all evaluations for this class.
+     *
+     * @return HasMany<Evaluation, $this>
      */
     public function evaluations(): HasMany
     {

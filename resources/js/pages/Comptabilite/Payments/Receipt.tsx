@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useMoney } from '@/helpers/money';
+import { useTranslation } from '@/helpers/i18n';
 import Barcode from 'react-barcode';
 import { OfficialHeader } from '@/components/documents/official-header';
 
@@ -57,13 +58,6 @@ interface Props {
     headerCss?: string | null;
 }
 
-const methodLabel: Record<PaymentMethod, string> = {
-    CASH: 'Espèces',
-    MOBILE_MONEY: 'Mobile Money',
-    BANK_TRANSFER: 'Virement bancaire',
-    CHEQUE: 'Chèque',
-};
-
 /* ------------------------------------------------------------------ */
 /* Un volet du reçu (établissement / payeur)                           */
 /* ------------------------------------------------------------------ */
@@ -78,6 +72,8 @@ function ReceiptCopy({
     pageBreak = false,
 }: Readonly<Props & { copyLabel: string; pageBreak?: boolean }>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const { invoice } = payment;
     const { enrollment } = invoice;
 
@@ -85,9 +81,9 @@ function ReceiptCopy({
         ? [payment.created_by.firstname, payment.created_by.lastname].filter(Boolean).join(' ') || payment.created_by.email
         : null;
 
-    const paidAt   = new Date(payment.paid_at).toLocaleDateString('fr-FR');
+    const paidAt   = new Date(payment.paid_at).toLocaleDateString(dateLocale);
     const issuedAt = payment.created_at
-        ? new Date(payment.created_at).toLocaleString('fr-FR')
+        ? new Date(payment.created_at).toLocaleString(dateLocale)
         : paidAt;
 
     return (
@@ -98,39 +94,39 @@ function ReceiptCopy({
             {/* Titre + n° reçu + exemplaire */}
             <div className="flex items-start justify-between border-b-2 border-gray-900 pb-2 mb-4">
                 <div>
-                    <h1 className="text-lg font-bold uppercase tracking-wide">Reçu de paiement</h1>
+                    <h1 className="text-lg font-bold uppercase tracking-wide">{t('comptabilite.receipt_doc.title')}</h1>
                     <p className="text-xs text-gray-500 uppercase">{copyLabel}</p>
                 </div>
                 <div className="text-right">
-                    <p className="text-xs text-gray-500 uppercase">N° de reçu</p>
+                    <p className="text-xs text-gray-500 uppercase">{t('comptabilite.receipt_doc.receipt_no')}</p>
                     <p className="text-base font-bold">{payment.receipt?.receipt_number ?? '—'}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Date : {paidAt}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{t('comptabilite.receipt_doc.date')} {paidAt}</p>
                 </div>
             </div>
 
             {/* Élève & inscription */}
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-4">
                 <div>
-                    <p className="text-gray-400 text-[10px] uppercase">Élève</p>
+                    <p className="text-gray-400 text-[10px] uppercase">{t('comptabilite.receipt_doc.student')}</p>
                     <p className="font-semibold">
                         {enrollment.student ? `${enrollment.student.lastname} ${enrollment.student.firstname}` : '—'}
                     </p>
                     {enrollment.student?.matricule && (
-                        <p className="text-gray-500 text-xs">Mat. {enrollment.student.matricule}</p>
+                        <p className="text-gray-500 text-xs">{t('comptabilite.receipt_doc.mat')} {enrollment.student.matricule}</p>
                     )}
                 </div>
                 <div>
-                    <p className="text-gray-400 text-[10px] uppercase">Classe · Année</p>
+                    <p className="text-gray-400 text-[10px] uppercase">{t('comptabilite.receipt_doc.class_year')}</p>
                     <p className="font-semibold">
                         {enrollment.classroom?.name ?? '—'} · {enrollment.academic_year?.year ?? '—'}
                     </p>
                 </div>
                 <div>
-                    <p className="text-gray-400 text-[10px] uppercase">N° inscription</p>
+                    <p className="text-gray-400 text-[10px] uppercase">{t('comptabilite.receipt_doc.enrollment_no')}</p>
                     <p className="font-semibold">{enrollment.enrollment_code}</p>
                 </div>
                 <div>
-                    <p className="text-gray-400 text-[10px] uppercase">Facture</p>
+                    <p className="text-gray-400 text-[10px] uppercase">{t('comptabilite.receipt_doc.invoice')}</p>
                     <p className="font-semibold">{invoice.invoice_number}</p>
                 </div>
             </div>
@@ -139,8 +135,8 @@ function ReceiptCopy({
             <table className="w-full text-sm border border-gray-200 mb-4">
                 <thead className="bg-gray-50 text-gray-500 text-[10px] uppercase">
                     <tr>
-                        <th className="px-3 py-1.5 text-left font-semibold">Désignation</th>
-                        <th className="px-3 py-1.5 text-right font-semibold">Montant</th>
+                        <th className="px-3 py-1.5 text-left font-semibold">{t('comptabilite.receipt_doc.designation')}</th>
+                        <th className="px-3 py-1.5 text-right font-semibold">{t('comptabilite.receipt_doc.amount')}</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -155,7 +151,7 @@ function ReceiptCopy({
                 </tbody>
                 <tfoot className="bg-gray-50 text-sm font-semibold border-t border-gray-200">
                     <tr>
-                        <td className="px-3 py-1.5 text-gray-600">Total facture</td>
+                        <td className="px-3 py-1.5 text-gray-600">{t('comptabilite.receipt_doc.invoice_total')}</td>
                         <td className="px-3 py-1.5 text-right">{fmt(invoice.total)}</td>
                     </tr>
                 </tfoot>
@@ -165,29 +161,29 @@ function ReceiptCopy({
             <div className="bg-green-50 border border-green-200 rounded-lg px-5 py-3 mb-4">
                 <div className="flex items-end justify-between">
                     <div>
-                        <p className="text-[10px] text-green-600 uppercase tracking-wider">Montant encaissé</p>
+                        <p className="text-[10px] text-green-600 uppercase tracking-wider">{t('comptabilite.receipt_doc.amount_collected')}</p>
                         <p className="text-2xl font-extrabold text-green-700 leading-tight">{fmt(payment.amount)}</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-xs text-green-700 font-medium">{methodLabel[payment.payment_method]}</p>
+                        <p className="text-xs text-green-700 font-medium">{t(`comptabilite.receipt_doc.method.${payment.payment_method}`)}</p>
                         {payment.reference_number && (
-                            <p className="text-[10px] text-green-600">Réf : {payment.reference_number}</p>
+                            <p className="text-[10px] text-green-600">{t('comptabilite.receipt_doc.ref')} {payment.reference_number}</p>
                         )}
                     </div>
                 </div>
                 <p className="text-xs text-gray-600 italic mt-2 pt-2 border-t border-green-200">
-                    Arrêté le présent reçu à la somme de : <span className="font-semibold not-italic text-gray-800">{amountInWords}</span>.
+                    {t('comptabilite.receipt_doc.in_words')} <span className="font-semibold not-italic text-gray-800">{amountInWords}</span>.
                 </p>
             </div>
 
             {/* Solde */}
             <div className="grid grid-cols-2 gap-3 text-sm mb-4">
                 <div className="bg-gray-50 rounded-lg px-4 py-2 text-center">
-                    <p className="text-[10px] text-gray-400 uppercase">Total payé</p>
+                    <p className="text-[10px] text-gray-400 uppercase">{t('comptabilite.receipt_doc.total_paid')}</p>
                     <p className="font-bold text-gray-800">{fmt(invoice.amount_paid)}</p>
                 </div>
                 <div className={`rounded-lg px-4 py-2 text-center ${invoice.amount_remaining > 0 ? 'bg-red-50' : 'bg-green-50'}`}>
-                    <p className="text-[10px] text-gray-400 uppercase">Reste à payer</p>
+                    <p className="text-[10px] text-gray-400 uppercase">{t('comptabilite.receipt_doc.remaining')}</p>
                     <p className={`font-bold ${invoice.amount_remaining > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         {fmt(invoice.amount_remaining)}
                     </p>
@@ -197,11 +193,11 @@ function ReceiptCopy({
             {/* Signature & cachet */}
             <div className="grid grid-cols-2 gap-6 text-xs mb-4">
                 <div>
-                    <p className="text-gray-500 mb-1">Cachet de l'établissement</p>
+                    <p className="text-gray-500 mb-1">{t('comptabilite.receipt_doc.stamp')}</p>
                     <div className="h-16 border border-dashed border-gray-300 rounded" />
                 </div>
                 <div className="text-center">
-                    <p className="text-gray-500 mb-1">La Comptabilité</p>
+                    <p className="text-gray-500 mb-1">{t('comptabilite.receipt_doc.accounting')}</p>
                     <div className="h-16 border-b border-gray-300" />
                     {agentName && <p className="text-gray-600 mt-1">{agentName}</p>}
                 </div>
@@ -210,9 +206,9 @@ function ReceiptCopy({
             {/* Infos complémentaires */}
             <div className="text-[11px] text-gray-500 space-y-0.5 mb-3">
                 {payment.paid_by && (
-                    <div className="flex justify-between"><span>Payé par</span><span className="text-gray-700">{payment.paid_by}</span></div>
+                    <div className="flex justify-between"><span>{t('comptabilite.receipt_doc.paid_by')}</span><span className="text-gray-700">{payment.paid_by}</span></div>
                 )}
-                <div className="flex justify-between"><span>Établi le</span><span className="text-gray-700">{issuedAt}</span></div>
+                <div className="flex justify-between"><span>{t('comptabilite.receipt_doc.established_on')}</span><span className="text-gray-700">{issuedAt}</span></div>
             </div>
 
             {/* Code-barres anti-falsification + vérification */}
@@ -227,7 +223,7 @@ function ReceiptCopy({
                         margin={0}
                     />
                     <p className="text-[9px] text-gray-400 mt-1 text-center">
-                        Reçu authentifiable sur <span className="font-medium text-gray-500">{verifyUrl}</span> — code : {payment.receipt.verification_code}
+                        {t('comptabilite.receipt_doc.verify_p1')}<span className="font-medium text-gray-500">{verifyUrl}</span>{t('comptabilite.receipt_doc.verify_p2')}{payment.receipt.verification_code}
                     </p>
                 </div>
             )}
@@ -240,9 +236,10 @@ function ReceiptCopy({
 /* ------------------------------------------------------------------ */
 
 export default function PaymentReceipt(props: Readonly<Props>) {
+    const { t } = useTranslation();
     return (
         <>
-            <Head title={`Reçu ${props.payment.receipt?.receipt_number ?? ''}`} />
+            <Head title={t('comptabilite.receipt_doc.head', { number: props.payment.receipt?.receipt_number ?? '' })} />
 
             <div className="receipt-page min-h-screen bg-gray-100 print:bg-white p-6 print:p-0">
                 <div className="mx-auto max-w-2xl">
@@ -251,13 +248,13 @@ export default function PaymentReceipt(props: Readonly<Props>) {
                             onClick={() => window.print()}
                             className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                         >
-                            Imprimer le reçu
+                            {t('comptabilite.receipt_doc.print')}
                         </button>
                     </div>
 
                     <div className="space-y-6 print:space-y-0">
-                        <ReceiptCopy {...props} copyLabel="Exemplaire établissement" pageBreak />
-                        <ReceiptCopy {...props} copyLabel="Exemplaire payeur" />
+                        <ReceiptCopy {...props} copyLabel={t('comptabilite.receipt_doc.copy_school')} pageBreak />
+                        <ReceiptCopy {...props} copyLabel={t('comptabilite.receipt_doc.copy_payer')} />
                     </div>
                 </div>
             </div>

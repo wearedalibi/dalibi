@@ -18,7 +18,7 @@ class UserObserver
                 $user->natricule,
                 'user',
                 $user->id,
-                $user->roles->first()?->name ?? 'unknown'
+                $user->roles->first()->name ?? 'unknown'
             );
         }
     }

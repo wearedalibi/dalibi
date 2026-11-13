@@ -75,24 +75,37 @@ class School extends Model
 
     /**
      * Get all subjects for the school.
+     *
+     * @return HasMany<Subject, $this>
      */
     public function subjects(): HasMany
     {
         return $this->hasMany(Subject::class);
     }
 
+    /**
+     * @return HasMany<GradingConfig, $this>
+     */
     public function gradingConfigs(): HasMany
     {
         return $this->hasMany(GradingConfig::class);
     }
 
-    /** En-tête personnalisé des documents (certificats, attestations, bulletins). */
+    /**
+     * En-tête personnalisé des documents (certificats, attestations, bulletins).
+     *
+     * @return HasOne<DocumentHeader, $this>
+     */
     public function documentHeader(): HasOne
     {
         return $this->hasOne(DocumentHeader::class);
     }
 
-    /** Types de classe proposés par l'école. */
+    /**
+     * Types de classe proposés par l'école.
+     *
+     * @return BelongsToMany<ClassroomType, $this>
+     */
     public function classTypes(): BelongsToMany
     {
         return $this->belongsToMany(ClassroomType::class, 'class_type_school');

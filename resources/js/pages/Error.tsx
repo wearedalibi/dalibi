@@ -2,27 +2,23 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, LayoutGrid } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { ErrorArt } from '@/components/error-art';
+import { useTranslation } from '@/helpers/i18n';
 import { dashboard } from '@/routes';
 
 interface AuthProps {
     user: { id: string } | null;
 }
 
-const INFO: Record<number, { title: string; message: string }> = {
-    403: { title: 'Accès refusé', message: "Vous n'avez pas l'autorisation d'accéder à cette page." },
-    404: { title: 'Page introuvable', message: "La page que vous recherchez n'existe pas ou a été déplacée." },
-    419: { title: 'Session expirée', message: 'Votre session a expiré. Veuillez vous reconnecter, puis réessayer.' },
-    429: { title: 'Trop de requêtes', message: 'Vous avez effectué trop de requêtes. Patientez un instant avant de réessayer.' },
-    500: { title: 'Erreur serveur', message: "Une erreur inattendue s'est produite. Réessayez dans un instant ; si le problème persiste, contactez l'administrateur de votre établissement." },
-    503: { title: 'Maintenance en cours', message: 'Le service est momentanément indisponible. Merci de revenir dans quelques instants.' },
-};
+const KNOWN_STATUSES = [403, 404, 419, 429, 500, 503];
 
 export default function ErrorPage({ status }: Readonly<{ status: number }>) {
+    const { t } = useTranslation();
     const auth = (usePage().props as { auth?: AuthProps }).auth;
     const isAuthed = Boolean(auth?.user);
-    const info = INFO[status] ?? {
-        title: 'Une erreur est survenue',
-        message: "Quelque chose s'est mal passé. Veuillez réessayer.",
+    const group = KNOWN_STATUSES.includes(status) ? String(status) : 'fallback';
+    const info = {
+        title: t(`errors.${group}.title`),
+        message: t(`errors.${group}.message`),
     };
 
     return (
@@ -53,14 +49,14 @@ export default function ErrorPage({ status }: Readonly<{ status: number }>) {
                                 href={isAuthed ? dashboard() : '/'}
                                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
                             >
-                                <LayoutGrid className="h-4 w-4" /> {isAuthed ? 'Tableau de bord' : "Retour à l'accueil"}
+                                <LayoutGrid className="h-4 w-4" /> {isAuthed ? t('errors.dashboard') : t('errors.home')}
                             </Link>
                             <button
                                 type="button"
                                 onClick={() => window.history.back()}
                                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
                             >
-                                <ArrowLeft className="h-4 w-4" /> Page précédente
+                                <ArrowLeft className="h-4 w-4" /> {t('errors.previous')}
                             </button>
                         </div>
                     </div>

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom { id: string; name: string }
@@ -35,9 +36,9 @@ interface Props {
     filters: { class_id: string; academic_period_id: string };
 }
 
-const ordinal = (r: number | null) => (r === null ? '—' : r === 1 ? '1er' : `${r}e`);
-
 export default function Index({ classrooms, periods, rows, activeYear, filters }: Readonly<Props>) {
+    const { t } = useTranslation();
+    const ordinal = (r: number | null) => (r === null ? '—' : r === 1 ? t('notes.bulletins.index.ord_first') : `${r}${t('notes.bulletins.index.ord_suffix')}`);
     const [classId, setClassId] = useState(filters.class_id || '');
     const [periodId, setPeriodId] = useState(filters.academic_period_id || '');
     const [observations, setObservations] = useState('');
@@ -91,20 +92,20 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
 
     return (
         <AppLayout>
-            <Head title="Bulletins" />
+            <Head title={t('notes.bulletins.index.head')} />
             <div className="w-full space-y-6">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-                            <FileSpreadsheet className="h-7 w-7 text-blue-600 shrink-0" /> Bulletins
+                            <FileSpreadsheet className="h-7 w-7 text-blue-600 shrink-0" /> {t('notes.bulletins.index.head')}
                         </h1>
                         <p className="mt-2 text-gray-500">
-                            Générez et figez les bulletins par classe et période{activeYear ? ` — ${activeYear.year}` : ''}.
+                            {t('notes.bulletins.index.subtitle')}{activeYear ? ` — ${activeYear.year}` : ''}.
                         </p>
                     </div>
                     {ready && validatedCount > 0 && (
                         <Button onClick={downloadClass} variant="outline" className="gap-2">
-                            <Download className="h-4 w-4" /> Télécharger toute la classe ({validatedCount})
+                            <Download className="h-4 w-4" /> {t('notes.bulletins.index.download_class', { count: validatedCount })}
                         </Button>
                     )}
                 </div>
@@ -112,15 +113,15 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                 {/* Filtres */}
                 <div className="rounded-2xl bg-linear-to-br from-slate-50 to-white p-4 shadow-sm ring-1 ring-slate-100 flex flex-wrap items-center gap-3">
                     <Select value={classId} onValueChange={onClass}>
-                        <SelectTrigger className="w-56"><SelectValue placeholder="Choisir une classe" /></SelectTrigger>
+                        <SelectTrigger className="w-56"><SelectValue placeholder={t('notes.bulletins.index.choose_class')} /></SelectTrigger>
                         <SelectContent>
                             {classrooms.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select value={periodId} onValueChange={onPeriod} disabled={classId === ''}>
-                        <SelectTrigger className="w-56"><SelectValue placeholder="Choisir une période" /></SelectTrigger>
+                        <SelectTrigger className="w-56"><SelectValue placeholder={t('notes.bulletins.index.choose_period')} /></SelectTrigger>
                         <SelectContent>
-                            {periods.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}{p.is_current ? ' (en cours)' : ''}</SelectItem>)}
+                            {periods.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}{p.is_current ? ` (${t('notes.bulletins.index.current')})` : ''}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -131,21 +132,21 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                         <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100 space-y-3">
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                                 <Lock className="w-4 h-4 text-amber-500" />
-                                Valider fige les bulletins (notes, rangs, mentions) et permet le téléchargement PDF.
-                                <span className="ml-auto text-xs text-gray-400">{validatedCount}/{rows.length} validé(s)</span>
+                                {t('notes.bulletins.index.validate_hint')}
+                                <span className="ml-auto text-xs text-gray-400">{t('notes.bulletins.index.validated_count', { count: validatedCount, total: rows.length })}</span>
                             </div>
                             <Input
                                 value={observations}
                                 onChange={(e) => setObservations(e.target.value)}
-                                placeholder="Observations du Chef d'Établissement (appliquées à toute la classe, optionnel)"
+                                placeholder={t('notes.bulletins.index.observations_ph')}
                             />
                             <Button onClick={onValidateClick} className="bg-blue-600 hover:bg-blue-700 gap-2" disabled={rows.length === 0}>
                                 <CheckCircle2 className="w-4 h-4" />
-                                {validatedCount > 0 ? 'Re-valider les bulletins de la classe' : 'Valider les bulletins de la classe'}
+                                {validatedCount > 0 ? t('notes.bulletins.index.revalidate') : t('notes.bulletins.index.validate')}
                             </Button>
                             {validatedCount > 0 && (
                                 <p className="text-xs text-gray-400">
-                                    Une re-validation recalcule notes et rangs mais <strong>conserve</strong> vos éditions manuelles (appréciations, observations, décision, discipline).
+                                    {t('notes.bulletins.index.revalidate_note')}
                                 </p>
                             )}
                         </div>
@@ -153,25 +154,24 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                         <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Re-valider {validatedCount} bulletin(s) déjà figé(s) ?</AlertDialogTitle>
+                                    <AlertDialogTitle>{t('notes.bulletins.index.confirm_title', { count: validatedCount })}</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Les notes, moyennes et rangs seront recalculés. Par défaut, vos éditions manuelles
-                                        (appréciations, observations, décision, discipline) sont <strong>conservées</strong>.
+                                        {t('notes.bulletins.index.confirm_desc')}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <label className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm">
                                     <Checkbox checked={regenerate} onCheckedChange={(v) => setRegenerate(v === true)} className="mt-0.5" />
                                     <span className="text-amber-800">
-                                        <span className="font-medium">Tout régénérer</span> — repartir de zéro et <strong>effacer</strong> les éditions manuelles.
+                                        <span className="font-medium">{t('notes.bulletins.index.regen_all')}</span> {t('notes.bulletins.index.regen_all_desc')}
                                     </span>
                                 </label>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                    <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={() => submit(regenerate)}
                                         className={regenerate ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}
                                     >
-                                        {regenerate ? 'Régénérer (efface les éditions)' : 'Re-valider (conserve les éditions)'}
+                                        {regenerate ? t('notes.bulletins.index.regen_action') : t('notes.bulletins.index.revalidate_action')}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -180,16 +180,15 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                         <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Dévalider le bulletin de {deleteTarget?.name} ?</AlertDialogTitle>
+                                    <AlertDialogTitle>{t('notes.bulletins.index.devalidate_title', { name: deleteTarget?.name ?? '' })}</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Le bulletin figé sera supprimé, y compris ses éditions manuelles. L'élève repassera
-                                        en « brouillon » et pourra être re-validé. Cette action est irréversible.
+                                        {t('notes.bulletins.index.devalidate_desc')}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                    <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                                     <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
-                                        Dévalider
+                                        {t('notes.bulletins.index.devalidate')}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -200,12 +199,12 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                             <Table>
                                 <TableHeader className="bg-gray-50">
                                     <TableRow>
-                                        <TableHead>Élève</TableHead>
-                                        <TableHead className="text-center">Moyenne</TableHead>
-                                        <TableHead className="text-center">Rang</TableHead>
-                                        <TableHead>Mention</TableHead>
-                                        <TableHead className="text-center">Statut</TableHead>
-                                        <TableHead className="text-right">Bulletin</TableHead>
+                                        <TableHead>{t('notes.bulletins.index.col_student')}</TableHead>
+                                        <TableHead className="text-center">{t('notes.bulletins.index.col_average')}</TableHead>
+                                        <TableHead className="text-center">{t('notes.bulletins.index.col_rank')}</TableHead>
+                                        <TableHead>{t('notes.bulletins.index.col_mention')}</TableHead>
+                                        <TableHead className="text-center">{t('notes.bulletins.index.col_status')}</TableHead>
+                                        <TableHead className="text-right">{t('notes.bulletins.index.col_bulletin')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -213,7 +212,7 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                                         <TableRow>
                                             <TableCell colSpan={6} className="py-12 text-center text-gray-400">
                                                 <GraduationCap className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                                Aucun élève actif dans cette classe.
+                                                {t('notes.bulletins.index.empty')}
                                             </TableCell>
                                         </TableRow>
                                     ) : rows.map((r) => (
@@ -230,10 +229,10 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                                             <TableCell className="text-center">
                                                 {r.validated ? (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                                                        <CheckCircle2 className="w-3 h-3" /> Validé
+                                                        <CheckCircle2 className="w-3 h-3" /> {t('notes.bulletins.index.status_validated')}
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Brouillon</span>
+                                                    <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">{t('notes.bulletins.index.status_draft')}</span>
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-right">
@@ -243,7 +242,7 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                                                         disabled={!r.validated || !r.report_card_id}
                                                         onClick={() => r.report_card_id && router.get(route('bulletins.edit', r.report_card_id))}
                                                     >
-                                                        <Pencil className="w-3.5 h-3.5" /> Éditer
+                                                        <Pencil className="w-3.5 h-3.5" /> {t('notes.bulletins.index.edit')}
                                                     </Button>
                                                     <Button
                                                         variant="outline" size="sm" className="gap-1.5"
@@ -253,7 +252,7 @@ export default function Index({ classrooms, periods, rows, activeYear, filters }
                                                         <Download className="w-3.5 h-3.5" /> PDF
                                                     </Button>
                                                     <IconButton
-                                                        label="Dévalider ce bulletin"
+                                                        label={t('notes.bulletins.index.devalidate_label')}
                                                         icon={<Trash2 className="w-3.5 h-3.5" />}
                                                         className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                         disabled={!r.validated || !r.report_card_id}

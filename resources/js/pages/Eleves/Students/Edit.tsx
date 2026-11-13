@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { StudentFormSteps, type StudentFormPayload } from '@/components/students/student-form-steps';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -58,6 +59,7 @@ const normalizeDate = (value?: string | null): string => {
 };
 
 export default function Edit({ student }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -122,7 +124,7 @@ export default function Edit({ student }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title="Modifier élève" />
+            <Head title={t('students.form.edit_head')} />
 
             <div className="space-y-6 w-full">
                 <div className="flex items-center gap-4">
@@ -134,8 +136,8 @@ export default function Edit({ student }: Readonly<EditProps>) {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Modifier un élève</h1>
-                        <p className="mt-2 text-gray-600">Mettez à jour les informations via le même formulaire par étapes.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('students.form.edit_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('students.form.edit_subtitle')}</p>
                     </div>
                 </div>
 

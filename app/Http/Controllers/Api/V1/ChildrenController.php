@@ -16,6 +16,7 @@ class ChildrenController extends ApiController
     {
         $withActiveEnrollment = ['enrollments' => fn ($q) => $q->where('status', Enrollment::STATUS_ACTIVE)->with('classroom:id,name')];
 
+        /** @var Student|Guardian $user */
         $user = $request->user();
 
         if ($user instanceof Student) {

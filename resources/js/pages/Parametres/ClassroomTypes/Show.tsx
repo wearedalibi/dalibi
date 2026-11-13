@@ -10,6 +10,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom {
@@ -35,8 +36,10 @@ interface ShowProps {
 }
 
 export default function Show({ classroomType }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const formatDate = (date: string) => {
-        return new Date(date).toLocaleDateString('fr-FR', {
+        return new Date(date).toLocaleDateString(dateLocale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -81,7 +84,7 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                             router.visit(route('classroom-types.edit', classroomType.id))
                         }
                     >
-                        Modifier
+                        {t('parametres.common.edit')}
                     </Button>
                 </div>
 
@@ -89,9 +92,9 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">État</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.classroom_types.show_status')}</p>
                                 <p className="text-3xl font-bold text-gray-900 mt-2">
-                                    {classroomType.active ? '✓ Actif' : 'Inactif'}
+                                    {classroomType.active ? t('parametres.classroom_types.show_active') : t('parametres.classroom_types.show_inactive')}
                                 </p>
                             </div>
                             <CheckCircle2
@@ -103,7 +106,7 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Classes associées</p>
+                                <p className="text-sm font-medium text-gray-600">{t('parametres.classroom_types.linked_classrooms')}</p>
                                 <p className="text-3xl font-bold text-gray-900 mt-2">
                                     {classroomType.classrooms.length}
                                 </p>
@@ -113,11 +116,11 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                     </div>
 
                     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                        <p className="text-sm font-medium text-gray-600 mb-3">Créé le</p>
+                        <p className="text-sm font-medium text-gray-600 mb-3">{t('parametres.classroom_types.created_on')}</p>
                         <p className="text-sm text-gray-600">
                             {formatDate(classroomType.created_at)}
                         </p>
-                        <p className="text-sm font-medium text-gray-600 mt-4 mb-2">Dernière modification</p>
+                        <p className="text-sm font-medium text-gray-600 mt-4 mb-2">{t('parametres.classroom_types.updated_on')}</p>
                         <p className="text-sm text-gray-600">
                             {formatDate(classroomType.updated_at)}
                         </p>
@@ -127,10 +130,10 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                 <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100">
                         <h2 className="text-2xl font-bold text-gray-900">
-                            Classes utilisant ce type
+                            {t('parametres.classroom_types.classes_using')}
                         </h2>
                         <p className="text-sm text-gray-600 mt-1">
-                            Affichage de toutes les classes assignées à ce type
+                            {t('parametres.classroom_types.classes_using_sub')}
                         </p>
                     </div>
 
@@ -139,13 +142,13 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                             <div className="text-center">
                                 <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                                 <p className="text-lg text-gray-500">
-                                    Aucune classe n'utilise ce type pour le moment
+                                    {t('parametres.classroom_types.no_classroom')}
                                 </p>
                                 <Button
                                     className="mt-4 bg-blue-600 hover:bg-blue-700"
                                     onClick={() => router.visit(route('classrooms.index'))}
                                 >
-                                    Créer une classe
+                                    {t('parametres.classroom_types.create_classroom')}
                                 </Button>
                             </div>
                         </div>
@@ -155,19 +158,19 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                                 <TableHeader className="bg-gray-50">
                                     <TableRow className="border-b border-gray-200">
                                         <TableHead className="font-semibold text-gray-900">
-                                            Nom
+                                            {t('parametres.classroom_types.cr_name')}
                                         </TableHead>
                                         <TableHead className="font-semibold text-gray-900">
-                                            Code
+                                            {t('parametres.classroom_types.cr_code')}
                                         </TableHead>
                                         <TableHead className="font-semibold text-gray-900">
-                                            Capacité
+                                            {t('parametres.classroom_types.cr_capacity')}
                                         </TableHead>
                                         <TableHead className="font-semibold text-gray-900">
-                                            État
+                                            {t('parametres.classroom_types.cr_status')}
                                         </TableHead>
                                         <TableHead className="text-center font-semibold text-gray-900">
-                                            Action
+                                            {t('parametres.classroom_types.cr_action')}
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -186,7 +189,7 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                                                 </code>
                                             </TableCell>
                                             <TableCell className="text-gray-600">
-                                                {classroom.capacity} places
+                                                {t('parametres.classroom_types.cr_places', { n: classroom.capacity })}
                                             </TableCell>
                                             <TableCell className="text-gray-600">
                                                 <span
@@ -196,7 +199,7 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                                                             : 'bg-gray-100 text-gray-800'
                                                     }`}
                                                 >
-                                                    {classroom.active ? '✓ Active' : 'Inactive'}
+                                                    {classroom.active ? t('parametres.classroom_types.cr_active') : t('parametres.classroom_types.cr_inactive')}
                                                 </span>
                                             </TableCell>
                                             <TableCell className="text-center">
@@ -210,7 +213,7 @@ export default function Show({ classroomType }: Readonly<ShowProps>) {
                                                         )
                                                     }
                                                 >
-                                                    Voir
+                                                    {t('parametres.classroom_types.cr_view')}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>

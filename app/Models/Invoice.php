@@ -40,16 +40,25 @@ class Invoice extends Model
     /* Relations */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * @return BelongsTo<Enrollment, $this>
+     */
     public function enrollment(): BelongsTo
     {
         return $this->belongsTo(Enrollment::class);
     }
 
+    /**
+     * @return HasMany<InvoiceItem, $this>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class)->orderBy('sort_order');
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class)->latest('paid_at');

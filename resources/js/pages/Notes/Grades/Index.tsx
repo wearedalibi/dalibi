@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -56,6 +57,7 @@ export default function Index({
     stats,
     filters,
 }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [classId, setClassId] = useState(filters.class_id || 'none');
     const [classSubjectId, setClassSubjectId] = useState(filters.class_subject_id || 'none');
     const [term, setTerm] = useState(filters.academic_period_id || 'none');
@@ -135,7 +137,7 @@ export default function Index({
 
     const statsCards = [
         {
-            title: 'Élèves inscrits',
+            title: t('notes.grades.index.stat_students'),
             value: stats.total,
             icon: Users,
             cardClass: 'bg-linear-to-br from-blue-50/70 to-white ring-1 ring-blue-100',
@@ -143,7 +145,7 @@ export default function Index({
             textColor: 'text-blue-600',
         },
         {
-            title: 'Notes saisies',
+            title: t('notes.grades.index.stat_graded'),
             value: stats.graded,
             icon: CheckCircle2,
             cardClass: 'bg-linear-to-br from-emerald-50/70 to-white ring-1 ring-emerald-100',
@@ -151,7 +153,7 @@ export default function Index({
             textColor: 'text-emerald-600',
         },
         {
-            title: 'Moyenne de classe',
+            title: t('notes.grades.index.stat_average'),
             value: stats.average !== null ? `${stats.average}/20` : '—',
             icon: TrendingUp,
             cardClass: 'bg-linear-to-br from-violet-50/70 to-white ring-1 ring-violet-100',
@@ -159,7 +161,7 @@ export default function Index({
             textColor: 'text-violet-600',
         },
         {
-            title: 'Taux de saisie',
+            title: t('notes.grades.index.stat_rate'),
             value: stats.total > 0 ? `${Math.round((stats.graded / stats.total) * 100)}%` : '—',
             icon: BookOpen,
             cardClass: 'bg-linear-to-br from-amber-50/70 to-white ring-1 ring-amber-100',
@@ -168,18 +170,18 @@ export default function Index({
         },
     ];
 
-    const termLabel = periods.find((t) => t.id === term)?.name ?? '';
+    const termLabel = periods.find((p) => p.id === term)?.name ?? '';
 
     return (
         <AppLayout>
-            <Head title="Saisie des Notes" />
+            <Head title={t('notes.grades.index.head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><NotebookPen className="h-7 w-7 text-blue-600 shrink-0" />Saisie des Notes</h1>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><NotebookPen className="h-7 w-7 text-blue-600 shrink-0" />{t('notes.grades.index.head')}</h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            {activeYear ? `Année scolaire : ${activeYear.year}` : 'Aucune année scolaire active'}
+                            {activeYear ? t('notes.grades.index.year', { year: activeYear.year }) : t('notes.grades.index.no_year')}
                         </p>
                     </div>
                     {canSave && (
@@ -189,7 +191,7 @@ export default function Index({
                             disabled={saving}
                         >
                             {saved ? <CheckCircle2 className="w-5 h-5" /> : <Save className="w-5 h-5" />}
-                            {saving ? 'Enregistrement...' : saved ? 'Enregistré !' : 'Enregistrer les notes'}
+                            {saving ? t('notes.grades.index.saving') : saved ? t('notes.grades.index.saved') : t('notes.grades.index.save')}
                         </Button>
                     )}
                 </div>
@@ -199,10 +201,10 @@ export default function Index({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Select value={classId} onValueChange={onClassChange}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une classe" />
+                                <SelectValue placeholder={t('notes.grades.index.select_class')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none" disabled>Sélectionner une classe</SelectItem>
+                                <SelectItem value="none" disabled>{t('notes.grades.index.select_class')}</SelectItem>
                                 {classrooms.map((c) => (
                                     <SelectItem key={c.id} value={c.id}>
                                         {c.name} ({c.code})
@@ -217,13 +219,13 @@ export default function Index({
                             disabled={classId === 'none' || classSubjects.length === 0}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une matière" />
+                                <SelectValue placeholder={t('notes.grades.index.select_subject')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none" disabled>Sélectionner une matière</SelectItem>
+                                <SelectItem value="none" disabled>{t('notes.grades.index.select_subject')}</SelectItem>
                                 {classSubjects.map((cs) => (
                                     <SelectItem key={cs.id} value={cs.id}>
-                                        {cs.subject.name} (coef. {cs.coefficient})
+                                        {cs.subject.name} ({t('notes.grades.index.coef', { n: cs.coefficient })})
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -235,19 +237,19 @@ export default function Index({
                             disabled={classSubjectId === 'none' || periods.length === 0}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une période" />
+                                <SelectValue placeholder={t('notes.grades.index.select_period')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none" disabled>Sélectionner une période</SelectItem>
+                                <SelectItem value="none" disabled>{t('notes.grades.index.select_period')}</SelectItem>
                                 {periods.map((p) => (
-                                    <SelectItem key={p.id} value={p.id}>{p.name}{p.is_current ? ' (en cours)' : ''}</SelectItem>
+                                    <SelectItem key={p.id} value={p.id}>{p.name}{p.is_current ? ` (${t('notes.grades.index.current')})` : ''}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                     {classId !== 'none' && classSubjects.length === 0 && (
                         <p className="mt-2 text-sm text-amber-600">
-                            Aucune matière assignée à cette classe pour l'année en cours.
+                            {t('notes.grades.index.no_subjects')}
                         </p>
                     )}
                 </div>
@@ -283,7 +285,7 @@ export default function Index({
                                     {selectedSubject.subject.name}
                                 </h2>
                                 <p className="text-sm text-gray-500">
-                                    {termLabel} — Coefficient {selectedSubject.coefficient} — Notes sur 20
+                                    {t('notes.grades.index.subheader', { period: termLabel, coef: selectedSubject.coefficient })}
                                 </p>
                             </div>
                         </div>
@@ -291,11 +293,11 @@ export default function Index({
                             <TableHeader className="bg-gray-50">
                                 <TableRow className="border-b border-gray-200">
                                     <TableHead className="w-14">#</TableHead>
-                                    <TableHead>Matricule</TableHead>
-                                    <TableHead>Nom & Prénom</TableHead>
-                                    <TableHead className="w-36">Note /20</TableHead>
-                                    <TableHead>Appréciation</TableHead>
-                                    <TableHead className="w-28 text-center">Bulletin</TableHead>
+                                    <TableHead>{t('notes.grades.index.col_matricule')}</TableHead>
+                                    <TableHead>{t('notes.grades.index.col_name')}</TableHead>
+                                    <TableHead className="w-36">{t('notes.grades.index.col_mark')}</TableHead>
+                                    <TableHead>{t('notes.grades.index.col_comment')}</TableHead>
+                                    <TableHead className="w-28 text-center">{t('notes.grades.index.col_bulletin')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -335,7 +337,7 @@ export default function Index({
                                                 <Input
                                                     value={grades[sg.student_id]?.comments ?? ''}
                                                     onChange={(e) => onCommentsChange(sg.student_id, e.target.value)}
-                                                    placeholder="Appréciation..."
+                                                    placeholder={t('notes.grades.index.comment_ph')}
                                                     className="max-w-xs"
                                                 />
                                             </TableCell>
@@ -346,7 +348,7 @@ export default function Index({
                                                     className="border-gray-300 text-xs"
                                                     onClick={() => router.get(route('grades.student', sg.student_id), { academic_period_id: term })}
                                                 >
-                                                    Bulletin
+                                                    {t('notes.grades.index.bulletin')}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -361,7 +363,7 @@ export default function Index({
                                 disabled={saving}
                             >
                                 {saved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                                {saving ? 'Enregistrement...' : saved ? 'Enregistré !' : 'Enregistrer les notes'}
+                                {saving ? t('notes.grades.index.saving') : saved ? t('notes.grades.index.saved') : t('notes.grades.index.save')}
                             </Button>
                         </div>
                     </div>
@@ -371,8 +373,8 @@ export default function Index({
                 {classId !== 'none' && classSubjectId !== 'none' && term !== 'none' && studentsWithGrades.length === 0 && (
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 py-16 text-center text-gray-500">
                         <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                        <p className="text-lg font-medium">Aucun élève inscrit dans cette classe</p>
-                        <p className="text-sm mt-1">Inscrivez des élèves pour saisir leurs notes.</p>
+                        <p className="text-lg font-medium">{t('notes.grades.index.empty_class')}</p>
+                        <p className="text-sm mt-1">{t('notes.grades.index.empty_class_hint')}</p>
                     </div>
                 )}
 
@@ -380,8 +382,8 @@ export default function Index({
                 {classId === 'none' && (
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 py-16 text-center text-gray-500">
                         <BookOpen className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                        <p className="text-lg font-medium">Sélectionnez une classe pour commencer</p>
-                        <p className="text-sm mt-1">Choisissez ensuite la matière et le trimestre.</p>
+                        <p className="text-lg font-medium">{t('notes.grades.index.initial')}</p>
+                        <p className="text-sm mt-1">{t('notes.grades.index.initial_hint')}</p>
                     </div>
                 )}
             </div>

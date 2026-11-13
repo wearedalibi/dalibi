@@ -14,6 +14,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Role {
@@ -41,6 +42,7 @@ interface EditProps {
 }
 
 export default function Edit({ user, roles }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const normalizeGender = (value: string) => {
         if (value === 'M') return 'male';
         if (value === 'F') return 'female';
@@ -91,7 +93,7 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title={`Modifier ${user.firstname} ${user.lastname}`} />
+            <Head title={t('administration.users.edit.head', { name: `${user.firstname} ${user.lastname}` })} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -104,7 +106,7 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Modifier {user.firstname} {user.lastname}
+                            {t('administration.users.edit.title', { name: `${user.firstname} ${user.lastname}` })}
                         </h1>
                     </div>
                 </div>
@@ -119,19 +121,19 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div className="h-9 w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                                         <CircleUserRound className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-lg font-semibold text-gray-900">Informations personnelles</h2>
+                                    <h2 className="text-lg font-semibold text-gray-900">{t('administration.users.form.personal_info')}</h2>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label htmlFor="firstname" className="block text-sm font-medium text-gray-900 mb-2">
-                                            Prénom *
+                                            {t('administration.users.form.firstname')}
                                         </label>
                                         <Input
                                             id="firstname"
                                             type="text"
                                             value={formData.firstname}
                                             onChange={(e) => setFormData(prev => ({ ...prev, firstname: e.target.value }))}
-                                            placeholder="Ex: Jean"
+                                            placeholder={t('administration.users.form.firstname_ph')}
                                             className={errors.firstname ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-blue-500'}
                                         />
                                         {errors.firstname && (
@@ -141,14 +143,14 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
 
                                     <div>
                                         <label htmlFor="lastname" className="block text-sm font-medium text-gray-900 mb-2">
-                                            Nom *
+                                            {t('administration.users.form.lastname')}
                                         </label>
                                         <Input
                                             id="lastname"
                                             type="text"
                                             value={formData.lastname}
                                             onChange={(e) => setFormData(prev => ({ ...prev, lastname: e.target.value }))}
-                                            placeholder="Ex: Dupont"
+                                            placeholder={t('administration.users.form.lastname_ph')}
                                             className={errors.lastname ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-blue-500'}
                                         />
                                         {errors.lastname && (
@@ -158,7 +160,7 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
 
                                     <div>
                                         <label htmlFor="gender" className="block text-sm font-medium text-gray-900 mb-2">
-                                            Genre *
+                                            {t('administration.users.form.gender')}
                                         </label>
                                         <select
                                             id="gender"
@@ -166,9 +168,9 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                             onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
                                             className="w-full px-3 py-2 border border-gray-200 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                                         >
-                                            <option value="male">Masculin</option>
-                                            <option value="female">Féminin</option>
-                                            <option value="other">Autre</option>
+                                            <option value="male">{t('administration.users.gender.male')}</option>
+                                            <option value="female">{t('administration.users.gender.female')}</option>
+                                            <option value="other">{t('administration.users.gender.other')}</option>
                                         </select>
                                         {errors.gender && (
                                             <p className="text-red-600 text-sm mt-1">{errors.gender}</p>
@@ -183,20 +185,20 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div className="h-9 w-9 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
                                         <Phone className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-lg font-semibold text-gray-900">Coordonnées</h2>
+                                    <h2 className="text-lg font-semibold text-gray-900">{t('administration.users.form.contact')}</h2>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
                                             <Mail className="inline w-4 h-4 mr-1 text-violet-500" />
-                                            Email *
+                                            {t('administration.users.form.email')}
                                         </label>
                                         <Input
                                             id="email"
                                             type="email"
                                             value={formData.email}
                                             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                            placeholder="exemple@email.com"
+                                            placeholder={t('administration.users.form.email_ph')}
                                             className={errors.email ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-blue-500'}
                                         />
                                         {errors.email && (
@@ -207,14 +209,14 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div>
                                         <label htmlFor="telephone" className="block text-sm font-medium text-gray-900 mb-2">
                                             <Phone className="inline w-4 h-4 mr-1 text-violet-500" />
-                                            Téléphone
+                                            {t('administration.users.form.phone')}
                                         </label>
                                         <Input
                                             id="telephone"
                                             type="text"
                                             value={formData.telephone}
                                             onChange={(e) => setFormData(prev => ({ ...prev, telephone: e.target.value }))}
-                                            placeholder="+228 XX XX XX XX"
+                                            placeholder={t('administration.users.form.phone_ph')}
                                             className={errors.telephone ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-blue-500'}
                                         />
                                         {errors.telephone && (
@@ -225,14 +227,14 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div className="md:col-span-2">
                                         <label htmlFor="address" className="block text-sm font-medium text-gray-900 mb-2">
                                             <MapPin className="inline w-4 h-4 mr-1 text-violet-500" />
-                                            Adresse
+                                            {t('administration.users.form.address')}
                                         </label>
                                         <Input
                                             id="address"
                                             type="text"
                                             value={formData.address}
                                             onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                                            placeholder="123 Rue de la Paix"
+                                            placeholder={t('administration.users.form.address_ph')}
                                             className={errors.address ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-blue-500'}
                                         />
                                         {errors.address && (
@@ -248,15 +250,15 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div className="h-9 w-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                                         <Shield className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-lg font-semibold text-gray-900">Sécurité</h2>
+                                    <h2 className="text-lg font-semibold text-gray-900">{t('administration.users.form.security')}</h2>
                                 </div>
                                 <p className="text-sm text-gray-600 mb-4">
-                                    Laissez ces champs vides pour conserver le mot de passe actuel.
+                                    {t('administration.users.form.security_hint')}
                                 </p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
-                                            Nouveau mot de passe
+                                            {t('administration.users.form.new_password')}
                                         </label>
                                         <Input
                                             id="password"
@@ -273,7 +275,7 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
 
                                     <div>
                                         <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-900 mb-2">
-                                            Confirmer le mot de passe
+                                            {t('administration.users.form.password_confirmation_opt')}
                                         </label>
                                         <Input
                                             id="password_confirmation"
@@ -293,17 +295,17 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div className="h-9 w-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                         <Sparkles className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-lg font-semibold text-gray-900">Profil</h2>
+                                    <h2 className="text-lg font-semibold text-gray-900">{t('administration.users.form.profile')}</h2>
                                 </div>
                                 <div>
                                     <label htmlFor="profile" className="block text-sm font-medium text-gray-900 mb-2">
-                                        Description du profil
+                                        {t('administration.users.form.profile_desc')}
                                     </label>
                                     <textarea
                                         id="profile"
                                         value={formData.profile}
                                         onChange={(e) => setFormData(prev => ({ ...prev, profile: e.target.value }))}
-                                        placeholder="Décrivez le profil de l'utilisateur..."
+                                        placeholder={t('administration.users.form.profile_ph')}
                                         rows={4}
                                         className="w-full px-3 py-2 border border-gray-200 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                                     />
@@ -321,18 +323,18 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-indigo-700">
                                             <Users className="w-4 h-4" />
-                                            <p className="text-sm font-semibold">Rôles sélectionnés</p>
+                                            <p className="text-sm font-semibold">{t('administration.users.form.selected_roles')}</p>
                                         </div>
                                         <span className="inline-flex h-6 min-w-6 px-2 items-center justify-center rounded-full bg-indigo-600 text-white text-xs font-semibold">
                                             {formData.roles.length}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-indigo-600 mt-2">Attribuez un ou plusieurs rôles selon les responsabilités.</p>
+                                    <p className="text-xs text-indigo-600 mt-2">{t('administration.users.form.roles_hint')}</p>
                                 </div>
 
                                 <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                     <UserCheck className="w-5 h-5 text-indigo-600" />
-                                    Rôles
+                                    {t('administration.users.form.roles')}
                                 </h2>
                                 <div className="space-y-3">
                                     {roles.map((role) => (
@@ -373,7 +375,7 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                             disabled={isSubmitting}
                             className="bg-blue-600 hover:bg-blue-700 shadow-sm"
                         >
-                            {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
+                            {isSubmitting ? t('administration.users.edit.updating') : t('administration.users.edit.submit')}
                         </Button>
                         <Button
                             type="button"
@@ -381,7 +383,7 @@ export default function Edit({ user, roles }: Readonly<EditProps>) {
                             className="border-gray-200 hover:bg-gray-50"
                             onClick={() => router.get(route('users.index'))}
                         >
-                            Annuler
+                            {t('administration.users.form.cancel')}
                         </Button>
                     </div>
                 </form>

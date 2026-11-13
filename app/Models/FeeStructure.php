@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FeeStructure extends Model
 {
@@ -38,6 +39,8 @@ class FeeStructure extends Model
 
     /**
      * Get the academic year that owns the fee structure.
+     *
+     * @return BelongsTo<AcademicYear, $this>
      */
     public function academicYear(): BelongsTo
     {
@@ -46,6 +49,8 @@ class FeeStructure extends Model
 
     /**
      * Get the fee category that owns the fee structure.
+     *
+     * @return BelongsTo<FeeCategorie, $this>
      */
     public function feeCategory(): BelongsTo
     {
@@ -54,6 +59,8 @@ class FeeStructure extends Model
 
     /**
      * Get the classroom that owns the fee structure.
+     *
+     * @return BelongsTo<Classroom, $this>
      */
     public function classroom(): BelongsTo
     {
@@ -62,8 +69,10 @@ class FeeStructure extends Model
 
     /**
      * Get the installments for the fee structure.
+     *
+     * @return HasMany<Installment, $this>
      */
-    public function installments()
+    public function installments(): HasMany
     {
         return $this->hasMany(Installment::class);
     }

@@ -2,6 +2,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { Users } from 'lucide-react';
 import { GuardianForm, type GuardianFormData } from '@/components/Guardians/guardian-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function Edit({ guardian }: Readonly<Props>) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm<GuardianFormData>({
         first_name: guardian.first_name,
         last_name: guardian.last_name,
@@ -32,11 +34,11 @@ export default function Edit({ guardian }: Readonly<Props>) {
 
     return (
         <AppLayout>
-            <Head title="Modifier le tuteur" />
+            <Head title={t('administration.guardians.edit.head')} />
             <div className="w-full space-y-6">
                 <div>
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-                        <Users className="h-7 w-7 text-blue-600 shrink-0" /> Modifier le tuteur
+                        <Users className="h-7 w-7 text-blue-600 shrink-0" /> {t('administration.guardians.edit.title')}
                     </h1>
                     <p className="mt-2 text-gray-500">{guardian.first_name} {guardian.last_name}</p>
                 </div>

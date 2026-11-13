@@ -5,6 +5,7 @@ import {
     type ClassroomTypeFormData,
 } from '@/components/ClassroomTypes/classroom-type-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 const initialValues: ClassroomTypeFormData = {
@@ -15,6 +16,7 @@ const initialValues: ClassroomTypeFormData = {
 };
 
 export default function Create() {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm<ClassroomTypeFormData>(initialValues);
 
     const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -24,7 +26,7 @@ export default function Create() {
 
     return (
         <AppLayout>
-            <Head title="Nouveau type de classe" />
+            <Head title={t('parametres.classroom_types.create_head')} />
 
             <div className="w-full space-y-6">
                 <div className="flex items-center gap-4">
@@ -36,8 +38,8 @@ export default function Create() {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Créer un type de classe</h1>
-                        <p className="mt-2 text-gray-600">Renseignez les informations du type.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.classroom_types.create_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('parametres.classroom_types.create_subtitle')}</p>
                     </div>
                 </div>
 

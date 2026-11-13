@@ -6,6 +6,7 @@ import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 /* ------------------------------------------------------------------ */
@@ -79,18 +80,11 @@ interface InvoicePageProps {
 /* ------------------------------------------------------------------ */
 
 
-const statusConfig: Record<InvoiceStatus, { label: string; icon: React.ReactNode; badge: string }> = {
-    ISSUED:          { label: 'Non payé',         icon: <Clock className="w-4 h-4" />,        badge: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    PARTIALLY_PAID:  { label: 'Partiellement payé', icon: <AlertCircle className="w-4 h-4" />, badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    PAID:            { label: 'Soldé',             icon: <CheckCircle2 className="w-4 h-4" />, badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-    CANCELLED:       { label: 'Annulé',            icon: <XCircle className="w-4 h-4" />,      badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-};
-
-const methodLabel: Record<PaymentMethod, string> = {
-    CASH:           'Espèces',
-    MOBILE_MONEY:   'Mobile Money',
-    BANK_TRANSFER:  'Virement',
-    CHEQUE:         'Chèque',
+const statusIconBadge: Record<InvoiceStatus, { icon: React.ReactNode; badge: string }> = {
+    ISSUED:          { icon: <Clock className="w-4 h-4" />,        badge: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
+    PARTIALLY_PAID:  { icon: <AlertCircle className="w-4 h-4" />, badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+    PAID:            { icon: <CheckCircle2 className="w-4 h-4" />, badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+    CANCELLED:       { icon: <XCircle className="w-4 h-4" />,      badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
 };
 
 /* ------------------------------------------------------------------ */
@@ -103,6 +97,8 @@ const cashAccountTypeIcon: Record<string, string> = {
 
 export default function InvoicePage({ enrollment, invoice, cashAccounts }: Readonly<InvoicePageProps>) {
     const fmt = useMoney();
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [showForm, setShowForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -117,7 +113,8 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
     });
 
     const paidPct = invoice.total > 0 ? Math.min(100, Math.round((invoice.amount_paid / invoice.total) * 100)) : 100;
-    const status  = statusConfig[invoice.status] ?? statusConfig.ISSUED;
+    const status  = statusIconBadge[invoice.status] ?? statusIconBadge.ISSUED;
+    const statusText = t(`enrollments.show.inv.${invoice.status}`);
     const isPaid  = invoice.status === 'PAID' || invoice.status === 'CANCELLED';
 
     const handleSubmit = (e: FormEvent) => {
@@ -136,7 +133,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
 
     return (
         <AppLayout>
-            <Head title={`Facture ${invoice.invoice_number}`} />
+            <Head title={t('enrollments.invoice_doc.head', { number: invoice.invoice_number })} />
 
             <div className="w-full space-y-6">
 
@@ -149,7 +146,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                         </button>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                Suivi financier
+                                {t('enrollments.show.financial')}
                             </h1>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                                 {enrollment.student ? `${enrollment.student.firstname} ${enrollment.student.lastname}` : '—'}
@@ -166,7 +163,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                         onClick={() => window.open(route('enrollments.invoice.print', enrollment.id), '_blank')}
                     >
                         <Printer className="w-4 h-4" />
-                        Imprimer la facture
+                        {t('enrollments.invoice_doc.print')}
                     </Button>
                 </div>
 
@@ -174,19 +171,19 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                 <div className="bg-white dark:bg-card rounded-xl shadow-sm p-6 space-y-4">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                         <div>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Facture</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{t('enrollments.invoice_doc.title')}</p>
                             <p className="text-lg font-semibold text-gray-900 dark:text-white">{invoice.invoice_number}</p>
                         </div>
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${status.badge}`}>
                             {status.icon}
-                            {status.label}
+                            {statusText}
                         </span>
                     </div>
 
                     {/* Barre de progression */}
                     <div>
                         <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1.5">
-                            <span>{fmt(invoice.amount_paid)} payés</span>
+                            <span>{t('enrollments.invoice.paid_progress', { amount: fmt(invoice.amount_paid) })}</span>
                             <span>{paidPct}%</span>
                         </div>
                         <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -203,21 +200,21 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                     {/* Chiffres */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-gray-100 dark:border-gray-700">
                         <div>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">Sous-total</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{t('enrollments.invoice_doc.subtotal')}</p>
                             <p className="font-semibold text-gray-900 dark:text-white">{fmt(invoice.subtotal)}</p>
                         </div>
                         {invoice.discount_amount > 0 && (
                             <div>
-                                <p className="text-xs text-gray-400 dark:text-gray-500">Réduction</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500">{t('enrollments.invoice_doc.discount')}</p>
                                 <p className="font-semibold text-green-600 dark:text-green-400">- {fmt(invoice.discount_amount)}</p>
                             </div>
                         )}
                         <div>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">Total dû</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{t('enrollments.invoice.total_due')}</p>
                             <p className="font-bold text-gray-900 dark:text-white text-lg">{fmt(invoice.total)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">Reste à payer</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{t('enrollments.invoice_doc.remaining')}</p>
                             <p className={`font-bold text-lg ${invoice.amount_remaining > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                                 {fmt(invoice.amount_remaining)}
                             </p>
@@ -229,7 +226,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                 {/* ── Lignes de facturation ── */}
                 <div className="bg-white dark:bg-card rounded-xl shadow-sm overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                        <h2 className="font-semibold text-gray-900 dark:text-white">Détail de la facture</h2>
+                        <h2 className="font-semibold text-gray-900 dark:text-white">{t('enrollments.invoice.detail_title')}</h2>
                     </div>
                     <table className="w-full text-sm">
                         <tbody>
@@ -248,7 +245,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                             {invoice.items.length === 0 && (
                                 <tr>
                                     <td colSpan={2} className="px-6 py-6 text-center text-gray-400">
-                                        Aucun frais configuré pour cette classe / année.
+                                        {t('enrollments.invoice.no_fees')}
                                     </td>
                                 </tr>
                             )}
@@ -260,7 +257,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                 <div className="bg-white dark:bg-card rounded-xl shadow-sm overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                         <h2 className="font-semibold text-gray-900 dark:text-white">
-                            Paiements ({invoice.payments.length})
+                            {t('enrollments.invoice.payments_count', { count: invoice.payments.length })}
                         </h2>
                         {!isPaid && (
                             <Button
@@ -269,7 +266,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                 onClick={() => setShowForm(v => !v)}
                             >
                                 <Plus className="w-4 h-4" />
-                                Nouveau paiement
+                                {t('enrollments.invoice.new_payment')}
                             </Button>
                         )}
                     </div>
@@ -277,10 +274,10 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                     {/* Formulaire ajout paiement */}
                     {showForm && (
                         <form onSubmit={handleSubmit} className="px-6 py-5 border-b border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/10 space-y-4">
-                            <p className="text-sm font-medium text-blue-700 dark:text-blue-400">Enregistrer un paiement</p>
+                            <p className="text-sm font-medium text-blue-700 dark:text-blue-400">{t('enrollments.invoice.record_payment')}</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Montant (F) *</label>
+                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.amount')}</label>
                                     <Input
                                         type="number"
                                         min="1"
@@ -288,35 +285,35 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                         value={form.amount}
                                         onChange={field('amount')}
                                         className={errors.amount ? 'border-red-500' : ''}
-                                        placeholder={`Max : ${fmt(invoice.amount_remaining)}`}
+                                        placeholder={t('enrollments.invoice.amount_max', { amount: fmt(invoice.amount_remaining) })}
                                     />
                                     {errors.amount && <p className="text-red-600 text-xs mt-1">{errors.amount}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Mode de paiement *</label>
+                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.method')}</label>
                                     <select
                                         value={form.payment_method}
                                         onChange={field('payment_method')}
                                         className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="CASH">Espèces</option>
-                                        <option value="MOBILE_MONEY">Mobile Money</option>
-                                        <option value="BANK_TRANSFER">Virement bancaire</option>
-                                        <option value="CHEQUE">Chèque</option>
+                                        <option value="CASH">{t('enrollments.invoice.opt.cash')}</option>
+                                        <option value="MOBILE_MONEY">{t('enrollments.invoice.opt.mobile')}</option>
+                                        <option value="BANK_TRANSFER">{t('enrollments.invoice.opt.transfer')}</option>
+                                        <option value="CHEQUE">{t('enrollments.invoice.opt.cheque')}</option>
                                     </select>
                                     {errors.payment_method && <p className="text-red-600 text-xs mt-1">{errors.payment_method}</p>}
                                 </div>
 
                                 {cashAccounts.length > 0 && (
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Caisse de destination</label>
+                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.cash_account')}</label>
                                         <select
                                             value={form.cash_account_id}
                                             onChange={field('cash_account_id')}
                                             className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
-                                            <option value="">— Sans caisse —</option>
+                                            <option value="">{t('enrollments.invoice.no_cash_account')}</option>
                                             {cashAccounts.map(ca => (
                                                 <option key={ca.id} value={ca.id}>
                                                     {cashAccountTypeIcon[ca.type]} {ca.name}
@@ -328,7 +325,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                 )}
 
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date de paiement *</label>
+                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.payment_date')}</label>
                                     <Input
                                         type="date"
                                         value={form.paid_at}
@@ -339,32 +336,32 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Payé par</label>
+                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.paid_by')}</label>
                                     <Input
                                         value={form.paid_by}
                                         onChange={field('paid_by')}
-                                        placeholder="Nom du payeur"
+                                        placeholder={t('enrollments.invoice.paid_by_ph')}
                                     />
                                 </div>
 
                                 {(form.payment_method === 'MOBILE_MONEY' || form.payment_method === 'BANK_TRANSFER' || form.payment_method === 'CHEQUE') && (
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Référence / N° transaction</label>
+                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.reference')}</label>
                                         <Input
                                             value={form.reference_number}
                                             onChange={field('reference_number')}
-                                            placeholder="Ex: TXN-123456"
+                                            placeholder={t('enrollments.invoice.reference_ph')}
                                         />
                                     </div>
                                 )}
 
                                 <div className="sm:col-span-2">
-                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Notes (optionnel)</label>
+                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('enrollments.invoice.notes')}</label>
                                     <textarea
                                         value={form.notes}
                                         onChange={field('notes')}
                                         rows={2}
-                                        placeholder="Remarques..."
+                                        placeholder={t('enrollments.invoice.notes_ph')}
                                         className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-card dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                     />
                                 </div>
@@ -372,10 +369,10 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
 
                             <div className="flex gap-2">
                                 <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                                    {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+                                    {isSubmitting ? t('enrollments.form.saving') : t('common.actions.save')}
                                 </Button>
                                 <Button type="button" size="sm" variant="outline" onClick={() => setShowForm(false)}>
-                                    Annuler
+                                    {t('common.actions.cancel')}
                                 </Button>
                             </div>
                         </form>
@@ -385,7 +382,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                     {invoice.payments.length === 0 ? (
                         <div className="px-6 py-10 text-center text-gray-400 dark:text-gray-500">
                             <Receipt className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                            <p>Aucun paiement enregistré</p>
+                            <p>{t('enrollments.invoice.empty_payments')}</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-50 dark:divide-gray-700">
@@ -398,7 +395,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                         <div>
                                             <p className="font-semibold text-gray-900 dark:text-white">{fmt(p.amount)}</p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                {methodLabel[p.payment_method]}
+                                                {t(`enrollments.invoice_doc.method.${p.payment_method}`)}
                                                 {p.reference_number ? ` · ${p.reference_number}` : ''}
                                                 {p.paid_by ? ` · ${p.paid_by}` : ''}
                                             </p>
@@ -406,7 +403,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            {new Date(p.paid_at).toLocaleDateString('fr-FR')}
+                                            {new Date(p.paid_at).toLocaleDateString(dateLocale)}
                                         </p>
                                         {p.receipt && (
                                             <Button
@@ -416,7 +413,7 @@ export default function InvoicePage({ enrollment, invoice, cashAccounts }: Reado
                                                 onClick={() => window.open(route('payments.receipt', p.id), '_blank')}
                                             >
                                                 <Printer className="w-3.5 h-3.5" />
-                                                Reçu {p.receipt.receipt_number}
+                                                {t('enrollments.invoice.receipt', { number: p.receipt.receipt_number })}
                                             </Button>
                                         )}
                                     </div>

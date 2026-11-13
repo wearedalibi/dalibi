@@ -8,19 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import type { BreadcrumbItem } from '@/types';
 import type { Auth } from '@/types/auth';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Paramètres du compte',
-        href: edit().url,
-    },
-];
 
 export default function Profile({
     mustVerifyEmail,
@@ -29,7 +23,15 @@ export default function Profile({
     mustVerifyEmail: boolean;
     status?: string;
 }>) {
+    const { t } = useTranslation();
     const { auth } = usePage<{ auth: Auth }>().props;
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('settings.profile.page.breadcrumb'),
+            href: edit().url,
+        },
+    ];
 
     const initials = [auth.user.firstname?.[0], auth.user.lastname?.[0]]
         .filter(Boolean)
@@ -38,9 +40,9 @@ export default function Profile({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Mon profil" />
+            <Head title={t('settings.profile.page.head')} />
 
-            <h1 className="sr-only flex items-center gap-3"><UserCircle className="h-7 w-7 text-blue-600 shrink-0" />Mon profil</h1>
+            <h1 className="sr-only flex items-center gap-3"><UserCircle className="h-7 w-7 text-blue-600 shrink-0" />{t('settings.profile.page.heading')}</h1>
 
             <SettingsLayout bare>
                 <div className="space-y-6">
@@ -52,7 +54,7 @@ export default function Profile({
                             </div>
                             <div className="min-w-0">
                                 <h2 className="truncate text-xl font-bold text-gray-900">
-                                    {[auth.user.firstname, auth.user.lastname].filter(Boolean).join(' ') || 'Mon profil'}
+                                    {[auth.user.firstname, auth.user.lastname].filter(Boolean).join(' ') || t('settings.profile.page.default_name')}
                                 </h2>
                                 <p className="truncate text-sm text-gray-600">{auth.user.email}</p>
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -79,8 +81,8 @@ export default function Profile({
                             <User className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-gray-900">Informations personnelles</h2>
-                            <p className="text-sm text-gray-600">Gérez vos informations de profil</p>
+                            <h2 className="text-lg font-semibold text-gray-900">{t('settings.profile.page.section_title')}</h2>
+                            <p className="text-sm text-gray-600">{t('settings.profile.page.section_desc')}</p>
                         </div>
                     </div>
 
@@ -96,7 +98,7 @@ export default function Profile({
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="firstname" className="text-sm font-medium text-gray-900">
-                                                Prénom *
+                                                {t('settings.profile.page.firstname')} *
                                             </Label>
                                             <Input
                                                 id="firstname"
@@ -105,14 +107,14 @@ export default function Profile({
                                                 name="firstname"
                                                 required
                                                 autoComplete="given-name"
-                                                placeholder="Votre prénom"
+                                                placeholder={t('settings.profile.page.firstname_ph')}
                                             />
                                             <InputError message={errors.firstname} />
                                         </div>
 
                                         <div className="space-y-2">
                                             <Label htmlFor="lastname" className="text-sm font-medium text-gray-900">
-                                                Nom de famille *
+                                                {t('settings.profile.page.lastname')} *
                                             </Label>
                                             <Input
                                                 id="lastname"
@@ -121,7 +123,7 @@ export default function Profile({
                                                 name="lastname"
                                                 required
                                                 autoComplete="family-name"
-                                                placeholder="Votre nom"
+                                                placeholder={t('settings.profile.page.lastname_ph')}
                                             />
                                             <InputError message={errors.lastname} />
                                         </div>
@@ -131,14 +133,14 @@ export default function Profile({
                                         <div className="space-y-2">
                                             <Label htmlFor="matricule" className="text-sm font-medium text-gray-900">
                                                 <IdCard className="w-4 h-4 inline mr-2" />
-                                                Matricule
+                                                {t('settings.profile.page.matricule')}
                                             </Label>
                                             <Input
                                                 id="matricule"
                                                 className="bg-gray-50 border-gray-200"
                                                 defaultValue={auth.user.natricule || ''}
                                                 disabled
-                                                placeholder="Non attribué"
+                                                placeholder={t('settings.profile.page.matricule_ph')}
                                             />
                                         </div>
                                     )}
@@ -146,16 +148,16 @@ export default function Profile({
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="gender" className="text-sm font-medium text-gray-900">
-                                                Genre
+                                                {t('settings.profile.page.gender')}
                                             </Label>
                                             <Select name="gender" defaultValue={auth.user.gender || ''}>
                                                 <SelectTrigger id="gender" className="border-gray-300">
-                                                    <SelectValue placeholder="Sélectionner" />
+                                                    <SelectValue placeholder={t('settings.profile.page.gender_ph')} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="male">Masculin</SelectItem>
-                                                    <SelectItem value="female">Féminin</SelectItem>
-                                                    <SelectItem value="other">Autre</SelectItem>
+                                                    <SelectItem value="male">{t('settings.profile.page.gender_male')}</SelectItem>
+                                                    <SelectItem value="female">{t('settings.profile.page.gender_female')}</SelectItem>
+                                                    <SelectItem value="other">{t('settings.profile.page.gender_other')}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <InputError message={errors.gender} />
@@ -164,7 +166,7 @@ export default function Profile({
                                         <div className="space-y-2">
                                             <Label htmlFor="birth_date" className="text-sm font-medium text-gray-900">
                                                 <Calendar className="w-4 h-4 inline mr-2" />
-                                                Date de naissance
+                                                {t('settings.profile.page.birth_date')}
                                             </Label>
                                             <Input
                                                 id="birth_date"
@@ -181,7 +183,7 @@ export default function Profile({
                                         <div className="space-y-2">
                                             <Label htmlFor="email" className="text-sm font-medium text-gray-900">
                                                 <Mail className="w-4 h-4 inline mr-2" />
-                                                Adresse email *
+                                                {t('settings.profile.page.email')} *
                                             </Label>
                                             <Input
                                                 id="email"
@@ -191,7 +193,7 @@ export default function Profile({
                                                 name="email"
                                                 required
                                                 autoComplete="username"
-                                                placeholder="exemple@email.com"
+                                                placeholder={t('settings.profile.page.email_ph')}
                                             />
                                             <InputError message={errors.email} />
                                         </div>
@@ -199,7 +201,7 @@ export default function Profile({
                                         <div className="space-y-2">
                                             <Label htmlFor="telephone" className="text-sm font-medium text-gray-900">
                                                 <Phone className="w-4 h-4 inline mr-2" />
-                                                Téléphone
+                                                {t('settings.profile.page.telephone')}
                                             </Label>
                                             <Input
                                                 id="telephone"
@@ -208,7 +210,7 @@ export default function Profile({
                                                 defaultValue={auth.user.telephone || ''}
                                                 name="telephone"
                                                 autoComplete="tel"
-                                                placeholder="+243 XXX XXX XXX"
+                                                placeholder={t('settings.profile.page.telephone_ph')}
                                             />
                                             <InputError message={errors.telephone} />
                                         </div>
@@ -217,7 +219,7 @@ export default function Profile({
                                     <div className="space-y-2">
                                         <Label htmlFor="address" className="text-sm font-medium text-gray-900">
                                             <MapPin className="w-4 h-4 inline mr-2" />
-                                            Adresse
+                                            {t('settings.profile.page.address')}
                                         </Label>
                                         <Textarea
                                             id="address"
@@ -225,7 +227,7 @@ export default function Profile({
                                             className="border-gray-300"
                                             defaultValue={auth.user.address || ''}
                                             name="address"
-                                            placeholder="Votre adresse complète"
+                                            placeholder={t('settings.profile.page.address_ph')}
                                         />
                                         <InputError message={errors.address} />
                                     </div>
@@ -234,19 +236,19 @@ export default function Profile({
                                         auth.user.email_verified_at === null && (
                                             <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
                                                 <p className="text-sm text-amber-800">
-                                                    Votre adresse email n'est pas vérifiée.{' '}
+                                                    {t('settings.profile.page.email_unverified')}{' '}
                                                     <Link
                                                         href={send()}
                                                         as="button"
                                                         className="font-medium underline underline-offset-4 hover:text-amber-900"
                                                     >
-                                                        Cliquez ici pour renvoyer l'email de vérification.
+                                                        {t('settings.profile.page.email_resend')}
                                                     </Link>
                                                 </p>
 
                                                 {status === 'verification-link-sent' && (
                                                     <div className="mt-2 text-sm font-medium text-green-700">
-                                                        Un nouveau lien de vérification a été envoyé à votre adresse email.
+                                                        {t('settings.profile.page.email_link_sent')}
                                                     </div>
                                                 )}
                                             </div>
@@ -258,7 +260,7 @@ export default function Profile({
                                             className="bg-blue-600 hover:bg-blue-700"
                                             data-test="update-profile-button"
                                         >
-                                            {processing ? 'Enregistrement...' : 'Enregistrer'}
+                                            {processing ? t('settings.profile.page.saving') : t('settings.profile.page.save')}
                                         </Button>
 
                                         <Transition
@@ -269,7 +271,7 @@ export default function Profile({
                                             leaveTo="opacity-0"
                                         >
                                             <p className="text-sm text-green-600 font-medium">
-                                                ✓ Modifications enregistrées
+                                                {t('settings.profile.page.saved')}
                                             </p>
                                         </Transition>
                                     </div>

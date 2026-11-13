@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Role {
@@ -24,8 +25,10 @@ interface ShowProps {
 }
 
 export default function Show({ permission }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const formatDate = (date: string) => {
-        return new Intl.DateTimeFormat('fr-FR', {
+        return new Intl.DateTimeFormat(dateLocale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -58,7 +61,7 @@ export default function Show({ permission }: Readonly<ShowProps>) {
                     <Link href={route('permissions.edit', permission.id)}>
                         <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
                             <Pencil className="w-4 h-4" />
-                            Éditer
+                            {t('administration.permissions.show.edit')}
                         </Button>
                     </Link>
                 </div>
@@ -67,23 +70,23 @@ export default function Show({ permission }: Readonly<ShowProps>) {
                     {/* Info Générale */}
                     <div className="bg-white rounded-lg border p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Informations
+                            {t('administration.permissions.show.info')}
                         </h2>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-sm text-gray-600">Nom</p>
+                                <p className="text-sm text-gray-600">{t('administration.permissions.show.name')}</p>
                                 <p className="text-lg font-medium text-gray-900">
                                     {permission.name}
                                 </p>
                             </div>
                             {permission.description && (
                                 <div>
-                                    <p className="text-sm text-gray-600">Description</p>
+                                    <p className="text-sm text-gray-600">{t('administration.permissions.show.description')}</p>
                                     <p className="text-gray-700">{permission.description}</p>
                                 </div>
                             )}
                             <div>
-                                <p className="text-sm text-gray-600">Rôles attribués</p>
+                                <p className="text-sm text-gray-600">{t('administration.permissions.show.assigned_roles')}</p>
                                 <p className="text-lg font-medium text-gray-900">
                                     {permission.roles.length}
                                 </p>
@@ -94,15 +97,15 @@ export default function Show({ permission }: Readonly<ShowProps>) {
                     {/* Timeline */}
                     <div className="bg-white rounded-lg border p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Événements
+                            {t('administration.permissions.show.events')}
                         </h2>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-sm text-gray-600">Créée le</p>
+                                <p className="text-sm text-gray-600">{t('administration.permissions.show.created_on')}</p>
                                 <p className="text-gray-700">{formatDate(permission.created_at)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Modifiée le</p>
+                                <p className="text-sm text-gray-600">{t('administration.permissions.show.updated_on')}</p>
                                 <p className="text-gray-700">{formatDate(permission.updated_at)}</p>
                             </div>
                         </div>
@@ -111,13 +114,13 @@ export default function Show({ permission }: Readonly<ShowProps>) {
                     {/* Stats */}
                     <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
                         <h2 className="text-lg font-semibold text-blue-900 mb-4">
-                            Statistiques
+                            {t('administration.permissions.show.stats')}
                         </h2>
                         <div className="text-center">
                             <p className="text-5xl font-bold text-blue-600">
                                 {permission.roles.length}
                             </p>
-                            <p className="text-blue-700 mt-2">Rôles attribués</p>
+                            <p className="text-blue-700 mt-2">{t('administration.permissions.show.assigned_roles')}</p>
                         </div>
                     </div>
                 </div>
@@ -125,7 +128,7 @@ export default function Show({ permission }: Readonly<ShowProps>) {
                 {/* Rôles */}
                 <div className="bg-white rounded-lg border p-6">
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                        Rôles associés
+                        {t('administration.permissions.show.associated_roles')}
                     </h2>
                     {permission.roles.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -139,7 +142,7 @@ export default function Show({ permission }: Readonly<ShowProps>) {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-600">Aucun rôle n'utilise cette permission.</p>
+                        <p className="text-gray-600">{t('administration.permissions.show.no_role')}</p>
                     )}
                 </div>
             </div>

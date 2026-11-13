@@ -33,12 +33,19 @@ class GradingConfig extends Model
         'mentions' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
-    /** Type de classe ciblé (null = configuration par défaut de l'école). */
+    /**
+     * Type de classe ciblé (null = configuration par défaut de l'école).
+     *
+     * @return BelongsTo<ClassroomType, $this>
+     */
     public function classroomType(): BelongsTo
     {
         return $this->belongsTo(ClassroomType::class, 'classroom_type_id');

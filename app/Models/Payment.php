@@ -34,31 +34,49 @@ class Payment extends Model
     /* Relations */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * @return BelongsTo<Invoice, $this>
+     */
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
     }
 
+    /**
+     * @return BelongsTo<Installment, $this>
+     */
     public function installment(): BelongsTo
     {
         return $this->belongsTo(Installment::class);
     }
 
+    /**
+     * @return HasOne<Receipt, $this>
+     */
     public function receipt(): HasOne
     {
         return $this->hasOne(Receipt::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * @return BelongsTo<CashAccount, $this>
+     */
     public function cashAccount(): BelongsTo
     {
         return $this->belongsTo(CashAccount::class);
     }
 
+    /**
+     * @return HasOne<AccountingTransaction, $this>
+     */
     public function accountingTransaction(): HasOne
     {
         return $this->hasOne(AccountingTransaction::class, 'reference_id');

@@ -23,11 +23,17 @@ class Receipt extends Model
         'printed_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Payment, $this>
+     */
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function printedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'printed_by');

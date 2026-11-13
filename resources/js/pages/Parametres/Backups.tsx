@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface BackupRow {
@@ -29,14 +30,13 @@ interface Props { backups: BackupRow[]; settings: Settings; storageDriver: strin
 
 const ALL_TABLES = '__all__';
 
-const DAYS = [
-    { v: '1', l: 'Lundi' }, { v: '2', l: 'Mardi' }, { v: '3', l: 'Mercredi' },
-    { v: '4', l: 'Jeudi' }, { v: '5', l: 'Vendredi' }, { v: '6', l: 'Samedi' }, { v: '7', l: 'Dimanche' },
-];
-
-const fmtSize = (b: number) => b > 1048576 ? `${(b / 1048576).toFixed(1)} Mo` : `${Math.max(1, Math.round(b / 1024))} Ko`;
+const DAY_KEYS = ['1', '2', '3', '4', '5', '6', '7'] as const;
 
 export default function Backups({ backups, settings, storageDriver, academicYears, tables }: Readonly<Props>) {
+    const { t } = useTranslation();
+    const fmtSize = (b: number) => b > 1048576
+        ? t('parametres.backups.size_mb', { n: (b / 1048576).toFixed(1) })
+        : t('parametres.backups.size_kb', { n: Math.max(1, Math.round(b / 1024)) });
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [restoreTable, setRestoreTable] = useState<string>(ALL_TABLES);
     const [runFormats, setRunFormats] = useState<string[]>(['json', 'sql']);
@@ -103,14 +103,14 @@ export default function Backups({ backups, settings, storageDriver, academicYear
 
     return (
         <AppLayout>
-            <Head title="Sauvegardes" />
+            <Head title={t('parametres.backups.head')} />
             <div className="w-full space-y-6">
 
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
-                        <DatabaseBackup className="w-7 h-7 text-blue-600" /> Sauvegardes
+                        <DatabaseBackup className="w-7 h-7 text-blue-600" /> {t('parametres.backups.title')}
                     </h1>
-                    <p className="mt-2 text-gray-500">Sauvegardez la base de données (JSON / SQL) et planifiez des sauvegardes automatiques.</p>
+                    <p className="mt-2 text-gray-500">{t('parametres.backups.subtitle')}</p>
                 </div>
 
                 {/* Destination de stockage */}
@@ -118,12 +118,12 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                     {isRemote ? <Cloud className="w-5 h-5 text-emerald-600" /> : <HardDrive className="w-5 h-5 text-amber-600" />}
                     <div className="text-sm">
                         <p className="font-semibold text-gray-900">
-                            Destination : {isRemote ? 'Dépôt distant (S3 / R2)' : 'Stockage local du serveur'}
+                            {t('parametres.backups.dest_label')} {isRemote ? t('parametres.backups.dest_remote') : t('parametres.backups.dest_local')}
                         </p>
                         <p className="text-gray-500">
                             {isRemote
-                                ? 'Les sauvegardes sont envoyées sur votre stockage cloud configuré.'
-                                : 'Configurez un stockage S3/R2 dans « Fichiers & Stockage » pour externaliser les sauvegardes.'}
+                                ? t('parametres.backups.dest_remote_desc')
+                                : t('parametres.backups.dest_local_desc')}
                         </p>
                     </div>
                 </div>
@@ -131,7 +131,7 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                 {/* Sauvegarde manuelle */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-5">
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-4">
-                        <Play className="w-4 h-4 text-blue-600" /> Sauvegarder maintenant
+                        <Play className="w-4 h-4 text-blue-600" /> {t('parametres.backups.manual_title')}
                     </h2>
                     <div className="flex flex-wrap items-center gap-6">
                         <div className="flex items-center gap-4">
@@ -144,42 +144,41 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                         </div>
                         <label className="flex items-center gap-2 text-sm cursor-pointer">
                             <Checkbox checked={withMedia} onCheckedChange={() => setWithMedia(v => !v)} />
-                            <span className="font-medium text-gray-700">Inclure les médias (documents, photos)</span>
+                            <span className="font-medium text-gray-700">{t('parametres.backups.include_media')}</span>
                         </label>
                         <Button onClick={runNow} disabled={running || runFormats.length === 0} className="bg-blue-600 hover:bg-blue-700 gap-2">
-                            <Database className="w-4 h-4" /> {running ? 'Sauvegarde…' : 'Lancer la sauvegarde'}
+                            <Database className="w-4 h-4" /> {running ? t('parametres.backups.running') : t('parametres.backups.run_backup')}
                         </Button>
                     </div>
                     <p className="mt-3 text-xs text-gray-400">
-                        Avec les médias, la sauvegarde est produite au format <strong>.zip</strong> (base + fichiers uploadés). Sinon, seule la base est sauvegardée.
+                        {t('parametres.backups.manual_hint_before')} <strong>.zip</strong> {t('parametres.backups.manual_hint_after')}
                     </p>
                 </div>
 
                 {/* Archive d'année scolaire */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-5">
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-1">
-                        <Archive className="w-4 h-4 text-cyan-600" /> Archiver une année scolaire
+                        <Archive className="w-4 h-4 text-cyan-600" /> {t('parametres.backups.archive_title')}
                     </h2>
                     <p className="text-sm text-gray-500 mb-4">
-                        Génère un instantané complet <strong>verrouillé</strong> et conservé à long terme (exclu de la rétention automatique).
-                        L'archive est aussi créée automatiquement à la clôture d'une année.
+                        {t('parametres.backups.archive_desc_before')} <strong>{t('parametres.backups.archive_desc_locked')}</strong> {t('parametres.backups.archive_desc_after')}
                     </p>
                     <div className="flex flex-wrap items-end gap-3">
                         <div className="space-y-1.5 min-w-56">
-                            <label className="text-sm font-medium text-gray-700">Année scolaire</label>
+                            <label className="text-sm font-medium text-gray-700">{t('parametres.backups.academic_year')}</label>
                             <Select value={archiveYear} onValueChange={setArchiveYear}>
-                                <SelectTrigger><SelectValue placeholder="Choisir une année…" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('parametres.backups.choose_year')} /></SelectTrigger>
                                 <SelectContent>
                                     {academicYears.map(y => (
                                         <SelectItem key={y.id} value={y.id} disabled={y.archived}>
-                                            {y.year}{y.archived ? ' — déjà archivée' : ''}
+                                            {y.year}{y.archived ? t('parametres.backups.already_archived') : ''}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
                         <Button onClick={runArchive} disabled={archiving || !archiveYear} className="bg-cyan-600 hover:bg-cyan-700 gap-2">
-                            <Archive className="w-4 h-4" /> {archiving ? 'Archivage…' : "Archiver l'année"}
+                            <Archive className="w-4 h-4" /> {archiving ? t('parametres.backups.archiving') : t('parametres.backups.archive_year')}
                         </Button>
                     </div>
                 </div>
@@ -187,42 +186,42 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                 {/* Planification */}
                 <form onSubmit={saveSchedule} className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-5 space-y-4">
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-indigo-600" /> Planification automatique
+                        <Clock className="w-4 h-4 text-indigo-600" /> {t('parametres.backups.schedule_title')}
                     </h2>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Fréquence</label>
+                            <label className="text-sm font-medium text-gray-700">{t('parametres.backups.frequency')}</label>
                             <Select value={data.frequency} onValueChange={v => setData('frequency', v)}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none">Désactivée</SelectItem>
-                                    <SelectItem value="daily">Quotidienne</SelectItem>
-                                    <SelectItem value="weekly">Hebdomadaire</SelectItem>
+                                    <SelectItem value="none">{t('parametres.backups.freq_none')}</SelectItem>
+                                    <SelectItem value="daily">{t('parametres.backups.freq_daily')}</SelectItem>
+                                    <SelectItem value="weekly">{t('parametres.backups.freq_weekly')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Heure</label>
+                            <label className="text-sm font-medium text-gray-700">{t('parametres.backups.time')}</label>
                             <Input type="time" value={data.time} onChange={e => setData('time', e.target.value)} />
                         </div>
                         {data.frequency === 'weekly' && (
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Jour</label>
+                                <label className="text-sm font-medium text-gray-700">{t('parametres.backups.day')}</label>
                                 <Select value={data.day_of_week} onValueChange={v => setData('day_of_week', v)}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        {DAYS.map(d => <SelectItem key={d.v} value={d.v}>{d.l}</SelectItem>)}
+                                        {DAY_KEYS.map(d => <SelectItem key={d} value={d}>{t(`parametres.backups.day_${d}`)}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
                         )}
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Rétention (nb conservés)</label>
+                            <label className="text-sm font-medium text-gray-700">{t('parametres.backups.retention')}</label>
                             <Input type="number" min={0} max={365} value={data.retention} onChange={e => setData('retention', e.target.value)} />
                         </div>
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-gray-700">Formats générés</label>
+                        <label className="text-sm font-medium text-gray-700">{t('parametres.backups.formats_generated')}</label>
                         <div className="flex items-center gap-4">
                             {['json', 'sql'].map(f => (
                                 <label key={f} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -233,24 +232,23 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                         </div>
                     </div>
                     <p className="text-xs text-gray-400">
-                        La planification nécessite que le planificateur Laravel tourne sur le serveur
-                        (<code>php artisan schedule:run</code> via cron, chaque minute).
+                        {t('parametres.backups.schedule_hint_before')}
+                        (<code>php artisan schedule:run</code> {t('parametres.backups.schedule_hint_after')}
                     </p>
                     <div className="flex justify-end">
-                        <Button type="submit" disabled={processing} className="bg-indigo-600 hover:bg-indigo-700">Enregistrer la planification</Button>
+                        <Button type="submit" disabled={processing} className="bg-indigo-600 hover:bg-indigo-700">{t('parametres.backups.save_schedule')}</Button>
                     </div>
                 </form>
 
                 {/* Restauration */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-red-100 p-5 space-y-4">
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <Upload className="w-4 h-4 text-red-600" /> Restaurer la base de données
+                        <Upload className="w-4 h-4 text-red-600" /> {t('parametres.backups.restore_title')}
                     </h2>
                     <div className="flex items-start gap-3 rounded-xl bg-red-50 ring-1 ring-red-100 p-3 text-sm">
                         <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                         <p className="text-red-700">
-                            La restauration <strong>écrase les données actuelles</strong> avec le contenu du fichier.
-                            Une sauvegarde de sécurité (JSON) est créée automatiquement avant l'opération.
+                            {t('parametres.backups.restore_warn_before')} <strong>{t('parametres.backups.restore_warn_bold')}</strong> {t('parametres.backups.restore_warn_after')}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
@@ -266,66 +264,66 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                             disabled={!restoreFile || restoring}
                             className="bg-red-600 hover:bg-red-700 gap-2"
                         >
-                            <Upload className="w-4 h-4" /> {restoring ? 'Restauration…' : 'Restaurer'}
+                            <Upload className="w-4 h-4" /> {restoring ? t('parametres.backups.restoring') : t('parametres.backups.restore')}
                         </Button>
                     </div>
                     <div className="space-y-1.5 max-w-md">
-                        <label className="text-sm font-medium text-gray-700">Restaurer une seule table (optionnel)</label>
+                        <label className="text-sm font-medium text-gray-700">{t('parametres.backups.restore_one_table')}</label>
                         <Select value={restoreTable} onValueChange={setRestoreTable}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL_TABLES}>Toute la base</SelectItem>
-                                {tables.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                                <SelectItem value={ALL_TABLES}>{t('parametres.backups.all_tables')}</SelectItem>
+                                {tables.map(tbl => <SelectItem key={tbl} value={tbl}>{tbl}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-gray-400">
-                            La restauration ciblée par table n'est disponible qu'avec les fichiers <strong>.json</strong> (ou .json.gz) et n'écrase que la table choisie.
+                            {t('parametres.backups.restore_table_hint_before')} <strong>.json</strong> {t('parametres.backups.restore_table_hint_after')}
                         </p>
                     </div>
-                    <p className="text-xs text-gray-400">Formats acceptés : .json, .sql, .gz (compressé), .dump (PostgreSQL) ou .zip (base + médias) issus de cette application — max 200 Mo.</p>
+                    <p className="text-xs text-gray-400">{t('parametres.backups.accepted_formats')}</p>
                 </div>
 
                 {/* Historique */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
-                    <h2 className="font-semibold text-gray-900 px-5 pt-5 pb-3">Historique des sauvegardes</h2>
+                    <h2 className="font-semibold text-gray-900 px-5 pt-5 pb-3">{t('parametres.backups.history_title')}</h2>
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Fichier</TableHead>
-                                <TableHead>Format</TableHead>
-                                <TableHead>Taille</TableHead>
-                                <TableHead>Origine</TableHead>
-                                <TableHead>Statut</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead className="text-center w-28">Actions</TableHead>
+                                <TableHead>{t('parametres.backups.th_file')}</TableHead>
+                                <TableHead>{t('parametres.backups.th_format')}</TableHead>
+                                <TableHead>{t('parametres.backups.th_size')}</TableHead>
+                                <TableHead>{t('parametres.backups.th_origin')}</TableHead>
+                                <TableHead>{t('parametres.backups.th_status')}</TableHead>
+                                <TableHead>{t('parametres.backups.th_date')}</TableHead>
+                                <TableHead className="text-center w-28">{t('parametres.common.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {backups.length === 0 ? (
-                                <TableRow><TableCell colSpan={7} className="py-12 text-center text-gray-400">Aucune sauvegarde pour le moment.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={7} className="py-12 text-center text-gray-400">{t('parametres.backups.empty')}</TableCell></TableRow>
                             ) : backups.map(b => (
                                 <TableRow key={b.id} className="hover:bg-gray-50">
                                     <TableCell className="font-mono text-xs text-gray-700">
                                         {b.filename}
                                         {b.locked && (
                                             <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2 py-0.5 font-sans text-[11px] font-medium text-cyan-700 ring-1 ring-cyan-100">
-                                                <Lock className="w-3 h-3" /> {b.label ?? 'Archive'}
+                                                <Lock className="w-3 h-3" /> {b.label ?? t('parametres.backups.badge_archive')}
                                             </span>
                                         )}
                                         {b.includes_media && (
                                             <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 font-sans text-[11px] font-medium text-violet-700 ring-1 ring-violet-100">
-                                                <Archive className="w-3 h-3" /> + médias
+                                                <Archive className="w-3 h-3" /> {t('parametres.backups.badge_media')}
                                             </span>
                                         )}
                                     </TableCell>
                                     <TableCell><span className="text-xs font-bold uppercase text-blue-600">{b.format}</span></TableCell>
                                     <TableCell className="text-sm text-gray-600">{b.status === 'completed' ? fmtSize(b.size) : '—'}</TableCell>
-                                    <TableCell className="text-xs text-gray-500">{b.scheduled ? 'Planifiée' : (b.created_by ?? 'Manuelle')}</TableCell>
+                                    <TableCell className="text-xs text-gray-500">{b.scheduled ? t('parametres.backups.origin_scheduled') : (b.created_by ?? t('parametres.backups.origin_manual'))}</TableCell>
                                     <TableCell>
                                         {b.status === 'completed' ? (
-                                            <span className="inline-flex items-center gap-1 text-xs text-emerald-600"><CheckCircle2 className="w-3.5 h-3.5" /> OK</span>
+                                            <span className="inline-flex items-center gap-1 text-xs text-emerald-600"><CheckCircle2 className="w-3.5 h-3.5" /> {t('parametres.backups.status_ok')}</span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 text-xs text-red-600" title={b.error ?? ''}><AlertCircle className="w-3.5 h-3.5" /> Échec</span>
+                                            <span className="inline-flex items-center gap-1 text-xs text-red-600" title={b.error ?? ''}><AlertCircle className="w-3.5 h-3.5" /> {t('parametres.backups.status_fail')}</span>
                                         )}
                                     </TableCell>
                                     <TableCell className="text-sm text-gray-600">{b.created_at}</TableCell>
@@ -338,7 +336,7 @@ export default function Backups({ backups, settings, storageDriver, academicYear
                                             )}
                                             {b.status === 'completed' && b.checksum && (
                                                 <Button variant="outline" size="sm" className="text-xs text-emerald-600 border-emerald-200 hover:bg-emerald-50"
-                                                    title="Vérifier l'intégrité"
+                                                    title={t('parametres.backups.verify_integrity')}
                                                     onClick={() => router.post(route('backups.verify', b.id), {}, { preserveScroll: true })}>
                                                     <ShieldCheck className="w-3.5 h-3.5" />
                                                 </Button>
@@ -358,16 +356,15 @@ export default function Backups({ backups, settings, storageDriver, academicYear
             <AlertDialog open={restoreConfirm} onOpenChange={setRestoreConfirm}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la restauration ?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.backups.restore_confirm_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Toutes les données actuelles seront remplacées par le contenu de
-                            « {restoreFile?.name} ». Une sauvegarde de sécurité est créée avant. Cette action est irréversible.
+                            {t('parametres.backups.restore_confirm_desc', { name: restoreFile?.name ?? '' })}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={runRestore}>
-                            Restaurer maintenant
+                            {t('parametres.backups.restore_now')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
@@ -376,13 +373,13 @@ export default function Backups({ backups, settings, storageDriver, academicYear
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette sauvegarde ?</AlertDialogTitle>
-                        <AlertDialogDescription>Le fichier sera définitivement supprimé du stockage.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('parametres.backups.delete_title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('parametres.backups.delete_desc')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && router.delete(route('backups.destroy', deleteId), { preserveScroll: true, onSuccess: () => setDeleteId(null) })}>
-                            Supprimer
+                            {t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

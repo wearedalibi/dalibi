@@ -38,6 +38,8 @@ class Scholarship extends Model
 
     /**
      * Get all student scholarships for this scholarship.
+     *
+     * @return HasMany<StudentScholarship, $this>
      */
     public function studentScholarships(): HasMany
     {

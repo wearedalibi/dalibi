@@ -3,10 +3,11 @@
 namespace App\Exports;
 
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\Export;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 /** Construit un classeur Excel multi-feuilles à partir des données d'une section. */
-class StatisticsExport implements WithMultipleSheets
+class StatisticsExport implements Export, WithMultipleSheets
 {
     private const METHOD_LABELS = [
         'CASH' => 'Espèces',

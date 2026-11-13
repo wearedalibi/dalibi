@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Permission {
@@ -27,6 +28,7 @@ interface EditProps {
 }
 
 export default function Edit({ role, permissions }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: role.name,
         description: role.description || '',
@@ -62,7 +64,7 @@ export default function Edit({ role, permissions }: Readonly<EditProps>) {
 
     return (
         <AppLayout>
-            <Head title={`Éditer ${role.name}`} />
+            <Head title={t('administration.roles.edit.head', { name: role.name })} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -76,7 +78,7 @@ export default function Edit({ role, permissions }: Readonly<EditProps>) {
                         </button>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">
-                                Éditer le rôle
+                                {t('administration.roles.edit.title')}
                             </h1>
                             <p className="text-gray-600 mt-1">{role.name}</p>
                         </div>
@@ -90,14 +92,14 @@ export default function Edit({ role, permissions }: Readonly<EditProps>) {
                             {/* Nom du rôle */}
                             <div className="bg-white rounded-lg border p-6">
                                 <label htmlFor="role-name" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Nom du rôle *
+                                    {t('administration.roles.edit.name')}
                                 </label>
                                 <Input
                                     id="role-name"
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                    placeholder="Ex: Administrateur"
+                                    placeholder={t('administration.roles.edit.name_ph')}
                                     className={errors.name ? 'border-red-500' : ''}
                                 />
                                 {errors.name && (
@@ -108,13 +110,13 @@ export default function Edit({ role, permissions }: Readonly<EditProps>) {
                             {/* Description */}
                             <div className="bg-white rounded-lg border p-6">
                                 <label htmlFor="role-description" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Description
+                                    {t('administration.roles.edit.description')}
                                 </label>
                                 <textarea
                                     id="role-description"
                                     value={formData.description}
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                    placeholder="Décrivez le rôle..."
+                                    placeholder={t('administration.roles.edit.description_ph')}
                                     rows={4}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
@@ -127,14 +129,14 @@ export default function Edit({ role, permissions }: Readonly<EditProps>) {
                                     disabled={isSubmitting}
                                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                                 >
-                                    {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
+                                    {isSubmitting ? t('administration.roles.edit.updating') : t('administration.roles.edit.update')}
                                 </Button>
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.get(route('roles.index'))}
                                 >
-                                    Annuler
+                                    {t('administration.roles.edit.cancel')}
                                 </Button>
                             </div>
                         </div>
@@ -143,7 +145,7 @@ export default function Edit({ role, permissions }: Readonly<EditProps>) {
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-lg border p-6">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                    Permissions ({formData.permissions.length})
+                                    {t('administration.roles.edit.permissions', { count: formData.permissions.length })}
                                 </h2>
                                 {errors.permissions && (
                                     <p className="text-red-600 text-sm mb-4">{errors.permissions}</p>

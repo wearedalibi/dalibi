@@ -31,16 +31,25 @@ class Installment extends Model
     /* Relations */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * @return BelongsTo<FeeStructure, $this>
+     */
     public function feeStructure(): BelongsTo
     {
         return $this->belongsTo(FeeStructure::class);
     }
 
+    /**
+     * @return BelongsTo<AcademicPeriod, $this>
+     */
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(AcademicPeriod::class);
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

@@ -46,6 +46,8 @@ class ClassSubject extends Model
 
     /**
      * Get the class this assignment belongs to.
+     *
+     * @return BelongsTo<Classroom, $this>
      */
     public function class(): BelongsTo
     {
@@ -54,6 +56,8 @@ class ClassSubject extends Model
 
     /**
      * Get the subject for this assignment.
+     *
+     * @return BelongsTo<Subject, $this>
      */
     public function subject(): BelongsTo
     {
@@ -62,6 +66,8 @@ class ClassSubject extends Model
 
     /**
      * Get the academic year for this class-subject assignment.
+     *
+     * @return BelongsTo<AcademicYear, $this>
      */
     public function academicYear(): BelongsTo
     {
@@ -70,6 +76,8 @@ class ClassSubject extends Model
 
     /**
      * Get all grades for this class-subject combination.
+     *
+     * @return HasMany<Grade, $this>
      */
     public function grades(): HasMany
     {
@@ -78,6 +86,8 @@ class ClassSubject extends Model
 
     /**
      * Get all evaluations for this class-subject combination.
+     *
+     * @return HasMany<Evaluation, $this>
      */
     public function evaluations(): HasMany
     {

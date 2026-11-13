@@ -6,6 +6,7 @@ import {
     type ClassroomTypeOption,
 } from '@/components/Classrooms/classroom-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface CreateProps {
@@ -21,6 +22,7 @@ const initialValues: ClassroomFormData = {
 };
 
 export default function Create({ classroomTypes }: Readonly<CreateProps>) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm<ClassroomFormData>(initialValues);
 
     const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -30,7 +32,7 @@ export default function Create({ classroomTypes }: Readonly<CreateProps>) {
 
     return (
         <AppLayout>
-            <Head title="Nouvelle classe" />
+            <Head title={t('parametres.classrooms.create_head')} />
 
             <div className="max-w-4xl space-y-6">
                 <div className="flex items-center gap-4">
@@ -42,8 +44,8 @@ export default function Create({ classroomTypes }: Readonly<CreateProps>) {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Créer une classe</h1>
-                        <p className="mt-2 text-gray-600">Renseignez les informations de la classe.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.classrooms.create_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('parametres.classrooms.create_subtitle')}</p>
                     </div>
                 </div>
 

@@ -1,7 +1,8 @@
-import { isSameMonth, isToday } from 'date-fns';
+import { format, isSameMonth, isToday } from 'date-fns';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from '@/helpers/i18n';
 import { CalEvent, packWeek, solidClass, toISO } from './utils';
 
-const WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 const MAX_LANES = 3;
 
 export interface DragPayload {
@@ -22,9 +23,12 @@ interface Props {
 }
 
 export function MonthView({ days, cursor, events, canEdit, canCreate, onCreateAt, onEditEvent, onDrop }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dfLocale = locale === 'en' ? enUS : fr;
     // Découpe la grille en semaines de 7 jours.
     const weeks: Date[][] = [];
     for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
+    const weekdayLabels = (weeks[0] ?? days.slice(0, 7)).map((d) => format(d, 'EEE', { locale: dfLocale }));
 
     const handleDrop = (ev: React.DragEvent, day: Date) => {
         ev.preventDefault();
@@ -40,8 +44,8 @@ export function MonthView({ days, cursor, events, canEdit, canCreate, onCreateAt
         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-100 overflow-hidden">
             {/* En-tête des jours */}
             <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50/60">
-                {WEEKDAYS.map((d) => (
-                    <div key={d} className="px-2 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gray-400">
+                {weekdayLabels.map((d, i) => (
+                    <div key={i} className="px-2 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gray-400">
                         {d}
                     </div>
                 ))}
@@ -135,7 +139,7 @@ export function MonthView({ days, cursor, events, canEdit, canCreate, onCreateAt
                                                         JSON.stringify({ id: e.id, mode: 'resize-end', grabDay: toISO(week[seg.col - 1]) }),
                                                     );
                                                 }}
-                                                title="Étirer la fin"
+                                                title={t('calendar.resize_hint')}
                                                 className="absolute right-0 top-0 h-full w-1.5 cursor-ew-resize rounded-r-md bg-black/20 opacity-0 transition hover:opacity-100"
                                             />
                                         )}

@@ -12,6 +12,7 @@ import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 /* ------------------------------------------------------------------ */
@@ -70,6 +71,7 @@ interface SearchSelectProps {
 }
 
 function StudentSearchSelect({ students, value, onChange, error }: Readonly<SearchSelectProps>) {
+    const { t } = useTranslation();
     const [open, setOpen]   = useState(false);
     const [query, setQuery] = useState('');
     const containerRef      = useRef<HTMLDivElement>(null);
@@ -134,7 +136,7 @@ function StudentSearchSelect({ students, value, onChange, error }: Readonly<Sear
                         )}
                     </div>
                 ) : (
-                    <span className="text-sm text-gray-400 flex-1">Rechercher un élève...</span>
+                    <span className="text-sm text-gray-400 flex-1">{t('enrollments.create.search_student_ph')}</span>
                 )}
 
                 <div className="flex items-center gap-1 shrink-0">
@@ -160,7 +162,7 @@ function StudentSearchSelect({ students, value, onChange, error }: Readonly<Sear
                                 type="text"
                                 value={query}
                                 onChange={e => setQuery(e.target.value)}
-                                placeholder="Nom, prénom ou matricule..."
+                                placeholder={t('enrollments.create.search_input_ph')}
                                 className="w-full pl-8 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-100"
                             />
                             {query && (
@@ -176,7 +178,7 @@ function StudentSearchSelect({ students, value, onChange, error }: Readonly<Sear
                     <div className="max-h-56 overflow-y-auto">
                         {filtered.length === 0 ? (
                             <div className="px-4 py-6 text-center text-sm text-gray-400">
-                                Aucun élève trouvé
+                                {t('enrollments.create.no_student')}
                             </div>
                         ) : (
                             filtered.map(s => (
@@ -208,7 +210,7 @@ function StudentSearchSelect({ students, value, onChange, error }: Readonly<Sear
 
                     {students.length > 50 && filtered.length === 50 && (
                         <div className="px-3 py-2 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 text-center">
-                            {students.length} élèves — affichage des 50 premiers correspondants
+                            {t('enrollments.create.more_students', { count: students.length })}
                         </div>
                     )}
                 </div>
@@ -343,6 +345,7 @@ function SectionHeader({ icon, title, subtitle, color = 'blue' }: {
 
 export default function Create({ schools, students, classrooms, academicYears, feeStructures }: Readonly<CreateProps>) {
     const fmt = useMoney();
+    const { t } = useTranslation();
     const [step, setStep]               = useState(1);
     const [errors, setErrors]           = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -427,16 +430,16 @@ export default function Create({ schools, students, classrooms, academicYears, f
     /* -------------------------------------------------------------- */
 
     const STEPS = [
-        { n: 1, label: 'Inscription',     icon: <GraduationCap className="w-4 h-4" /> },
-        { n: 2, label: 'Récapitulatif',   icon: <FileText className="w-4 h-4" /> },
-        { n: 3, label: 'Paiement',        icon: <Banknote className="w-4 h-4" /> },
+        { n: 1, label: t('enrollments.create.steps.enrollment'), icon: <GraduationCap className="w-4 h-4" /> },
+        { n: 2, label: t('enrollments.create.steps.summary'),    icon: <FileText className="w-4 h-4" /> },
+        { n: 3, label: t('enrollments.create.steps.payment'),    icon: <Banknote className="w-4 h-4" /> },
     ];
 
     const PAYMENT_METHODS: { value: PaymentMethod; label: string; icon: React.ReactNode; desc: string }[] = [
-        { value: 'CASH',          label: 'Espèces',  icon: <Banknote className="w-5 h-5" />,  desc: 'Paiement en cash' },
-        { value: 'MOBILE_MONEY',  label: 'Mobile',   icon: <Smartphone className="w-5 h-5" />, desc: 'Flooz, T-Money...' },
-        { value: 'BANK_TRANSFER', label: 'Virement', icon: <Landmark className="w-5 h-5" />,   desc: 'Virement bancaire' },
-        { value: 'CHEQUE',        label: 'Chèque',   icon: <FileText className="w-5 h-5" />,   desc: 'Chèque bancaire' },
+        { value: 'CASH',          label: t('enrollments.create.method.cash'),     icon: <Banknote className="w-5 h-5" />,  desc: t('enrollments.create.method.cash_desc') },
+        { value: 'MOBILE_MONEY',  label: t('enrollments.create.method.mobile'),   icon: <Smartphone className="w-5 h-5" />, desc: t('enrollments.create.method.mobile_desc') },
+        { value: 'BANK_TRANSFER', label: t('enrollments.create.method.transfer'), icon: <Landmark className="w-5 h-5" />,   desc: t('enrollments.create.method.transfer_desc') },
+        { value: 'CHEQUE',        label: t('enrollments.create.method.cheque'),   icon: <FileText className="w-5 h-5" />,   desc: t('enrollments.create.method.cheque_desc') },
     ];
 
     /* -------------------------------------------------------------- */
@@ -445,7 +448,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
 
     return (
         <AppLayout>
-            <Head title="Nouvelle inscription" />
+            <Head title={t('enrollments.create.head')} />
 
             <div className="space-y-6">
 
@@ -459,8 +462,8 @@ export default function Create({ schools, students, classrooms, academicYears, f
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Nouvelle inscription</h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Inscrire un élève pour l'année scolaire</p>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('enrollments.create.head')}</h1>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('enrollments.create.subtitle')}</p>
                     </div>
                 </div>
 
@@ -488,7 +491,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                           step > n   ? 'text-green-600 dark:text-green-400 group-hover:text-green-700' :
                                                        'text-gray-400 dark:text-gray-500'}`}
                                     >
-                                        Étape {n}
+                                        {t('enrollments.create.step', { n })}
                                     </p>
                                     <p className={`text-sm font-semibold leading-tight transition-colors
                                         ${step === n ? 'text-gray-900 dark:text-white' :
@@ -533,7 +536,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                         )}
                         <button type="button" onClick={() => setStep(1)}
                             className="ml-auto text-blue-600 dark:text-blue-400 text-xs hover:underline font-medium">
-                            Modifier
+                            {t('common.actions.edit')}
                         </button>
                     </div>
                 )}
@@ -547,8 +550,8 @@ export default function Create({ schools, students, classrooms, academicYears, f
                         <div className="bg-white dark:bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <SectionHeader
                                 icon={<GraduationCap className="w-5 h-5" />}
-                                title="Informations de l'inscription"
-                                subtitle="Renseignez l'établissement, l'élève et la classe"
+                                title={t('enrollments.create.s1.title')}
+                                subtitle={t('enrollments.create.s1.subtitle')}
                                 color="blue"
                             />
 
@@ -557,32 +560,32 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                 {/* ── Bloc École + Année ── */}
                                 <div>
                                     <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
-                                        Établissement
+                                        {t('enrollments.create.s1.establishment')}
                                     </p>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                         <SelectField
-                                            label="École"
+                                            label={t('enrollments.create.s1.school')}
                                             icon={<Building2 className="w-4 h-4" />}
                                             value={enrollment.school_id}
                                             onChange={setEnr('school_id')}
                                             error={errors.school_id}
                                             required
                                         >
-                                            <option value="">Sélectionner une école</option>
+                                            <option value="">{t('enrollments.form.select_school')}</option>
                                             {schools.map(s => (
                                                 <option key={s.id} value={s.id}>{s.name} ({s.code})</option>
                                             ))}
                                         </SelectField>
 
                                         <SelectField
-                                            label="Année académique"
+                                            label={t('enrollments.create.s1.academic_year')}
                                             icon={<Calendar className="w-4 h-4" />}
                                             value={enrollment.academic_year_id}
                                             onChange={setEnr('academic_year_id')}
                                             error={errors.academic_year_id}
                                             required
                                         >
-                                            <option value="">Sélectionner une année</option>
+                                            <option value="">{t('enrollments.form.select_year')}</option>
                                             {academicYears.map(y => (
                                                 <option key={y.id} value={y.id}>
                                                     {y.year}{y.active ? ' ✓' : ''}
@@ -597,11 +600,11 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                 {/* ── Bloc Élève ── */}
                                 <div>
                                     <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
-                                        Élève
+                                        {t('enrollments.create.s1.student')}
                                     </p>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                            Élève <span className="text-red-500">*</span>
+                                            {t('enrollments.create.s1.student')} <span className="text-red-500">*</span>
                                         </label>
                                         <StudentSearchSelect
                                             students={students}
@@ -622,25 +625,25 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                 {/* ── Bloc Classe + Date + Code + Statut ── */}
                                 <div>
                                     <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
-                                        Classe & détails
+                                        {t('enrollments.create.s1.class_details')}
                                     </p>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                         <SelectField
-                                            label="Classe"
+                                            label={t('enrollments.create.s1.class')}
                                             icon={<BookOpen className="w-4 h-4" />}
                                             value={enrollment.class_id}
                                             onChange={setEnr('class_id')}
                                             error={errors.class_id}
                                             required
                                         >
-                                            <option value="">Sélectionner une classe</option>
+                                            <option value="">{t('enrollments.form.select_class')}</option>
                                             {classrooms.map(c => (
                                                 <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                                             ))}
                                         </SelectField>
 
                                         <InputField
-                                            label="Date d'inscription"
+                                            label={t('enrollments.create.s1.date')}
                                             icon={<CalendarDays className="w-4 h-4" />}
                                             type="date"
                                             value={enrollment.enrollment_date}
@@ -650,25 +653,25 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                         />
 
                                         <InputField
-                                            label="Code d'inscription"
+                                            label={t('enrollments.create.s1.code')}
                                             icon={<Hash className="w-4 h-4" />}
                                             value={enrollment.enrollment_code}
                                             onChange={setEnr('enrollment_code')}
                                             error={errors.enrollment_code}
-                                            placeholder="Auto-généré si vide"
-                                            hint="Laisser vide pour génération automatique"
+                                            placeholder={t('enrollments.create.s1.code_ph')}
+                                            hint={t('enrollments.create.s1.code_hint')}
                                         />
 
                                         {/* Statut — radio visuel */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                                Statut <span className="text-red-500">*</span>
+                                                {t('enrollments.create.s1.status')} <span className="text-red-500">*</span>
                                             </label>
                                             <div className="flex gap-2">
                                                 {([
-                                                    { v: 'PENDING',   label: 'En attente', cls: 'border-yellow-300 bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-400' },
-                                                    { v: 'ACTIVE',    label: 'Actif',       cls: 'border-green-300 bg-green-50 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400' },
-                                                    { v: 'CANCELLED', label: 'Annulé',      cls: 'border-red-300 bg-red-50 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400' },
+                                                    { v: 'PENDING',   label: t('enrollments.index.status.pending'),   cls: 'border-yellow-300 bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-400' },
+                                                    { v: 'ACTIVE',    label: t('enrollments.index.status.active'),    cls: 'border-green-300 bg-green-50 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400' },
+                                                    { v: 'CANCELLED', label: t('enrollments.index.status.cancelled'), cls: 'border-red-300 bg-red-50 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400' },
                                                 ] as const).map(({ v, label, cls }) => (
                                                     <button
                                                         key={v}
@@ -692,7 +695,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                             {/* Footer étape 1 */}
                             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                                 <p className="text-xs text-gray-400">
-                                    {[enrollment.school_id, enrollment.student_id, enrollment.class_id, enrollment.academic_year_id].filter(Boolean).length} / 4 champs obligatoires remplis
+                                    {t('enrollments.create.fields_filled', { n: [enrollment.school_id, enrollment.student_id, enrollment.class_id, enrollment.academic_year_id].filter(Boolean).length })}
                                 </p>
                                 <Button
                                     type="button"
@@ -700,7 +703,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                     onClick={() => setStep(2)}
                                     className="bg-blue-600 hover:bg-blue-700 gap-2 disabled:opacity-40"
                                 >
-                                    Suivant
+                                    {t('common.actions.next')}
                                     <ArrowRight className="w-4 h-4" />
                                 </Button>
                             </div>
@@ -715,8 +718,8 @@ export default function Create({ schools, students, classrooms, academicYears, f
                             <div className="bg-white dark:bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                                 <SectionHeader
                                     icon={<FileText className="w-5 h-5" />}
-                                    title="Récapitulatif des frais"
-                                    subtitle="Frais générés automatiquement depuis la grille tarifaire"
+                                    title={t('enrollments.create.s2.title')}
+                                    subtitle={t('enrollments.create.s2.subtitle')}
                                     color="purple"
                                 />
 
@@ -736,7 +739,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                             ))}
                                         </div>
                                         <div className="flex items-center justify-between px-6 py-4 bg-purple-50 dark:bg-purple-900/20 border-t-2 border-purple-100 dark:border-purple-900/40">
-                                            <span className="font-bold text-gray-900 dark:text-white">Total à régler</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">{t('enrollments.create.s2.total')}</span>
                                             <span className="text-2xl font-extrabold text-purple-600 dark:text-purple-400">{fmt(totalFees)}</span>
                                         </div>
                                     </>
@@ -746,10 +749,10 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                             <Info className="w-7 h-7 text-yellow-500" />
                                         </div>
                                         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Aucun frais configuré
+                                            {t('enrollments.create.s2.no_fees')}
                                         </p>
                                         <p className="text-xs text-gray-400 mt-1">
-                                            La facture sera créée vide — vous pourrez y ajouter des frais manuellement.
+                                            {t('enrollments.create.s2.no_fees_hint')}
                                         </p>
                                     </div>
                                 )}
@@ -757,10 +760,10 @@ export default function Create({ schools, students, classrooms, academicYears, f
 
                             <div className="flex justify-between">
                                 <Button type="button" variant="outline" onClick={() => setStep(1)} className="gap-2">
-                                    <ArrowLeft className="w-4 h-4" /> Retour
+                                    <ArrowLeft className="w-4 h-4" /> {t('common.actions.back')}
                                 </Button>
                                 <Button type="button" onClick={() => setStep(3)} className="bg-blue-600 hover:bg-blue-700 gap-2">
-                                    Suivant <ArrowRight className="w-4 h-4" />
+                                    {t('common.actions.next')} <ArrowRight className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
@@ -774,8 +777,8 @@ export default function Create({ schools, students, classrooms, academicYears, f
                             <div className="bg-white dark:bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                                 <SectionHeader
                                     icon={<Banknote className="w-5 h-5" />}
-                                    title="Premier paiement"
-                                    subtitle="Optionnel — enregistrable maintenant ou plus tard"
+                                    title={t('enrollments.create.s3.title')}
+                                    subtitle={t('enrollments.create.s3.subtitle')}
                                     color="green"
                                 />
 
@@ -785,12 +788,12 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                         border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/30">
                                         <div>
                                             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                                {withPayment ? 'Paiement à enregistrer maintenant' : 'Payer plus tard'}
+                                                {withPayment ? t('enrollments.create.s3.now') : t('enrollments.create.s3.later')}
                                             </p>
                                             <p className="text-xs text-gray-400 mt-0.5">
                                                 {withPayment
-                                                    ? 'Un reçu sera généré automatiquement'
-                                                    : "L'inscription sera créée avec facture sans paiement"
+                                                    ? t('enrollments.create.s3.now_hint')
+                                                    : t('enrollments.create.s3.later_hint')
                                                 }
                                             </p>
                                         </div>
@@ -816,7 +819,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                             {/* Mode de paiement — cards */}
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Mode de paiement <span className="text-red-500">*</span>
+                                                    {t('enrollments.create.s3.method')} <span className="text-red-500">*</span>
                                                 </label>
                                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                                     {PAYMENT_METHODS.map(m => (
@@ -842,7 +845,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                                        Montant (F) <span className="text-red-500">*</span>
+                                                        {t('enrollments.create.s3.amount')} <span className="text-red-500">*</span>
                                                     </label>
                                                     <div className="relative">
                                                         <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -864,7 +867,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                                             onClick={() => setPayment(p => ({ ...p, amount: String(totalFees) }))}
                                                             className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
                                                         >
-                                                            Remplir le total ({fmt(totalFees)})
+                                                            {t('enrollments.create.s3.fill_total', { amount: fmt(totalFees) })}
                                                         </button>
                                                     )}
                                                     {errors.first_payment_amount && (
@@ -873,7 +876,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                                 </div>
 
                                                 <InputField
-                                                    label="Date de paiement"
+                                                    label={t('enrollments.create.s3.payment_date')}
                                                     icon={<CalendarDays className="w-4 h-4" />}
                                                     type="date"
                                                     value={payment.paid_at}
@@ -882,20 +885,20 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                                 />
 
                                                 <InputField
-                                                    label="Payé par"
+                                                    label={t('enrollments.create.s3.paid_by')}
                                                     icon={<User className="w-4 h-4" />}
                                                     value={payment.paid_by}
                                                     onChange={setPay('paid_by')}
-                                                    placeholder="Nom du payeur"
+                                                    placeholder={t('enrollments.create.s3.paid_by_ph')}
                                                 />
 
                                                 {(payment.payment_method !== 'CASH') && (
                                                     <InputField
-                                                        label="Référence / N° transaction"
+                                                        label={t('enrollments.create.s3.reference')}
                                                         icon={<Hash className="w-4 h-4" />}
                                                         value={payment.reference_number}
                                                         onChange={setPay('reference_number')}
-                                                        placeholder="Ex: TXN-123456"
+                                                        placeholder={t('enrollments.create.s3.reference_ph')}
                                                     />
                                                 )}
                                             </div>
@@ -907,7 +910,7 @@ export default function Create({ schools, students, classrooms, academicYears, f
                             {/* Footer étape 3 */}
                             <div className="flex justify-between items-center">
                                 <Button type="button" variant="outline" onClick={() => setStep(2)} className="gap-2">
-                                    <ArrowLeft className="w-4 h-4" /> Retour
+                                    <ArrowLeft className="w-4 h-4" /> {t('common.actions.back')}
                                 </Button>
 
                                 <Button
@@ -921,12 +924,12 @@ export default function Create({ schools, students, classrooms, academicYears, f
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                                             </svg>
-                                            Création en cours...
+                                            {t('enrollments.create.creating')}
                                         </span>
                                     ) : (
                                         <>
                                             <Check className="w-4 h-4" />
-                                            {withPayment ? 'Inscrire & enregistrer le paiement' : 'Créer l\'inscription'}
+                                            {withPayment ? t('enrollments.create.submit_with_payment') : t('enrollments.create.submit')}
                                         </>
                                     )}
                                 </Button>

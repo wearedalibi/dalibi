@@ -1,0 +1,24 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+
+    paths:
+        - app
+        - routes
+        - database
+
+    # Larastan a besoin de connaître le répertoire des vues pour analyser les
+    # vues Blade référencées depuis le code.
+    # viewDirectories:
+    #     - resources/views
+
+    # Faux positif de framework : Illuminate\Database\Seeder::$command est typé
+    # non-nul, mais vaut null quand run() est appelé directement (hors `db:seed`),
+    # ce que font les seeders invoqués programmatiquement et SeederHardeningTest.
+    # L'accès nullsafe `$this->command?->` est donc volontaire et correct.
+    ignoreErrors:
+        -
+            message: '#Using nullsafe method call on non-nullable type Illuminate\\Console\\Command\. Use -> instead\.#'
+            path: database/seeders/*.php

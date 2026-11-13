@@ -27,6 +27,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -100,18 +101,20 @@ interface ShowProps {
     documents: StudentDocument[];
 }
 
-const formatDate = (value?: string | null): string => {
+const formatDate = (value: string | null | undefined, loc: string): string => {
     if (!value) return '—';
-    return new Date(value).toLocaleDateString('fr-FR');
-};
-
-const admissionTypeLabel: Record<string, string> = {
-    new: 'Nouvelle inscription',
-    transfer: 'Transfert',
-    re_admission: 'Ré-admission',
+    return new Date(value).toLocaleDateString(loc);
 };
 
 export default function Show({ student, documentContext, issuedDocuments, currentEnrollment, classrooms, documents }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
+    const admissionTypeLabel: Record<string, string> = {
+        new: t('students.admission.new'),
+        transfer: t('students.admission.transfer'),
+        re_admission: t('students.admission.re_admission'),
+    };
+
     const userLabel = `${student.user?.firstname ?? ''} ${student.user?.lastname ?? ''}`.trim() || student.user?.name || '—';
     const hasEmergencyContact = Boolean(student.medical_info?.emergency_contact_name || student.medical_info?.emergency_contact_phone);
 
@@ -206,7 +209,7 @@ export default function Show({ student, documentContext, issuedDocuments, curren
 
     return (
         <AppLayout>
-            <Head title="Détail élève" />
+            <Head title={t('students.show.title')} />
 
             <div className="space-y-6 w-full">
                 <div className="flex items-center justify-between">
@@ -219,18 +222,18 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                             <ArrowLeft className="w-5 h-5 text-gray-600" />
                         </button>
                         <div>
-                            <h1 className="text-4xl font-bold tracking-tight text-gray-900">Détail élève</h1>
-                            <p className="mt-2 text-gray-600">Consultez toutes les informations de l'élève</p>
+                            <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('students.show.title')}</h1>
+                            <p className="mt-2 text-gray-600">{t('students.show.subtitle')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" onClick={() => setDeliverOpen(true)} className="gap-2" disabled={!documentContext?.templates?.length}>
                             <FileBadge className="w-4 h-4" />
-                            Délivrer un document
+                            {t('students.show.deliver_document')}
                         </Button>
                         <Button onClick={() => router.get(route('students.edit', student.id))} className="bg-blue-600 hover:bg-blue-700 gap-2">
                             <Pencil className="w-4 h-4" />
-                            Modifier
+                            {t('common.actions.edit')}
                         </Button>
                     </div>
                 </div>
@@ -249,7 +252,7 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                             type="button"
                             onClick={() => photoRef.current?.click()}
                             className="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md ring-2 ring-white"
-                            title="Changer la photo"
+                            title={t('students.show.change_photo')}
                         >
                             <Camera className="w-4 h-4" />
                         </button>
@@ -260,15 +263,15 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                         <p className="text-sm text-gray-500 font-mono mt-0.5">{student.matricule ?? '—'}</p>
                         <div className="flex items-center gap-2 mt-2">
                             <Button variant="outline" size="sm" className="gap-1.5" onClick={() => photoRef.current?.click()}>
-                                <Camera className="w-3.5 h-3.5" /> {photoUrl ? 'Changer' : 'Ajouter une photo'}
+                                <Camera className="w-3.5 h-3.5" /> {photoUrl ? t('students.show.change') : t('students.show.add_photo')}
                             </Button>
                             {photoUrl && (
                                 <Button variant="outline" size="sm" className="gap-1.5 border-red-200 text-red-500 hover:bg-red-50" onClick={handlePhotoDelete}>
-                                    <Trash2 className="w-3.5 h-3.5" /> Retirer
+                                    <Trash2 className="w-3.5 h-3.5" /> {t('common.actions.remove')}
                                 </Button>
                             )}
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">JPG, PNG ou WebP — max 2 Mo</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('students.show.photo_hint')}</p>
                     </div>
                 </div>
 
@@ -276,38 +279,38 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                 {currentEnrollment && (
                     <div className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-4 shadow-sm flex items-center justify-between gap-4">
                         <div>
-                            <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold">Scolarité actuelle ({currentEnrollment.year})</p>
+                            <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold">{t('students.show.current_schooling', { year: currentEnrollment.year ?? '—' })}</p>
                             <p className="mt-1 text-lg font-bold text-indigo-900">
                                 {currentEnrollment.class_name ?? '—'}
                                 {currentEnrollment.class_code && <span className="ml-2 text-sm font-normal text-indigo-500">({currentEnrollment.class_code})</span>}
                             </p>
                         </div>
                         <Button variant="outline" className="gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-100" onClick={() => { setTargetClass(currentEnrollment.class_id); setClassOpen(true); }}>
-                            <Building2 className="w-4 h-4" /> Changer de classe
+                            <Building2 className="w-4 h-4" /> {t('students.show.change_class')}
                         </Button>
                     </div>
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
-                        <p className="text-xs uppercase tracking-wide text-blue-700 font-semibold">Identité</p>
+                        <p className="text-xs uppercase tracking-wide text-blue-700 font-semibold">{t('students.show.identity')}</p>
                         <p className="mt-2 text-lg font-bold text-blue-900">{student.firstname} {student.lastname}</p>
-                        <p className="text-sm text-blue-700 mt-1">Matricule: {student.matricule ?? '—'}</p>
+                        <p className="text-sm text-blue-700 mt-1">{t('students.field.matricule')}: {student.matricule ?? '—'}</p>
                     </div>
                     <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
-                        <p className="text-xs uppercase tracking-wide text-emerald-700 font-semibold">Statut</p>
+                        <p className="text-xs uppercase tracking-wide text-emerald-700 font-semibold">{t('students.show.status')}</p>
                         <div className="mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold bg-white border border-emerald-200 text-emerald-800">
                             <BadgeCheck className="w-4 h-4" />
-                            {student.active ? 'Élève actif' : 'Élève inactif'}
+                            {student.active ? t('students.show.student_active') : t('students.show.student_inactive')}
                         </div>
-                        <p className="text-sm text-emerald-700 mt-2">Compte: {userLabel}</p>
+                        <p className="text-sm text-emerald-700 mt-2">{t('students.show.account', { name: userLabel })}</p>
                     </div>
                     <div className={`rounded-xl border p-4 shadow-sm ${hasEmergencyContact ? 'border-rose-200 bg-rose-50' : 'border-amber-200 bg-amber-50'}`}>
-                        <p className={`text-xs uppercase tracking-wide font-semibold ${hasEmergencyContact ? 'text-rose-700' : 'text-amber-700'}`}>Urgence médicale</p>
+                        <p className={`text-xs uppercase tracking-wide font-semibold ${hasEmergencyContact ? 'text-rose-700' : 'text-amber-700'}`}>{t('students.show.medical_emergency')}</p>
                         <p className={`mt-2 text-sm ${hasEmergencyContact ? 'text-rose-800' : 'text-amber-800'}`}>
                             {hasEmergencyContact
-                                ? `${student.medical_info?.emergency_contact_name ?? 'Contact'} - ${student.medical_info?.emergency_contact_phone ?? 'Téléphone non renseigné'}`
-                                : 'Aucun contact d\'urgence renseigné'}
+                                ? `${student.medical_info?.emergency_contact_name ?? t('students.show.contact_fallback')} - ${student.medical_info?.emergency_contact_phone ?? t('students.show.phone_missing')}`
+                                : t('students.show.no_emergency')}
                         </p>
                     </div>
                 </div>
@@ -316,22 +319,22 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                     <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 shadow-sm">
                         <div className="flex items-center justify-between flex-wrap gap-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold">Portail élève</p>
+                                <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold">{t('students.show.portal')}</p>
                                 <p className="mt-1 text-sm text-indigo-900">
-                                    {student.portal_active ? 'Accès activé' : 'Accès non activé'} · connexion avec le matricule{' '}
+                                    {student.portal_active ? t('students.show.portal_on') : t('students.show.portal_off')} · {t('students.show.portal_login')}{' '}
                                     <span className="font-mono">{student.matricule ?? '—'}</span>
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Input type="password" value={portalPwd} onChange={(e) => setPortalPwd(e.target.value)} placeholder="Mot de passe (min 8)" className="w-52 bg-white" />
+                                <Input type="password" value={portalPwd} onChange={(e) => setPortalPwd(e.target.value)} placeholder={t('students.show.portal_password')} className="w-52 bg-white" />
                                 <Button className="bg-indigo-600 hover:bg-indigo-700" disabled={portalPwd.length < 8}
                                     onClick={() => router.post(route('students.portal.activate', student.id), { password: portalPwd }, { preserveScroll: true, onSuccess: () => setPortalPwd('') })}>
-                                    {student.portal_active ? 'Réinitialiser' : 'Activer'}
+                                    {student.portal_active ? t('students.show.portal_reset') : t('students.show.portal_activate')}
                                 </Button>
                                 {student.portal_active && (
                                     <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50"
                                         onClick={() => router.post(route('students.portal.deactivate', student.id), {}, { preserveScroll: true })}>
-                                        Désactiver
+                                        {t('students.show.portal_deactivate')}
                                     </Button>
                                 )}
                             </div>
@@ -343,35 +346,35 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                     <div className="rounded-xl border border-blue-100 bg-linear-to-br from-blue-50 to-white p-6 shadow-sm space-y-4">
                         <h2 className="text-lg font-semibold text-blue-900 flex items-center gap-2">
                             <UserCircle2 className="w-5 h-5" />
-                            Identité
+                            {t('students.show.identity')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <p className="text-gray-500">Nom complet</p>
+                                <p className="text-gray-500">{t('students.field.full_name')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.firstname} {student.lastname}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Matricule</p>
+                                <p className="text-gray-500">{t('students.field.matricule')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.matricule ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Genre</p>
-                                <p className="font-medium text-gray-900 mt-1">{student.gender === 'male' ? 'Masculin' : 'Féminin'}</p>
+                                <p className="text-gray-500">{t('students.field.gender')}</p>
+                                <p className="font-medium text-gray-900 mt-1">{student.gender === 'male' ? t('students.gender.male') : t('students.gender.female')}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Statut</p>
+                                <p className="text-gray-500">{t('students.field.status')}</p>
                                 <p className="font-medium mt-1">
                                     <span className={`px-2 py-1 rounded text-sm ${student.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                        {student.active ? 'Actif' : 'Inactif'}
+                                        {student.active ? t('common.status.active') : t('common.status.inactive')}
                                     </span>
                                 </p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Date de naissance</p>
-                                <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><CalendarDays className="w-4 h-4 text-blue-600" />{formatDate(student.birth_date)}</p>
+                                <p className="text-gray-500">{t('students.field.birth_date')}</p>
+                                <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><CalendarDays className="w-4 h-4 text-blue-600" />{formatDate(student.birth_date, dateLocale)}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Lieu de naissance</p>
+                                <p className="text-gray-500">{t('students.field.place_of_birth')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Building2 className="w-4 h-4 text-blue-600" />{student.place_of_birth ?? '—'}</p>
                             </div>
                         </div>
@@ -380,35 +383,35 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                     <div className="rounded-xl border border-cyan-100 bg-linear-to-br from-cyan-50 to-white p-6 shadow-sm space-y-4">
                         <h2 className="text-lg font-semibold text-cyan-900 flex items-center gap-2">
                             <BadgeCheck className="w-5 h-5" />
-                            Contact & compte
+                            {t('students.show.contact_account')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <p className="text-gray-500">Compte utilisateur</p>
+                                <p className="text-gray-500">{t('students.field.user_account')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{userLabel}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Email compte</p>
+                                <p className="text-gray-500">{t('students.field.account_email')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Mail className="w-4 h-4 text-cyan-600" />{student.user?.email ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Téléphone</p>
+                                <p className="text-gray-500">{t('students.field.phone')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Phone className="w-4 h-4 text-cyan-600" />{student.phone ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Email élève</p>
+                                <p className="text-gray-500">{t('students.field.student_email')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Mail className="w-4 h-4 text-cyan-600" />{student.email ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Ville</p>
+                                <p className="text-gray-500">{t('students.field.city')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><MapPin className="w-4 h-4 text-cyan-600" />{student.city ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Nationalité</p>
+                                <p className="text-gray-500">{t('students.field.nationality')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Globe className="w-4 h-4 text-cyan-600" />{student.nationality ?? '—'}</p>
                             </div>
                             <div className="md:col-span-2">
-                                <p className="text-gray-500">Adresse</p>
+                                <p className="text-gray-500">{t('students.field.address')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.address ?? '—'}</p>
                             </div>
                         </div>
@@ -417,23 +420,23 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                     <div className="rounded-xl border border-violet-100 bg-linear-to-br from-violet-50 to-white p-6 shadow-sm space-y-4">
                         <h2 className="text-lg font-semibold text-violet-900 flex items-center gap-2">
                             <FileText className="w-5 h-5" />
-                            Dossier administratif
+                            {t('students.show.admin_file')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <p className="text-gray-500">Type d'admission</p>
+                                <p className="text-gray-500">{t('students.field.admission_type')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{admissionTypeLabel[student.information?.admission_type ?? 'new']}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">N° acte de naissance</p>
+                                <p className="text-gray-500">{t('students.field.birth_cert_number')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.information?.birth_certificate_number ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Date de délivrance</p>
-                                <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><CalendarDays className="w-4 h-4 text-violet-600" />{formatDate(student.information?.birth_certificate_issue_date)}</p>
+                                <p className="text-gray-500">{t('students.field.issue_date')}</p>
+                                <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><CalendarDays className="w-4 h-4 text-violet-600" />{formatDate(student.information?.birth_certificate_issue_date, dateLocale)}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Lieu de délivrance</p>
+                                <p className="text-gray-500">{t('students.field.issue_place')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.information?.birth_certificate_issue_place ?? '—'}</p>
                             </div>
                         </div>
@@ -442,49 +445,49 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                     <div className="rounded-xl border border-rose-100 bg-linear-to-br from-rose-50 to-white p-6 shadow-sm space-y-4">
                         <h2 className="text-lg font-semibold text-rose-900 flex items-center gap-2">
                             <HeartPulse className="w-5 h-5" />
-                            Parents & médical
+                            {t('students.show.parents_medical')}
                         </h2>
                         {hasEmergencyContact && (
                             <div className="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm text-rose-800 inline-flex items-center gap-2">
                                 <ShieldAlert className="w-4 h-4" />
-                                Contact d'urgence disponible
+                                {t('students.show.emergency_available')}
                             </div>
                         )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <p className="text-gray-500">Père</p>
+                                <p className="text-gray-500">{t('students.field.father')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Users className="w-4 h-4 text-rose-600" />{student.parent_info?.father_firstname ?? '—'} {student.parent_info?.father_lastname ?? ''}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Mère</p>
+                                <p className="text-gray-500">{t('students.field.mother')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Users className="w-4 h-4 text-rose-600" />{student.parent_info?.mother_firstname ?? '—'} {student.parent_info?.mother_lastname ?? ''}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Téléphone père</p>
+                                <p className="text-gray-500">{t('students.field.father_phone')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Phone className="w-4 h-4 text-rose-600" />{student.parent_info?.father_phone ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Téléphone mère</p>
+                                <p className="text-gray-500">{t('students.field.mother_phone')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Phone className="w-4 h-4 text-rose-600" />{student.parent_info?.mother_phone ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Email parent</p>
+                                <p className="text-gray-500">{t('students.field.parent_email')}</p>
                                 <p className="font-medium text-gray-900 mt-1 inline-flex items-center gap-1.5"><Mail className="w-4 h-4 text-rose-600" />{student.parent_info?.email ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Groupe sanguin</p>
+                                <p className="text-gray-500">{t('students.field.blood_group')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.medical_info?.blood_group ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Contact d'urgence</p>
+                                <p className="text-gray-500">{t('students.field.emergency_contact')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.medical_info?.emergency_contact_name ?? '—'}</p>
                             </div>
                             <div>
-                                <p className="text-gray-500">Téléphone d'urgence</p>
+                                <p className="text-gray-500">{t('students.field.emergency_phone')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.medical_info?.emergency_contact_phone ?? '—'}</p>
                             </div>
                             <div className="md:col-span-2">
-                                <p className="text-gray-500">Allergies</p>
+                                <p className="text-gray-500">{t('students.field.allergies')}</p>
                                 <p className="font-medium text-gray-900 mt-1">{student.medical_info?.allergies ?? '—'}</p>
                             </div>
                         </div>
@@ -495,18 +498,18 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                     <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-3">
                         <FileText className="w-4 h-4 text-indigo-600" />
-                        Pièces du dossier
+                        {t('students.show.docs_title')}
                         <span className="text-gray-400 font-normal">({documents.length})</span>
                     </h2>
 
                     {/* Formulaire d'ajout : nom + fichier */}
                     <form onSubmit={addDocument} className="flex flex-wrap items-end gap-3 mb-4 rounded-xl bg-gray-50 ring-1 ring-gray-100 p-3">
                         <div className="flex-1 min-w-48">
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Nom du document *</label>
-                            <Input value={docName} onChange={e => setDocName(e.target.value)} placeholder="Ex: Extrait de naissance, Passeport..." className="bg-white" />
+                            <label className="block text-xs font-medium text-gray-600 mb-1">{t('students.show.doc_name_label')}</label>
+                            <Input value={docName} onChange={e => setDocName(e.target.value)} placeholder={t('students.show.doc_name_ph')} className="bg-white" />
                         </div>
                         <div className="flex-1 min-w-48">
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Fichier *</label>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">{t('students.show.doc_file_label')}</label>
                             <input
                                 ref={docFileRef}
                                 type="file"
@@ -516,13 +519,13 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                             />
                         </div>
                         <Button type="submit" disabled={!docName || !docFile || docUploading} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                            <Upload className="w-4 h-4" /> {docUploading ? 'Ajout...' : 'Ajouter'}
+                            <Upload className="w-4 h-4" /> {docUploading ? t('students.show.adding') : t('common.actions.add')}
                         </Button>
                     </form>
-                    <p className="text-xs text-gray-400 mb-3">Stockés dans le dossier privé de l'élève. PDF, image ou Word — max 5 Mo.</p>
+                    <p className="text-xs text-gray-400 mb-3">{t('students.show.docs_hint')}</p>
 
                     {documents.length === 0 ? (
-                        <p className="text-sm text-gray-400 py-4 text-center">Aucune pièce dans le dossier.</p>
+                        <p className="text-sm text-gray-400 py-4 text-center">{t('students.show.docs_empty')}</p>
                     ) : (
                         <div className="divide-y divide-gray-50">
                             {documents.map(d => (
@@ -536,7 +539,7 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                                     </div>
                                     <div className="flex items-center gap-1.5 shrink-0 ml-3">
                                         <a href={`/students/${student.id}/documents/${d.id}`} target="_blank" rel="noreferrer">
-                                            <Button variant="outline" size="sm" className="gap-1 text-xs"><Download className="w-3.5 h-3.5" /> Télécharger</Button>
+                                            <Button variant="outline" size="sm" className="gap-1 text-xs"><Download className="w-3.5 h-3.5" /> {t('common.actions.download')}</Button>
                                         </a>
                                         <Button variant="outline" size="sm" className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => deleteDocument(d.id)}>
                                             <Trash2 className="w-3.5 h-3.5" />
@@ -552,11 +555,11 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                     <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-3">
                         <FileBadge className="w-4 h-4 text-blue-600" />
-                        Documents délivrés
+                        {t('students.show.issued_docs')}
                         <span className="text-gray-400 font-normal">({issuedDocuments.length})</span>
                     </h2>
                     {issuedDocuments.length === 0 ? (
-                        <p className="text-sm text-gray-400 py-4 text-center">Aucun document délivré pour cet élève.</p>
+                        <p className="text-sm text-gray-400 py-4 text-center">{t('students.show.issued_empty')}</p>
                     ) : (
                         <div className="divide-y divide-gray-50">
                             {issuedDocuments.map(doc => (
@@ -570,7 +573,7 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                                     </div>
                                     <div className="text-right text-xs text-gray-500">
                                         <p>{doc.issued_at}</p>
-                                        {doc.issued_by && <p className="text-gray-400">par {doc.issued_by}</p>}
+                                        {doc.issued_by && <p className="text-gray-400">{t('students.show.issued_by', { name: doc.issued_by })}</p>}
                                     </div>
                                 </div>
                             ))}
@@ -579,8 +582,8 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                 </div>
 
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm text-sm text-slate-600 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-2"><Clock3 className="w-4 h-4" />Créé le {new Date(student.created_at).toLocaleString('fr-FR')}</span>
-                    <span className="inline-flex items-center gap-2"><Clock3 className="w-4 h-4" />Mis à jour le {new Date(student.updated_at).toLocaleString('fr-FR')}</span>
+                    <span className="inline-flex items-center gap-2"><Clock3 className="w-4 h-4" />{t('students.show.created_at', { date: new Date(student.created_at).toLocaleString(dateLocale) })}</span>
+                    <span className="inline-flex items-center gap-2"><Clock3 className="w-4 h-4" />{t('students.show.updated_at', { date: new Date(student.updated_at).toLocaleString(dateLocale) })}</span>
                 </div>
             </div>
 
@@ -588,20 +591,20 @@ export default function Show({ student, documentContext, issuedDocuments, curren
             <Dialog open={deliverOpen} onOpenChange={setDeliverOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Délivrer un document</DialogTitle>
+                        <DialogTitle>{t('students.show.deliver_document')}</DialogTitle>
                         <DialogDescription>
-                            Générez un certificat ou une attestation pour {student.firstname} {student.lastname}.
+                            {t('students.dialog.deliver_desc', { name: `${student.firstname} ${student.lastname}` })}
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 py-2">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Type de document *</label>
+                            <label className="text-sm font-medium text-gray-700">{t('students.dialog.doc_type')}</label>
                             <Select value={templateId} onValueChange={setTemplateId}>
-                                <SelectTrigger><SelectValue placeholder="Choisir un modèle" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('students.dialog.choose_template')} /></SelectTrigger>
                                 <SelectContent>
-                                    {documentContext?.templates?.map(t => (
-                                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                                    {documentContext?.templates?.map(tpl => (
+                                        <SelectItem key={tpl.id} value={tpl.id}>{tpl.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -609,20 +612,20 @@ export default function Show({ student, documentContext, issuedDocuments, curren
 
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Classe</label>
-                                <Input value={classe} onChange={e => setClasse(e.target.value)} placeholder="Ex: 3ème A" />
+                                <label className="text-sm font-medium text-gray-700">{t('students.dialog.class')}</label>
+                                <Input value={classe} onChange={e => setClasse(e.target.value)} placeholder={t('students.dialog.class_ph')} />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-gray-700">Année scolaire</label>
+                                <label className="text-sm font-medium text-gray-700">{t('students.dialog.school_year')}</label>
                                 <Input value={annee} onChange={e => setAnnee(e.target.value)} placeholder="2025-2026" />
                             </div>
                         </div>
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setDeliverOpen(false)}>Annuler</Button>
+                        <Button variant="outline" onClick={() => setDeliverOpen(false)}>{t('common.actions.cancel')}</Button>
                         <Button onClick={handleGenerate} disabled={!templateId} className="bg-blue-600 hover:bg-blue-700 gap-2">
-                            <Download className="w-4 h-4" /> Générer le PDF
+                            <Download className="w-4 h-4" /> {t('students.dialog.generate_pdf')}
                         </Button>
                     </div>
                 </DialogContent>
@@ -632,16 +635,16 @@ export default function Show({ student, documentContext, issuedDocuments, curren
             <Dialog open={classOpen} onOpenChange={setClassOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Changer de classe</DialogTitle>
+                        <DialogTitle>{t('students.show.change_class')}</DialogTitle>
                         <DialogDescription>
-                            Réaffecter {student.firstname} {student.lastname} pour l'année {currentEnrollment?.year}.
+                            {t('students.dialog.change_class_desc', { name: `${student.firstname} ${student.lastname}`, year: currentEnrollment?.year ?? '—' })}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-gray-700">Nouvelle classe</label>
+                            <label className="text-sm font-medium text-gray-700">{t('students.dialog.new_class')}</label>
                             <Select value={targetClass} onValueChange={setTargetClass}>
-                                <SelectTrigger><SelectValue placeholder="Choisir une classe" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('students.dialog.choose_class')} /></SelectTrigger>
                                 <SelectContent>
                                     {classrooms.map(c => (
                                         <SelectItem key={c.id} value={c.id}>{c.name} ({c.code})</SelectItem>
@@ -649,12 +652,12 @@ export default function Show({ student, documentContext, issuedDocuments, curren
                                 </SelectContent>
                             </Select>
                         </div>
-                        <p className="text-xs text-gray-400">Les frais déjà facturés ne sont pas recalculés automatiquement.</p>
+                        <p className="text-xs text-gray-400">{t('students.dialog.reassign_hint')}</p>
                     </div>
                     <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setClassOpen(false)}>Annuler</Button>
+                        <Button variant="outline" onClick={() => setClassOpen(false)}>{t('common.actions.cancel')}</Button>
                         <Button className="bg-blue-600 hover:bg-blue-700" disabled={!targetClass || targetClass === currentEnrollment?.class_id} onClick={handleChangeClass}>
-                            Réaffecter
+                            {t('students.dialog.reassign')}
                         </Button>
                     </div>
                 </DialogContent>

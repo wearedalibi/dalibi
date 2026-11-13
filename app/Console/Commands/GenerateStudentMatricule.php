@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Student;
-use App\Services\MatriculeService;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 class GenerateStudentMatricule extends Command
 {
@@ -13,10 +13,10 @@ class GenerateStudentMatricule extends Command
      *
      * @var string
      */
-    protected $signature = 'matricule:generate-student 
+    protected $signature = 'matricule:generate-student
                             {--class-id= : ID de la classe}
                             {--all : Générer pour tous les élèves}
-                            {--registration : Générer aussi les numéros d\'enregistrement}
+                            {--matricule : Générer aussi les matricules des élèves}
                             {--force : Forcer la régénération}';
 
     /**
@@ -31,10 +31,9 @@ class GenerateStudentMatricule extends Command
      */
     public function handle(): int
     {
-        $matriculeService = app(MatriculeService::class);
+        $withStudentMatricule = (bool) $this->option('matricule');
 
         if ($this->option('all')) {
-            // Générer pour tous les élèves
             $students = Student::all();
 
             if ($students->isEmpty()) {
@@ -44,28 +43,7 @@ class GenerateStudentMatricule extends Command
             }
 
             $this->info("Génération des matricules pour {$students->count()} élèves...");
-
-            $progressBar = $this->output->createProgressBar($students->count());
-            $progressBar->start();
-
-            foreach ($students as $student) {
-                // Générer matricule de l'utilisateur
-                if (! $student->user->natricule) {
-                    $student->user->natricule = $student->user->generateMatricule();
-                    $student->user->save();
-                }
-
-                // Générer numéro d'enregistrement
-                if (! $student->registration_number) {
-                    $student->registration_number = $student->generateRegistrationNumber();
-                    $student->save();
-                }
-
-                $progressBar->advance();
-            }
-
-            $progressBar->finish();
-            $this->newLine();
+            $this->backfillMatricules($students, $withStudentMatricule);
             $this->info('✅ Matricules générés avec succès!');
 
             return 0;
@@ -88,18 +66,32 @@ class GenerateStudentMatricule extends Command
         }
 
         $this->info("Génération pour {$students->count()} élèves...");
+        $this->backfillMatricules($students, $withStudentMatricule);
+        $this->info('✅ Matricules générés avec succès!');
 
+        return 0;
+    }
+
+    /**
+     * Génère les matricules manquants pour un lot d'élèves.
+     *
+     * @param  Collection<int, Student>  $students
+     */
+    private function backfillMatricules(Collection $students, bool $withStudentMatricule): void
+    {
         $progressBar = $this->output->createProgressBar($students->count());
         $progressBar->start();
 
         foreach ($students as $student) {
+            // Matricule du compte utilisateur associé.
             if (! $student->user->natricule) {
                 $student->user->natricule = $student->user->generateMatricule();
                 $student->user->save();
             }
 
-            if (! $student->registration_number) {
-                $student->registration_number = $student->generateRegistrationNumber();
+            // Matricule de l'élève (optionnel, via --matricule).
+            if ($withStudentMatricule && empty($student->matricule)) {
+                $student->matricule = $student->generateMatricule();
                 $student->save();
             }
 
@@ -108,8 +100,5 @@ class GenerateStudentMatricule extends Command
 
         $progressBar->finish();
         $this->newLine();
-        $this->info('✅ Matricules générés avec succès!');
-
-        return 0;
     }
 }

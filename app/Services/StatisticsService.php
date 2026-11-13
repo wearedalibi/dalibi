@@ -334,10 +334,10 @@ final class StatisticsService
             'moyenne_generale' => $rcStats->avg_moy !== null ? round((float) $rcStats->avg_moy, 2) : null,
             'pass_rate' => $rcTotal > 0 ? round(((int) $rcStats->pass_count) / $rcTotal * 100, 1) : 0.0,
             'mentions' => [
-                'passable' => (int) ($mentions['passable'] ?? 0),
-                'assez_bien' => (int) ($mentions['assez_bien'] ?? 0),
-                'bien' => (int) ($mentions['bien'] ?? 0),
-                'tres_bien' => (int) ($mentions['tres_bien'] ?? 0),
+                'passable' => (int) ($mentions['passable']),
+                'assez_bien' => (int) ($mentions['assez_bien']),
+                'bien' => (int) ($mentions['bien']),
+                'tres_bien' => (int) ($mentions['tres_bien']),
             ],
             'exams' => $exams,
             'exams_summary' => [
@@ -395,6 +395,9 @@ final class StatisticsService
             ->sortByDesc('absence_rate')
             ->values();
 
+        // GROUP BY + HAVING : un ->count() SQL compterait les lignes par groupe,
+        // pas le nombre de groupes. On matérialise puis on compte en mémoire.
+        // @phpstan-ignore larastan.noUnnecessaryCollectionCall
         $chronic = (clone $base)
             ->where('ar.status', 'absent')
             ->groupBy('ar.student_id')

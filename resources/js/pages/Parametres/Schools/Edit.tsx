@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { SchoolForm, type SchoolFormData, type CurrencyOption } from '@/components/Schools/school-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface School {
@@ -33,6 +34,7 @@ interface EditProps {
 }
 
 export default function Edit({ school, classroomTypes = [], selectedClassTypes = [], currencies = [] }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const currentLogoUrl = school.logo_url ?? null;
 
     const { data, setData, post, transform, processing, errors } = useForm<SchoolFormData>({
@@ -63,12 +65,12 @@ export default function Edit({ school, classroomTypes = [], selectedClassTypes =
 
     return (
         <AppLayout>
-            <Head title={`Éditer ${school.name}`} />
+            <Head title={t('parametres.schools.edit_head', { name: school.name })} />
 
             <div className="w-full space-y-6">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-gray-900">Paramètres de l'école</h1>
-                    <p className="mt-2 text-gray-600">Informations, logo, en-tête et devise de {school.name}.</p>
+                    <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.schools.edit_title')}</h1>
+                    <p className="mt-2 text-gray-600">{t('parametres.schools.edit_subtitle', { name: school.name })}</p>
                 </div>
 
                 <SchoolForm

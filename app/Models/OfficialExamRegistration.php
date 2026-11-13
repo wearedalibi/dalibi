@@ -32,11 +32,17 @@ class OfficialExamRegistration extends Model
         'tres_bien' => 'Très bien',
     ];
 
+    /**
+     * @return BelongsTo<OfficialExam, $this>
+     */
     public function officialExam(): BelongsTo
     {
         return $this->belongsTo(OfficialExam::class);
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

@@ -32,16 +32,25 @@ class Evaluation extends Model
         'locked_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<EvaluationTemplate, $this>
+     */
     public function template(): BelongsTo
     {
         return $this->belongsTo(EvaluationTemplate::class, 'evaluation_template_id');
     }
 
+    /**
+     * @return BelongsTo<ClassSubject, $this>
+     */
     public function classSubject(): BelongsTo
     {
         return $this->belongsTo(ClassSubject::class);
     }
 
+    /**
+     * @return HasMany<Mark, $this>
+     */
     public function marks(): HasMany
     {
         return $this->hasMany(Mark::class);

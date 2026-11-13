@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface EvalRow {
@@ -49,6 +50,8 @@ interface Props {
 const ALL = 'all';
 
 export default function Index({ evaluations, filters, options, canLock }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [search, setSearch]   = useState(filters.search ?? '');
     const [status, setStatus]   = useState(filters.status || ALL);
     const [classId, setClassId] = useState(filters.class_id || ALL);
@@ -93,20 +96,20 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
         router.patch(route('evaluations.toggle-lock', id), {}, { preserveScroll: true });
     };
 
-    const statusLabel = (s: string) => s === 'completed' ? 'Terminée' : 'Planifiée';
+    const statusLabel = (s: string) => s === 'completed' ? t('examens.evaluations.index.completed') : t('examens.evaluations.index.scheduled');
 
     return (
         <AppLayout>
-            <Head title="Évaluations par classe" />
+            <Head title={t('examens.evaluations.index.head')} />
 
             <div className="w-full space-y-6">
 
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ClipboardList className="h-7 w-7 text-blue-600 shrink-0" />Évaluations par classe</h1>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><ClipboardList className="h-7 w-7 text-blue-600 shrink-0" />{t('examens.evaluations.index.title')}</h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Évaluations générées depuis les modèles, par classe et matière
+                            {t('examens.evaluations.index.subtitle')}
                         </p>
                     </div>
                     <Button
@@ -115,7 +118,7 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                         onClick={() => router.get(route('evaluation-templates.index'))}
                     >
                         <ListChecks className="w-4 h-4" />
-                        Gérer les modèles
+                        {t('examens.evaluations.index.manage_templates')}
                     </Button>
                 </div>
 
@@ -128,7 +131,7 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && apply()}
-                                placeholder="Classe, matière, modèle..."
+                                placeholder={t('examens.evaluations.index.search_ph')}
                                 className="pl-9"
                             />
                             {search && (
@@ -139,65 +142,65 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                         </div>
 
                         <Select value={classId} onValueChange={v => { setClassId(v); apply({ class_id: v }); }}>
-                            <SelectTrigger className="w-44"><SelectValue placeholder="Classe" /></SelectTrigger>
+                            <SelectTrigger className="w-44"><SelectValue placeholder={t('examens.evaluations.index.class')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL}>Toutes les classes</SelectItem>
+                                <SelectItem value={ALL}>{t('examens.evaluations.index.all_classes')}</SelectItem>
                                 {options.classrooms.map(c => <SelectItem key={c.id} value={c.id}>{c.name}{c.code ? ` (${c.code})` : ''}</SelectItem>)}
                             </SelectContent>
                         </Select>
 
                         <Select value={subjectId} onValueChange={v => { setSubjectId(v); apply({ subject_id: v }); }}>
-                            <SelectTrigger className="w-44"><SelectValue placeholder="Matière" /></SelectTrigger>
+                            <SelectTrigger className="w-44"><SelectValue placeholder={t('examens.evaluations.index.subject')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL}>Toutes les matières</SelectItem>
+                                <SelectItem value={ALL}>{t('examens.evaluations.index.all_subjects')}</SelectItem>
                                 {options.subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
 
                         <Select value={evalTypeId} onValueChange={v => { setEvalTypeId(v); apply({ evaluation_type_id: v }); }}>
-                            <SelectTrigger className="w-44"><SelectValue placeholder="Type" /></SelectTrigger>
+                            <SelectTrigger className="w-44"><SelectValue placeholder={t('examens.evaluations.index.type')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL}>Tous les types</SelectItem>
-                                {options.evaluationTypes.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                                <SelectItem value={ALL}>{t('examens.evaluations.index.all_types')}</SelectItem>
+                                {options.evaluationTypes.map(et => <SelectItem key={et.id} value={et.id}>{et.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
 
                         {options.periods.length > 0 && (
                             <Select value={periodId} onValueChange={v => { setPeriodId(v); apply({ period_id: v }); }}>
-                                <SelectTrigger className="w-40"><SelectValue placeholder="Période" /></SelectTrigger>
+                                <SelectTrigger className="w-40"><SelectValue placeholder={t('examens.evaluations.index.period')} /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value={ALL}>Toutes les périodes</SelectItem>
+                                    <SelectItem value={ALL}>{t('examens.evaluations.index.all_periods')}</SelectItem>
                                     {options.periods.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         )}
 
                         <Select value={status} onValueChange={v => { setStatus(v); apply({ status: v }); }}>
-                            <SelectTrigger className="w-40"><SelectValue placeholder="Statut" /></SelectTrigger>
+                            <SelectTrigger className="w-40"><SelectValue placeholder={t('examens.evaluations.index.status')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL}>Tous les statuts</SelectItem>
-                                <SelectItem value="scheduled">Planifiée</SelectItem>
-                                <SelectItem value="completed">Terminée</SelectItem>
+                                <SelectItem value={ALL}>{t('examens.evaluations.index.all_statuses')}</SelectItem>
+                                <SelectItem value="scheduled">{t('examens.evaluations.index.scheduled')}</SelectItem>
+                                <SelectItem value="completed">{t('examens.evaluations.index.completed')}</SelectItem>
                             </SelectContent>
                         </Select>
 
                         <Select value={scheduling} onValueChange={v => { setScheduling(v); apply({ scheduling: v }); }}>
-                            <SelectTrigger className="w-40"><SelectValue placeholder="Planification" /></SelectTrigger>
+                            <SelectTrigger className="w-40"><SelectValue placeholder={t('examens.evaluations.index.scheduling')} /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={ALL}>Toutes</SelectItem>
-                                <SelectItem value="with">Avec date</SelectItem>
-                                <SelectItem value="without">Sans date</SelectItem>
+                                <SelectItem value={ALL}>{t('examens.evaluations.index.all')}</SelectItem>
+                                <SelectItem value="with">{t('examens.evaluations.index.with_date')}</SelectItem>
+                                <SelectItem value="without">{t('examens.evaluations.index.without_date')}</SelectItem>
                             </SelectContent>
                         </Select>
 
-                        <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">Filtrer</Button>
+                        <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">{t('examens.evaluations.index.filter')}</Button>
                     </div>
 
                     {activeFilterCount > 0 && (
                         <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">{activeFilterCount} filtre(s) actif(s)</span>
+                            <span className="text-xs text-gray-500">{t('examens.evaluations.index.active_filters', { count: activeFilterCount })}</span>
                             <button onClick={resetFilters} className="text-xs text-blue-600 hover:text-blue-700 inline-flex items-center gap-1">
-                                <X className="w-3 h-3" /> Réinitialiser
+                                <X className="w-3 h-3" /> {t('examens.evaluations.index.reset')}
                             </button>
                         </div>
                     )}
@@ -208,15 +211,15 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Modèle</TableHead>
-                                <TableHead>Classe</TableHead>
-                                <TableHead>Matière</TableHead>
-                                <TableHead>Période</TableHead>
-                                <TableHead className="text-center">Coeff.</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Statut</TableHead>
-                                <TableHead className="text-center">Progression</TableHead>
-                                <TableHead className="text-center w-36">Actions</TableHead>
+                                <TableHead>{t('examens.evaluations.index.col_template')}</TableHead>
+                                <TableHead>{t('examens.evaluations.index.col_class')}</TableHead>
+                                <TableHead>{t('examens.evaluations.index.col_subject')}</TableHead>
+                                <TableHead>{t('examens.evaluations.index.col_period')}</TableHead>
+                                <TableHead className="text-center">{t('examens.evaluations.index.col_coeff')}</TableHead>
+                                <TableHead>{t('examens.evaluations.index.col_date')}</TableHead>
+                                <TableHead>{t('examens.evaluations.index.col_status')}</TableHead>
+                                <TableHead className="text-center">{t('examens.evaluations.index.col_progress')}</TableHead>
+                                <TableHead className="text-center w-36">{t('examens.evaluations.index.col_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -224,7 +227,7 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                                 <TableRow>
                                     <TableCell colSpan={9} className="py-16 text-center text-gray-400">
                                         <ListChecks className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                        Aucune évaluation. Créez des modèles et déployez-les par classe.
+                                        {t('examens.evaluations.index.empty')}
                                     </TableCell>
                                 </TableRow>
                             ) : evaluations.data.map(ev => {
@@ -236,7 +239,7 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                                             {ev.template?.name}
                                             {isLocked && (
                                                 <span className="ml-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-red-100 text-red-600">
-                                                    <Lock className="w-3 h-3" /> Clôturée
+                                                    <Lock className="w-3 h-3" /> {t('examens.evaluations.index.locked')}
                                                 </span>
                                             )}
                                         </TableCell>
@@ -250,7 +253,7 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                                             {Number(ev.template?.coefficient).toFixed(2)}
                                         </TableCell>
                                         <TableCell className="text-gray-500 text-sm">
-                                            {ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '—'}
+                                            {ev.date ? new Date(ev.date).toLocaleDateString(dateLocale) : '—'}
                                         </TableCell>
                                         <TableCell>
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -279,11 +282,11 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                                                     variant="outline" size="sm" className="gap-1 text-xs"
                                                     onClick={() => router.get(route('marks.index', ev.id))}
                                                 >
-                                                    <ClipboardList className="w-3.5 h-3.5" /> Notes
+                                                    <ClipboardList className="w-3.5 h-3.5" /> {t('examens.evaluations.index.marks')}
                                                 </Button>
                                                 {canLock && (
                                                     <IconButton
-                                                        label={isLocked ? 'Déclôturer' : 'Clôturer'}
+                                                        label={isLocked ? t('examens.evaluations.index.unlock') : t('examens.evaluations.index.lock')}
                                                         icon={isLocked ? <Lock className="w-3.5 h-3.5" /> : <LockOpen className="w-3.5 h-3.5" />}
                                                         className={isLocked
                                                             ? 'border-red-200 text-red-500 hover:bg-red-50'
@@ -293,7 +296,7 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                                                     />
                                                 )}
                                                 <IconButton
-                                                    label="Supprimer"
+                                                    label={t('common.actions.delete')}
                                                     icon={<Trash2 className="w-3.5 h-3.5" />}
                                                     className="border-red-200 text-red-500 hover:bg-red-50"
                                                     onClick={() => setDeleteId(ev.id)}
@@ -307,19 +310,19 @@ export default function Index({ evaluations, filters, options, canLock }: Readon
                     </Table>
                 </div>
 
-                <p className="text-sm text-gray-400 text-right">{evaluations.total} évaluation(s) au total</p>
+                <p className="text-sm text-gray-400 text-right">{t('examens.evaluations.index.total', { count: evaluations.total })}</p>
             </div>
 
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette évaluation ?</AlertDialogTitle>
-                        <AlertDialogDescription>Toutes les notes associées seront perdues.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('examens.evaluations.index.delete_title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('examens.evaluations.index.delete_desc')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && onDelete(deleteId)}>
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

@@ -8,6 +8,7 @@ use App\Models\Enrollment;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -48,7 +49,8 @@ class StudentStatsController extends Controller
         ];
 
         // Répartition par nationalité (top 6, cohorte)
-        $byNationality = Student::query()
+        /** @var Collection<int, object{nationality: string, count: int|string}> $natRows */
+        $natRows = Student::query()
             ->whereIn('id', $studentIds)
             ->select('nationality', DB::raw('COUNT(*) as count'))
             ->whereNotNull('nationality')
@@ -56,8 +58,8 @@ class StudentStatsController extends Controller
             ->groupBy('nationality')
             ->orderByDesc('count')
             ->limit(6)
-            ->get()
-            ->map(fn ($r) => ['label' => $r->nationality, 'count' => (int) $r->count]);
+            ->get();
+        $byNationality = $natRows->map(fn ($r) => ['label' => $r->nationality, 'count' => (int) $r->count]);
 
         // Répartition par tranche d'âge (cohorte)
         $brackets = [
@@ -89,6 +91,7 @@ class StudentStatsController extends Controller
 
         // Sur-âge (retard scolaire) : âge de l'élève >= âge attendu de sa classe + 2.
         $overAgeThreshold = 2;
+        /** @var Collection<int, object{birth_date: string, expected_age: int|string}> $ageRows */
         $ageRows = Enrollment::query()
             ->join('classes', 'classes.id', '=', 'enrollments.class_id')
             ->join('students', 'students.id', '=', 'enrollments.student_id')
@@ -102,7 +105,8 @@ class StudentStatsController extends Controller
 
         // Effectifs par classe (année sélectionnée, scolarité active), enrichis du
         // cycle, du sexe et de la capacité pour permettre filtre et empilage côté client.
-        $byClass = $selectedYearId
+        /** @var Collection<int, object{label: string, cycle: ?string, capacity: int|string|null, level: int|string|null, total: int|string, male: int|string, female: int|string}> $byClassRows */
+        $byClassRows = $selectedYearId
             ? Enrollment::query()
                 ->join('classes', 'classes.id', '=', 'enrollments.class_id')
                 ->join('students', 'students.id', '=', 'enrollments.student_id')
@@ -118,16 +122,16 @@ class StudentStatsController extends Controller
                 ->orderByRaw('classes.expected_age NULLS LAST')
                 ->orderBy('classes.name')
                 ->get()
-                ->map(fn ($r) => [
-                    'label' => $r->label,
-                    'cycle' => $this->cycleLabel($r->cycle),
-                    'capacity' => (int) $r->capacity,
-                    'level' => $r->level !== null ? (int) $r->level : null,
-                    'count' => (int) $r->total,
-                    'male' => (int) $r->male,
-                    'female' => (int) $r->female,
-                ])
             : collect();
+        $byClass = $byClassRows->map(fn ($r) => [
+            'label' => $r->label,
+            'cycle' => $this->cycleLabel($r->cycle),
+            'capacity' => (int) $r->capacity,
+            'level' => $r->level !== null ? (int) $r->level : null,
+            'count' => (int) $r->total,
+            'male' => (int) $r->male,
+            'female' => (int) $r->female,
+        ]);
 
         return Inertia::render('Eleves/Students/Stats', [
             'summary' => [

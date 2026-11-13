@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { ArrowLeft, Calendar, FileText, Pencil, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface EvaluationType {
@@ -17,7 +18,9 @@ interface ShowProps {
 }
 
 export default function Show({ evaluationType }: Readonly<ShowProps>) {
-    const formatDate = (date: string) => new Date(date).toLocaleDateString('fr-FR', {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
+    const formatDate = (date: string) => new Date(date).toLocaleDateString(dateLocale, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -37,12 +40,12 @@ export default function Show({ evaluationType }: Readonly<ShowProps>) {
                         </Button>
                         <div>
                             <h1 className="text-4xl font-bold tracking-tight text-gray-900">{evaluationType.name}</h1>
-                            <p className="text-gray-600 mt-2">Détails du type d'évaluation.</p>
+                            <p className="text-gray-600 mt-2">{t('parametres.evaluation_types.show_subtitle')}</p>
                         </div>
                     </div>
                     <Button className="bg-blue-600 hover:bg-blue-700 gap-2" onClick={() => router.visit(route('evaluation-types.edit', evaluationType.id))}>
                         <Pencil className="w-4 h-4" />
-                        Modifier
+                        {t('parametres.common.edit')}
                     </Button>
                 </div>
 
@@ -53,10 +56,10 @@ export default function Show({ evaluationType }: Readonly<ShowProps>) {
                                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100">
                                     <Tag className="h-5 w-5 text-blue-600" />
                                 </div>
-                                <p className="text-lg font-semibold text-gray-900">Informations principales</p>
+                                <p className="text-lg font-semibold text-gray-900">{t('parametres.evaluation_types.main_info')}</p>
                             </div>
                             <div className="rounded-xl bg-white/80 ring-1 ring-blue-100 px-4 py-3">
-                                <p className="text-xs uppercase tracking-wide text-gray-500">Nom</p>
+                                <p className="text-xs uppercase tracking-wide text-gray-500">{t('parametres.evaluation_types.name')}</p>
                                 <p className="font-semibold text-gray-900 mt-1">{evaluationType.name}</p>
                             </div>
                         </div>
@@ -66,10 +69,10 @@ export default function Show({ evaluationType }: Readonly<ShowProps>) {
                                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100">
                                     <FileText className="h-5 w-5 text-violet-600" />
                                 </div>
-                                <p className="text-lg font-semibold text-gray-900">Description</p>
+                                <p className="text-lg font-semibold text-gray-900">{t('parametres.evaluation_types.description')}</p>
                             </div>
                             <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                {evaluationType.description || 'Aucune description renseignée pour ce type d\'évaluation.'}
+                                {evaluationType.description || t('parametres.evaluation_types.no_description')}
                             </p>
                         </div>
                     </div>
@@ -80,14 +83,14 @@ export default function Show({ evaluationType }: Readonly<ShowProps>) {
                                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100">
                                     <Calendar className="h-5 w-5 text-emerald-600" />
                                 </div>
-                                <p className="text-lg font-semibold text-gray-900">Historique</p>
+                                <p className="text-lg font-semibold text-gray-900">{t('parametres.evaluation_types.history')}</p>
                             </div>
                             <div className="rounded-xl bg-white/80 ring-1 ring-emerald-100 px-4 py-3">
-                                <p className="text-xs uppercase tracking-wide text-gray-500">Créé le</p>
+                                <p className="text-xs uppercase tracking-wide text-gray-500">{t('parametres.evaluation_types.created_on')}</p>
                                 <p className="font-semibold text-gray-900 mt-1">{formatDate(evaluationType.created_at)}</p>
                             </div>
                             <div className="rounded-xl bg-white/80 ring-1 ring-emerald-100 px-4 py-3">
-                                <p className="text-xs uppercase tracking-wide text-gray-500">Modifié le</p>
+                                <p className="text-xs uppercase tracking-wide text-gray-500">{t('parametres.evaluation_types.updated_on')}</p>
                                 <p className="font-semibold text-gray-900 mt-1">{formatDate(evaluationType.updated_at)}</p>
                             </div>
                         </div>

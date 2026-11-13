@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface ClassSubject {
@@ -46,6 +47,8 @@ interface Props {
 }
 
 export default function Show({ template, evaluations, availableClassSubjects, activeYear }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [selected, setSelected]         = useState<string[]>([]);
     const [dates, setDates]               = useState<Record<string, string>>({});
     const [generating, setGenerating]     = useState(false);
@@ -96,11 +99,11 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
         });
     };
 
-    const statusLabel = (s: string) => s === 'completed' ? 'Terminée' : 'Planifiée';
+    const statusLabel = (s: string) => s === 'completed' ? t('examens.templates.show.status_completed') : t('examens.templates.show.status_scheduled');
 
     return (
         <AppLayout>
-            <Head title={`Modèle : ${template.name}`} />
+            <Head title={t('examens.templates.show.head', { name: template.name })} />
 
             <div className="w-full space-y-6">
 
@@ -108,22 +111,22 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-4">
                         <Button variant="outline" size="sm" className="gap-2" onClick={() => router.get(route('evaluation-templates.index'))}>
-                            <ArrowLeft className="w-4 h-4" /> Retour
+                            <ArrowLeft className="w-4 h-4" /> {t('common.actions.back')}
                         </Button>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">{template.name}</h1>
                             <p className="text-gray-500 mt-1">
                                 {template.academic_period.name} · {template.evaluation_type.name}
-                                · Coeff. {Number(template.coefficient).toFixed(2)}
+                                · {t('examens.templates.index.col_coeff')} {Number(template.coefficient).toFixed(2)}
                                 · /{Number(template.max_score).toFixed(0)}
-                                {template.date && ` · ${new Date(template.date).toLocaleDateString('fr-FR')}`}
+                                {template.date && ` · ${new Date(template.date).toLocaleDateString(dateLocale)}`}
                             </p>
                             {template.description && <p className="text-sm text-gray-400 mt-1 italic">{template.description}</p>}
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" className="gap-2" onClick={() => router.get(route('evaluation-templates.edit', template.id))}>
-                            <Pencil className="w-4 h-4" /> Modifier
+                            <Pencil className="w-4 h-4" /> {t('common.actions.edit')}
                         </Button>
                         <Button
                             className="gap-2 bg-blue-600 hover:bg-blue-700"
@@ -131,7 +134,7 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                             disabled={availableClassSubjects.length === 0}
                         >
                             <Plus className="w-4 h-4" />
-                            Déployer vers des classes
+                            {t('examens.templates.show.deploy')}
                             {availableClassSubjects.length > 0 && (
                                 <span className="ml-1 bg-white/20 rounded px-1.5 text-xs">{availableClassSubjects.length}</span>
                             )}
@@ -144,11 +147,11 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                     <div className="bg-amber-50 ring-1 ring-amber-200 rounded-2xl p-4 flex gap-3">
                         <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                         <div>
-                            <p className="font-semibold text-amber-800">Aucune année académique active</p>
+                            <p className="font-semibold text-amber-800">{t('examens.templates.show.no_active_year')}</p>
                             <p className="text-sm text-amber-600 mt-0.5">
-                                Activez une année académique pour pouvoir déployer ce modèle.{' '}
+                                {t('examens.templates.show.no_active_year_hint')}{' '}
                                 <button onClick={() => router.get(route('academic-years.index'))} className="underline font-medium">
-                                    Gérer les années académiques
+                                    {t('examens.templates.show.manage_years')}
                                 </button>
                             </p>
                         </div>
@@ -158,11 +161,11 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                     <div className="bg-amber-50 ring-1 ring-amber-200 rounded-2xl p-4 flex gap-3">
                         <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                         <div>
-                            <p className="font-semibold text-amber-800">Aucune classe/matière disponible</p>
+                            <p className="font-semibold text-amber-800">{t('examens.templates.show.no_classes')}</p>
                             <p className="text-sm text-amber-600 mt-0.5">
-                                Aucune affectation classe/matière n'existe pour l'année académique active.{' '}
+                                {t('examens.templates.show.no_classes_hint')}{' '}
                                 <button onClick={() => router.get(route('classrooms.index'))} className="underline font-medium">
-                                    Configurer les classes
+                                    {t('examens.templates.show.configure_classes')}
                                 </button>
                             </p>
                         </div>
@@ -172,7 +175,7 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                     <div className="bg-emerald-50 ring-1 ring-emerald-200 rounded-2xl p-4 flex gap-2 items-center">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                         <p className="text-sm text-emerald-700 font-medium">
-                            Toutes les classes/matières de l'année active ont déjà été déployées pour ce modèle.
+                            {t('examens.templates.show.all_deployed')}
                         </p>
                     </div>
                 )}
@@ -183,18 +186,18 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold text-blue-900 flex items-center gap-2">
                                 <Layers className="w-4 h-4" />
-                                Sélectionner les classes/matières à déployer
+                                {t('examens.templates.show.select_title')}
                             </h3>
                             <button onClick={selectAll} className="text-xs text-blue-600 hover:underline">
-                                {selected.length === availableClassSubjects.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                {selected.length === availableClassSubjects.length ? t('examens.templates.show.deselect_all') : t('examens.templates.show.select_all')}
                             </button>
                         </div>
 
                         {/* En-tête colonnes */}
                         <div className="hidden sm:grid grid-cols-[1fr_1fr_160px] gap-2 px-3 text-xs font-semibold text-blue-700 uppercase tracking-wide">
-                            <span>Classe</span>
-                            <span>Matière · coeff.</span>
-                            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Date planifiée</span>
+                            <span>{t('examens.templates.show.col_class')}</span>
+                            <span>{t('examens.templates.show.col_subject_coeff')}</span>
+                            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {t('examens.templates.show.col_planned_date')}</span>
                         </div>
 
                         <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
@@ -218,7 +221,7 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                                         </label>
                                         <span className="text-sm text-gray-600 pl-7 sm:pl-0">
                                             {cs.subject.name}
-                                            <span className="ml-1 text-xs text-gray-400">· coeff. {cs.coefficient}</span>
+                                            <span className="ml-1 text-xs text-gray-400">· {t('examens.templates.show.coeff', { n: cs.coefficient })}</span>
                                         </span>
                                         <Input
                                             type="date"
@@ -234,8 +237,8 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
 
                         {selected.length > 0 && (
                             <p className="text-xs text-blue-700 font-medium">
-                                {selected.length} classe{selected.length > 1 ? 's' : ''} sélectionnée{selected.length > 1 ? 's' : ''}
-                                {selected.filter(id => dates[id]).length > 0 && ` · ${selected.filter(id => dates[id]).length} avec date planifiée`}
+                                {t('examens.templates.show.selected_summary', { count: selected.length })}
+                                {selected.filter(id => dates[id]).length > 0 && ` · ${t('examens.templates.show.with_date', { count: selected.filter(id => dates[id]).length })}`}
                             </p>
                         )}
 
@@ -246,9 +249,9 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                                 onClick={handleGenerate}
                             >
                                 <Play className="w-4 h-4" />
-                                {generating ? 'Génération...' : `Générer ${selected.length} évaluation${selected.length > 1 ? 's' : ''}`}
+                                {generating ? t('examens.templates.show.generating') : t('examens.templates.show.generate', { count: selected.length })}
                             </Button>
-                            <Button variant="outline" onClick={() => { setShowSelector(false); setSelected([]); setDates({}); }}>Annuler</Button>
+                            <Button variant="outline" onClick={() => { setShowSelector(false); setSelected([]); setDates({}); }}>{t('common.actions.cancel')}</Button>
                         </div>
                     </div>
                 )}
@@ -258,26 +261,26 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <h2 className="font-semibold text-gray-900 flex items-center gap-2">
                             <ClipboardList className="w-5 h-5 text-blue-500" />
-                            Évaluations générées
+                            {t('examens.templates.show.generated')}
                             <span className="ml-2 bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">{evaluations.length}</span>
                         </h2>
                     </div>
                     {evaluations.length === 0 ? (
                         <div className="py-16 text-center text-gray-400">
                             <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                            <p>Aucune évaluation déployée. Utilisez le bouton ci-dessus pour déployer ce modèle.</p>
+                            <p>{t('examens.templates.show.empty')}</p>
                         </div>
                     ) : (
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow>
-                                    <TableHead>Classe</TableHead>
-                                    <TableHead>Matière</TableHead>
-                                    <TableHead className="text-center">Coeff. matière</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Statut</TableHead>
-                                    <TableHead className="text-center">Progression</TableHead>
-                                    <TableHead className="text-center w-32">Actions</TableHead>
+                                    <TableHead>{t('examens.templates.show.col_class')}</TableHead>
+                                    <TableHead>{t('examens.templates.show.col_subject')}</TableHead>
+                                    <TableHead className="text-center">{t('examens.templates.show.col_subject_coeff2')}</TableHead>
+                                    <TableHead>{t('examens.templates.show.col_date')}</TableHead>
+                                    <TableHead>{t('examens.templates.show.col_status')}</TableHead>
+                                    <TableHead className="text-center">{t('examens.templates.show.col_progress')}</TableHead>
+                                    <TableHead className="text-center w-32">{t('examens.templates.show.col_actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -292,7 +295,7 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                                             <TableCell className="text-gray-600">{ev.class_subject.subject.name}</TableCell>
                                             <TableCell className="text-center font-mono text-gray-600">{ev.class_subject.coefficient}</TableCell>
                                             <TableCell className="text-gray-500 text-sm">
-                                                {ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '—'}
+                                                {ev.date ? new Date(ev.date).toLocaleDateString(dateLocale) : '—'}
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -321,7 +324,7 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
                                                         variant="outline" size="sm" className="gap-1 text-xs"
                                                         onClick={() => router.get(route('marks.index', ev.id))}
                                                     >
-                                                        <ClipboardList className="w-3.5 h-3.5" /> Notes
+                                                        <ClipboardList className="w-3.5 h-3.5" /> {t('examens.templates.show.marks')}
                                                     </Button>
                                                     <Button
                                                         variant="outline" size="sm"
@@ -344,13 +347,13 @@ export default function Show({ template, evaluations, availableClassSubjects, ac
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette évaluation ?</AlertDialogTitle>
-                        <AlertDialogDescription>Toutes les notes saisies pour cette évaluation seront perdues.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('examens.templates.show.delete_eval_title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('examens.templates.show.delete_eval_desc')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('common.actions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && onDeleteEval(deleteId)}>
-                            Supprimer
+                            {t('common.actions.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

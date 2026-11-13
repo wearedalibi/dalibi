@@ -36,11 +36,17 @@ class EmployeeAllowance extends Model
         'active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<EmployeeProfile, $this>
+     */
     public function employeeProfile(): BelongsTo
     {
         return $this->belongsTo(EmployeeProfile::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

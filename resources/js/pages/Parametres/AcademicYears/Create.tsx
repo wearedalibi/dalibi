@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 export default function Create() {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         year: '',
         start_date: '',
@@ -34,7 +36,7 @@ export default function Create() {
 
     return (
         <AppLayout>
-            <Head title="Créer une année académique" />
+            <Head title={t('parametres.academic_years.create_head')} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -47,7 +49,7 @@ export default function Create() {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Créer une nouvelle année académique
+                            {t('parametres.academic_years.create_title')}
                         </h1>
                     </div>
                 </div>
@@ -57,18 +59,18 @@ export default function Create() {
                         <div className="rounded-2xl bg-linear-to-br from-indigo-50 to-white ring-1 ring-indigo-100 p-6 shadow-sm space-y-4">
                             <div className="flex items-center gap-2 text-indigo-700">
                                 <CalendarDays className="h-4 w-4" />
-                                <p className="text-sm font-semibold">Période académique</p>
+                                <p className="text-sm font-semibold">{t('parametres.academic_years.section_period')}</p>
                             </div>
                             <div>
                                 <label htmlFor="year" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Année *
+                                    {t('parametres.academic_years.label_year')} *
                                 </label>
                                 <Input
                                     id="year"
                                     type="text"
                                     value={formData.year}
                                     onChange={(e) => setFormData(prev => ({ ...prev, year: e.target.value }))}
-                                    placeholder="Ex: 2025-2026"
+                                    placeholder={t('parametres.academic_years.year_ph')}
                                     className={errors.year ? 'border-red-500 bg-white/90' : 'border-slate-200 bg-white/90'}
                                 />
                                 {errors.year && (
@@ -78,7 +80,7 @@ export default function Create() {
 
                             <div>
                                 <label htmlFor="start_date" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Date de début *
+                                    {t('parametres.academic_years.label_start')} *
                                 </label>
                                 <Input
                                     id="start_date"
@@ -94,7 +96,7 @@ export default function Create() {
 
                             <div>
                                 <label htmlFor="end_date" className="block text-sm font-medium text-gray-900 mb-2">
-                                    Date de fin *
+                                    {t('parametres.academic_years.label_end')} *
                                 </label>
                                 <Input
                                     id="end_date"
@@ -112,7 +114,7 @@ export default function Create() {
                         <div className="rounded-2xl bg-linear-to-br from-emerald-50 to-white ring-1 ring-emerald-100 p-6 shadow-sm space-y-4">
                             <div className="flex items-center gap-2 text-emerald-700">
                                 <ToggleLeft className="h-4 w-4" />
-                                <p className="text-sm font-semibold">Activation</p>
+                                <p className="text-sm font-semibold">{t('parametres.academic_years.section_activation')}</p>
                             </div>
                             <div>
                                 <label className="flex items-center gap-2 cursor-pointer">
@@ -123,11 +125,11 @@ export default function Create() {
                                         className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                                     />
                                     <span className="text-sm font-medium text-gray-900">
-                                        Année active
+                                        {t('parametres.academic_years.active_label')}
                                     </span>
                                 </label>
                                 <p className="text-sm text-gray-500 mt-3">
-                                    Cochez cette case si c'est l'année académique en cours
+                                    {t('parametres.academic_years.active_hint')}
                                 </p>
                             </div>
                         </div>
@@ -140,7 +142,7 @@ export default function Create() {
                             disabled={isSubmitting}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            {isSubmitting ? 'Création...' : 'Créer l\'année académique'}
+                            {isSubmitting ? t('parametres.common.creating') : t('parametres.academic_years.submit_create')}
                         </Button>
                         <Button
                             type="button"
@@ -148,7 +150,7 @@ export default function Create() {
                             className="border-slate-200"
                             onClick={() => router.get(route('academic-years.index'))}
                         >
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                     </div>
                 </form>

@@ -28,6 +28,8 @@ class StudentScholarship extends Model
 
     /**
      * Get the student that owns the student scholarship.
+     *
+     * @return BelongsTo<Student, $this>
      */
     public function student(): BelongsTo
     {
@@ -36,6 +38,8 @@ class StudentScholarship extends Model
 
     /**
      * Get the scholarship that owns the student scholarship.
+     *
+     * @return BelongsTo<Scholarship, $this>
      */
     public function scholarship(): BelongsTo
     {
@@ -44,6 +48,8 @@ class StudentScholarship extends Model
 
     /**
      * Get the academic year that owns the student scholarship.
+     *
+     * @return BelongsTo<AcademicYear, $this>
      */
     public function academicYear(): BelongsTo
     {

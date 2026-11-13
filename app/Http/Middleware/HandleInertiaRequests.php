@@ -3,8 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Constants\Currencies;
+use App\Constants\Locales;
 use App\Models\School;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -53,7 +55,45 @@ class HandleInertiaRequests extends Middleware
             'settings' => [
                 'currency' => $user ? $this->currency() : self::defaultCurrency(),
             ],
+            // Internationalisation : langue active, langues disponibles et dictionnaire
+            // de la langue active (la langue par défaut sert de repli pour les clés absentes).
+            'locale' => App::getLocale(),
+            'locales' => Locales::options(),
+            'translations' => $this->translations(App::getLocale()),
         ];
+    }
+
+    /**
+     * Dictionnaire de traduction d'une langue : chaque fichier `lang/{code}/*.php`
+     * devient un groupe. La langue par défaut est fusionnée dessous comme repli.
+     *
+     * @return array<string, mixed>
+     */
+    private function translations(string $locale): array
+    {
+        $fallback = $this->loadLang(config('app.fallback_locale', Locales::DEFAULT));
+        $active = $this->loadLang($locale);
+
+        return array_replace_recursive($fallback, $active);
+    }
+
+    /**
+     * Charge tous les groupes de `lang/{locale}/*.php`.
+     *
+     * @return array<string, mixed>
+     */
+    private function loadLang(string $locale): array
+    {
+        $out = [];
+        $dir = lang_path($locale);
+
+        if (is_dir($dir)) {
+            foreach (glob($dir.'/*.php') as $file) {
+                $out[basename($file, '.php')] = require $file;
+            }
+        }
+
+        return $out;
     }
 
     /**

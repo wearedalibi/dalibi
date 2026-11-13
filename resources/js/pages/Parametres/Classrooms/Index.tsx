@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface ClassroomType {
@@ -63,6 +64,7 @@ function getPages(current: number, last: number): (number | '...')[] {
 }
 
 export default function Index({ classrooms, activeCount, filters, message }: Readonly<IndexProps>) {
+    const { t } = useTranslation();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search ?? '');
@@ -95,7 +97,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
 
     const statsCards = [
         {
-            title: 'Total des classes',
+            title: t('parametres.classrooms.stat_total'),
             value: classrooms.total,
             icon: Layers,
             bgColor: 'bg-blue-50',
@@ -103,7 +105,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
             borderColor: 'border-blue-200',
         },
         {
-            title: 'Classes actives',
+            title: t('parametres.classrooms.stat_active'),
             value: activeCount,
             icon: Users,
             bgColor: 'bg-green-50',
@@ -111,7 +113,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
             borderColor: 'border-green-200',
         },
         {
-            title: 'Page',
+            title: t('parametres.classrooms.stat_page'),
             value: `${classrooms.current_page}/${classrooms.last_page}`,
             icon: Plus,
             bgColor: 'bg-purple-50',
@@ -122,16 +124,16 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
 
     return (
         <AppLayout>
-            <Head title="Classes" />
+            <Head title={t('parametres.classrooms.head')} />
 
                     <div className="space-y-6">
                         <div className="flex items-start justify-between">
                             <div>
                                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Layers className="h-7 w-7 text-blue-600 shrink-0" />
-                                    Classes
+                                    {t('parametres.classrooms.title')}
                                 </h1>
                                 <p className="mt-2 text-lg text-gray-600">
-                                    Gérez les classes de votre établissement
+                                    {t('parametres.classrooms.subtitle')}
                                 </p>
                             </div>
                             <Button
@@ -139,7 +141,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                 className="gap-2 bg-blue-600 hover:bg-blue-700"
                             >
                                 <Plus className="w-5 h-5" />
-                                Nouvelle classe
+                                {t('parametres.classrooms.new')}
                             </Button>
                         </div>
 
@@ -180,7 +182,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                     <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                                     <Input
                                         type="text"
-                                        placeholder="Rechercher une classe..."
+                                        placeholder={t('parametres.classrooms.search_ph')}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="pl-10 bg-gray-50 border-gray-300"
@@ -191,7 +193,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                     className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
                                 >
                                     <Search className="w-4 h-4" />
-                                    Rechercher
+                                    {t('parametres.common.search')}
                                 </Button>
                                 {searchQuery && (
                                     <Button
@@ -199,7 +201,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                         onClick={handleClearSearch}
                                         className="border-gray-300 text-gray-700 hover:bg-gray-50"
                                     >
-                                        Réinitialiser
+                                        {t('parametres.classrooms.reset')}
                                     </Button>
                                 )}
                             </div>
@@ -210,11 +212,11 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                 <Table>
                                     <TableHeader className="bg-gray-50">
                                         <TableRow className="border-b border-gray-200">
-                                            <TableHead className="font-semibold text-gray-900">Nom</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Code</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Type</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Capacité</TableHead>
-                                            <TableHead className="text-center font-semibold text-gray-900 w-36">Actions</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('parametres.classrooms.th_name')}</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('parametres.classrooms.th_code')}</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('parametres.classrooms.th_type')}</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">{t('parametres.classrooms.th_capacity')}</TableHead>
+                                            <TableHead className="text-center font-semibold text-gray-900 w-36">{t('parametres.common.actions')}</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -226,7 +228,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                                 >
                                                     <div className="flex flex-col items-center gap-2">
                                                         <Layers className="w-12 h-12 text-gray-300" />
-                                                        <p className="text-lg">Aucune classe trouvée</p>
+                                                        <p className="text-lg">{t('parametres.classrooms.empty')}</p>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -264,25 +266,25 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                                                     <TableCell className="text-center">
                                                         <div className="flex gap-2 justify-center">
                                                             <IconButton
-                                                                label="Attribuer des matières"
+                                                                label={t('parametres.classrooms.assign_subjects')}
                                                                 icon={<BookPlus className="w-4 h-4" />}
                                                                 className="border-blue-300 text-blue-600 transition-colors duration-200 ease-out hover:bg-blue-50 hover:text-blue-700"
                                                                 onClick={() => router.get(route('classrooms.subject-assignments.create', classroom.id))}
                                                             />
                                                             <IconButton
-                                                                label="Voir"
+                                                                label={t('parametres.common.view')}
                                                                 icon={<Eye className="w-4 h-4" />}
                                                                 className="border-gray-300 text-gray-700 transition-colors duration-200 ease-out hover:bg-blue-50/60 hover:text-blue-800"
                                                                 onClick={() => router.visit(route('classrooms.show', classroom.id))}
                                                             />
                                                             <IconButton
-                                                                label="Modifier"
+                                                                label={t('parametres.common.edit')}
                                                                 icon={<Pencil className="w-4 h-4" />}
                                                                 className="border-gray-300 text-gray-700 transition-colors duration-200 ease-out hover:bg-blue-50/60 hover:text-blue-800"
                                                                 onClick={() => router.visit(route('classrooms.edit', classroom.id))}
                                                             />
                                                             <IconButton
-                                                                label="Supprimer"
+                                                                label={t('parametres.common.delete')}
                                                                 icon={<Trash2 className="w-4 h-4" />}
                                                                 className="border-red-300 text-red-600 transition-colors duration-200 ease-out hover:bg-red-50 hover:text-red-700"
                                                                 onClick={() => setDeleteConfirm(classroom.id)}
@@ -300,7 +302,7 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
                         {classrooms.last_page > 1 && (
                             <div className="flex items-center justify-between bg-white rounded-lg px-4 py-3 shadow-sm">
                                 <p className="text-sm text-gray-500">
-                                    <span className="font-semibold text-gray-700">{classrooms.from}</span>–<span className="font-semibold text-gray-700">{classrooms.to}</span> sur <span className="font-semibold text-gray-700">{classrooms.total}</span> classes
+                                    <span className="font-semibold text-gray-700">{classrooms.from}</span>–<span className="font-semibold text-gray-700">{classrooms.to}</span> {t('parametres.classrooms.showing_sep')} <span className="font-semibold text-gray-700">{classrooms.total}</span> {t('parametres.classrooms.showing_unit')}
                                 </p>
                                 <div className="flex items-center gap-1">
                                     <Button
@@ -346,22 +348,21 @@ export default function Index({ classrooms, activeCount, filters, message }: Rea
             >
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer la classe</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.classrooms.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette classe ?
-                            Cette action est irréversible.
+                            {t('parametres.classrooms.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3 justify-end">
                         <AlertDialogCancel disabled={isDeleting}>
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.classrooms.deleting') : t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

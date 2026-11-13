@@ -15,6 +15,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { useTranslation } from '@/helpers/i18n';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import type { NavItem } from '@/types';
 
@@ -24,6 +25,7 @@ const ACTIVE_CLASS =
 
 export function NavMain({ items = [] }: Readonly<{ items: NavItem[] }>) {
     const { currentUrl, findActiveKey } = useCurrentUrl();
+    const { t } = useTranslation();
 
     const auth = (usePage().props as { auth?: { permissions?: string[] } }).auth;
     const permissions = auth?.permissions ?? [];
@@ -91,11 +93,11 @@ export function NavMain({ items = [] }: Readonly<{ items: NavItem[] }>) {
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuButton
                                             isActive={isGroupActive(item)}
-                                            tooltip={{ children: item.title }}
+                                            tooltip={{ children: t(item.title) }}
                                             className={ACTIVE_CLASS}
                                         >
                                             {item.icon && <item.icon />}
-                                            <span>{item.title}</span>
+                                            <span>{t(item.title)}</span>
                                             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                         </SidebarMenuButton>
                                     </CollapsibleTrigger>
@@ -110,7 +112,7 @@ export function NavMain({ items = [] }: Readonly<{ items: NavItem[] }>) {
                                                     >
                                                         <Link href={subItem.href} prefetch>
                                                             {subItem.icon && <subItem.icon />}
-                                                            <span>{subItem.title}</span>
+                                                            <span>{t(subItem.title)}</span>
                                                         </Link>
                                                     </SidebarMenuSubButton>
                                                 </SidebarMenuSubItem>
@@ -122,12 +124,12 @@ export function NavMain({ items = [] }: Readonly<{ items: NavItem[] }>) {
                                 <SidebarMenuButton
                                     asChild
                                     isActive={isLinkActive(item)}
-                                    tooltip={{ children: item.title }}
+                                    tooltip={{ children: t(item.title) }}
                                     className={ACTIVE_CLASS}
                                 >
                                     <Link href={item.href} prefetch>
                                         {item.icon && <item.icon />}
-                                        <span>{item.title}</span>
+                                        <span>{t(item.title)}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             )}

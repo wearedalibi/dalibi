@@ -10,6 +10,7 @@ import { IconButton } from '@/components/icon-button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface School { id: string; name: string; }
@@ -36,6 +37,7 @@ interface Props {
 }
 
 export default function Index({ configs, schools, filters }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [schoolId, setSchoolId] = useState(filters.school_id || 'all');
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -57,20 +59,20 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
 
     return (
         <AppLayout>
-            <Head title="Configurations de calcul des moyennes" />
+            <Head title={t('parametres.grading_configs.head')} />
 
             <div className="w-full space-y-6">
 
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><SlidersHorizontal className="h-7 w-7 text-blue-600 shrink-0" />Calcul des moyennes</h1>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><SlidersHorizontal className="h-7 w-7 text-blue-600 shrink-0" />{t('parametres.grading_configs.title')}</h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Personnalisez la formule de calcul par établissement
+                            {t('parametres.grading_configs.subtitle')}
                         </p>
                     </div>
                     <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => router.get(route('grading-configs.create'))}>
-                        <Plus className="w-4 h-4" /> Nouvelle configuration
+                        <Plus className="w-4 h-4" /> {t('parametres.grading_configs.new')}
                     </Button>
                 </div>
 
@@ -79,10 +81,10 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
                     <SlidersHorizontal className="w-4 h-4 text-gray-400 shrink-0" />
                     <Select value={schoolId} onValueChange={onSchoolChange}>
                         <SelectTrigger className="w-56">
-                            <SelectValue placeholder="Tous les établissements" />
+                            <SelectValue placeholder={t('parametres.grading_configs.filter_all')} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Tous les établissements</SelectItem>
+                            <SelectItem value="all">{t('parametres.grading_configs.filter_all')}</SelectItem>
                             {schools.map(s => (
                                 <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                             ))}
@@ -100,14 +102,14 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Nom</TableHead>
-                                <TableHead>Établissement</TableHead>
-                                <TableHead>Type de classe</TableHead>
-                                <TableHead className="text-center">Seuil</TableHead>
-                                <TableHead className="text-center">Note max</TableHead>
-                                <TableHead className="text-center">Arrondi</TableHead>
-                                <TableHead className="text-center">Statut</TableHead>
-                                <TableHead className="text-center w-36">Actions</TableHead>
+                                <TableHead>{t('parametres.grading_configs.th_name')}</TableHead>
+                                <TableHead>{t('parametres.grading_configs.th_school')}</TableHead>
+                                <TableHead>{t('parametres.grading_configs.th_class_type')}</TableHead>
+                                <TableHead className="text-center">{t('parametres.grading_configs.th_threshold')}</TableHead>
+                                <TableHead className="text-center">{t('parametres.grading_configs.th_max')}</TableHead>
+                                <TableHead className="text-center">{t('parametres.grading_configs.th_round')}</TableHead>
+                                <TableHead className="text-center">{t('parametres.grading_configs.th_status')}</TableHead>
+                                <TableHead className="text-center w-36">{t('parametres.common.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -115,7 +117,7 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
                                 <TableRow>
                                     <TableCell colSpan={8} className="py-16 text-center text-gray-400">
                                         <SlidersHorizontal className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                                        Aucune configuration. Créez-en une pour personnaliser le calcul des moyennes.
+                                        {t('parametres.grading_configs.empty')}
                                     </TableCell>
                                 </TableRow>
                             ) : configs.map(c => (
@@ -129,20 +131,20 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
                                                 <span className="block text-xs text-gray-400">{c.classroom_type.period_system}</span>
                                             </>
                                         ) : (
-                                            <span className="text-gray-400 italic">Toutes (défaut)</span>
+                                            <span className="text-gray-400 italic">{t('parametres.grading_configs.all_default')}</span>
                                         )}
                                     </TableCell>
                                     <TableCell className="text-center font-mono text-gray-700">{c.passing_score}/20</TableCell>
                                     <TableCell className="text-center font-mono text-gray-700">{c.default_max_score}</TableCell>
-                                    <TableCell className="text-center text-gray-600">{c.round_precision} déc.</TableCell>
+                                    <TableCell className="text-center text-gray-600">{t('parametres.grading_configs.decimals', { n: c.round_precision })}</TableCell>
                                     <TableCell className="text-center">
                                         {c.is_active ? (
                                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                                                <CheckCircle2 className="w-3 h-3" /> Active
+                                                <CheckCircle2 className="w-3 h-3" /> {t('parametres.grading_configs.active')}
                                             </span>
                                         ) : (
                                             <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                                                Inactive
+                                                {t('parametres.grading_configs.inactive')}
                                             </span>
                                         )}
                                     </TableCell>
@@ -154,17 +156,17 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
                                                     className="text-xs border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                                                     onClick={() => onActivate(c.id)}
                                                 >
-                                                    Activer
+                                                    {t('parametres.grading_configs.activate')}
                                                 </Button>
                                             )}
                                             <IconButton
-                                                label="Modifier"
+                                                label={t('parametres.common.edit')}
                                                 icon={<Pencil className="w-3.5 h-3.5" />}
                                                 onClick={() => router.get(route('grading-configs.edit', c.id))}
                                             />
                                             {!c.is_active && (
                                                 <IconButton
-                                                    label="Supprimer"
+                                                    label={t('parametres.common.delete')}
                                                     icon={<Trash2 className="w-3.5 h-3.5" />}
                                                     className="border-red-200 text-red-500 hover:bg-red-50"
                                                     onClick={() => setDeleteId(c.id)}
@@ -178,19 +180,19 @@ export default function Index({ configs, schools, filters }: Readonly<Props>) {
                     </Table>
                 </div>
 
-                <p className="text-sm text-gray-400 text-right">{configs.length} configuration(s)</p>
+                <p className="text-sm text-gray-400 text-right">{t('parametres.grading_configs.count', { n: configs.length })}</p>
             </div>
 
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer cette configuration ?</AlertDialogTitle>
-                        <AlertDialogDescription>Cette action est irréversible.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('parametres.grading_configs.delete_q')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('parametres.common.irreversible')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => deleteId && onDelete(deleteId)}>
-                            Supprimer
+                            {t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>

@@ -45,7 +45,7 @@ class DashboardController extends ApiController
                 'id' => $e->id,
                 'title' => $e->title,
                 'type' => $e->type,
-                'start_date' => $e->start_date?->format('Y-m-d'),
+                'start_date' => $e->start_date->format('Y-m-d'),
             ]);
 
         return response()->json([

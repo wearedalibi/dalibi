@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Registration {
@@ -33,6 +34,8 @@ interface Props {
 }
 
 export default function Show({ exam, registrations, availableStudents, stats, statuses, mentions, isBac }: Readonly<Props>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [rows, setRows] = useState<Registration[]>(registrations);
     const [addOpen, setAddOpen] = useState(false);
     const [selected, setSelected] = useState<string[]>([]);
@@ -76,10 +79,10 @@ export default function Show({ exam, registrations, availableStudents, stats, st
     };
 
     const statCards = [
-        { label: 'Inscrits', value: stats.total, color: 'text-gray-700', icon: Users },
-        { label: 'Admis', value: stats.admis, color: 'text-emerald-600', icon: Award },
-        { label: 'Échoués', value: stats.echoue, color: 'text-red-600', icon: Users },
-        { label: 'Taux de réussite', value: `${stats.taux}%`, color: 'text-blue-600', icon: Award },
+        { label: t('examens.official.show.registered'), value: stats.total, color: 'text-gray-700', icon: Users },
+        { label: t('examens.official.show.admitted'), value: stats.admis, color: 'text-emerald-600', icon: Award },
+        { label: t('examens.official.show.failed'), value: stats.echoue, color: 'text-red-600', icon: Users },
+        { label: t('examens.official.show.success_rate'), value: `${stats.taux}%`, color: 'text-blue-600', icon: Award },
     ];
 
     return (
@@ -97,18 +100,18 @@ export default function Show({ exam, registrations, availableStudents, stats, st
                             <span className="text-xs font-bold uppercase tracking-wide text-blue-600">{exam.type} · {exam.year}</span>
                             <h1 className="text-3xl font-bold text-gray-900">{exam.name}</h1>
                             <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                                {exam.class_name && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">Classe : {exam.class_name}</span>}
-                                {exam.exam_date && <span className="inline-flex items-center gap-1"><CalendarDays className="w-4 h-4" />{new Date(exam.exam_date).toLocaleDateString('fr-FR')}</span>}
+                                {exam.class_name && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">{t('examens.official.show.class_prefix', { name: exam.class_name })}</span>}
+                                {exam.exam_date && <span className="inline-flex items-center gap-1"><CalendarDays className="w-4 h-4" />{new Date(exam.exam_date).toLocaleDateString(dateLocale)}</span>}
                                 {exam.center && <span className="inline-flex items-center gap-1"><MapPin className="w-4 h-4" />{exam.center}</span>}
                             </div>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" className="gap-2" onClick={() => setAddOpen(true)} disabled={availableStudents.length === 0}>
-                            <UserPlus className="w-4 h-4" /> Inscrire des élèves
+                            <UserPlus className="w-4 h-4" /> {t('examens.official.show.register_students')}
                         </Button>
                         <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={saveResults} disabled={saving || rows.length === 0}>
-                            <Save className="w-4 h-4" /> Enregistrer les résultats
+                            <Save className="w-4 h-4" /> {t('examens.official.show.save_results')}
                         </Button>
                     </div>
                 </div>
@@ -136,12 +139,12 @@ export default function Show({ exam, registrations, availableStudents, stats, st
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Élève</TableHead>
-                                <TableHead className="w-28">N° table</TableHead>
-                                {isBac && <TableHead className="w-24">Série</TableHead>}
-                                <TableHead className="w-32">Statut</TableHead>
-                                <TableHead className="w-24">Moyenne</TableHead>
-                                <TableHead className="w-36">Mention</TableHead>
+                                <TableHead>{t('examens.official.show.col_student')}</TableHead>
+                                <TableHead className="w-28">{t('examens.official.show.col_table_no')}</TableHead>
+                                {isBac && <TableHead className="w-24">{t('examens.official.show.col_series')}</TableHead>}
+                                <TableHead className="w-32">{t('examens.official.show.col_status')}</TableHead>
+                                <TableHead className="w-24">{t('examens.official.show.col_average')}</TableHead>
+                                <TableHead className="w-36">{t('examens.official.show.col_mention')}</TableHead>
                                 <TableHead className="w-12"></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -150,7 +153,7 @@ export default function Show({ exam, registrations, availableStudents, stats, st
                                 <TableRow>
                                     <TableCell colSpan={isBac ? 7 : 6} className="py-12 text-center text-gray-400">
                                         <Users className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                                        Aucun élève inscrit. Cliquez sur « Inscrire des élèves ».
+                                        {t('examens.official.show.empty')}
                                     </TableCell>
                                 </TableRow>
                             ) : rows.map(r => (
@@ -202,11 +205,11 @@ export default function Show({ exam, registrations, availableStudents, stats, st
             {/* Dialog inscription d'élèves */}
             <Dialog open={addOpen} onOpenChange={setAddOpen}>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>Inscrire des élèves</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>{t('examens.official.show.register_students')}</DialogTitle></DialogHeader>
                     <div className="py-2">
                         <div className="max-h-80 overflow-y-auto divide-y divide-gray-50 ring-1 ring-gray-100 rounded-xl">
                             {availableStudents.length === 0 ? (
-                                <p className="p-4 text-sm text-gray-400 text-center">Tous les élèves sont déjà inscrits.</p>
+                                <p className="p-4 text-sm text-gray-400 text-center">{t('examens.official.show.all_registered')}</p>
                             ) : availableStudents.map(s => (
                                 <label key={s.id} className="flex items-center gap-3 p-2.5 hover:bg-gray-50 cursor-pointer text-sm">
                                     <input type="checkbox" checked={selected.includes(s.id)} onChange={() => toggleSelect(s.id)} className="rounded" />
@@ -215,11 +218,11 @@ export default function Show({ exam, registrations, availableStudents, stats, st
                                 </label>
                             ))}
                         </div>
-                        <p className="text-xs text-gray-400 mt-2">{selected.length} sélectionné(s)</p>
+                        <p className="text-xs text-gray-400 mt-2">{t('examens.official.show.selected', { count: selected.length })}</p>
                     </div>
                     <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setAddOpen(false)}>Annuler</Button>
-                        <Button onClick={addStudents} disabled={selected.length === 0} className="bg-blue-600 hover:bg-blue-700">Inscrire</Button>
+                        <Button variant="outline" onClick={() => setAddOpen(false)}>{t('common.actions.cancel')}</Button>
+                        <Button onClick={addStudents} disabled={selected.length === 0} className="bg-blue-600 hover:bg-blue-700">{t('examens.official.show.register')}</Button>
                     </div>
                 </DialogContent>
             </Dialog>

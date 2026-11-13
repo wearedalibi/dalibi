@@ -20,6 +20,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface AcademicYear {
@@ -65,6 +66,8 @@ interface ShowProps {
 const uid = () => (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
 
 export default function Show({ feeStructure }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [deleteConfirm, setDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [installmentsModal, setInstallmentsModal] = useState(false);
@@ -92,7 +95,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
         }, 0);
 
         if (newTotal > feeStructure.amount) {
-            setInstallmentsError(`Le total des tranches (${formatMoney(newTotal)}) dépasse le montant de la structure (${formatMoney(feeStructure.amount)})`);
+            setInstallmentsError(t('parametres.fee_structures.total_exceeds', { total: formatMoney(newTotal), amount: formatMoney(feeStructure.amount) }));
         } else {
             setInstallmentsError('');
         }
@@ -109,7 +112,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
         }, 0);
 
         if (newTotal > feeStructure.amount) {
-            setInstallmentsError(`Le total des tranches (${formatMoney(newTotal)}) dépasse le montant de la structure (${formatMoney(feeStructure.amount)})`);
+            setInstallmentsError(t('parametres.fee_structures.total_exceeds', { total: formatMoney(newTotal), amount: formatMoney(feeStructure.amount) }));
         } else {
             setInstallmentsError('');
         }
@@ -127,7 +130,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
         }, 0);
 
         if (newTotal > feeStructure.amount) {
-            setInstallmentsError(`Le total des tranches (${formatMoney(newTotal)}) dépasse le montant de la structure (${formatMoney(feeStructure.amount)})`);
+            setInstallmentsError(t('parametres.fee_structures.total_exceeds', { total: formatMoney(newTotal), amount: formatMoney(feeStructure.amount) }));
         } else {
             setInstallmentsError('');
         }
@@ -164,7 +167,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
 
     return (
         <AppLayout>
-            <Head title="Détails de la structure de frais" />
+            <Head title={t('parametres.fee_structures.show_head')} />
 
             <div className="space-y-6">
                 {/* Header */}
@@ -177,7 +180,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             className="text-gray-600 hover:text-gray-900"
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
-                            Retour
+                            {t('parametres.fee_structures.back')}
                         </Button>
                     </div>
                     <div className="flex gap-3">
@@ -200,7 +203,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             className="border-blue-300 text-blue-600 hover:bg-blue-50"
                         >
                             <Layers className="h-4 w-4 mr-2" />
-                            Gérer les tranches
+                            {t('parametres.fee_structures.manage_installments')}
                         </Button>
                         <Button
                             variant="outline"
@@ -208,7 +211,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             className="border-slate-200"
                         >
                             <Pencil className="h-4 w-4 mr-2" />
-                            Modifier
+                            {t('parametres.fee_structures.edit')}
                         </Button>
                         <Button
                             variant="outline"
@@ -216,7 +219,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             className="border-red-300 text-red-600 hover:bg-red-50"
                         >
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Supprimer
+                            {t('parametres.fee_structures.delete')}
                         </Button>
                     </div>
                 </div>
@@ -228,7 +231,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                         </div>
                         <div>
                             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-                                Structure de frais
+                                {t('parametres.fee_structures.show_heading')}
                             </h1>
                             <p className="text-lg text-gray-600 mt-1">
                                 {feeStructure.fee_category.name} - {feeStructure.classroom.name}
@@ -238,10 +241,10 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                     <div className="bg-linear-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-blue-100 text-sm font-medium">Montant total</p>
+                                <p className="text-blue-100 text-sm font-medium">{t('parametres.fee_structures.show_amount_total')}</p>
                                 <p className="text-3xl font-bold">{formatMoney(feeStructure.amount)}</p>
                                 <p className="text-blue-100 text-sm mt-1">
-                                    {feeStructure.academic_year.year} • {feeStructure.installments?.length || 0} tranche(s)
+                                    {feeStructure.academic_year.year} • {t('parametres.fee_structures.installments_count', { count: feeStructure.installments?.length || 0 })}
                                 </p>
                             </div>
                             <div className="text-right">
@@ -262,20 +265,20 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             <div className="p-2 bg-blue-100 rounded-lg">
                                 <BookOpen className="h-5 w-5 text-blue-600" />
                             </div>
-                            <h3 className="text-lg font-semibold text-blue-900">Informations générales</h3>
+                            <h3 className="text-lg font-semibold text-blue-900">{t('parametres.fee_structures.show_general')}</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white/60 rounded-lg p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Calendar className="h-4 w-4 text-blue-600" />
-                                    <div className="text-sm font-medium text-blue-800">Année académique</div>
+                                    <div className="text-sm font-medium text-blue-800">{t('parametres.fee_structures.show_year')}</div>
                                 </div>
                                 <p className="text-lg font-semibold text-gray-900">{feeStructure.academic_year.year}</p>
                             </div>
                             <div className="bg-white/60 rounded-lg p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                     <DollarSign className="h-4 w-4 text-blue-600" />
-                                    <div className="text-sm font-medium text-blue-800">Catégorie de frais</div>
+                                    <div className="text-sm font-medium text-blue-800">{t('parametres.fee_structures.show_category')}</div>
                                 </div>
                                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${getCategoryColor(feeStructure.fee_category.name)}`}>
                                     <DollarSign className="h-3.5 w-3.5" />
@@ -286,10 +289,10 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                         <div className="mt-4 bg-white/60 rounded-lg p-4">
                             <div className="flex items-center gap-2 mb-2">
                                 <Users className="h-4 w-4 text-blue-600" />
-                                <div className="text-sm font-medium text-blue-800">Classe concernée</div>
+                                <div className="text-sm font-medium text-blue-800">{t('parametres.fee_structures.show_class')}</div>
                             </div>
                             <p className="text-lg font-semibold text-gray-900">{feeStructure.classroom.name}</p>
-                            <p className="text-sm text-gray-600 mt-1">Code: <span className="font-medium">{feeStructure.classroom.code}</span></p>
+                            <p className="text-sm text-gray-600 mt-1">{t('parametres.fee_structures.show_code')}: <span className="font-medium">{feeStructure.classroom.code}</span></p>
                         </div>
                     </div>
 
@@ -299,18 +302,18 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             <div className="p-2 bg-green-100 rounded-lg">
                                 <CreditCard className="h-5 w-5 text-green-600" />
                             </div>
-                            <h3 className="text-lg font-semibold text-green-900">Montant et tranches</h3>
+                            <h3 className="text-lg font-semibold text-green-900">{t('parametres.fee_structures.show_amount_section')}</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white/60 rounded-lg p-4">
-                                <div className="text-sm font-medium text-green-800 mb-2">Montant total</div>
+                                <div className="text-sm font-medium text-green-800 mb-2">{t('parametres.fee_structures.show_amount_total')}</div>
                                 <p className="text-3xl font-bold text-green-600">{formatMoney(feeStructure.amount)}</p>
                             </div>
                             <div className="bg-white/60 rounded-lg p-4">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <Layers className="h-4 w-4 text-green-600" />
-                                        <div className="text-sm font-medium text-green-800">Tranches</div>
+                                        <div className="text-sm font-medium text-green-800">{t('parametres.fee_structures.installments')}</div>
                                     </div>
                                     <Button
                                         variant="outline"
@@ -332,7 +335,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                         className="border-green-300 text-green-600 hover:bg-green-50"
                                     >
                                         <Layers className="h-4 w-4 mr-2" />
-                                        Gérer
+                                        {t('parametres.fee_structures.manage')}
                                     </Button>
                                 </div>
                                 {feeStructure.installments && feeStructure.installments.length > 0 ? (
@@ -343,14 +346,14 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                             <div key={installment.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
                                                 <div>
                                                     <p className="font-medium text-gray-900">{installment.name}</p>
-                                                    <p className="text-xs text-gray-600">Tranche {installment.installment_number}</p>
+                                                    <p className="text-xs text-gray-600">{t('parametres.fee_structures.installment_num', { num: installment.installment_number })}</p>
                                                 </div>
                                                 <p className="font-semibold text-green-700">{formatMoney(installment.amount)}</p>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-gray-500 text-sm">Aucune tranche définie</p>
+                                    <p className="text-gray-500 text-sm">{t('parametres.fee_structures.no_installments')}</p>
                                 )}
                             </div>
                         </div>
@@ -362,13 +365,13 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             <div className="p-2 bg-gray-100 rounded-lg">
                                 <Clock className="h-5 w-5 text-gray-600" />
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-900">Informations système</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">{t('parametres.fee_structures.show_system')}</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white/60 rounded-lg p-4">
-                                <div className="text-sm font-medium text-gray-700 mb-2">Créée le</div>
+                                <div className="text-sm font-medium text-gray-700 mb-2">{t('parametres.fee_structures.show_created_on')}</div>
                                 <p className="text-sm text-gray-900">
-                                    {new Date(feeStructure.created_at).toLocaleDateString('fr-FR', {
+                                    {new Date(feeStructure.created_at).toLocaleDateString(dateLocale, {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric',
@@ -378,9 +381,9 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                 </p>
                             </div>
                             <div className="bg-white/60 rounded-lg p-4">
-                                <div className="text-sm font-medium text-gray-700 mb-2">Dernière modification</div>
+                                <div className="text-sm font-medium text-gray-700 mb-2">{t('parametres.fee_structures.show_updated_on')}</div>
                                 <p className="text-sm text-gray-900">
-                                    {new Date(feeStructure.updated_at).toLocaleDateString('fr-FR', {
+                                    {new Date(feeStructure.updated_at).toLocaleDateString(dateLocale, {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric',
@@ -391,7 +394,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             </div>
                         </div>
                         <div className="mt-4 bg-white/60 rounded-lg p-4">
-                            <div className="text-sm font-medium text-gray-700 mb-2">Identifiant unique</div>
+                            <div className="text-sm font-medium text-gray-700 mb-2">{t('parametres.fee_structures.show_uid')}</div>
                             <p className="text-sm text-gray-600 font-mono bg-gray-100 px-3 py-1 rounded">{feeStructure.id}</p>
                         </div>
                     </div>
@@ -402,19 +405,19 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
             <AlertDialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.fee_structures.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette structure de frais ? Cette action est irréversible.
+                            {t('parametres.fee_structures.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-3">
-                        <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeleting}>{t('parametres.fee_structures.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDelete}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.fee_structures.deleting') : t('parametres.fee_structures.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
@@ -424,9 +427,9 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
             <Dialog open={installmentsModal} onOpenChange={setInstallmentsModal}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Gérer les tranches</DialogTitle>
+                        <DialogTitle>{t('parametres.fee_structures.modal_title')}</DialogTitle>
                         <DialogDescription>
-                            Ajoutez ou modifiez les tranches pour cette structure de frais.
+                            {t('parametres.fee_structures.modal_desc')}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -434,15 +437,15 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                         <div className="bg-blue-50 rounded-lg p-4 ring-1 ring-blue-100">
                             <div className="flex items-center gap-2 mb-2">
                                 <CreditCard className="h-4 w-4 text-blue-600" />
-                                <span className="text-sm font-medium text-blue-800">Structure actuelle</span>
+                                <span className="text-sm font-medium text-blue-800">{t('parametres.fee_structures.current_structure')}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="text-gray-600">Montant total:</span>
+                                    <span className="text-gray-600">{t('parametres.fee_structures.current_total')}</span>
                                     <span className="font-semibold text-gray-900 ml-2">{formatMoney(feeStructure.amount)}</span>
                                 </div>
                                 <div>
-                                    <span className="text-gray-600">Tranches actuelles:</span>
+                                    <span className="text-gray-600">{t('parametres.fee_structures.current_installments')}</span>
                                     <span className="font-semibold text-gray-900 ml-2">{feeStructure.installments?.length || 0}</span>
                                 </div>
                             </div>
@@ -451,10 +454,10 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                         <div className="bg-green-50 rounded-lg p-4 ring-1 ring-green-100">
                             <div className="flex items-center gap-2 mb-2">
                                 <Layers className="h-4 w-4 text-green-600" />
-                                <span className="text-sm font-medium text-green-800">Total des tranches configurées</span>
+                                <span className="text-sm font-medium text-green-800">{t('parametres.fee_structures.configured_total')}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">Montant total des tranches:</span>
+                                <span className="text-sm text-gray-600">{t('parametres.fee_structures.installments_total_label')}</span>
                                 <span className={`font-bold text-lg ${isTotalExceeded ? 'text-red-600' : 'text-green-600'}`}>
                                     {formatMoney(totalInstallments)}
                                 </span>
@@ -476,7 +479,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                 <div key={installment.uid} className="flex gap-3 items-end">
                                     <div className="flex-1">
                                         <label htmlFor={nameId} className="block text-sm font-medium text-gray-700 mb-1">
-                                            Nom de la tranche
+                                            {t('parametres.fee_structures.installment_name')}
                                         </label>
                                         <input
                                             id={nameId}
@@ -484,12 +487,12 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                             value={installment.name}
                                             onChange={(e) => updateInstallment(index, 'name', e.target.value)}
                                             className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="Ex: Première tranche"
+                                            placeholder={t('parametres.fee_structures.installment_name_ph')}
                                         />
                                     </div>
                                     <div className="w-24">
                                         <label htmlFor={numberId} className="block text-sm font-medium text-gray-700 mb-1">
-                                            N°
+                                            {t('parametres.fee_structures.installment_number_label')}
                                         </label>
                                         <input
                                             id={numberId}
@@ -503,7 +506,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                     </div>
                                     <div className="flex-1">
                                         <label htmlFor={amountId} className="block text-sm font-medium text-gray-700 mb-1">
-                                            Montant
+                                            {t('parametres.fee_structures.installment_amount')}
                                         </label>
                                         <input
                                             id={amountId}
@@ -537,7 +540,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                             className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
                         >
                             <Layers className="h-4 w-4 mr-2" />
-                            Ajouter une tranche
+                            {t('parametres.fee_structures.add_installment')}
                         </Button>
                         <div className="flex justify-end gap-3 pt-4">
                             <Button
@@ -547,7 +550,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                     setNewInstallments([{uid: uid(), name: '', installment_number: '1', amount: '0'}]);
                                 }}
                             >
-                                Annuler
+                                {t('parametres.fee_structures.cancel')}
                             </Button>
                             <Button
                                 onClick={() => {
@@ -558,11 +561,11 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                         Number.parseFloat(inst.amount) > 0
                                     );
                                     if (validInstallments.length === 0) {
-                                        alert('Veuillez ajouter au moins une tranche valide.');
+                                        alert(t('parametres.fee_structures.err_valid_installment'));
                                         return;
                                     }
                                     if (isTotalExceeded) {
-                                        alert('Le total des tranches ne peut pas dépasser le montant de la structure de frais.');
+                                        alert(t('parametres.fee_structures.err_total_exceeds'));
                                         return;
                                     }
                                     router.post(route('fee-structures.installments.store-multiple', feeStructure.id), {
@@ -575,7 +578,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                             setInstallmentsError('');
                                         },
                                         onError: (errs) => {
-                                            setInstallmentsError(errs.installments ?? 'Erreur lors de l\'enregistrement des tranches.');
+                                            setInstallmentsError(errs.installments ?? t('parametres.fee_structures.err_saving'));
                                         },
                                     });
                                 }}
@@ -583,7 +586,7 @@ export default function Show({ feeStructure }: Readonly<ShowProps>) {
                                 className={`bg-blue-600 hover:bg-blue-700 ${isTotalExceeded ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 <Layers className="h-4 w-4 mr-2" />
-                                Enregistrer les tranches
+                                {t('parametres.fee_structures.save_installments')}
                             </Button>
                         </div>
                     </div>

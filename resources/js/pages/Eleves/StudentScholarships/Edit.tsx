@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Student {
@@ -59,7 +60,9 @@ interface SearchSelectProps {
     error?: string;
 }
 
-function StudentSearchSelect({ students, value, onChange, placeholder = "Sélectionnez un élève", error }: SearchSelectProps) {
+function StudentSearchSelect({ students, value, onChange, placeholder, error }: SearchSelectProps) {
+    const { t } = useTranslation();
+    const ph = placeholder ?? t('scholarships.form.select_student');
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -144,7 +147,7 @@ function StudentSearchSelect({ students, value, onChange, placeholder = "Sélect
                 <Input
                     ref={inputRef}
                     type="text"
-                    placeholder={selectedStudent ? `${selectedStudent.firstname} ${selectedStudent.lastname} (${selectedStudent.matricule})` : placeholder}
+                    placeholder={selectedStudent ? `${selectedStudent.firstname} ${selectedStudent.lastname} (${selectedStudent.matricule})` : ph}
                     value={isOpen ? search : (selectedStudent ? `${selectedStudent.firstname} ${selectedStudent.lastname} (${selectedStudent.matricule})` : '')}
                     onChange={(e) => {
                         setSearch(e.target.value);
@@ -169,7 +172,7 @@ function StudentSearchSelect({ students, value, onChange, placeholder = "Sélect
                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
                     {filteredStudents.length === 0 ? (
                         <div className="px-3 py-2 text-sm text-gray-500">
-                            Aucun élève trouvé
+                            {t('scholarships.form.no_student')}
                         </div>
                     ) : (
                         filteredStudents.map((student, index) => (
@@ -192,7 +195,7 @@ function StudentSearchSelect({ students, value, onChange, placeholder = "Sélect
                     )}
                     {students.length > 50 && filteredStudents.length === 50 && (
                         <div className="px-3 py-2 text-xs text-gray-500 border-t">
-                            Et {students.length - 50} autres élèves...
+                            {t('scholarships.form.more_students', { count: students.length - 50 })}
                         </div>
                     )}
                 </div>
@@ -206,6 +209,7 @@ function StudentSearchSelect({ students, value, onChange, placeholder = "Sélect
 }
 
 export default function Edit({ studentScholarship, students, scholarships, academicYears }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const currency = useCurrencySymbol();
     const { data, setData, put, processing, errors } = useForm({
         student_id: studentScholarship.student_id,
@@ -224,7 +228,7 @@ export default function Edit({ studentScholarship, students, scholarships, acade
 
     return (
         <AppLayout>
-            <Head title="Modifier l'attribution de bourse" />
+            <Head title={t('scholarships.form.edit_head')} />
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -234,12 +238,12 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                         onClick={() => router.visit(route('student-scholarships.show', studentScholarship.id))}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Retour
+                        {t('common.actions.back')}
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Modifier l'Attribution de Bourse</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{t('scholarships.form.edit_title')}</h1>
                         <p className="text-sm text-gray-600">
-                            Modifiez les détails de l'attribution de bourse
+                            {t('scholarships.form.edit_subtitle')}
                         </p>
                     </div>
                 </div>
@@ -250,7 +254,7 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                         <CardHeader className="bg-blue-100">
                             <CardTitle className="flex items-center gap-2 text-blue-900">
                                 <Award className="h-5 w-5" />
-                                Attribution de Bourse
+                                {t('scholarships.form.section_award')}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
@@ -259,13 +263,13 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                                 <div className="space-y-2">
                                     <Label htmlFor="student_id" className="flex items-center gap-2 text-blue-800">
                                         <User className="h-4 w-4" />
-                                        Élève *
+                                        {t('scholarships.form.student')}
                                     </Label>
                                     <StudentSearchSelect
                                         students={students}
                                         value={data.student_id}
                                         onChange={(value) => setData('student_id', value)}
-                                        placeholder="Rechercher et sélectionner un élève..."
+                                        placeholder={t('scholarships.form.student_search_ph')}
                                         error={errors.student_id}
                                     />
                                 </div>
@@ -274,14 +278,14 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                                 <div className="space-y-2">
                                     <Label htmlFor="scholarship_id" className="flex items-center gap-2 text-blue-800">
                                         <Award className="h-4 w-4" />
-                                        Bourse *
+                                        {t('scholarships.form.scholarship')}
                                     </Label>
                                     <Select
                                         value={data.scholarship_id}
                                         onValueChange={(value) => setData('scholarship_id', value)}
                                     >
                                         <SelectTrigger className="bg-white">
-                                            <SelectValue placeholder="Sélectionnez une bourse" />
+                                            <SelectValue placeholder={t('scholarships.form.select_scholarship')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {scholarships.map((scholarship) => (
@@ -300,14 +304,14 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                                 <div className="space-y-2 md:col-span-2">
                                     <Label htmlFor="academic_year_id" className="flex items-center gap-2 text-blue-800">
                                         <Calendar className="h-4 w-4" />
-                                        Année Académique *
+                                        {t('scholarships.form.academic_year')}
                                     </Label>
                                     <Select
                                         value={data.academic_year_id}
                                         onValueChange={(value) => setData('academic_year_id', value)}
                                     >
                                         <SelectTrigger className="bg-white md:w-1/2">
-                                            <SelectValue placeholder="Sélectionnez une année" />
+                                            <SelectValue placeholder={t('scholarships.form.select_year')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {academicYears.map((year) => (
@@ -325,14 +329,14 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                                 {/* Scholarship Duration */}
                                 <div className="space-y-2">
                                     <Label htmlFor="number_of_year" className="flex items-center gap-2 text-blue-800">
-                                        Nombre d'années
+                                        {t('scholarships.form.number_of_year')}
                                     </Label>
                                     <Input
                                         type="number"
                                         id="number_of_year"
                                         value={data.number_of_year}
                                         onChange={(e) => setData('number_of_year', e.target.value)}
-                                        placeholder="Ex: 1, 2, 3..."
+                                        placeholder={t('scholarships.form.number_of_year_ph')}
                                         className="bg-white"
                                         min="1"
                                     />
@@ -345,7 +349,7 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                                 <div className="space-y-2">
                                     <Label htmlFor="start_date" className="flex items-center gap-2 text-blue-800">
                                         <Calendar className="h-4 w-4" />
-                                        Date de début
+                                        {t('scholarships.form.start_date')}
                                     </Label>
                                     <Input
                                         type="date"
@@ -363,7 +367,7 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                                 <div className="space-y-2">
                                     <Label htmlFor="end_date" className="flex items-center gap-2 text-blue-800">
                                         <Calendar className="h-4 w-4" />
-                                        Date de fin
+                                        {t('scholarships.form.end_date')}
                                     </Label>
                                     <Input
                                         type="date"
@@ -385,20 +389,20 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                         <CardHeader className="bg-green-100">
                             <CardTitle className="flex items-center gap-2 text-green-900">
                                 <FileText className="h-5 w-5" />
-                                Informations Complémentaires
+                                {t('scholarships.form.extra_info')}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
                             <div className="space-y-2">
                                 <Label htmlFor="notes" className="flex items-center gap-2 text-green-800">
                                     <FileText className="h-4 w-4" />
-                                    Notes (optionnel)
+                                    {t('scholarships.form.notes')}
                                 </Label>
                                 <Textarea
                                     id="notes"
                                     value={data.notes}
                                     onChange={(e) => setData('notes', e.target.value)}
-                                    placeholder="Ajoutez des notes sur cette attribution..."
+                                    placeholder={t('scholarships.form.notes_ph')}
                                     rows={3}
                                     className="bg-white"
                                 />
@@ -416,7 +420,7 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                             variant="outline"
                             onClick={() => router.visit(route('student-scholarships.show', studentScholarship.id))}
                         >
-                            Annuler
+                            {t('common.actions.cancel')}
                         </Button>
                         <Button
                             type="submit"
@@ -424,7 +428,7 @@ export default function Edit({ studentScholarship, students, scholarships, acade
                             className="bg-blue-600 hover:bg-blue-700"
                         >
                             <Save className="mr-2 h-4 w-4" />
-                            {processing ? 'Enregistrement...' : 'Enregistrer'}
+                            {processing ? t('scholarships.form.saving') : t('common.actions.save')}
                         </Button>
                     </div>
                 </form>

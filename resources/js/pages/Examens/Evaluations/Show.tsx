@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, ClipboardList, TrendingUp, UserX, Users } from
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Mark {
@@ -33,6 +34,7 @@ interface Evaluation {
 interface Props { evaluation: Evaluation; }
 
 export default function Show({ evaluation }: Readonly<Props>) {
+    const { t } = useTranslation();
     const maxScore   = Number(evaluation.template.max_score);
     const gradedMarks = evaluation.marks.filter(m => !m.absent && m.score !== null);
     const absentCount = evaluation.marks.filter(m => m.absent).length;
@@ -49,15 +51,15 @@ export default function Show({ evaluation }: Readonly<Props>) {
     };
 
     const statsCards = [
-        { title: 'Élèves', value: evaluation.marks.length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 ring-blue-100' },
-        { title: 'Notés', value: gradedMarks.length, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 ring-emerald-100' },
-        { title: 'Absents', value: absentCount, icon: UserX, color: 'text-orange-600', bg: 'bg-orange-50 ring-orange-100' },
-        { title: `Moyenne /${maxScore}`, value: avg ?? '—', icon: TrendingUp, color: 'text-violet-600', bg: 'bg-violet-50 ring-violet-100' },
+        { title: t('examens.evaluations.show.students'), value: evaluation.marks.length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 ring-blue-100' },
+        { title: t('examens.evaluations.show.graded'), value: gradedMarks.length, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 ring-emerald-100' },
+        { title: t('examens.evaluations.show.absent'), value: absentCount, icon: UserX, color: 'text-orange-600', bg: 'bg-orange-50 ring-orange-100' },
+        { title: t('examens.evaluations.show.avg', { max: maxScore }), value: avg ?? '—', icon: TrendingUp, color: 'text-violet-600', bg: 'bg-violet-50 ring-violet-100' },
     ];
 
     return (
         <AppLayout>
-            <Head title={`${evaluation.template.name} — ${evaluation.class_subject.class.name}`} />
+            <Head title={t('examens.evaluations.show.head', { template: evaluation.template.name, class: evaluation.class_subject.class.name })} />
 
             <div className="w-full space-y-6">
 
@@ -74,7 +76,7 @@ export default function Show({ evaluation }: Readonly<Props>) {
                             <span>·</span>
                             <span>{evaluation.template.academic_period.name}</span>
                             <span>·</span>
-                            <span>Coeff. {Number(evaluation.template.coefficient).toFixed(2)}</span>
+                            <span>{t('examens.templates.index.col_coeff')} {Number(evaluation.template.coefficient).toFixed(2)}</span>
                             <span>·</span>
                             <span>/{maxScore}</span>
                         </div>
@@ -84,13 +86,13 @@ export default function Show({ evaluation }: Readonly<Props>) {
                             evaluation.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                         }`}>
                             {evaluation.status === 'completed' && <CheckCircle2 className="w-3 h-3" />}
-                            {evaluation.status === 'completed' ? 'Terminée' : 'Planifiée'}
+                            {evaluation.status === 'completed' ? t('examens.evaluations.show.status_completed') : t('examens.evaluations.show.status_scheduled')}
                         </span>
                         <Button
                             className="gap-2 bg-blue-600 hover:bg-blue-700"
                             onClick={() => router.get(route('marks.index', evaluation.id))}
                         >
-                            <ClipboardList className="w-4 h-4" /> Saisir les notes
+                            <ClipboardList className="w-4 h-4" /> {t('examens.evaluations.show.enter_marks')}
                         </Button>
                     </div>
                 </div>
@@ -115,28 +117,28 @@ export default function Show({ evaluation }: Readonly<Props>) {
 
                 {min !== null && max !== null && (
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-4 flex gap-8 text-sm text-gray-600">
-                        <span>Min : <strong className="text-red-500">{min}/{maxScore}</strong></span>
-                        <span>Max : <strong className="text-emerald-600">{max}/{maxScore}</strong></span>
-                        <span>Moyenne : <strong className="text-blue-600">{avg}/{maxScore}</strong></span>
+                        <span>{t('examens.evaluations.show.min_label')} <strong className="text-red-500">{min}/{maxScore}</strong></span>
+                        <span>{t('examens.evaluations.show.max_label')} <strong className="text-emerald-600">{max}/{maxScore}</strong></span>
+                        <span>{t('examens.evaluations.show.avg_label')} <strong className="text-blue-600">{avg}/{maxScore}</strong></span>
                     </div>
                 )}
 
                 {/* Notes */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100">
-                        <h2 className="font-semibold text-gray-900">Notes saisies</h2>
+                        <h2 className="font-semibold text-gray-900">{t('examens.evaluations.show.marks_entered')}</h2>
                     </div>
                     {evaluation.marks.length === 0 ? (
-                        <div className="py-12 text-center text-gray-400">Aucune note encore saisie.</div>
+                        <div className="py-12 text-center text-gray-400">{t('examens.evaluations.show.no_marks')}</div>
                     ) : (
                         <Table>
                             <TableHeader className="bg-gray-50">
                                 <TableRow>
                                     <TableHead className="w-10">#</TableHead>
-                                    <TableHead>Matricule</TableHead>
-                                    <TableHead>Élève</TableHead>
-                                    <TableHead className="text-center">Note</TableHead>
-                                    <TableHead>Appréciation</TableHead>
+                                    <TableHead>{t('examens.evaluations.show.col_matricule')}</TableHead>
+                                    <TableHead>{t('examens.evaluations.show.col_student')}</TableHead>
+                                    <TableHead className="text-center">{t('examens.evaluations.show.col_mark')}</TableHead>
+                                    <TableHead>{t('examens.evaluations.show.col_comment')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -149,7 +151,7 @@ export default function Show({ evaluation }: Readonly<Props>) {
                                         </TableCell>
                                         <TableCell className="text-center">
                                             {m.absent ? (
-                                                <span className="text-xs text-orange-500 italic">Absent</span>
+                                                <span className="text-xs text-orange-500 italic">{t('examens.evaluations.show.absent_mark')}</span>
                                             ) : m.score !== null ? (
                                                 <span className={scoreColor(Number(m.score))}>
                                                     {Number(m.score).toFixed(2)}/{maxScore}

@@ -16,8 +16,6 @@ use Inertia\Response;
 
 class ArchiveController extends Controller
 {
-    private const TYPES = ['student' => Student::class, 'classroom' => Classroom::class];
-
     private function authorizeManage(Request $request): void
     {
         // Socle de sécurité : les routes portent déjà la permission fine (create/edit/
@@ -234,9 +232,12 @@ class ArchiveController extends Controller
             return null;
         }
 
-        return match ($d->documentable_type) {
-            Student::class => 'Élève : '.$d->documentable->name,
-            Classroom::class => 'Classe : '.$d->documentable->name,
+        $linked = $d->documentable;
+
+        return match (true) {
+            // Un élève n'a pas de colonne « name » : on compose nom + prénom.
+            $linked instanceof Student => 'Élève : '.trim($linked->firstname.' '.$linked->lastname),
+            $linked instanceof Classroom => 'Classe : '.$linked->name,
             default => null,
         };
     }

@@ -34,7 +34,11 @@ class Guardian extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /** Enfants liés à ce tuteur. */
+    /**
+     * Enfants liés à ce tuteur.
+     *
+     * @return BelongsToMany<Student, $this>
+     */
     public function children(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'guardian_student')->withPivot('relationship');

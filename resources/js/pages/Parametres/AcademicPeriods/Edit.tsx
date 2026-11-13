@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface AcademicYear {
@@ -50,6 +51,7 @@ interface EditProps {
 }
 
 export default function Edit({ academicPeriod, academicYears, classroomTypes = [] }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: academicPeriod.name,
         description: academicPeriod.description || '',
@@ -84,7 +86,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
 
     return (
         <AppLayout>
-            <Head title={`Modifier ${academicPeriod.name}`} />
+            <Head title={t('parametres.academic_periods.edit_head', { name: academicPeriod.name })} />
 
             <div className="space-y-6">
                 {/* En-tête */}
@@ -98,7 +100,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                            Modifier la période
+                            {t('parametres.academic_periods.edit_title')}
                         </h1>
                         <p className="text-gray-500 mt-1 text-sm">
                             {academicPeriod.name} — {academicPeriod.academic_year.year}
@@ -112,21 +114,21 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                     <div className="rounded-2xl p-6 bg-linear-to-br from-indigo-50 to-blue-50 border border-indigo-100 shadow-sm">
                         <h2 className="text-base font-semibold text-indigo-800 mb-5 flex items-center gap-2">
                             <GraduationCap className="w-5 h-5 text-indigo-500" />
-                            Identification
+                            {t('parametres.academic_periods.section_identification')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Nom */}
                             <div className="space-y-1.5">
                                 <label htmlFor="name" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <FileText className="w-4 h-4 text-indigo-400" />
-                                    Nom <span className="text-red-500">*</span>
+                                    {t('parametres.academic_periods.label_name')} <span className="text-red-500">*</span>
                                 </label>
                                 <Input
                                     id="name"
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                                    placeholder="Ex: Trimestre 1, Semestre 1..."
+                                    placeholder={t('parametres.academic_periods.name_ph')}
                                     className={errors.name ? 'border-red-400 bg-red-50/40 ring-1 ring-red-300' : 'border-indigo-200 bg-white focus-visible:ring-indigo-400'}
                                 />
                                 {errors.name && <p className="text-red-600 text-xs flex items-center gap-1"><X className="w-3 h-3" />{errors.name}</p>}
@@ -136,7 +138,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                             <div className="space-y-1.5">
                                 <label htmlFor="academic_year_id" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <GraduationCap className="w-4 h-4 text-indigo-400" />
-                                    Année académique <span className="text-red-500">*</span>
+                                    {t('parametres.academic_periods.label_year')} <span className="text-red-500">*</span>
                                 </label>
                                 <Select
                                     value={formData.academic_year_id}
@@ -146,7 +148,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                                         id="academic_year_id"
                                         className={`bg-white ${errors.academic_year_id ? 'border-red-400 ring-1 ring-red-300' : 'border-indigo-200'}`}
                                     >
-                                        <SelectValue placeholder="Sélectionner une année" />
+                                        <SelectValue placeholder={t('parametres.academic_periods.year_ph')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {academicYears.map((year) => (
@@ -163,14 +165,14 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                     <div className="rounded-2xl p-6 bg-linear-to-br from-violet-50 to-purple-50 border border-violet-100 shadow-sm">
                         <h2 className="text-base font-semibold text-violet-800 mb-5 flex items-center gap-2">
                             <Hash className="w-5 h-5 text-violet-500" />
-                            Classification
+                            {t('parametres.academic_periods.section_classification')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Type */}
                             <div className="space-y-1.5">
                                 <label htmlFor="type" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <Hash className="w-4 h-4 text-violet-400" />
-                                    Type <span className="text-red-500">*</span>
+                                    {t('parametres.academic_periods.label_type')} <span className="text-red-500">*</span>
                                 </label>
                                 <Select
                                     value={formData.type}
@@ -183,8 +185,8 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="trimestre">Trimestre</SelectItem>
-                                        <SelectItem value="semestre">Semestre</SelectItem>
+                                        <SelectItem value="trimestre">{t('parametres.academic_periods.type_trimester')}</SelectItem>
+                                        <SelectItem value="semestre">{t('parametres.academic_periods.type_semester')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 {errors.type && <p className="text-red-600 text-xs flex items-center gap-1"><X className="w-3 h-3" />{errors.type}</p>}
@@ -194,7 +196,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                             <div className="space-y-1.5">
                                 <label htmlFor="order" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <ListOrdered className="w-4 h-4 text-violet-400" />
-                                    Ordre
+                                    {t('parametres.academic_periods.label_order')}
                                 </label>
                                 <Input
                                     id="order"
@@ -202,7 +204,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                                     min="1"
                                     value={formData.order}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, order: e.target.value }))}
-                                    placeholder="1, 2, 3..."
+                                    placeholder={t('parametres.academic_periods.order_ph')}
                                     className={errors.order ? 'border-red-400 bg-red-50/40 ring-1 ring-red-300' : 'border-violet-200 bg-white focus-visible:ring-violet-400'}
                                 />
                                 {errors.order && <p className="text-red-600 text-xs flex items-center gap-1"><X className="w-3 h-3" />{errors.order}</p>}
@@ -212,7 +214,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                             <div className="space-y-1.5">
                                 <label htmlFor="class_type_id" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <GraduationCap className="w-4 h-4 text-violet-400" />
-                                    Type de classe
+                                    {t('parametres.academic_periods.label_class_type')}
                                 </label>
                                 <Select
                                     value={formData.class_type_id}
@@ -222,20 +224,20 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">Toutes les classes (global)</SelectItem>
+                                        <SelectItem value="all">{t('parametres.academic_periods.class_type_all')}</SelectItem>
                                         {classroomTypes.map((ct) => (
                                             <SelectItem key={ct.id} value={ct.id}>{ct.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <p className="text-xs text-gray-400">Laisser « global » pour appliquer à tous les types de classe.</p>
+                                <p className="text-xs text-gray-400">{t('parametres.academic_periods.class_type_hint')}</p>
                             </div>
 
                             {/* Poids (moyenne annuelle) */}
                             <div className="space-y-1.5">
                                 <label htmlFor="weight" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <Hash className="w-4 h-4 text-violet-400" />
-                                    Poids (moyenne annuelle)
+                                    {t('parametres.academic_periods.label_weight')}
                                 </label>
                                 <Input
                                     id="weight"
@@ -255,14 +257,14 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                     <div className="rounded-2xl p-6 bg-linear-to-br from-teal-50 to-emerald-50 border border-teal-100 shadow-sm">
                         <h2 className="text-base font-semibold text-teal-800 mb-5 flex items-center gap-2">
                             <CalendarRange className="w-5 h-5 text-teal-500" />
-                            Calendrier
+                            {t('parametres.academic_periods.section_calendar')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Date de début */}
                             <div className="space-y-1.5">
                                 <label htmlFor="start_date" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <CalendarDays className="w-4 h-4 text-teal-400" />
-                                    Date de début <span className="text-red-500">*</span>
+                                    {t('parametres.academic_periods.label_start')} <span className="text-red-500">*</span>
                                 </label>
                                 <Input
                                     id="start_date"
@@ -278,7 +280,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                             <div className="space-y-1.5">
                                 <label htmlFor="end_date" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <CalendarDays className="w-4 h-4 text-teal-400" />
-                                    Date de fin <span className="text-red-500">*</span>
+                                    {t('parametres.academic_periods.label_end')} <span className="text-red-500">*</span>
                                 </label>
                                 <Input
                                     id="end_date"
@@ -296,20 +298,20 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                     <div className="rounded-2xl p-6 bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 shadow-sm">
                         <h2 className="text-base font-semibold text-amber-800 mb-5 flex items-center gap-2">
                             <Star className="w-5 h-5 text-amber-500" />
-                            Détails &amp; Statut
+                            {t('parametres.academic_periods.section_details')}
                         </h2>
                         <div className="space-y-5">
                             {/* Description */}
                             <div className="space-y-1.5">
                                 <label htmlFor="description" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <FileText className="w-4 h-4 text-amber-400" />
-                                    Description
+                                    {t('parametres.academic_periods.label_description')}
                                 </label>
                                 <Textarea
                                     id="description"
                                     value={formData.description}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                                    placeholder="Description de la période..."
+                                    placeholder={t('parametres.academic_periods.description_ph')}
                                     rows={3}
                                     className={errors.description ? 'border-red-400 bg-red-50/40 ring-1 ring-red-300 resize-none' : 'border-amber-200 bg-white focus-visible:ring-amber-400 resize-none'}
                                 />
@@ -327,7 +329,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                                 />
                                 <span className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                                     <Star className="w-4 h-4 text-amber-400" />
-                                    Période active (en cours)
+                                    {t('parametres.academic_periods.active_label')}
                                 </span>
                             </label>
                         </div>
@@ -341,7 +343,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                             className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm min-w-40"
                         >
                             <Save className="w-4 h-4 mr-2" />
-                            {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                            {isSubmitting ? t('parametres.academic_periods.saving') : t('parametres.academic_periods.submit_update')}
                         </Button>
                         <Button
                             type="button"
@@ -350,7 +352,7 @@ export default function Edit({ academicPeriod, academicYears, classroomTypes = [
                             onClick={() => router.get(route('academic-periods.index'))}
                         >
                             <X className="w-4 h-4 mr-1.5" />
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                     </div>
                 </form>

@@ -18,6 +18,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface StudentSummary {
@@ -55,19 +56,12 @@ interface HistoryProps {
     enrollments: EnrollmentHistoryItem[];
 }
 
-function formatDate(value?: string | null): string {
+function formatDate(value: string | null | undefined, loc: string): string {
     if (!value) {
         return '—';
     }
 
-    return new Date(value).toLocaleDateString('fr-FR');
-}
-
-function getStatusLabel(status?: string | null): string {
-    if (!status) return '—';
-    return ({
-        PAID: 'Payé', PARTIALLY_PAID: 'Partiel', ISSUED: 'Impayé', NONE: 'Sans facture',
-    } as Record<string, string>)[status] ?? status;
+    return new Date(value).toLocaleDateString(loc);
 }
 
 function getStatusClass(status?: string | null): string {
@@ -78,12 +72,18 @@ function getStatusClass(status?: string | null): string {
 }
 
 export default function HistoryPage({ student, enrollments }: Readonly<HistoryProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
+    const getStatusLabel = (status?: string | null): string => {
+        if (!status) return '—';
+        return t(`students.history.pay.${status}`);
+    };
     const firstEnrollment = enrollments.at(-1);
     const latestEnrollment = enrollments[0];
 
     return (
         <AppLayout>
-            <Head title="Historique des inscriptions" />
+            <Head title={t('students.history.title')} />
 
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -96,7 +96,7 @@ export default function HistoryPage({ student, enrollments }: Readonly<HistoryPr
                             <ArrowLeft className="w-5 h-5 text-gray-600" />
                         </button>
                         <div>
-                            <h1 className="text-4xl font-bold tracking-tight text-gray-900">Historique des inscriptions</h1>
+                            <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('students.history.title')}</h1>
                             <p className="mt-2 text-gray-600">
                                 {student.firstname} {student.lastname}
                                 {student.matricule ? ` (${student.matricule})` : ''}
@@ -109,13 +109,13 @@ export default function HistoryPage({ student, enrollments }: Readonly<HistoryPr
                         className="gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
                     >
                         <History className="w-4 h-4" />
-                        Voir le profil élève
+                        {t('students.history.view_profile')}
                     </Button>
                 </div>
 
                 <div className="rounded-xl border border-sky-200 bg-sky-50 p-4 shadow-sm flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-xs uppercase tracking-wide text-sky-700 font-semibold">Parcours scolaire</p>
+                        <p className="text-xs uppercase tracking-wide text-sky-700 font-semibold">{t('students.history.journey')}</p>
                         <p className="mt-1 text-lg font-bold text-sky-900 inline-flex items-center gap-2">
                             <UserCircle2 className="w-5 h-5" />
                             {student.firstname} {student.lastname}
@@ -123,21 +123,21 @@ export default function HistoryPage({ student, enrollments }: Readonly<HistoryPr
                     </div>
                     <div className="inline-flex items-center gap-2 rounded-full bg-white border border-sky-200 px-3 py-1 text-sm font-semibold text-sky-800">
                         <BadgeCheck className="w-4 h-4" />
-                        {enrollments.length} inscription(s)
+                        {t('students.history.count', { count: enrollments.length })}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
-                        <p className="text-sm text-blue-700 inline-flex items-center gap-1.5"><History className="w-4 h-4" />Total inscriptions</p>
+                        <p className="text-sm text-blue-700 inline-flex items-center gap-1.5"><History className="w-4 h-4" />{t('students.history.total')}</p>
                         <p className="text-2xl font-bold text-blue-900 mt-1">{enrollments.length}</p>
                     </div>
                     <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
-                        <p className="text-sm text-emerald-700 inline-flex items-center gap-1.5"><GraduationCap className="w-4 h-4" />Première classe</p>
+                        <p className="text-sm text-emerald-700 inline-flex items-center gap-1.5"><GraduationCap className="w-4 h-4" />{t('students.history.first_class')}</p>
                         <p className="text-lg font-semibold text-emerald-900 mt-1">{firstEnrollment?.classroom?.name ?? '—'}</p>
                     </div>
                     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
-                        <p className="text-sm text-amber-700 inline-flex items-center gap-1.5"><School className="w-4 h-4" />Classe actuelle</p>
+                        <p className="text-sm text-amber-700 inline-flex items-center gap-1.5"><School className="w-4 h-4" />{t('students.history.current_class')}</p>
                         <p className="text-lg font-semibold text-amber-900 mt-1">{latestEnrollment?.classroom?.name ?? '—'}</p>
                     </div>
                 </div>
@@ -145,19 +145,19 @@ export default function HistoryPage({ student, enrollments }: Readonly<HistoryPr
                 <div className="rounded-xl border border-indigo-100 bg-linear-to-br from-indigo-50 to-white shadow-sm overflow-hidden">
                     <div className="px-4 py-3 border-b border-indigo-100 flex items-center gap-2 text-indigo-800 bg-indigo-50">
                         <School className="w-4 h-4" />
-                        <span className="font-semibold">Parcours par classe et année scolaire</span>
+                        <span className="font-semibold">{t('students.history.by_class_year')}</span>
                     </div>
 
                     <div className="overflow-x-auto">
                         <Table>
                             <TableHeader className="bg-indigo-50/60">
                                 <TableRow className="border-b border-gray-200">
-                                    <TableHead className="font-semibold text-gray-900">Classe</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Année scolaire</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Date d'inscription</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Code inscription</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Paiement</TableHead>
-                                    <TableHead className="font-semibold text-gray-900">Scolarité</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.history.col_class')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.history.col_year')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.history.col_date')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.history.col_code')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.history.col_payment')}</TableHead>
+                                    <TableHead className="font-semibold text-gray-900">{t('students.history.col_schooling')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -166,7 +166,7 @@ export default function HistoryPage({ student, enrollments }: Readonly<HistoryPr
                                         <TableCell colSpan={6} className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <CalendarDays className="w-10 h-10 text-gray-300" />
-                                                <p>Aucune inscription trouvée pour cet élève.</p>
+                                                <p>{t('students.history.empty')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -180,7 +180,7 @@ export default function HistoryPage({ student, enrollments }: Readonly<HistoryPr
                                                 ) : null}
                                             </TableCell>
                                             <TableCell className="text-gray-700">{enrollment.academic_year ?? '—'}</TableCell>
-                                            <TableCell className="text-gray-700">{formatDate(enrollment.enrollment_date)}</TableCell>
+                                            <TableCell className="text-gray-700">{formatDate(enrollment.enrollment_date, dateLocale)}</TableCell>
                                             <TableCell className="text-gray-700">{enrollment.enrollment_code ?? '—'}</TableCell>
                                             <TableCell>
                                                 <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusClass(enrollment.status)}`}>

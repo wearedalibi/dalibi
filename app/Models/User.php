@@ -23,6 +23,7 @@ use App\Services\MatriculeService;
 use App\Traits\HasMatricule;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,8 +31,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property-read Collection<int, Role> $roles
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -55,6 +60,7 @@ class User extends Authenticatable
         'password',
         'is_demo',
         'must_change_password',
+        'locale',
     ];
 
     /**
@@ -97,27 +103,41 @@ class User extends Authenticatable
 
     /**
      * Get the user's full name
+     *
+     * @return Attribute<string, never>
      */
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn () => "{$this->firstname} {$this->lastname}",
+            get: fn (): string => "{$this->firstname} {$this->lastname}",
         );
     }
 
-    /** Profil RH (paie) de l'utilisateur, s'il est employé. */
+    /**
+     * Profil RH (paie) de l'utilisateur, s'il est employé.
+     *
+     * @return HasOne<EmployeeProfile, $this>
+     */
     public function employeeProfile(): HasOne
     {
         return $this->hasOne(EmployeeProfile::class);
     }
 
-    /** Affectations matières où l'utilisateur est l'enseignant. */
+    /**
+     * Affectations matières où l'utilisateur est l'enseignant.
+     *
+     * @return HasMany<SubjectAssignment, $this>
+     */
     public function subjectAssignments(): HasMany
     {
         return $this->hasMany(SubjectAssignment::class, 'teacher_id');
     }
 
-    /** Créneaux d'emploi du temps où l'utilisateur est l'enseignant. */
+    /**
+     * Créneaux d'emploi du temps où l'utilisateur est l'enseignant.
+     *
+     * @return HasMany<TimetableSlot, $this>
+     */
     public function timetableSlots(): HasMany
     {
         return $this->hasMany(TimetableSlot::class, 'teacher_id');
@@ -156,7 +176,7 @@ class User extends Authenticatable
         $matriculeService = app(MatriculeService::class);
 
         // Obtenir le rôle principal de l'utilisateur
-        $role = $this->roles?->first()?->name;
+        $role = $this->roles->first()?->name;
 
         if ($role) {
             return $matriculeService->generateUserMatricule($role);

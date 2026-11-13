@@ -138,7 +138,7 @@ final class FrenchNumberSpeller
                 ? ($isFinal ? 'quatre-vingts' : 'quatre-vingt')
                 : 'quatre-vingt-'.self::UNITS[$unit],
             90 => 'quatre-vingt-'.self::UNITS[10 + $unit],
-            default => self::UNITS[$n], // inatteignable, garde-fou
+            default => throw new \LogicException("Dizaine inattendue: {$base}"), // inatteignable pour n ∈ [20,99]
         };
     }
 

@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Building2, CalendarClock, CheckCircle2, ImageIcon, Mail, MapPin, Pencil, Phone, Quote, XCircle, School } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface School {
@@ -28,6 +29,8 @@ interface ShowProps {
 }
 
 export default function Show({ school }: Readonly<ShowProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const logoUrl = school.logo_url ?? null;
 
     return (
@@ -64,11 +67,11 @@ export default function Show({ school }: Readonly<ShowProps>) {
                                     <span className="text-xs text-gray-400 font-mono">{school.code}</span>
                                     {school.active ? (
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
-                                            <CheckCircle2 className="w-3 h-3" /> Active
+                                            <CheckCircle2 className="w-3 h-3" /> {t('parametres.schools.active')}
                                         </span>
                                     ) : (
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
-                                            <XCircle className="w-3 h-3" /> Inactive
+                                            <XCircle className="w-3 h-3" /> {t('parametres.schools.inactive')}
                                         </span>
                                     )}
                                 </div>
@@ -78,7 +81,7 @@ export default function Show({ school }: Readonly<ShowProps>) {
                     <Link href={route('schools.edit', school.id)}>
                         <Button className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm">
                             <Pencil className="w-4 h-4" />
-                            Éditer
+                            {t('parametres.common.edit')}
                         </Button>
                     </Link>
                 </div>
@@ -88,31 +91,31 @@ export default function Show({ school }: Readonly<ShowProps>) {
                     <div className="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-gray-100 space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                             <Building2 className="w-5 h-5 text-blue-600" />
-                            Informations générales
+                            {t('parametres.schools.section_general')}
                         </h2>
 
                         <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Terme / Entité</p>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.terme_entity')}</p>
                             <p className="text-sm font-medium text-gray-900 mt-0.5">{school.terme || '-'}</p>
                         </div>
 
                         <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
-                                <Quote className="w-3 h-3" /> Devise
+                                <Quote className="w-3 h-3" /> {t('parametres.schools.devise')}
                             </p>
                             <p className="text-sm font-medium text-gray-900 italic mt-0.5">{school.devise || '-'}</p>
                         </div>
 
                         <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
-                                <Mail className="w-3 h-3" /> E-mail
+                                <Mail className="w-3 h-3" /> {t('parametres.schools.email')}
                             </p>
                             <p className="text-sm font-medium text-gray-900 mt-0.5">{school.email || '-'}</p>
                         </div>
 
                         <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
-                                <Phone className="w-3 h-3" /> Téléphone
+                                <Phone className="w-3 h-3" /> {t('parametres.schools.phone')}
                             </p>
                             <p className="text-sm font-medium text-gray-900 mt-0.5">{school.phone || '-'}</p>
                         </div>
@@ -123,22 +126,22 @@ export default function Show({ school }: Readonly<ShowProps>) {
                         <div className="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-gray-100 space-y-3">
                             <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                 <MapPin className="w-5 h-5 text-emerald-600" />
-                                Localisation
+                                {t('parametres.schools.section_location')}
                             </h2>
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide">Région</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.region')}</p>
                                 <p className="text-sm font-medium text-gray-900 mt-0.5">{school.region || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide">Ville</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.city')}</p>
                                 <p className="text-sm font-medium text-gray-900 mt-0.5">{school.city || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide">Boîte postale</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.po_box')}</p>
                                 <p className="text-sm font-medium text-gray-900 mt-0.5">{school.po_box || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide">Adresse</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.address')}</p>
                                 <p className="text-sm font-medium text-gray-900 mt-0.5 whitespace-pre-wrap">{school.address || '-'}</p>
                             </div>
                         </div>
@@ -146,18 +149,18 @@ export default function Show({ school }: Readonly<ShowProps>) {
                         <div className="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-gray-100 space-y-3">
                             <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                 <CalendarClock className="w-5 h-5 text-violet-600" />
-                                Événements
+                                {t('parametres.schools.section_events')}
                             </h2>
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide">Créée le</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.created_on')}</p>
                                 <p className="text-sm font-medium text-gray-900 mt-0.5">
-                                    {new Date(school.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(school.created_at).toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 uppercase tracking-wide">Modifiée le</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wide">{t('parametres.schools.updated_on')}</p>
                                 <p className="text-sm font-medium text-gray-900 mt-0.5">
-                                    {new Date(school.updated_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(school.updated_at).toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                 </p>
                             </div>
                         </div>

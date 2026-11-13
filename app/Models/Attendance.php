@@ -25,21 +25,33 @@ class Attendance extends Model
         'date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<Classroom, $this>
+     */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class, 'class_id');
     }
 
+    /**
+     * @return BelongsTo<AcademicPeriod, $this>
+     */
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(AcademicPeriod::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
     }
 
+    /**
+     * @return HasMany<AttendanceRecord, $this>
+     */
     public function records(): HasMany
     {
         return $this->hasMany(AttendanceRecord::class);

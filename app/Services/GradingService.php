@@ -424,7 +424,7 @@ final class GradingService
     /**
      * Attribue des rangs à une liste [{student_id, average}].
      *
-     * @param  Collection<int, array{student_id: mixed, average: float|null}>  $rows
+     * @param  Collection<int, array{student_id: string, average: float|null}>  $rows
      * @return Collection<string, array{average: float|null, rank: int|null}>
      */
     public function rank(Collection $rows): Collection
@@ -469,7 +469,7 @@ final class GradingService
     /**
      * Attribue les rangs (1, 1, 3…). Les élèves sans moyenne ne sont pas classés (rang null).
      *
-     * @param  Collection<int, array{student_id: mixed, average: float|null}>  $rows
+     * @param  Collection<int, array{student_id: string, average: float|null}>  $rows
      * @return Collection<string, array{average: float|null, rank: int|null}>
      */
     private function assignRanks(Collection $rows): Collection

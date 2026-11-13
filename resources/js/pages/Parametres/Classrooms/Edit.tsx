@@ -6,6 +6,7 @@ import {
     type ClassroomTypeOption,
 } from '@/components/Classrooms/classroom-form';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom {
@@ -24,6 +25,7 @@ interface EditProps {
 }
 
 export default function Edit({ classroom, classroomTypes }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm<ClassroomFormData>({
         name: classroom.name,
         code: classroom.code,
@@ -39,7 +41,7 @@ export default function Edit({ classroom, classroomTypes }: Readonly<EditProps>)
 
     return (
         <AppLayout>
-            <Head title={`Éditer ${classroom.name}`} />
+            <Head title={t('parametres.classrooms.edit_head', { name: classroom.name })} />
 
             <div className="max-w-4xl space-y-6">
                 <div className="flex items-center gap-4">
@@ -51,8 +53,8 @@ export default function Edit({ classroom, classroomTypes }: Readonly<EditProps>)
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Éditer une classe</h1>
-                        <p className="mt-2 text-gray-600">Mettez à jour les informations de {classroom.name}.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.classrooms.edit_title')}</h1>
+                        <p className="mt-2 text-gray-600">{t('parametres.classrooms.edit_subtitle', { name: classroom.name })}</p>
                     </div>
                 </div>
 

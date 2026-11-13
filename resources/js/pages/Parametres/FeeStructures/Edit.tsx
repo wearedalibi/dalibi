@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface AcademicYear {
@@ -40,6 +41,7 @@ interface EditProps {
 }
 
 export default function Edit({ feeStructure, academicYears, feeCategories, classrooms }: Readonly<EditProps>) {
+    const { t } = useTranslation();
     const currency = useCurrencySymbol();
     const { data, setData, put, processing, errors } = useForm({
         academic_year_id: feeStructure.academic_year_id,
@@ -55,7 +57,7 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
 
     return (
         <AppLayout>
-            <Head title="Modifier la structure de frais" />
+            <Head title={t('parametres.fee_structures.edit_head')} />
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -66,16 +68,16 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
                         className="text-gray-600 hover:text-gray-900"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Retour
+                        {t('parametres.fee_structures.back')}
                     </Button>
                 </div>
 
                 <div>
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><DollarSign className="h-7 w-7 text-blue-600 shrink-0" />
-                        Modifier la structure de frais
+                        {t('parametres.fee_structures.edit_title')}
                     </h1>
                     <p className="mt-3 text-base text-gray-600">
-                        Modifiez les informations de cette structure de frais
+                        {t('parametres.fee_structures.edit_subtitle')}
                     </p>
                 </div>
 
@@ -84,18 +86,18 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
                     <div className="rounded-2xl bg-linear-to-br from-indigo-50 to-white ring-1 ring-indigo-100 p-6 space-y-4">
                         <div className="flex items-center gap-2 text-indigo-700">
                             <CalendarDays className="h-4 w-4" />
-                            <p className="text-sm font-semibold">Contexte académique</p>
+                            <p className="text-sm font-semibold">{t('parametres.fee_structures.section_academic')}</p>
                         </div>
                         <div className="space-y-2">
                         <Label htmlFor="academic_year_id">
-                            Année académique <span className="text-red-600">*</span>
+                            {t('parametres.fee_structures.field_year')} <span className="text-red-600">*</span>
                         </Label>
                         <Select
                             value={data.academic_year_id}
                             onValueChange={(value) => setData('academic_year_id', value)}
                         >
                             <SelectTrigger id="academic_year_id" className="border-slate-200 bg-white/90">
-                                <SelectValue placeholder="Sélectionner une année académique" />
+                                <SelectValue placeholder={t('parametres.fee_structures.field_year_ph')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {academicYears.map((year) => (
@@ -114,18 +116,18 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
                     <div className="rounded-2xl bg-linear-to-br from-amber-50 to-white ring-1 ring-amber-100 p-6 space-y-4">
                         <div className="flex items-center gap-2 text-amber-700">
                             <Layers className="h-4 w-4" />
-                            <p className="text-sm font-semibold">Catégorie de frais</p>
+                            <p className="text-sm font-semibold">{t('parametres.fee_structures.field_category')}</p>
                         </div>
                         <div className="space-y-2">
                         <Label htmlFor="fee_category_id">
-                            Catégorie de frais <span className="text-red-600">*</span>
+                            {t('parametres.fee_structures.field_category')} <span className="text-red-600">*</span>
                         </Label>
                         <Select
                             value={data.fee_category_id}
                             onValueChange={(value) => setData('fee_category_id', value)}
                         >
                             <SelectTrigger id="fee_category_id" className="border-slate-200 bg-white/90">
-                                <SelectValue placeholder="Sélectionner une catégorie" />
+                                <SelectValue placeholder={t('parametres.fee_structures.field_category_ph')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {feeCategories.map((category) => (
@@ -144,18 +146,18 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
                     <div className="rounded-2xl bg-linear-to-br from-sky-50 to-white ring-1 ring-sky-100 p-6 space-y-4">
                         <div className="flex items-center gap-2 text-sky-700">
                             <School className="h-4 w-4" />
-                            <p className="text-sm font-semibold">Classe concernée</p>
+                            <p className="text-sm font-semibold">{t('parametres.fee_structures.field_class_section')}</p>
                         </div>
                         <div className="space-y-2">
                         <Label htmlFor="class_id">
-                            Classe <span className="text-red-600">*</span>
+                            {t('parametres.fee_structures.field_class')} <span className="text-red-600">*</span>
                         </Label>
                         <Select
                             value={data.class_id}
                             onValueChange={(value) => setData('class_id', value)}
                         >
                             <SelectTrigger id="class_id" className="border-slate-200 bg-white/90">
-                                <SelectValue placeholder="Sélectionner une classe" />
+                                <SelectValue placeholder={t('parametres.fee_structures.field_class_ph')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {classrooms.map((classroom) => (
@@ -174,18 +176,18 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
                     <div className="rounded-2xl bg-linear-to-br from-emerald-50 to-white ring-1 ring-emerald-100 p-6 space-y-4">
                         <div className="flex items-center gap-2 text-emerald-700">
                             <Banknote className="h-4 w-4" />
-                            <p className="text-sm font-semibold">Montant</p>
+                            <p className="text-sm font-semibold">{t('parametres.fee_structures.field_amount')}</p>
                         </div>
                         <div className="space-y-2">
                         <Label htmlFor="amount">
-                            Montant ({currency}) <span className="text-red-600">*</span>
+                            {t('parametres.fee_structures.field_amount_currency', { currency })} <span className="text-red-600">*</span>
                         </Label>
                         <Input
                             id="amount"
                             type="number"
                             step="0.01"
                             min="0"
-                            placeholder="Ex: 50000"
+                            placeholder={t('parametres.fee_structures.field_amount_ph')}
                             value={data.amount}
                             onChange={(e) => setData('amount', e.target.value)}
                             className="border-slate-200 bg-white/90"
@@ -205,14 +207,14 @@ export default function Edit({ feeStructure, academicYears, feeCategories, class
                             disabled={processing}
                             className="border-slate-200"
                         >
-                            Annuler
+                            {t('parametres.fee_structures.cancel')}
                         </Button>
                         <Button
                             type="submit"
                             disabled={processing}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            {processing ? 'Mise à jour...' : 'Mettre à jour'}
+                            {processing ? t('parametres.fee_structures.updating') : t('parametres.fee_structures.update')}
                         </Button>
                     </div>
                 </form>

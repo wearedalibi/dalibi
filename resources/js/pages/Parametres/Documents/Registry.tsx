@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Issuance {
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export default function Registry({ issuances, filters }: Readonly<Props>) {
+    const { t } = useTranslation();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const apply = (value = search) => {
@@ -37,7 +39,7 @@ export default function Registry({ issuances, filters }: Readonly<Props>) {
 
     return (
         <AppLayout>
-            <Head title="Registre des documents" />
+            <Head title={t('parametres.documents.registry_head')} />
             <div className="w-full space-y-6">
 
                 <div className="flex items-center gap-4">
@@ -45,8 +47,8 @@ export default function Registry({ issuances, filters }: Readonly<Props>) {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Registre des documents</h1>
-                        <p className="mt-2 text-gray-500">Traçabilité de tous les documents délivrés ({issuances.total}).</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-gray-900">{t('parametres.documents.registry_title')}</h1>
+                        <p className="mt-2 text-gray-500">{t('parametres.documents.registry_subtitle', { n: issuances.total })}</p>
                     </div>
                 </div>
 
@@ -58,7 +60,7 @@ export default function Registry({ issuances, filters }: Readonly<Props>) {
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && apply()}
-                            placeholder="N° de référence, nom ou matricule de l'élève..."
+                            placeholder={t('parametres.documents.registry_search_ph')}
                             className="pl-9"
                         />
                         {search && (
@@ -67,7 +69,7 @@ export default function Registry({ issuances, filters }: Readonly<Props>) {
                             </button>
                         )}
                     </div>
-                    <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">Rechercher</Button>
+                    <Button onClick={() => apply()} className="bg-blue-600 hover:bg-blue-700">{t('parametres.common.search')}</Button>
                 </div>
 
                 {/* Table */}
@@ -75,11 +77,11 @@ export default function Registry({ issuances, filters }: Readonly<Props>) {
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>Référence</TableHead>
-                                <TableHead>Document</TableHead>
-                                <TableHead>Élève</TableHead>
-                                <TableHead>Délivré par</TableHead>
-                                <TableHead className="text-right">Date</TableHead>
+                                <TableHead>{t('parametres.documents.registry_th_ref')}</TableHead>
+                                <TableHead>{t('parametres.documents.registry_th_doc')}</TableHead>
+                                <TableHead>{t('parametres.documents.registry_th_student')}</TableHead>
+                                <TableHead>{t('parametres.documents.registry_th_issuer')}</TableHead>
+                                <TableHead className="text-right">{t('parametres.documents.registry_th_date')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -87,7 +89,7 @@ export default function Registry({ issuances, filters }: Readonly<Props>) {
                                 <TableRow>
                                     <TableCell colSpan={5} className="py-16 text-center text-gray-400">
                                         <FileText className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                                        Aucun document délivré.
+                                        {t('parametres.documents.registry_empty')}
                                     </TableCell>
                                 </TableRow>
                             ) : issuances.data.map(i => (

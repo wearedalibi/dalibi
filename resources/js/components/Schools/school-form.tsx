@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/helpers/i18n';
 
 export interface ClassroomTypeOption { id: string; name: string; period_system: string; }
 export interface CurrencyOption { code: string; label: string; symbol: string; }
@@ -41,6 +42,7 @@ interface SchoolFormProps {
 }
 
 export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, classroomTypes = [], currencies = [], onCancel, onSubmit, setData }: Readonly<SchoolFormProps>) {
+    const { t } = useTranslation();
     const toggleClassType = (id: string) => {
         const current = data.class_type_ids ?? [];
         setData('class_type_ids', current.includes(id) ? current.filter(x => x !== id) : [...current, id]);
@@ -54,10 +56,10 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
         setPreview(file ? URL.createObjectURL(file) : (currentLogoUrl ?? null));
     };
 
-    let submitLabel = 'Mettre à jour';
-    if (processing && mode === 'create') submitLabel = 'Création...';
-    else if (processing) submitLabel = 'Mise à jour...';
-    else if (mode === 'create') submitLabel = 'Créer l\'école';
+    let submitLabel = t('parametres.common.update');
+    if (processing && mode === 'create') submitLabel = t('parametres.common.creating');
+    else if (processing) submitLabel = t('parametres.common.updating');
+    else if (mode === 'create') submitLabel = t('parametres.schools.submit_create');
 
     return (
         <form onSubmit={onSubmit} className="space-y-6">
@@ -68,67 +70,67 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
                         <Building2 className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Identité de l'école</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.schools.section_identity')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">Nom *</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.schools.name')} *</label>
                         <Input
                             id="name"
                             value={data.name}
                             onChange={e => setData('name', e.target.value)}
                             disabled={processing}
                             className={errors.name ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="Ex: Lycée Jean Jaurès"
+                            placeholder={t('parametres.schools.name_ph')}
                         />
                         {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="code" className="block text-sm font-medium text-gray-900 mb-2">Code *</label>
+                        <label htmlFor="code" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.schools.code')} *</label>
                         <Input
                             id="code"
                             value={data.code}
                             onChange={e => setData('code', e.target.value)}
                             disabled={processing}
                             className={errors.code ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="Ex: LJJ001"
+                            placeholder={t('parametres.schools.code_ph')}
                         />
                         {errors.code && <p className="text-sm text-red-600 mt-1">{errors.code}</p>}
                     </div>
 
                     <div className="md:col-span-2">
-                        <label htmlFor="terme" className="block text-sm font-medium text-gray-900 mb-2">Terme / Entité supérieure</label>
+                        <label htmlFor="terme" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.schools.terme')}</label>
                         <Input
                             id="terme"
                             value={data.terme}
                             onChange={e => setData('terme', e.target.value)}
                             disabled={processing}
                             className={errors.terme ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="Ex: République Togolaise"
+                            placeholder={t('parametres.schools.terme_ph')}
                         />
                         {errors.terme && <p className="text-sm text-red-600 mt-1">{errors.terme}</p>}
                     </div>
 
                     <div className="md:col-span-2">
-                        <label htmlFor="ministry" className="block text-sm font-medium text-gray-900 mb-2">Ministère de tutelle</label>
+                        <label htmlFor="ministry" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.schools.ministry')}</label>
                         <Input
                             id="ministry"
                             value={data.ministry}
                             onChange={e => setData('ministry', e.target.value)}
                             disabled={processing}
                             className={errors.ministry ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="Ex: Ministère des Enseignements Primaire, Secondaire et Technique"
+                            placeholder={t('parametres.schools.ministry_ph')}
                         />
-                        <p className="text-xs text-gray-400 mt-1">Affiché en haut à gauche de l'en-tête officiel des documents.</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('parametres.schools.ministry_hint')}</p>
                         {errors.ministry && <p className="text-sm text-red-600 mt-1">{errors.ministry}</p>}
                     </div>
 
                     <div>
                         <label htmlFor="devise" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <Quote className="w-4 h-4 text-blue-500" />
-                            Devise (slogan) de l'école
+                            {t('parametres.schools.devise_label')}
                         </label>
                         <Input
                             id="devise"
@@ -136,7 +138,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                             onChange={e => setData('devise', e.target.value)}
                             disabled={processing}
                             className={errors.devise ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="Ex: Travail, Liberté, Patrie"
+                            placeholder={t('parametres.schools.devise_ph')}
                         />
                         {errors.devise && <p className="text-sm text-red-600 mt-1">{errors.devise}</p>}
                     </div>
@@ -144,7 +146,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div>
                         <label htmlFor="currency" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <WalletCards className="w-4 h-4 text-emerald-500" />
-                            Monnaie (comptabilité)
+                            {t('parametres.schools.currency')}
                         </label>
                         <select
                             id="currency"
@@ -168,7 +170,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="w-9 h-9 rounded-full bg-violet-100 flex items-center justify-center">
                         <ImageIcon className="w-5 h-5 text-violet-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Logo et contact</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.schools.section_logo')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -176,7 +178,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="md:col-span-2">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <ImageIcon className="w-4 h-4 text-violet-600" />
-                            Logo de l'école
+                            {t('parametres.schools.logo_label')}
                         </label>
                         <div className="flex items-center gap-4">
                             {preview ? (
@@ -204,9 +206,9 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                                     className="gap-2"
                                 >
                                     <ImageIcon className="w-4 h-4" />
-                                    {preview ? 'Changer le logo' : 'Choisir une image'}
+                                    {preview ? t('parametres.schools.change_logo') : t('parametres.schools.choose_image')}
                                 </Button>
-                                <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP — max 2 Mo</p>
+                                <p className="text-xs text-gray-400 mt-1">{t('parametres.schools.logo_hint')}</p>
                             </div>
                         </div>
                         {errors.logo && <p className="text-sm text-red-600 mt-1">{errors.logo}</p>}
@@ -215,7 +217,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div>
                         <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <Mail className="w-4 h-4 text-violet-600" />
-                            E-mail
+                            {t('parametres.schools.email_label')}
                         </label>
                         <Input
                             id="email"
@@ -224,7 +226,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                             onChange={e => setData('email', e.target.value)}
                             disabled={processing}
                             className={errors.email ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="contact@ecole.com"
+                            placeholder={t('parametres.schools.email_ph')}
                         />
                         {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                     </div>
@@ -232,7 +234,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div>
                         <label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <Phone className="w-4 h-4 text-violet-600" />
-                            Téléphone
+                            {t('parametres.schools.phone_label')}
                         </label>
                         <Input
                             id="phone"
@@ -240,7 +242,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                             onChange={e => setData('phone', e.target.value)}
                             disabled={processing}
                             className={errors.phone ? 'border-red-500 bg-red-50/40' : ''}
-                            placeholder="+228 XX XX XX XX"
+                            placeholder={t('parametres.schools.phone_ph')}
                         />
                         {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
                     </div>
@@ -253,14 +255,14 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center">
                         <MapPinned className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Localisation</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.schools.section_location')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label htmlFor="region" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <MapPin className="w-4 h-4 text-emerald-600" />
-                            Région
+                            {t('parametres.schools.region_label')}
                         </label>
                         <Input id="region" value={data.region} onChange={e => setData('region', e.target.value)} disabled={processing} className={errors.region ? 'border-red-500 bg-red-50/40' : ''} />
                         {errors.region && <p className="text-sm text-red-600 mt-1">{errors.region}</p>}
@@ -269,7 +271,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div>
                         <label htmlFor="city" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <MapPin className="w-4 h-4 text-emerald-600" />
-                            Ville
+                            {t('parametres.schools.city_label')}
                         </label>
                         <Input id="city" value={data.city} onChange={e => setData('city', e.target.value)} disabled={processing} className={errors.city ? 'border-red-500 bg-red-50/40' : ''} />
                         {errors.city && <p className="text-sm text-red-600 mt-1">{errors.city}</p>}
@@ -278,14 +280,14 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="md:col-span-2">
                         <label htmlFor="po_box" className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
                             <WalletCards className="w-4 h-4 text-emerald-600" />
-                            Boîte postale
+                            {t('parametres.schools.po_box_label')}
                         </label>
-                        <Input id="po_box" value={data.po_box} onChange={e => setData('po_box', e.target.value)} disabled={processing} className={errors.po_box ? 'border-red-500 bg-red-50/40' : ''} placeholder="BP 123" />
+                        <Input id="po_box" value={data.po_box} onChange={e => setData('po_box', e.target.value)} disabled={processing} className={errors.po_box ? 'border-red-500 bg-red-50/40' : ''} placeholder={t('parametres.schools.po_box_ph')} />
                         {errors.po_box && <p className="text-sm text-red-600 mt-1">{errors.po_box}</p>}
                     </div>
 
                     <div className="md:col-span-2">
-                        <label htmlFor="address" className="block text-sm font-medium text-gray-900 mb-2">Adresse complète</label>
+                        <label htmlFor="address" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.schools.address_label')}</label>
                         <Textarea id="address" rows={3} value={data.address} onChange={e => setData('address', e.target.value)} disabled={processing} className={errors.address ? 'border-red-500 bg-red-50/40' : ''} />
                         {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address}</p>}
                     </div>
@@ -298,10 +300,10 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center">
                         <Building2 className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Types de classe proposés</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.schools.section_class_types')}</h3>
                 </div>
                 {classroomTypes.length === 0 ? (
-                    <p className="text-sm text-gray-400">Aucun type de classe disponible. Créez-en d'abord dans Paramètres → Types de classes.</p>
+                    <p className="text-sm text-gray-400">{t('parametres.schools.no_class_types')}</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {classroomTypes.map(ct => {
@@ -311,7 +313,7 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                                     <Checkbox checked={checked} onCheckedChange={() => toggleClassType(ct.id)} disabled={processing} />
                                     <div>
                                         <p className="text-sm font-medium text-gray-900">{ct.name}</p>
-                                        <p className="text-xs text-gray-400">{ct.period_system === 'semestre' ? 'Semestre (2 périodes)' : 'Trimestre (3 périodes)'}</p>
+                                        <p className="text-xs text-gray-400">{ct.period_system === 'semestre' ? t('parametres.schools.semester') : t('parametres.schools.trimester')}</p>
                                     </div>
                                 </label>
                             );
@@ -326,11 +328,11 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center">
                         <ShieldCheck className="w-5 h-5 text-amber-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Statut</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.schools.section_status')}</h3>
                 </div>
                 <div className="flex items-center gap-3">
                     <Checkbox id="active" checked={data.active} onCheckedChange={checked => setData('active', checked === true)} />
-                    <label htmlFor="active" className="text-sm font-medium text-gray-700">École active</label>
+                    <label htmlFor="active" className="text-sm font-medium text-gray-700">{t('parametres.schools.active_label')}</label>
                 </div>
 
                 <div className="flex items-start gap-3 rounded-xl bg-white/70 px-3 py-3 ring-1 ring-amber-100">
@@ -338,17 +340,17 @@ export function SchoolForm({ mode, data, errors, processing, currentLogoUrl, cla
                     <label htmlFor="portal_enabled" className="cursor-pointer">
                         <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
                             <Smartphone className="w-4 h-4 text-amber-600" />
-                            Accès au portail parents / élèves
+                            {t('parametres.schools.portal_label')}
                         </span>
                         <span className="mt-0.5 block text-xs text-gray-400">
-                            Lorsque désactivé, la connexion et toutes les fonctionnalités de l'espace parents/élèves sont bloquées.
+                            {t('parametres.schools.portal_hint')}
                         </span>
                     </label>
                 </div>
             </div>
 
             <div className="flex gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={onCancel} disabled={processing} className="flex-1">Annuler</Button>
+                <Button type="button" variant="outline" onClick={onCancel} disabled={processing} className="flex-1">{t('parametres.common.cancel')}</Button>
                 <Button type="submit" disabled={processing} className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm">
                     <Save className="w-4 h-4" />
                     {submitLabel}

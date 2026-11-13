@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMoney } from '@/helpers/money';
+import { useTranslation } from '@/helpers/i18n';
 import { route } from '@/helpers/route';
 import AppLayout from '@/layouts/app-layout';
 import { useChartTheme } from '@/lib/chart-theme';
@@ -161,37 +162,8 @@ interface DashboardProps {
 /* ------------------------------------------------------------------ */
 
 
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-    CASH: 'Espèces',
-    MOBILE_MONEY: 'Mobile Money',
-    BANK_TRANSFER: 'Virement bancaire',
-    CHEQUE: 'Chèque',
-    AUTRE: 'Autre',
-};
-
 const pct = (paid: number, total: number) =>
     total > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0;
-
-const methodLabel: Record<string, string> = {
-    CASH:          'Espèces',
-    MOBILE_MONEY:  'Mobile Money',
-    BANK_TRANSFER: 'Virement',
-    CHEQUE:        'Chèque',
-};
-
-const cashTypeLabel: Record<string, string> = {
-    CASH:         'Espèces',
-    MOBILE_MONEY: 'Mobile Money',
-    BANK:         'Banque',
-};
-
-const statusLabel: Record<string, { label: string; cls: string }> = {
-    ISSUED:         { label: 'Non payé',  cls: 'bg-red-100 text-red-700'    },
-    PARTIALLY_PAID: { label: 'Partiel',   cls: 'bg-orange-100 text-orange-700' },
-    PAID:           { label: 'Soldé',     cls: 'bg-green-100 text-green-700' },
-    ACTIVE:         { label: 'Actif',     cls: 'bg-green-100 text-green-700' },
-    PENDING:        { label: 'En attente',cls: 'bg-gray-100 text-gray-600'   },
-};
 
 /* ------------------------------------------------------------------ */
 /* Micro-composants                                                    */
@@ -271,11 +243,38 @@ function SectionCard({ title, icon, count, children, action }: {
 /* Composant principal                                                 */
 /* ------------------------------------------------------------------ */
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tableau de bord', href: '/dashboard' }];
-
 export default function Dashboard({ activeYear, selectedYearId, selectedYear, academicYears, userRole, financial, enrollments, teaching, academic, bulletins }: Readonly<DashboardProps>) {
     const theme = useChartTheme();
     const fmt = useMoney();
+    const { t } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [{ title: t('dashboard.title'), href: '/dashboard' }];
+
+    const PAYMENT_METHOD_LABELS: Record<string, string> = {
+        CASH: t('dashboard.method.cash'),
+        MOBILE_MONEY: t('dashboard.method.mobile_money'),
+        BANK_TRANSFER: t('dashboard.method.bank_transfer'),
+        CHEQUE: t('dashboard.method.cheque'),
+        AUTRE: t('dashboard.method.other'),
+    };
+    const methodLabel: Record<string, string> = {
+        CASH: t('dashboard.method.cash'),
+        MOBILE_MONEY: t('dashboard.method.mobile_money'),
+        BANK_TRANSFER: t('dashboard.method.bank_transfer_short'),
+        CHEQUE: t('dashboard.method.cheque'),
+    };
+    const cashTypeLabel: Record<string, string> = {
+        CASH: t('dashboard.method.cash'),
+        MOBILE_MONEY: t('dashboard.method.mobile_money'),
+        BANK: t('dashboard.method.bank'),
+    };
+    const statusLabel: Record<string, { label: string; cls: string }> = {
+        ISSUED: { label: t('dashboard.status.issued'), cls: 'bg-red-100 text-red-700' },
+        PARTIALLY_PAID: { label: t('dashboard.status.partially_paid'), cls: 'bg-orange-100 text-orange-700' },
+        PAID: { label: t('dashboard.status.paid'), cls: 'bg-green-100 text-green-700' },
+        ACTIVE: { label: t('dashboard.status.active'), cls: 'bg-green-100 text-green-700' },
+        PENDING: { label: t('dashboard.status.pending'), cls: 'bg-gray-100 text-gray-600' },
+    };
 
     const changeYear = (id: string) => {
         router.get(route('dashboard'), { academic_year_id: id }, { preserveScroll: true, preserveState: false });
@@ -285,9 +284,9 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
     const collectedPct = pct(Number(stats?.total_paid ?? 0), Number(stats?.total_amount ?? 0));
 
     const invoiceStatusData = stats ? [
-        { name: 'Soldé',    value: Number(stats.paid_count ?? 0),    color: theme.status.good },
-        { name: 'Partiel',  value: Number(stats.partial_count ?? 0), color: theme.status.warning },
-        { name: 'Non payé', value: Number(stats.issued_count ?? 0),  color: theme.status.critical },
+        { name: t('dashboard.status.paid'),            value: Number(stats.paid_count ?? 0),    color: theme.status.good },
+        { name: t('dashboard.status.partially_paid'),  value: Number(stats.partial_count ?? 0), color: theme.status.warning },
+        { name: t('dashboard.status.issued'),          value: Number(stats.issued_count ?? 0),  color: theme.status.critical },
     ].filter(d => d.value > 0) : [];
 
     const isFinancial  = !!financial;
@@ -295,7 +294,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
     const isTeacher    = !!teaching;
     const isAcademic   = !!academic;
     const isBulletins  = !!bulletins;
-    const reasonLabel: Record<string, string> = { medical: 'Médical', familial: 'Familial', autre: 'Autre' };
+    const reasonLabel: Record<string, string> = { medical: t('dashboard.reason.medical'), familial: t('dashboard.reason.familial'), autre: t('dashboard.reason.autre') };
 
     // Taux de présence du jour (présents / pointés), calculé depuis les compteurs existants.
     const pointedToday = academic ? academic.present_today + academic.absent_today : 0;
@@ -307,16 +306,16 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tableau de bord" />
+            <Head title={t('dashboard.title')} />
 
             <div className="space-y-6 p-1">
 
                 {/* ── En-tête ──────────────────────────────────────────── */}
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3"><LayoutGrid className="h-7 w-7 text-blue-600 shrink-0" />Tableau de bord</h1>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3"><LayoutGrid className="h-7 w-7 text-blue-600 shrink-0" />{t('dashboard.title')}</h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                            {selectedYear ? `Année scolaire ${selectedYear.year}` : 'Aucune année active'}
+                            {selectedYear ? t('dashboard.header.school_year', { year: selectedYear.year }) : t('dashboard.header.no_active_year')}
                             {userRole && ` · ${userRole}`}
                         </p>
                     </div>
@@ -324,12 +323,12 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <CalendarDays className="w-4 h-4 text-gray-400" />
                         <Select value={selectedYearId ?? ''} onValueChange={changeYear}>
                             <SelectTrigger className="w-44 bg-white dark:bg-card">
-                                <SelectValue placeholder="Année académique" />
+                                <SelectValue placeholder={t('dashboard.header.academic_year')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {academicYears.map(y => (
                                     <SelectItem key={y.id} value={y.id}>
-                                        {y.year}{y.active ? ' · active' : ''}
+                                        {y.year}{y.active ? ` · ${t('dashboard.header.active_suffix')}` : ''}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -343,15 +342,15 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
                         <div className="flex-1">
                             <p className="text-sm font-semibold text-red-700 dark:text-red-400">
-                                {financial.studentsNoPay.length} élève{financial.studentsNoPay.length > 1 ? 's' : ''} n'ont effectué aucun paiement
+                                {t('dashboard.alert.no_payment', { count: financial.studentsNoPay.length })}
                             </p>
                             <p className="text-xs text-red-500 mt-0.5">
-                                Ces élèves sont à risque d'exclusion faute de paiement.
+                                {t('dashboard.alert.no_payment_hint')}
                             </p>
                         </div>
                         <Button size="sm" variant="outline" className="border-red-300 text-red-700 hover:bg-red-100 text-xs gap-1 shrink-0"
                             onClick={() => router.get(route('accounting.index'))}>
-                            Voir <ArrowRight className="w-3 h-3" />
+                            {t('common.actions.view')} <ArrowRight className="w-3 h-3" />
                         </Button>
                     </div>
                 )}
@@ -361,29 +360,29 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 {isEnrollment && (
                     <>
                         <KpiCard
-                            title="Élèves inscrits"
+                            title={t('dashboard.kpi.students_enrolled')}
                             value={enrollments.enrollments_year}
-                            sub={`Année ${activeYear?.year ?? '—'}`}
+                            sub={t('dashboard.header.school_year', { year: activeYear?.year ?? '—' })}
                             icon={Users}
                             color="blue"
                         />
                         <KpiCard
-                            title="Cette semaine"
+                            title={t('dashboard.kpi.this_week')}
                             value={enrollments.enrollments_week}
-                            sub="Nouvelles inscriptions"
+                            sub={t('dashboard.kpi.this_week_sub')}
                             icon={CalendarDays}
                             color="purple"
                         />
                         <KpiCard
-                            title="Élèves actifs"
+                            title={t('dashboard.kpi.active_students')}
                             value={enrollments.active_students}
-                            sub={`sur ${enrollments.total_students} au total`}
+                            sub={t('dashboard.kpi.active_students_sub', { total: enrollments.total_students })}
                             icon={GraduationCap}
                             color="green"
                         />
                         {isFinancial && (
                             <div className="bg-white dark:bg-card rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 min-h-28 flex flex-col justify-center">
-                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Taux de recouvrement</p>
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{t('dashboard.kpi.recovery_rate')}</p>
                                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{collectedPct}%</p>
                                 <ProgressBar
                                     value={collectedPct}
@@ -392,44 +391,44 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             </div>
                         )}
                         <KpiCard
-                            title="Garçons"
+                            title={t('dashboard.kpi.boys')}
                             value={enrollments.students_by_gender.male}
-                            sub={`${genderPct(enrollments.students_by_gender.male)}% des inscrits`}
+                            sub={t('dashboard.kpi.gender_sub', { pct: genderPct(enrollments.students_by_gender.male) })}
                             icon={User}
                             color="blue"
                         />
                         <KpiCard
-                            title="Filles"
+                            title={t('dashboard.kpi.girls')}
                             value={enrollments.students_by_gender.female}
-                            sub={`${genderPct(enrollments.students_by_gender.female)}% des inscrits`}
+                            sub={t('dashboard.kpi.gender_sub', { pct: genderPct(enrollments.students_by_gender.female) })}
                             icon={User}
                             color="purple"
                         />
                         <KpiCard
-                            title="Classes actives"
+                            title={t('dashboard.kpi.active_classes')}
                             value={enrollments.active_classrooms}
-                            sub="Classes ouvertes"
+                            sub={t('dashboard.kpi.active_classes_sub')}
                             icon={Layers}
                             color="green"
                         />
                         <KpiCard
-                            title="Utilisateurs"
+                            title={t('dashboard.kpi.users')}
                             value={enrollments.total_users}
-                            sub="Comptes au total"
+                            sub={t('dashboard.kpi.users_sub')}
                             icon={Users}
                             color="orange"
                         />
                         <KpiCard
-                            title="Enseignants"
+                            title={t('dashboard.kpi.teachers')}
                             value={enrollments.teachers_count}
-                            sub="Personnel pédagogique"
+                            sub={t('dashboard.kpi.teachers_sub')}
                             icon={GraduationCap}
                             color="purple"
                         />
                         <KpiCard
-                            title="Ratio élèves/enseignant"
+                            title={t('dashboard.kpi.rem')}
                             value={enrollments.rem ?? '—'}
-                            sub={`REM · ${enrollments.teachers_count} enseignant${enrollments.teachers_count > 1 ? 's' : ''}`}
+                            sub={t('dashboard.kpi.rem_sub', { count: enrollments.teachers_count })}
                             icon={Users}
                             color="blue"
                         />
@@ -438,37 +437,37 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 {isAcademic && (
                     <>
                         <KpiCard
-                            title="Présences du jour"
+                            title={t('dashboard.kpi.present_today')}
                             value={academic.present_today}
-                            sub={`${academic.absent_today} absence${academic.absent_today > 1 ? 's' : ''} aujourd'hui`}
+                            sub={t('dashboard.kpi.present_today_sub', { count: academic.absent_today })}
                             icon={UserCheck}
                             color="green"
                         />
                         <KpiCard
-                            title="Taux de présence (jour)"
+                            title={t('dashboard.kpi.presence_rate')}
                             value={presenceRateToday !== null ? `${presenceRateToday}%` : '—'}
-                            sub={pointedToday > 0 ? `${academic.present_today}/${pointedToday} pointés` : 'Aucun pointage'}
+                            sub={pointedToday > 0 ? t('dashboard.kpi.presence_rate_sub', { present: academic.present_today, total: pointedToday }) : t('dashboard.kpi.presence_rate_none')}
                             icon={UserCheck}
                             color={presenceRateToday === null ? 'blue' : presenceRateToday >= 90 ? 'green' : presenceRateToday >= 75 ? 'orange' : 'red'}
                         />
                         <KpiCard
-                            title="Permissions en attente"
+                            title={t('dashboard.kpi.pending_permissions')}
                             value={academic.pending_permissions}
-                            sub="À traiter"
+                            sub={t('dashboard.kpi.pending_permissions_sub')}
                             icon={ShieldCheck}
                             color="orange"
                         />
                         <KpiCard
-                            title="Documents délivrés"
+                            title={t('dashboard.kpi.documents')}
                             value={academic.documents_month}
-                            sub="Ce mois-ci"
+                            sub={t('dashboard.kpi.this_month')}
                             icon={FileBadge}
                             color="purple"
                         />
                         <KpiCard
-                            title="Examens officiels"
+                            title={t('dashboard.kpi.official_exams')}
                             value={academic.exams_open}
-                            sub={`${academic.exam_registrations} inscription${academic.exam_registrations > 1 ? 's' : ''}`}
+                            sub={t('dashboard.kpi.official_exams_sub', { count: academic.exam_registrations })}
                             icon={GraduationCap}
                             color="blue"
                         />
@@ -477,16 +476,16 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 {isBulletins && (
                     <>
                         <KpiCard
-                            title="Bulletins validés"
+                            title={t('dashboard.kpi.validated_bulletins')}
                             value={bulletins.validated}
-                            sub={bulletins.period ? `Période : ${bulletins.period}` : 'Toutes périodes'}
+                            sub={bulletins.period ? t('dashboard.kpi.period', { period: bulletins.period }) : t('dashboard.kpi.all_periods')}
                             icon={FileBadge}
                             color="blue"
                         />
                         <KpiCard
-                            title="Moyenne générale"
+                            title={t('dashboard.kpi.general_average')}
                             value={bulletins.average !== null ? `${bulletins.average}/20` : '—'}
-                            sub={bulletins.period ? `Période : ${bulletins.period}` : 'Période courante'}
+                            sub={bulletins.period ? t('dashboard.kpi.period', { period: bulletins.period }) : t('dashboard.kpi.current_period')}
                             icon={CheckCircle2}
                             color="green"
                         />
@@ -495,39 +494,39 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 {isFinancial && (
                     <>
                         <KpiCard
-                            title="Total facturé"
+                            title={t('dashboard.kpi.total_billed')}
                             value={fmt(Number(stats?.total_amount ?? 0))}
-                            sub={`${stats?.total_invoices ?? 0} factures`}
+                            sub={t('dashboard.kpi.total_billed_sub', { count: stats?.total_invoices ?? 0 })}
                             icon={Banknote}
                             color="blue"
                         />
                         <KpiCard
-                            title="Encaissé"
+                            title={t('dashboard.kpi.collected')}
                             value={fmt(Number(stats?.total_paid ?? 0))}
-                            sub={`Taux ${collectedPct}%`}
+                            sub={t('dashboard.kpi.collected_sub', { pct: collectedPct })}
                             icon={CheckCircle2}
                             color="green"
                         />
                         <KpiCard
-                            title="Reste à recouvrer"
+                            title={t('dashboard.kpi.remaining')}
                             value={fmt(Number(stats?.total_remaining ?? 0))}
-                            sub={`${(stats?.issued_count ?? 0) + (stats?.partial_count ?? 0)} dossiers ouverts`}
+                            sub={t('dashboard.kpi.remaining_sub', { count: (stats?.issued_count ?? 0) + (stats?.partial_count ?? 0) })}
                             icon={AlertCircle}
                             color="orange"
                         />
                         <KpiCard
-                            title="Soldés / Impayés"
+                            title={t('dashboard.kpi.paid_unpaid')}
                             value={`${stats?.paid_count ?? 0} / ${stats?.issued_count ?? 0}`}
-                            sub={`${stats?.partial_count ?? 0} paiements partiels`}
+                            sub={t('dashboard.kpi.paid_unpaid_sub', { count: stats?.partial_count ?? 0 })}
                             icon={XCircle}
                             color="red"
                         />
-                        <KpiCard title="Encaissé (mois)" value={fmt(financial.month.income)} sub="Ce mois-ci" icon={TrendingUp} color="green" />
-                        <KpiCard title="Dépenses (mois)" value={fmt(financial.month.expenses)} sub="Ce mois-ci" icon={TrendingDown} color="red" />
+                        <KpiCard title={t('dashboard.kpi.collected_month')} value={fmt(financial.month.income)} sub={t('dashboard.kpi.this_month')} icon={TrendingUp} color="green" />
+                        <KpiCard title={t('dashboard.kpi.expenses_month')} value={fmt(financial.month.expenses)} sub={t('dashboard.kpi.this_month')} icon={TrendingDown} color="red" />
                         <KpiCard
-                            title="Solde net (mois)"
+                            title={t('dashboard.kpi.net_month')}
                             value={fmt(financial.month.net)}
-                            sub={financial.month.net >= 0 ? 'Excédent' : 'Déficit'}
+                            sub={financial.month.net >= 0 ? t('dashboard.kpi.surplus') : t('dashboard.kpi.deficit')}
                             icon={Wallet}
                             color={financial.month.net >= 0 ? 'blue' : 'orange'}
                         />
@@ -539,13 +538,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 {isAcademic && (
                     <div className="grid lg:grid-cols-2 gap-5">
                         <SectionCard
-                            title="Permissions en attente"
+                            title={t('dashboard.section.pending_permissions')}
                             icon={<ShieldCheck className="w-4 h-4" />}
                             count={academic.pendingPermissions.length}
-                            action={{ label: 'Permissions', href: route('absence-permissions.index') }}
+                            action={{ label: t('dashboard.section.pending_permissions_action'), href: route('absence-permissions.index') }}
                         >
                             {academic.pendingPermissions.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-6 px-5">Aucune demande en attente</p>
+                                <p className="text-sm text-gray-400 text-center py-6 px-5">{t('dashboard.section.pending_permissions_empty')}</p>
                             ) : (
                                 <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
                                     {academic.pendingPermissions.map(p => (
@@ -555,7 +554,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                                 <p className="text-xs text-gray-400">{reasonLabel[p.reason] ?? p.reason} · {p.start_date} → {p.end_date}</p>
                                             </div>
                                             <span className="shrink-0 ml-3 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-                                                En attente
+                                                {t('dashboard.status.pending')}
                                             </span>
                                         </div>
                                     ))}
@@ -564,13 +563,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         </SectionCard>
 
                         <SectionCard
-                            title="Prochains examens officiels"
+                            title={t('dashboard.section.upcoming_exams')}
                             icon={<GraduationCap className="w-4 h-4" />}
                             count={academic.upcomingExams.length}
-                            action={{ label: 'Examens', href: route('official-exams.index') }}
+                            action={{ label: t('dashboard.section.upcoming_exams_action'), href: route('official-exams.index') }}
                         >
                             {academic.upcomingExams.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-6 px-5">Aucun examen planifié</p>
+                                <p className="text-sm text-gray-400 text-center py-6 px-5">{t('dashboard.section.upcoming_exams_empty')}</p>
                             ) : (
                                 <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
                                     {academic.upcomingExams.map(e => (
@@ -579,7 +578,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                                     <span className="uppercase text-blue-600 dark:text-blue-400 font-bold mr-1.5">{e.type}</span>{e.name}
                                                 </p>
-                                                <p className="text-xs text-gray-400">{e.center ?? '—'} · {e.registrations} inscrit{e.registrations > 1 ? 's' : ''}</p>
+                                                <p className="text-xs text-gray-400">{e.center ?? '—'} · {t('dashboard.section.registered', { count: e.registrations })}</p>
                                             </div>
                                             <span className="shrink-0 ml-3 text-xs text-gray-500">{e.exam_date}</span>
                                         </div>
@@ -598,10 +597,10 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <div className="lg:col-span-2 bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
                                 <TrendingUp className="w-4 h-4 text-gray-400" />
-                                <h2 className="font-semibold text-sm text-gray-900 dark:text-white">Encaissements — 6 derniers mois</h2>
+                                <h2 className="font-semibold text-sm text-gray-900 dark:text-white">{t('dashboard.section.monthly')}</h2>
                             </div>
                             {financial.monthlyPayments.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-8">Aucun paiement sur la période</p>
+                                <p className="text-sm text-gray-400 text-center py-8">{t('dashboard.section.monthly_empty')}</p>
                             ) : (
                                 <ResponsiveContainer width="100%" height={200}>
                                     <AreaChart data={financial.monthlyPayments.map(m => ({ name: m.month_label.slice(0, 3), total: Number(m.total), label: m.month_label }))}
@@ -615,7 +614,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: theme.tick }} axisLine={false} tickLine={false} />
                                         <YAxis tick={{ fontSize: 11, fill: theme.tick }} axisLine={false} tickLine={false} width={48}
                                             tickFormatter={(v: number) => v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`} />
-                                        <RTooltip formatter={(v) => [fmt(Number(v)), 'Encaissé']} labelFormatter={() => ''} />
+                                        <RTooltip formatter={(v) => [fmt(Number(v)), t('dashboard.section.collected_tooltip')]} labelFormatter={() => ''} />
                                         <Area type="monotone" dataKey="total" stroke={theme.primary} strokeWidth={2} fill="url(#payGrad)" />
                                     </AreaChart>
                                 </ResponsiveContainer>
@@ -626,10 +625,10 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
                                 <Wallet className="w-4 h-4 text-gray-400" />
-                                <h2 className="font-semibold text-sm text-gray-900 dark:text-white">Soldes des caisses</h2>
+                                <h2 className="font-semibold text-sm text-gray-900 dark:text-white">{t('dashboard.section.cash_balances')}</h2>
                             </div>
                             {financial.cashAccounts.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-6">Aucune caisse active</p>
+                                <p className="text-sm text-gray-400 text-center py-6">{t('dashboard.section.cash_balances_empty')}</p>
                             ) : (
                                 <div className="space-y-3">
                                     {financial.cashAccounts.map(ca => (
@@ -644,7 +643,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                         </div>
                                     ))}
                                     <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
-                                        <p className="text-xs font-semibold text-gray-500 uppercase">Total</p>
+                                        <p className="text-xs font-semibold text-gray-500 uppercase">{t('dashboard.section.total')}</p>
                                         <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                                             {fmt(financial.cashAccounts.reduce((s, ca) => s + Number(ca.balance), 0))}
                                         </span>
@@ -661,12 +660,12 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <div className="flex items-center gap-2 mb-4">
                             <Banknote className="w-4 h-4 text-gray-400" />
                             <h2 className="font-semibold text-sm text-gray-900 dark:text-white">
-                                Moyens de paiement — {selectedYear?.year ?? activeYear?.year ?? ''}
+                                {t('dashboard.section.payment_methods_year', { year: selectedYear?.year ?? activeYear?.year ?? '' })}
                             </h2>
                         </div>
                         {(() => {
                             const total = financial.paymentMethods.reduce((s, m) => s + m.total, 0);
-                            if (total === 0) return <p className="text-sm text-gray-400 text-center py-6">Aucun encaissement sur la période</p>;
+                            if (total === 0) return <p className="text-sm text-gray-400 text-center py-6">{t('dashboard.section.payment_methods_empty')}</p>;
                             return (
                                 <ul className="space-y-3">
                                     {financial.paymentMethods.map(m => {
@@ -699,7 +698,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
                                 <div className="flex items-center gap-2 mb-4">
                                     <Banknote className="w-4 h-4 text-gray-400" />
-                                    <h2 className="font-semibold text-sm text-gray-900 dark:text-white">Répartition des factures</h2>
+                                    <h2 className="font-semibold text-sm text-gray-900 dark:text-white">{t('dashboard.section.invoice_breakdown')}</h2>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <ResponsiveContainer width="55%" height={200}>
@@ -731,14 +730,14 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                             <div className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
                                 <div className="flex items-center gap-2 mb-4">
                                     <Users className="w-4 h-4 text-gray-400" />
-                                    <h2 className="font-semibold text-sm text-gray-900 dark:text-white">Élèves par classe</h2>
+                                    <h2 className="font-semibold text-sm text-gray-900 dark:text-white">{t('dashboard.section.students_per_class')}</h2>
                                 </div>
                                 <ResponsiveContainer width="100%" height={200}>
                                     <BarChart data={enrollments.byClass.map(c => ({ name: c.class_name, total: Number(c.total) }))}
                                         margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                                         <XAxis dataKey="name" tick={{ fontSize: 11, fill: theme.tick }} axisLine={false} tickLine={false} interval={0} angle={-15} textAnchor="end" height={50} />
                                         <YAxis tick={{ fontSize: 11, fill: theme.tick }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
-                                        <RTooltip formatter={(v) => [`${v}`, 'Élèves']} />
+                                        <RTooltip formatter={(v) => [`${v}`, t('dashboard.section.students_tooltip')]} />
                                         <Bar dataKey="total" fill={theme.primary} radius={[6, 6, 0, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -753,13 +752,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                     {/* Derniers paiements */}
                     {isFinancial && (
                         <SectionCard
-                            title="Derniers paiements"
+                            title={t('dashboard.section.recent_payments')}
                             icon={<Banknote className="w-4 h-4" />}
                             count={financial.recentPayments.length}
-                            action={{ label: 'Comptabilité', href: route('accounting.index') }}
+                            action={{ label: t('dashboard.section.recent_payments_action'), href: route('accounting.index') }}
                         >
                             {financial.recentPayments.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-6 px-5">Aucun paiement enregistré</p>
+                                <p className="text-sm text-gray-400 text-center py-6 px-5">{t('dashboard.section.recent_payments_empty')}</p>
                             ) : (
                                 <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
                                     {financial.recentPayments.map(p => (
@@ -782,13 +781,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                     {/* Dernières inscriptions */}
                     {isEnrollment && (
                         <SectionCard
-                            title="Dernières inscriptions"
+                            title={t('dashboard.section.recent_enrollments')}
                             icon={<ClipboardList className="w-4 h-4" />}
                             count={enrollments.recentEnrollments.length}
-                            action={{ label: 'Inscriptions', href: route('enrollments.index') }}
+                            action={{ label: t('dashboard.section.recent_enrollments_action'), href: route('enrollments.index') }}
                         >
                             {enrollments.recentEnrollments.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-6 px-5">Aucune inscription pour cette année</p>
+                                <p className="text-sm text-gray-400 text-center py-6 px-5">{t('dashboard.section.recent_enrollments_empty')}</p>
                             ) : (
                                 <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
                                     {enrollments.recentEnrollments.map(e => {
@@ -814,18 +813,18 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                 {/* ── Élèves sans paiement (table détaillée) ──────────── */}
                 {isFinancial && financial.studentsNoPay.length > 0 && (
                     <SectionCard
-                        title="Élèves à risque — aucun paiement"
+                        title={t('dashboard.section.students_no_pay')}
                         icon={<AlertTriangle className="w-4 h-4 text-red-500" />}
                         count={financial.studentsNoPay.length}
-                        action={{ label: 'Voir tout', href: route('accounting.index') }}
+                        action={{ label: t('dashboard.section.students_no_pay_action'), href: route('accounting.index') }}
                     >
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Élève</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Classe</th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Montant dû</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.section.col_student')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.section.col_class')}</th>
+                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.section.col_amount_due')}</th>
                                         <th className="px-4 py-3"></th>
                                     </tr>
                                 </thead>
@@ -849,7 +848,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                             <td className="px-4 py-3 text-right">
                                                 <Button size="sm" variant="outline" className="text-xs h-7"
                                                     onClick={() => router.get(route('enrollments.invoice', e.id))}>
-                                                    Facture
+                                                    {t('dashboard.section.invoice_action')}
                                                 </Button>
                                             </td>
                                         </tr>
@@ -866,13 +865,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <div className="grid lg:grid-cols-2 gap-4">
                             {/* Emploi du temps du jour */}
                             <SectionCard
-                                title="Mon emploi du temps — aujourd'hui"
+                                title={t('dashboard.teacher.today_timetable')}
                                 icon={<CalendarDays className="w-4 h-4" />}
                                 count={teaching.today.length}
-                                action={{ label: 'Emploi du temps', href: route('timetable.index') }}
+                                action={{ label: t('dashboard.teacher.timetable_action'), href: route('timetable.index') }}
                             >
                                 {teaching.today.length === 0 ? (
-                                    <p className="text-sm text-gray-400 text-center py-6 px-5">Aucun cours programmé aujourd'hui.</p>
+                                    <p className="text-sm text-gray-400 text-center py-6 px-5">{t('dashboard.teacher.today_empty')}</p>
                                 ) : (
                                     <ul className="divide-y divide-gray-100 dark:divide-gray-700">
                                         {teaching.today.map(s => (
@@ -882,7 +881,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                                 </span>
                                                 <div className="min-w-0 flex-1">
                                                     <p className="font-medium text-gray-800 dark:text-gray-200 text-sm truncate">{s.subject}</p>
-                                                    <p className="text-xs text-gray-400">{s.class_name}{s.room ? ` · salle ${s.room}` : ''}</p>
+                                                    <p className="text-xs text-gray-400">{s.class_name}{s.room ? ` · ${t('dashboard.teacher.room', { room: s.room })}` : ''}</p>
                                                 </div>
                                             </li>
                                         ))}
@@ -892,13 +891,13 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                             {/* Notes à saisir */}
                             <SectionCard
-                                title="Notes à saisir"
+                                title={t('dashboard.teacher.pending_marks')}
                                 icon={<ClipboardList className="w-4 h-4" />}
                                 count={teaching.pendingMarks.count}
-                                action={{ label: 'Évaluations', href: route('evaluations.index') }}
+                                action={{ label: t('dashboard.teacher.evaluations_action'), href: route('evaluations.index') }}
                             >
                                 {teaching.pendingMarks.items.length === 0 ? (
-                                    <p className="text-sm text-gray-400 text-center py-6 px-5">Toutes vos évaluations sont saisies. 🎉</p>
+                                    <p className="text-sm text-gray-400 text-center py-6 px-5">{t('dashboard.teacher.pending_marks_empty')}</p>
                                 ) : (
                                     <ul className="divide-y divide-gray-100 dark:divide-gray-700">
                                         {teaching.pendingMarks.items.map(e => (
@@ -922,14 +921,14 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
 
                         {/* Mes classes & matières */}
                         <SectionCard
-                            title="Mes classes & matières"
+                            title={t('dashboard.teacher.my_classes')}
                             icon={<BookOpen className="w-4 h-4" />}
                             count={teaching.assignments.length}
-                            action={{ label: 'Affectations', href: route('subject-assignments.index') }}
+                            action={{ label: t('dashboard.teacher.assignments_action'), href: route('subject-assignments.index') }}
                         >
                             {teaching.assignments.length === 0 ? (
                                 <p className="text-sm text-gray-400 text-center py-6 px-5">
-                                    Aucune affectation pour l'année {activeYear?.year ?? 'courante'}
+                                    {t('dashboard.teacher.assignments_empty', { year: activeYear?.year ?? '—' })}
                                 </p>
                             ) : (
                                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 p-5">
@@ -943,7 +942,7 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                                                 href={route('attendances.index')}
                                                 className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-300 hover:gap-2 transition-all"
                                             >
-                                                <UserCheck className="w-3.5 h-3.5" /> Faire l'appel
+                                                <UserCheck className="w-3.5 h-3.5" /> {t('dashboard.teacher.take_attendance')}
                                             </Link>
                                         </div>
                                     ))}
@@ -959,8 +958,8 @@ export default function Dashboard({ activeYear, selectedYearId, selectedYear, ac
                         <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
                             <TrendingDown className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="text-gray-600 dark:text-gray-400 font-medium">Tableau de bord non disponible</p>
-                        <p className="text-sm text-gray-400 mt-1">Aucune donnée à afficher pour votre profil.</p>
+                        <p className="text-gray-600 dark:text-gray-400 font-medium">{t('dashboard.empty.title')}</p>
+                        <p className="text-sm text-gray-400 mt-1">{t('dashboard.empty.subtitle')}</p>
                     </div>
                 )}
 

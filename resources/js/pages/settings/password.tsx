@@ -8,28 +8,30 @@ import PasswordStrength from '@/components/password-strength';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Mot de passe',
-        href: edit().url,
-    },
-];
-
 export default function Password() {
+    const { t } = useTranslation();
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
     const [password, setPassword] = useState('');
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('settings.password.page.breadcrumb'),
+            href: edit().url,
+        },
+    ];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Mot de passe" />
+            <Head title={t('settings.password.page.head')} />
 
-            <h1 className="sr-only flex items-center gap-3"><KeyRound className="h-7 w-7 text-blue-600 shrink-0" />Mot de passe</h1>
+            <h1 className="sr-only flex items-center gap-3"><KeyRound className="h-7 w-7 text-blue-600 shrink-0" />{t('settings.password.page.heading')}</h1>
 
             <SettingsLayout bare>
                 <div className="space-y-6">
@@ -40,8 +42,8 @@ export default function Password() {
                                 <KeyRound className="h-7 w-7" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">Mot de passe</h2>
-                                <p className="text-sm text-gray-600">Assurez-vous d'utiliser un mot de passe long et sécurisé.</p>
+                                <h2 className="text-xl font-bold text-gray-900">{t('settings.password.page.heading')}</h2>
+                                <p className="text-sm text-gray-600">{t('settings.password.page.card_desc')}</p>
                             </div>
                         </div>
                         <Lock className="pointer-events-none absolute -right-4 -bottom-6 h-32 w-32 text-blue-600 opacity-[0.07]" />
@@ -78,7 +80,7 @@ export default function Password() {
                                     <div className="flex items-center gap-2 mb-4">
                                         <KeyRound className="w-4 h-4 text-gray-600" />
                                         <Label htmlFor="current_password" className="text-sm font-semibold text-gray-900 mb-0">
-                                            Mot de passe actuel
+                                            {t('settings.password.page.current')}
                                         </Label>
                                     </div>
                                     <Input
@@ -88,7 +90,7 @@ export default function Password() {
                                         type="password"
                                         className="bg-white border-gray-300"
                                         autoComplete="current-password"
-                                        placeholder="Entrez votre mot de passe actuel"
+                                        placeholder={t('settings.password.page.current_ph')}
                                     />
                                     <InputError message={errors.current_password} />
                                 </div>
@@ -98,14 +100,14 @@ export default function Password() {
                                     <div className="flex items-center gap-2 mb-4">
                                         <ShieldCheck className="w-5 h-5 text-green-600" />
                                         <span className="text-sm font-semibold text-green-900">
-                                            Nouveau mot de passe
+                                            {t('settings.password.page.new_section')}
                                         </span>
                                     </div>
                                     
                                     <div className="space-y-4">
                                         <div>
                                             <Label htmlFor="password" className="text-sm font-medium text-gray-900">
-                                                Nouveau mot de passe
+                                                {t('settings.password.page.new')}
                                             </Label>
                                             <Input
                                                 id="password"
@@ -114,7 +116,7 @@ export default function Password() {
                                                 type="password"
                                                 className="mt-2 bg-white border-green-300 focus:ring-green-500"
                                                 autoComplete="new-password"
-                                                placeholder="Entrez un nouveau mot de passe"
+                                                placeholder={t('settings.password.page.new_ph')}
                                                 onChange={(e) => setPassword(e.target.value)}
                                             />
                                             <InputError message={errors.password} />
@@ -123,7 +125,7 @@ export default function Password() {
 
                                         <div>
                                             <Label htmlFor="password_confirmation" className="text-sm font-medium text-gray-900">
-                                                Confirmer le mot de passe
+                                                {t('settings.password.page.confirm')}
                                             </Label>
                                             <Input
                                                 id="password_confirmation"
@@ -131,7 +133,7 @@ export default function Password() {
                                                 type="password"
                                                 className="mt-2 bg-white border-green-300 focus:ring-green-500"
                                                 autoComplete="new-password"
-                                                placeholder="Confirmez le nouveau mot de passe"
+                                                placeholder={t('settings.password.page.confirm_ph')}
                                             />
                                             <InputError message={errors.password_confirmation} />
                                         </div>
@@ -139,7 +141,7 @@ export default function Password() {
 
                                     <div className="mt-4 p-3 bg-green-100 rounded-md">
                                         <p className="text-xs text-green-800">
-                                            💡 <strong>Conseil :</strong> Au moins 12 caractères mêlant majuscules, minuscules, chiffres et symboles. Évitez les mots de passe déjà utilisés ailleurs.
+                                            💡 <strong>{t('settings.password.page.tip_label')}</strong> {t('settings.password.page.tip')}
                                         </p>
                                     </div>
                                 </div>
@@ -150,7 +152,7 @@ export default function Password() {
                                         className="bg-blue-600 hover:bg-blue-700"
                                         data-test="update-password-button"
                                     >
-                                        {processing ? 'Modification...' : 'Modifier le mot de passe'}
+                                        {processing ? t('settings.password.page.saving') : t('settings.password.page.submit')}
                                     </Button>
 
                                     <Transition
@@ -161,7 +163,7 @@ export default function Password() {
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-green-600 font-medium">
-                                            ✓ Mot de passe modifié
+                                            {t('settings.password.page.saved')}
                                         </p>
                                     </Transition>
                                 </div>
