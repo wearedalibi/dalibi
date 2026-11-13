@@ -55,7 +55,7 @@ class NoteReclamationController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): Response|RedirectResponse
     {
         abort_unless($request->user()->can('create_note_reclamations'), 403);
 

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FeeStructure extends Model
 {
@@ -68,8 +69,10 @@ class FeeStructure extends Model
 
     /**
      * Get the installments for the fee structure.
+     *
+     * @return HasMany<Installment, $this>
      */
-    public function installments()
+    public function installments(): HasMany
     {
         return $this->hasMany(Installment::class);
     }

@@ -16,12 +16,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection;
 
 class AcademicPeriod extends Model
 {
@@ -81,7 +81,7 @@ class AcademicPeriod extends Model
      * Périodes applicables à un type de classe pour une année donnée.
      * Priorité aux périodes spécifiques au type ; sinon, périodes globales (class_type_id null).
      *
-     * @return Collection<int, AcademicPeriod>
+     * @return Collection<int, static>
      */
     public static function forClassType(?string $academicYearId, ?string $classTypeId)
     {

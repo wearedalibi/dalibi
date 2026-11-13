@@ -217,12 +217,6 @@ parameters:
 			path: app/Http/Controllers/Notes/BulletinController.php
 
 		-
-			message: '#^Method App\\Http\\Controllers\\Notes\\NoteReclamationController\:\:create\(\) should return Inertia\\Response but returns Illuminate\\Http\\RedirectResponse\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Notes/NoteReclamationController.php
-
-		-
 			message: '#^Offset ''media'' on array\{format\: string, tables\: int, rows\?\: int\} in isset\(\) does not exist\.$#'
 			identifier: isset.offset
 			count: 1
@@ -239,18 +233,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\FeeStructure\:\:\$installments\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Parametres/FeeStructureController.php
-
-		-
-			message: '#^Relation ''installments'' is not found in App\\Models\\FeeStructure model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/Parametres/FeeStructureController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -287,12 +269,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Api/StudentResource.php
-
-		-
-			message: '#^Method App\\Models\\AcademicPeriod\:\:forClassType\(\) should return Illuminate\\Support\\Collection\<int, App\\Models\\AcademicPeriod\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\AcademicPeriod\)\>\.$#'
-			identifier: return.type
-			count: 2
-			path: app/Models/AcademicPeriod.php
 
 		-
 			message: '#^Match arm comparison between ''BANK'' and ''BANK'' is always true\.$#'
