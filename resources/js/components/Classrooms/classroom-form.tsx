@@ -1,6 +1,7 @@
 import { Building2, Save, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/helpers/i18n';
 
 export interface ClassroomTypeOption {
     id: string;
@@ -36,14 +37,15 @@ export function ClassroomForm({
     onSubmit,
     setData,
 }: Readonly<ClassroomFormProps>) {
-    let submitLabel = 'Mettre à jour';
+    const { t } = useTranslation();
+    let submitLabel = t('parametres.common.update');
 
     if (processing && mode === 'create') {
-        submitLabel = 'Création...';
+        submitLabel = t('parametres.classrooms.creating');
     } else if (processing) {
-        submitLabel = 'Mise à jour...';
+        submitLabel = t('parametres.common.updating');
     } else if (mode === 'create') {
-        submitLabel = 'Créer la classe';
+        submitLabel = t('parametres.classrooms.submit_create');
     }
 
     return (
@@ -53,38 +55,38 @@ export function ClassroomForm({
                     <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
                         <Building2 className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Informations de la classe</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.classrooms.form_info')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">Nom *</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classrooms.label_name')} *</label>
                         <Input
                             id="name"
                             value={data.name}
                             onChange={(event) => setData('name', event.target.value)}
                             disabled={processing}
                             className={errors.name ? 'border-red-500 bg-red-50/40' : 'border-gray-200 bg-white focus-visible:ring-blue-500'}
-                            placeholder="Ex: 6e A"
+                            placeholder={t('parametres.classrooms.name_ph')}
                         />
                         {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="code" className="block text-sm font-medium text-gray-900 mb-2">Code *</label>
+                        <label htmlFor="code" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classrooms.label_code')} *</label>
                         <Input
                             id="code"
                             value={data.code}
                             onChange={(event) => setData('code', event.target.value)}
                             disabled={processing}
                             className={errors.code ? 'border-red-500 bg-red-50/40' : 'border-gray-200 bg-white focus-visible:ring-blue-500'}
-                            placeholder="Ex: 6A-2026"
+                            placeholder={t('parametres.classrooms.code_ph')}
                         />
                         {errors.code && <p className="text-sm text-red-600 mt-1">{errors.code}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="capacity" className="block text-sm font-medium text-gray-900 mb-2">Capacité *</label>
+                        <label htmlFor="capacity" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classrooms.label_capacity')} *</label>
                         <Input
                             id="capacity"
                             type="number"
@@ -102,13 +104,13 @@ export function ClassroomForm({
                     </div>
 
                     <div>
-                        <label htmlFor="expected_age" className="block text-sm font-medium text-gray-900 mb-2">Âge attendu</label>
+                        <label htmlFor="expected_age" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classrooms.label_expected_age')}</label>
                         <Input
                             id="expected_age"
                             type="number"
                             min={3}
                             max={30}
-                            placeholder="Ex. 12"
+                            placeholder={t('parametres.classrooms.expected_age_ph')}
                             value={data.expected_age ?? ''}
                             onChange={(event) => {
                                 const v = event.target.value;
@@ -117,12 +119,12 @@ export function ClassroomForm({
                             disabled={processing}
                             className={errors.expected_age ? 'border-red-500 bg-red-50/40' : 'border-gray-200 bg-white focus-visible:ring-blue-500'}
                         />
-                        <p className="text-xs text-gray-400 mt-1">Âge officiel attendu (base du calcul de sur-âge).</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('parametres.classrooms.expected_age_hint')}</p>
                         {errors.expected_age && <p className="text-sm text-red-600 mt-1">{errors.expected_age}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="classroom_type_id" className="block text-sm font-medium text-gray-900 mb-2">Type de classe</label>
+                        <label htmlFor="classroom_type_id" className="block text-sm font-medium text-gray-900 mb-2">{t('parametres.classrooms.label_type')}</label>
                         <select
                             id="classroom_type_id"
                             value={data.classroom_type_id}
@@ -134,7 +136,7 @@ export function ClassroomForm({
                                     : 'border-gray-200 bg-white focus-visible:ring-2 focus-visible:ring-blue-500'
                             }`}
                         >
-                            <option value="">Aucun type</option>
+                            <option value="">{t('parametres.classrooms.type_none')}</option>
                             {classroomTypes.map((type) => (
                                 <option key={type.id} value={type.id}>
                                     {type.name}
@@ -151,16 +153,16 @@ export function ClassroomForm({
                     <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center">
                         <Users className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Aperçu</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('parametres.classrooms.preview')}</h3>
                 </div>
                 <p className="text-sm text-gray-700">
-                    Cette classe accueillera jusqu'à <span className="font-semibold">{data.capacity || 0}</span> élèves.
+                    {t('parametres.classrooms.preview_text_before')} <span className="font-semibold">{data.capacity || 0}</span> {t('parametres.classrooms.preview_text_after')}
                 </p>
             </div>
 
             <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={processing} className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50">
-                    Annuler
+                    {t('parametres.common.cancel')}
                 </Button>
                 <Button type="submit" disabled={processing} className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm">
                     <Save className="w-4 h-4" />

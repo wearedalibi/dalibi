@@ -12,6 +12,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classroom {
@@ -51,6 +52,7 @@ export default function SubjectAssignments({
     academicYears,
     existingAssignmentsByYear,
 }: Readonly<SubjectAssignmentsProps>) {
+    const { t } = useTranslation();
     const [academicYearId, setAcademicYearId] = useState('');
     const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
     const [coefficients, setCoefficients] = useState<Record<string, string>>({});
@@ -124,17 +126,17 @@ export default function SubjectAssignments({
         const newErrors: Record<string, string> = {};
 
         if (!academicYearId) {
-            newErrors.academic_year_id = 'L\'année académique est requise.';
+            newErrors.academic_year_id = t('parametres.classrooms.err_year_required');
         }
 
         if (selectedSubjects.length === 0) {
-            newErrors.subjects = 'Veuillez sélectionner au moins une matière.';
+            newErrors.subjects = t('parametres.classrooms.err_subjects_required');
         }
 
         selectedSubjects.forEach((subjectId) => {
             const coefficient = normalizeCoefficient(coefficients[subjectId] ?? '');
             if (!Number.isFinite(coefficient) || coefficient <= 0) {
-                newErrors[`coefficient_${subjectId}`] = 'Coefficient invalide (doit être > 0).';
+                newErrors[`coefficient_${subjectId}`] = t('parametres.classrooms.err_coef_invalid');
             }
         });
 
@@ -166,7 +168,7 @@ export default function SubjectAssignments({
 
     return (
         <AppLayout>
-            <Head title={`Attributions - ${classroom.name}`} />
+            <Head title={t('parametres.classrooms.assign_head', { name: classroom.name })} />
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -178,24 +180,24 @@ export default function SubjectAssignments({
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Attribuer des matières
+                            {t('parametres.classrooms.assign_title')}
                         </h1>
                         <p className="text-gray-600 mt-1">
-                            Classe : <span className="font-semibold text-gray-900">{classroom.name} ({classroom.code})</span>
+                            {t('parametres.classrooms.assign_class_before')} <span className="font-semibold text-gray-900">{classroom.name} ({classroom.code})</span>
                         </p>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="bg-white rounded-lg p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Année académique</h2>
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('parametres.classrooms.assign_year_section')}</h2>
                         <div className="max-w-md">
                             <Select
                                 value={academicYearId}
                                 onValueChange={handleAcademicYearChange}
                             >
                                 <SelectTrigger className={errors.academic_year_id ? 'border-red-500' : ''}>
-                                    <SelectValue placeholder="Sélectionnez une année académique" />
+                                    <SelectValue placeholder={t('parametres.classrooms.assign_year_ph')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {academicYears.map((year) => (
@@ -212,13 +214,13 @@ export default function SubjectAssignments({
                     </div>
 
                     <div className="bg-white rounded-lg p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Matières et coefficients</h2>
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('parametres.classrooms.assign_subjects_section')}</h2>
 
                         <div className="mb-4 relative max-w-xl">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Rechercher une matière..."
+                                placeholder={t('parametres.classrooms.assign_search_ph')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="pl-10 pr-10"
@@ -250,7 +252,7 @@ export default function SubjectAssignments({
                                         className="flex-1 text-left"
                                     >
                                         <p className="text-sm font-medium text-gray-900">{subject.name}</p>
-                                        <p className="text-xs text-gray-500">Code: {subject.code}</p>
+                                        <p className="text-xs text-gray-500">{t('parametres.classrooms.show_code')}: {subject.code}</p>
                                     </button>
                                     {selectedSubjects.includes(subject.id) && (
                                         <div className="w-32">
@@ -259,7 +261,7 @@ export default function SubjectAssignments({
                                                 inputMode="decimal"
                                                 value={coefficients[subject.id] ?? '1'}
                                                 onChange={(e) => updateCoefficient(subject.id, e.target.value)}
-                                                placeholder="Coef"
+                                                placeholder={t('parametres.classrooms.assign_coef_ph')}
                                                 className={errors[`coefficient_${subject.id}`] ? 'border-red-500' : ''}
                                             />
                                         </div>
@@ -274,7 +276,7 @@ export default function SubjectAssignments({
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <p className="text-sm text-blue-900">
-                            <span className="font-semibold">{selectedSubjects.length}</span> matière(s) sélectionnée(s)
+                            {t('parametres.classrooms.assign_selected_count', { n: selectedSubjects.length })}
                         </p>
                     </div>
 
@@ -284,14 +286,14 @@ export default function SubjectAssignments({
                             disabled={isSubmitting}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            {isSubmitting ? 'Enregistrement...' : 'Enregistrer les attributions'}
+                            {isSubmitting ? t('parametres.classrooms.assign_saving') : t('parametres.classrooms.assign_submit')}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => router.get(route('classrooms.index'))}
                         >
-                            Annuler
+                            {t('parametres.common.cancel')}
                         </Button>
                     </div>
                 </form>
