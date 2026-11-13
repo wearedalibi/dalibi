@@ -55,6 +55,8 @@ class Classroom extends Model
 
     /**
      * Alias for type() relationship.
+     *
+     * @return BelongsTo<ClassroomType, $this>
      */
     public function classroomType(): BelongsTo
     {

@@ -108,7 +108,11 @@ class User extends Authenticatable
         );
     }
 
-    /** Profil RH (paie) de l'utilisateur, s'il est employé. */
+    /**
+     * Profil RH (paie) de l'utilisateur, s'il est employé.
+     *
+     * @return HasOne<EmployeeProfile, $this>
+     */
     public function employeeProfile(): HasOne
     {
         return $this->hasOne(EmployeeProfile::class);
