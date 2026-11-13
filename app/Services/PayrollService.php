@@ -137,7 +137,7 @@ final class PayrollService
         $grossEarnings = 0.0;
         foreach ($lines as $l) {
             if (($l['type'] ?? '') !== SalaryComponent::DEDUCTION) {
-                $grossEarnings += (float) ($l['amount'] ?? 0);
+                $grossEarnings += (float) ($l['amount']);
             }
         }
         $statutory = $this->statutory($grossEarnings, $settings);

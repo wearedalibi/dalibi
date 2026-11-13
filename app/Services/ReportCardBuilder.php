@@ -171,7 +171,7 @@ final class ReportCardBuilder
                                 'moyenne' => $cell['moy'],
                                 'points' => $points,
                                 'definitive' => $points,
-                                'by_type' => $cell['by_type'] ?? [],
+                                'by_type' => $cell['by_type'],
                                 'rang' => $subjectRanks[$cs->id]->get($student->id)['rank'] ?? null,
                                 'appreciation' => $comments[$student->id.'|'.$cs->id] ?? '',
                                 'teacher' => $teachers[$cs->subject_id] ?? '',

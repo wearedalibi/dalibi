@@ -512,7 +512,7 @@ final class BackupService
     private function restoreSql(string $contents): array
     {
         preg_match_all('/INSERT\s+INTO\s+"([^"]+)"/i', $contents, $matches);
-        $tables = array_values(array_unique($matches[1] ?? []));
+        $tables = array_values(array_unique($matches[1]));
 
         try {
             DB::transaction(function () use ($contents, $tables): void {
