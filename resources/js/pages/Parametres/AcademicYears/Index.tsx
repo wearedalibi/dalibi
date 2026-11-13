@@ -22,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { route } from '@/helpers/route';
+import { useTranslation } from '@/helpers/i18n';
 import AppLayout from '@/layouts/app-layout';
 
 interface AcademicYear {
@@ -51,6 +52,8 @@ interface IndexProps {
 }
 
 export default function Index({ academicYears, filters }: Readonly<IndexProps>) {
+    const { t, locale } = useTranslation();
+    const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR';
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -87,21 +90,21 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
 
     const statsCards = [
         {
-            title: 'Années totales',
+            title: t('parametres.academic_years.stat_total'),
             value: academicYears.total,
             icon: Calendar,
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
         {
-            title: 'Années actives',
+            title: t('parametres.academic_years.stat_active'),
             value: activeYears,
             icon: CheckCircle2,
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
         {
-            title: 'Page',
+            title: t('parametres.academic_years.stat_page'),
             value: `${academicYears.current_page}/${academicYears.last_page}`,
             icon: Calendar,
             bgColor: 'bg-purple-50',
@@ -110,7 +113,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
     ];
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        return new Date(dateString).toLocaleDateString(dateLocale, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
@@ -119,17 +122,17 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
 
     return (
         <AppLayout>
-            <Head title="Années académiques" />
+            <Head title={t('parametres.academic_years.head')} />
 
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"><Calendar className="h-7 w-7 text-blue-600 shrink-0" />
-                            Années académiques
+                            {t('parametres.academic_years.title')}
                         </h1>
                         <p className="mt-2 text-lg text-gray-600">
-                            Gérez les années académiques
+                            {t('parametres.academic_years.subtitle')}
                         </p>
                     </div>
                     <Button 
@@ -137,7 +140,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                         className="gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus className="w-5 h-5" />
-                        Nouvelle année
+                        {t('parametres.academic_years.new')}
                     </Button>
                 </div>
 
@@ -175,7 +178,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Rechercher une année..."
+                                placeholder={t('parametres.academic_years.search_ph')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={(e) => {
@@ -198,7 +201,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                             onClick={handleSearch}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            Rechercher
+                            {t('parametres.common.search')}
                         </Button>
                     </div>
                 </div>
@@ -208,18 +211,18 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-gray-50">
-                                <TableHead className="font-semibold text-gray-900">Année</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Date de début</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Date de fin</TableHead>
-                                <TableHead className="font-semibold text-gray-900">Statut</TableHead>
-                                <TableHead className="text-right font-semibold text-gray-900">Actions</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_years.th_year')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_years.th_start')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_years.th_end')}</TableHead>
+                                <TableHead className="font-semibold text-gray-900">{t('parametres.academic_years.th_status')}</TableHead>
+                                <TableHead className="text-right font-semibold text-gray-900">{t('parametres.common.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {academicYears.data.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                                        Aucune année académique trouvée
+                                        {t('parametres.academic_years.empty')}
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -242,32 +245,32 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                                             {academicYear.active ? (
                                                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                                     <CheckCircle2 className="w-4 h-4" />
-                                                    Active
+                                                    {t('parametres.academic_years.status_active')}
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                                                    Inactive
+                                                    {t('parametres.academic_years.status_inactive')}
                                                 </span>
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <IconButton
-                                                    label="Voir"
+                                                    label={t('parametres.common.view')}
                                                     variant="ghost"
                                                     icon={<Eye className="w-4 h-4" />}
                                                     onClick={() => router.get(route('academic-years.show', academicYear.id))}
                                                     className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                                 />
                                                 <IconButton
-                                                    label="Modifier"
+                                                    label={t('parametres.common.edit')}
                                                     variant="ghost"
                                                     icon={<Pencil className="w-4 h-4" />}
                                                     onClick={() => router.get(route('academic-years.edit', academicYear.id))}
                                                     className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
                                                 />
                                                 <IconButton
-                                                    label="Supprimer"
+                                                    label={t('parametres.common.delete')}
                                                     variant="ghost"
                                                     icon={<Trash2 className="w-4 h-4" />}
                                                     onClick={() => setDeleteConfirm(academicYear.id)}
@@ -286,7 +289,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                 {academicYears.last_page > 1 && (
                     <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-4 border border-gray-200">
                         <div className="text-sm text-gray-600">
-                            Affichage de {academicYears.from} à {academicYears.to} sur {academicYears.total} résultats
+                            {t('parametres.common.showing', { from: academicYears.from, to: academicYears.to, total: academicYears.total })}
                         </div>
                         <div className="flex items-center gap-2">
                             <Button
@@ -302,7 +305,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                                 className="gap-1"
                             >
                                 <ChevronLeft className="w-4 h-4" />
-                                Précédent
+                                {t('parametres.common.prev')}
                             </Button>
 
                             <div className="flex gap-1">
@@ -349,7 +352,7 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
                                 disabled={academicYears.current_page === academicYears.last_page}
                                 className="gap-1"
                             >
-                                Suivant
+                                {t('parametres.common.next')}
                                 <ChevronRight className="w-4 h-4" />
                             </Button>
                         </div>
@@ -361,19 +364,19 @@ export default function Index({ academicYears, filters }: Readonly<IndexProps>) 
             <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                        <AlertDialogTitle>{t('parametres.academic_years.delete_title')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette année académique ? Cette action est irréversible.
+                            {t('parametres.academic_years.delete_desc')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-3">
-                        <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeleting}>{t('parametres.common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isDeleting ? 'Suppression...' : 'Supprimer'}
+                            {isDeleting ? t('parametres.academic_years.deleting') : t('parametres.common.delete')}
                         </AlertDialogAction>
                     </div>
                 </AlertDialogContent>
