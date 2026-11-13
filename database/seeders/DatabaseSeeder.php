@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
         // 2) Données de démonstration — jamais en production
         if (app()->environment('production')) {
-            $this->command?->warn(
+            $this->command->warn(
                 'Données de démonstration ignorées (environnement de production). '
                 .'Seules les données de référence ont été installées.'
             );

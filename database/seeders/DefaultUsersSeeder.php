@@ -18,7 +18,7 @@ class DefaultUsersSeeder extends Seeder
     {
         // Garde-fou : ces comptes utilisent un mot de passe connu, jamais en production.
         if (app()->environment('production')) {
-            $this->command?->warn('DefaultUsersSeeder ignoré : comptes de démonstration interdits en production.');
+            $this->command->warn('DefaultUsersSeeder ignoré : comptes de démonstration interdits en production.');
 
             return;
         }
@@ -71,10 +71,10 @@ class DefaultUsersSeeder extends Seeder
                 $user->save();
             }
 
-            $this->command?->info("• {$email} ({$role})");
+            $this->command->info("• {$email} ({$role})");
         }
 
-        $this->command?->warn(
+        $this->command->warn(
             'Comptes de démonstration créés — mot de passe : "'.self::PASSWORD.'". '
             .'Un changement de mot de passe sera exigé à la première connexion.'
         );

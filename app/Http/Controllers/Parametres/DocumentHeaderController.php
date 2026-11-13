@@ -29,7 +29,7 @@ class DocumentHeaderController extends Controller
 
         return Inertia::render('Parametres/Documents/HeaderDesigner', [
             'header' => $config,
-            'preset' => $header?->preset ?? 'ministeriel',
+            'preset' => $header->preset ?? 'ministeriel',
             'presets' => DocumentHeader::PRESETS,
             'default' => DocumentHeader::defaultLayout($school),
             'watermarkImageUrl' => $this->mediaUrl($config['watermark']['image_path'] ?? null),

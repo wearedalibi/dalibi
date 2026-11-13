@@ -115,12 +115,12 @@ class DashboardController extends Controller
                     'id' => $p->id,
                     'amount' => (float) $p->amount,
                     'payment_method' => $p->payment_method,
-                    'paid_at' => $p->paid_at?->toDateString(),
+                    'paid_at' => $p->paid_at->toDateString(),
                     'cash_account' => $p->cashAccount?->name,
                     'student_name' => $p->invoice?->enrollment?->student
                         ? $p->invoice->enrollment->student->firstname.' '.$p->invoice->enrollment->student->lastname
                         : '—',
-                    'class_name' => $p->invoice?->enrollment?->classroom?->name ?? '—',
+                    'class_name' => $p->invoice?->enrollment?->classroom->name ?? '—',
                 ]);
 
             /* Élèves avec aucun paiement (status ISSUED) — top 5 restant le + élevé */
@@ -193,14 +193,14 @@ class DashboardController extends Controller
                 ->map(fn ($e) => [
                     'id' => $e->id,
                     'enrollment_code' => $e->enrollment_code,
-                    'enrollment_date' => $e->enrollment_date?->toDateString(),
+                    'enrollment_date' => $e->enrollment_date->toDateString(),
                     'status' => $e->status,
                     'student_name' => $e->student
                         ? $e->student->firstname.' '.$e->student->lastname
                         : '—',
                     'matricule' => $e->student?->matricule,
-                    'class_name' => $e->classroom?->name ?? '—',
-                    'class_code' => $e->classroom?->code ?? '—',
+                    'class_name' => $e->classroom->name ?? '—',
+                    'class_code' => $e->classroom->code ?? '—',
                 ]);
 
             /* Répartition des inscriptions par classe (pour le graphe) */
@@ -265,8 +265,8 @@ class DashboardController extends Controller
                     'id' => $p->id,
                     'student_name' => $p->student ? $p->student->lastname.' '.$p->student->firstname : '—',
                     'reason' => $p->reason,
-                    'start_date' => $p->start_date?->format('d/m/Y'),
-                    'end_date' => $p->end_date?->format('d/m/Y'),
+                    'start_date' => $p->start_date->format('d/m/Y'),
+                    'end_date' => $p->end_date->format('d/m/Y'),
                 ]);
 
             /* Prochains examens officiels */
@@ -332,10 +332,10 @@ class DashboardController extends Controller
 
             $myAssignments = $assignments->map(fn ($a) => [
                 'id' => $a->id,
-                'subject' => $a->subject?->name ?? '—',
+                'subject' => $a->subject->name ?? '—',
                 'class_id' => $a->class_id,
-                'class_name' => $a->classroom?->name ?? '—',
-                'class_code' => $a->classroom?->code ?? '—',
+                'class_name' => $a->classroom->name ?? '—',
+                'class_code' => $a->classroom->code ?? '—',
             ]);
 
             /* Emploi du temps du jour (1=lundi … 6=samedi) */
@@ -350,8 +350,8 @@ class DashboardController extends Controller
                     'id' => $s->id,
                     'start_time' => substr((string) $s->start_time, 0, 5),
                     'end_time' => substr((string) $s->end_time, 0, 5),
-                    'subject' => $s->subject?->name ?? '—',
-                    'class_name' => $s->classroom?->name ?? '—',
+                    'subject' => $s->subject->name ?? '—',
+                    'class_name' => $s->classroom->name ?? '—',
                     'room' => $s->room,
                 ]);
 
@@ -378,9 +378,9 @@ class DashboardController extends Controller
                 ->get()
                 ->map(fn ($e) => [
                     'id' => $e->id,
-                    'name' => $e->template?->name ?? 'Évaluation',
-                    'subject' => $e->classSubject?->subject?->name ?? '—',
-                    'class_name' => $e->classSubject?->class?->name ?? '—',
+                    'name' => $e->template->name ?? 'Évaluation',
+                    'subject' => $e->classSubject?->subject->name ?? '—',
+                    'class_name' => $e->classSubject?->class->name ?? '—',
                     'date' => $e->date?->format('d/m/Y'),
                 ]);
 

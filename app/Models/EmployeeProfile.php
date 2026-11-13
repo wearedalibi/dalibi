@@ -74,7 +74,7 @@ class EmployeeProfile extends Model
     /** Nom complet de l'employé (via le compte utilisateur). */
     public function fullName(): string
     {
-        return trim(($this->user?->firstname ?? '').' '.($this->user?->lastname ?? ''));
+        return trim(($this->user->firstname ?? '').' '.($this->user->lastname ?? ''));
     }
 
     /**
@@ -83,6 +83,6 @@ class EmployeeProfile extends Model
      */
     public function effectiveBaseSalary(): float
     {
-        return (float) ($this->salaryGrade?->base_amount ?? $this->base_salary);
+        return (float) ($this->salaryGrade->base_amount ?? $this->base_salary);
     }
 }

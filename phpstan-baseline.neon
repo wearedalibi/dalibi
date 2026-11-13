@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 4
-			path: app/Http/Controllers/Administration/SubjectAssignmentController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>year" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Administration/SubjectAssignmentController.php
-
-		-
 			message: '#^Instanceof between App\\Models\\User\|null and App\\Models\\Guardian will always evaluate to false\.$#'
 			identifier: instanceof.alwaysFalse
 			count: 2
@@ -61,12 +49,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/ChildrenController.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Api/V1/DashboardController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
@@ -91,76 +73,10 @@ parameters:
 			path: app/Http/Controllers/Archives/ArchiveController.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/CalendarEventController.php
-
-		-
 			message: '#^Method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\CashAccount\>\:\:withSum\(\) invoked with 3 parameters, 2 required\.$#'
 			identifier: arguments.count
 			count: 1
 			path: app/Http/Controllers/Comptabilite/CashAccountController.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/InvoiceController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>amount_paid" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>amount_remaining" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>firstname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>invoice_number" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>lastname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>matricule" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Comptabilite/SituationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>total" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Comptabilite/SituationController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\ReportCard\:\:\$avg_general\.$#'
@@ -172,24 +88,6 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 4
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>code" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Dashboard/DashboardController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 9
 			path: app/Http/Controllers/Dashboard/DashboardController.php
 
 		-
@@ -223,18 +121,6 @@ parameters:
 			path: app/Http/Controllers/Eleves/EnrollmentController.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Eleves/RosterController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 2
@@ -261,24 +147,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\StudentDocument\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Eleves/StudentController.php
-
-		-
-			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\AcademicYear\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Eleves/StudentController.php
 
@@ -379,24 +247,6 @@ parameters:
 			path: app/Http/Controllers/Eleves/TimetableController.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>year" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Eleves/TimetableController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>absent" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Examens/MarkController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>max_score" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Examens/MarkController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\OfficialExam\:\:\$admis_count\.$#'
 			identifier: property.notFound
 			count: 1
@@ -405,12 +255,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\OfficialExam\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Examens/OfficialExamController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Examens/OfficialExamController.php
 
@@ -429,12 +273,6 @@ parameters:
 		-
 			message: '#^Method App\\Http\\Controllers\\Notes\\NoteReclamationController\:\:create\(\) should return Inertia\\Response but returns Illuminate\\Http\\RedirectResponse\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Notes/NoteReclamationController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>max_score" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Notes/NoteReclamationController.php
 
@@ -463,26 +301,8 @@ parameters:
 			path: app/Http/Controllers/Parametres/BulletinTemplateController.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>columns" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Parametres/BulletinTemplateController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>options" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Parametres/BulletinTemplateController.php
-
-		-
 			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\School\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>preset" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Parametres/DocumentHeaderController.php
 
@@ -499,12 +319,6 @@ parameters:
 			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Parametres/DocumentTemplateController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\FeeStructure\:\:\$installments\.$#'
 			identifier: property.notFound
 			count: 1
@@ -515,12 +329,6 @@ parameters:
 			identifier: larastan.relationExistence
 			count: 2
 			path: app/Http/Controllers/Parametres/FeeStructureController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Presences/AttendanceController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -545,12 +353,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Http/Controllers/Rh/UserPayrollController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>locale" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Middleware/SetLocale.php
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\CalendarEventResource\:\:\$all_day\.$#'
@@ -715,24 +517,6 @@ parameters:
 			path: app/Models/CashAccount.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>base_amount" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Models/EmployeeProfile.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>firstname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Models/EmployeeProfile.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>lastname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Models/EmployeeProfile.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditExcluded\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -835,24 +619,6 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Observers/UserObserver.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Observers/UserObserver.php
-
-		-
 			message: '#^Result of && is always false\.$#'
 			identifier: booleanAnd.alwaysFalse
 			count: 1
@@ -863,12 +629,6 @@ parameters:
 			identifier: identical.alwaysFalse
 			count: 1
 			path: app/Rules/UniqueMatricule.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Services/AccountingService.php
 
 		-
 			message: '#^Offset 1 on array\{list\<string\>, list\<non\-empty\-string\>\} on left side of \?\? always exists and is not nullable\.$#'
@@ -903,12 +663,6 @@ parameters:
 		-
 			message: '#^Ternary operator condition is always true\.$#'
 			identifier: ternary.alwaysTrue
-			count: 1
-			path: app/Services/DocumentRenderer.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>preset" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Services/DocumentRenderer.php
 
@@ -949,12 +703,6 @@ parameters:
 			path: app/Services/PayrollService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$period_system\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
 			message: '#^Offset ''by_type'' on array\{classe\: float\|null, compo\: float\|null, moy\: float\|null, by_type\: array\<float\|null\>\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
@@ -975,30 +723,6 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$type of static method App\\Models\\GradingConfig\:\:resolveOrDefault\(\) expects App\\Models\\ClassroomType\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>firstname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>lastname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Services/ReportCardBuilder.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>period_system" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Services/ReportCardBuilder.php
 
@@ -1051,43 +775,7 @@ parameters:
 			path: database/migrations/2026_06_14_000011_add_locked_at_to_evaluations_table.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: database/seeders/DatabaseSeeder.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: database/seeders/DefaultUsersSeeder.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 8
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: database/seeders/RolesAndPermissionsSeeder.php
-
-		-
 			message: '#^Method Database\\Seeders\\StudentTestSeeder\:\:resolveAcademicYear\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
-			path: database/seeders/StudentTestSeeder.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 4
 			path: database/seeders/StudentTestSeeder.php

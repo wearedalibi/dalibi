@@ -165,7 +165,7 @@ class User extends Authenticatable
         $matriculeService = app(MatriculeService::class);
 
         // Obtenir le rôle principal de l'utilisateur
-        $role = $this->roles?->first()?->name;
+        $role = $this->roles->first()?->name;
 
         if ($role) {
             return $matriculeService->generateUserMatricule($role);

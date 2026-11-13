@@ -93,10 +93,10 @@ class SituationController extends Controller
                     'lastname' => $e->student?->lastname,
                     'matricule' => $e->student?->matricule,
                     'invoice_number' => $e->invoice?->invoice_number,
-                    'total' => (float) ($e->invoice?->total ?? 0),
-                    'amount_paid' => (float) ($e->invoice?->amount_paid ?? 0),
-                    'amount_remaining' => (float) ($e->invoice?->amount_remaining ?? 0),
-                    'status' => $e->invoice?->status ?? 'ISSUED',
+                    'total' => (float) ($e->invoice->total ?? 0),
+                    'amount_paid' => (float) ($e->invoice->amount_paid ?? 0),
+                    'amount_remaining' => (float) ($e->invoice->amount_remaining ?? 0),
+                    'status' => $e->invoice->status ?? 'ISSUED',
                 ]);
         }
 
@@ -153,14 +153,14 @@ class SituationController extends Controller
             foreach ($enrollments as $e) {
                 $inv = $e->invoice;
                 fputcsv($out, [
-                    $e->student?->matricule ?? '—',
-                    $e->student?->lastname ?? '—',
-                    $e->student?->firstname ?? '—',
-                    $e->classroom?->name ?? '—',
-                    $inv?->invoice_number ?? '—',
-                    number_format((float) ($inv?->total ?? 0), 0, ',', ' '),
-                    number_format((float) ($inv?->amount_paid ?? 0), 0, ',', ' '),
-                    number_format((float) ($inv?->amount_remaining ?? 0), 0, ',', ' '),
+                    $e->student->matricule ?? '—',
+                    $e->student->lastname ?? '—',
+                    $e->student->firstname ?? '—',
+                    $e->classroom->name ?? '—',
+                    $inv->invoice_number ?? '—',
+                    number_format((float) ($inv->total ?? 0), 0, ',', ' '),
+                    number_format((float) ($inv->amount_paid ?? 0), 0, ',', ' '),
+                    number_format((float) ($inv->amount_remaining ?? 0), 0, ',', ' '),
                     $this->statusLabel($inv?->status),
                 ], ';');
             }

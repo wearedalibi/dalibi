@@ -198,7 +198,7 @@ final class DocumentRenderer
     protected function renderHeader(DocumentTemplate $template, array $variables): string
     {
         $header = $template->school?->documentHeader;
-        $preset = $header?->preset ?? 'ministeriel';
+        $preset = $header->preset ?? 'ministeriel';
 
         // Préréglage « personnalisé » : canevas glisser-déposer (si des éléments existent).
         // Sinon on rend le gabarit officiel ministériel (défaut).

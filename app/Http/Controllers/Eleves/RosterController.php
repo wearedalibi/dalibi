@@ -30,7 +30,7 @@ class RosterController extends Controller
 
         // Année par défaut : celle demandée, sinon l'année active
         if ($yearId === '') {
-            $yearId = $activeYear?->id ?? '';
+            $yearId = $activeYear->id ?? '';
         }
 
         $classrooms = Classroom::where('active', true)->orderBy('name')->get(['id', 'name', 'code']);
@@ -59,7 +59,7 @@ class RosterController extends Controller
                     'student_name' => $e->student ? $e->student->lastname.' '.$e->student->firstname : '—',
                     'matricule' => $e->student?->matricule,
                     'gender' => $e->student?->gender,
-                    'payment_status' => $e->invoice?->status ?? 'NONE',
+                    'payment_status' => $e->invoice->status ?? 'NONE',
                     'academic_status' => $e->academic_status ?? 'en_cours',
                     'status_reason' => $e->status_reason,
                 ])->values();

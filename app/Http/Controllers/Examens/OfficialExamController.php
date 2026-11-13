@@ -26,7 +26,7 @@ class OfficialExamController extends Controller
         $years = AcademicYear::orderByDesc('start_date')->get(['id', 'year', 'active']);
 
         // Année par défaut = année académique active
-        $yearId = $request->string('academic_year_id')->toString() ?: ($activeYear?->id ?? '');
+        $yearId = $request->string('academic_year_id')->toString() ?: ($activeYear->id ?? '');
         $type = $request->string('type')->toString();
         $session = $request->string('session')->toString();
         $status = $request->string('status')->toString();

@@ -125,7 +125,7 @@ class TimetableController extends Controller
         return $this->schedulePdf(
             $this->teacherSlots($teacher->id, $activeYearId),
             title: 'EMPLOI DU TEMPS — ENSEIGNANT',
-            subtitle: $teacher->name.' — Année : '.($year?->year ?? '—'),
+            subtitle: $teacher->name.' — Année : '.($year->year ?? '—'),
             filename: 'emploi-du-temps-'.Str::slug($teacher->name),
         );
     }

@@ -152,7 +152,7 @@ class NoteReclamationController extends Controller
 
         $data = $request->validated();
         $evaluation = $noteReclamation->evaluation()->with('template:id,max_score')->first();
-        $maxScore = (float) ($evaluation?->template?->max_score ?? 9999);
+        $maxScore = (float) ($evaluation?->template->max_score ?? 9999);
 
         if ($data['status'] === 'approved' && isset($data['corrected_score']) && $data['corrected_score'] > $maxScore) {
             return back()->withErrors(['corrected_score' => "La note corrigée ne peut pas dépasser {$maxScore}."]);

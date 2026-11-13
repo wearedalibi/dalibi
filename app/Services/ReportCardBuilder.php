@@ -99,7 +99,7 @@ final class ReportCardBuilder
             'lowest' => $values->isNotEmpty() ? $values->min() : null,
             'average' => $values->isNotEmpty() ? round($values->avg(), 2) : null,
         ];
-        $periodSystem = $class->classroomType?->period_system ?? 'trimestre';
+        $periodSystem = $class->classroomType->period_system ?? 'trimestre';
         $retards = $this->retardsByStudent($class->id, $period);
 
         // Récapitulatif inter-périodes + annuel (classements précalculés une fois, depuis l'index).
@@ -162,7 +162,7 @@ final class ReportCardBuilder
                             }
 
                             $lines[] = [
-                                'subject' => $cs->subject?->name ?? '',
+                                'subject' => $cs->subject->name ?? '',
                                 'parent' => $cs->subject?->parent?->name,
                                 'group' => $cs->group ?? 'obligatoire',
                                 'coefficient' => $coeff,
@@ -257,7 +257,7 @@ final class ReportCardBuilder
             ->with(['subject:id,name,code,parent_id', 'subject.parent:id,name'])
             ->get()
             // Regroupe les sous-matières sous leur matière parente.
-            ->sortBy(fn ($cs) => ($cs->subject?->parent?->name ?? $cs->subject?->name).'~'.($cs->subject?->name))
+            ->sortBy(fn ($cs) => ($cs->subject?->parent->name ?? $cs->subject->name).'~'.($cs->subject->name))
             ->values();
     }
 
@@ -282,7 +282,7 @@ final class ReportCardBuilder
             ->when($yearId, fn ($q) => $q->where('academic_year_id', $yearId))
             ->with('teacher:id,firstname,lastname')
             ->get()
-            ->mapWithKeys(fn ($a) => [$a->subject_id => trim(($a->teacher?->firstname ?? '').' '.($a->teacher?->lastname ?? ''))])
+            ->mapWithKeys(fn ($a) => [$a->subject_id => trim(($a->teacher->firstname ?? '').' '.($a->teacher->lastname ?? ''))])
             ->toArray();
     }
 
