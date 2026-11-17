@@ -8,8 +8,10 @@ use App\Constants\Locales;
 use App\Http\Controllers\Controller;
 use App\Support\Install\Installer;
 use App\Support\Install\RequirementsChecker;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -114,8 +116,11 @@ class InstallController extends Controller
             'password' => $this->passwordRules(),
         ]);
 
-        // On ne conserve pas le mot de passe en clair plus que nécessaire ;
-        // en Phase 2 il sera consommé immédiatement par l'Installer.
+        // M2 : le mot de passe ne doit jamais transiter en clair dans la session
+        // (payload fichier non chiffré au repos). On le chiffre ici (APP_KEY) ; il
+        // n'est déchiffré qu'à l'exécution, puis purgé. La base reste l'unique
+        // stockage final, en haché.
+        $validated['password'] = Crypt::encryptString($validated['password']);
         session(['install.admin' => $validated]);
 
         return redirect('/install/security');
@@ -166,10 +171,21 @@ class InstallController extends Controller
             return redirect('/install');
         }
 
+        // M2 : déchiffrement du mot de passe juste avant de le consommer. Une session
+        // altérée (déchiffrement impossible) renvoie à l'étape administrateur.
+        $admin = (array) session('install.admin', []);
+        if (isset($admin['password'])) {
+            try {
+                $admin['password'] = Crypt::decryptString((string) $admin['password']);
+            } catch (DecryptException) {
+                return redirect('/install/admin');
+            }
+        }
+
         $payload = [
             'locale' => session('install.language.locale', config('install.defaults.locale')),
             'school' => (array) session('install.school', []),
-            'admin' => (array) session('install.admin', []),
+            'admin' => $admin,
             'security' => (array) session('install.security', []),
         ];
 

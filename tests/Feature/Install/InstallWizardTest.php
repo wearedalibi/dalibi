@@ -8,6 +8,8 @@ use App\Models\School;
 use App\Models\User;
 use App\Support\Install\InstallState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Tests\TestCase;
 
@@ -174,6 +176,28 @@ class InstallWizardTest extends TestCase
         $this->assertDatabaseCount('schools', 0);
     }
 
+    public function test_execute_rejects_a_tampered_admin_session(): void
+    {
+        $this->notInstalled();
+
+        // M2 : mot de passe non déchiffrable (session altérée) → retour à l'étape admin,
+        // aucune installation.
+        $this->session([
+            'install.school' => ['name' => 'Collège Dalibi'],
+            'install.admin' => [
+                'firstname' => 'Ada',
+                'lastname' => 'Admin',
+                'email' => 'ada@example.test',
+                'password' => 'ceci-nest-pas-chiffre',
+            ],
+        ]);
+
+        $this->post('/install/execute')->assertRedirect('/install/admin');
+
+        $this->assertDatabaseCount('schools', 0);
+        $this->assertDatabaseCount('users', 0);
+    }
+
     public function test_execute_installs_the_application_and_locks_it(): void
     {
         $this->notInstalled();
@@ -192,7 +216,8 @@ class InstallWizardTest extends TestCase
                 'firstname' => 'Ada',
                 'lastname' => 'Admin',
                 'email' => 'ada@example.test',
-                'password' => 'secret-pass-123',
+                // M2 : l'étape admin chiffre le mot de passe en session.
+                'password' => Crypt::encryptString('secret-pass-123'),
             ],
             'install.security' => [
                 'app_debug_off' => true,
@@ -217,6 +242,8 @@ class InstallWizardTest extends TestCase
         $this->assertTrue($admin->hasRole(Roles::ADMINISTRATOR));
         $this->assertFalse($admin->must_change_password);
         $this->assertNotEmpty($admin->natricule);
+        // M2 : le mot de passe déchiffré est bien stocké haché et vérifiable.
+        $this->assertTrue(Hash::check('secret-pass-123', $admin->password));
 
         // Le propriétaire de l'école est l'administrateur créé.
         $this->assertSame($admin->id, $school->owner_id);

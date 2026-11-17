@@ -4,7 +4,6 @@ namespace App\Support\Install;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 /**
@@ -38,16 +37,21 @@ class InstallState
             return $this->installed;
         }
 
-        if (File::exists($this->lockPath())) {
+        // M3 : la base de données fait foi quand elle est joignable ; le fichier-verrou
+        // n'est qu'un cache. Une base déjà peuplée = application installée (et on
+        // (re)pose le cache si besoin). Un verrou périmé sur une base vide ne bloque
+        // donc plus une nouvelle installation légitime.
+        if ($this->databaseHasUsers()) {
+            if (! File::exists($this->lockPath())) {
+                $this->lock(['healed' => true]);
+            }
+
             return $this->installed = true;
         }
 
-        // Auto-cicatrisation : une base déjà peuplée = application installée.
-        // La sonde est protégée (try/catch) : sur un clone neuf sans base, elle
-        // renvoie false sans erreur.
-        if ($this->databaseHasUsers()) {
-            $this->lock(['healed' => true]);
-
+        // Repli : base injoignable (clone neuf, ou panne momentanée). On se fie alors
+        // au fichier-verrou s'il est présent.
+        if (File::exists($this->lockPath())) {
             return $this->installed = true;
         }
 
@@ -109,13 +113,18 @@ class InstallState
         return storage_path('app/'.config('install.lock_file', 'installed.json'));
     }
 
-    /** Sonde prudente : la table users existe-t-elle et contient-elle des lignes ? */
+    /**
+     * Sonde allégée : la table users contient-elle au moins une ligne ?
+     *
+     * Une seule requête `exists` (indexée, peu coûteuse) exécutée au plus une fois
+     * par requête (résultat mémoïsé). Si la table est absente (clone neuf) ou la base
+     * injoignable, la requête lève une exception interceptée → false, sans erreur.
+     */
     private function databaseHasUsers(): bool
     {
         try {
-            return Schema::hasTable('users') && DB::table('users')->exists();
+            return DB::table('users')->exists();
         } catch (Throwable) {
-            // Base injoignable (clone neuf) : non installé, sans erreur.
             return false;
         }
     }
