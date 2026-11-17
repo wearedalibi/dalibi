@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
-        $this->useFileSessionBeforeInstall();
+        $this->useFileStoresBeforeInstall();
         $this->registerObservers();
 
         // HTTPS forcé en production, ou lorsque l'assistant d'installation l'a activé
@@ -46,19 +46,23 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Avant installation, le pilote de session par défaut (« database ») ne peut
-     * pas fonctionner : la table sessions n'existe pas encore. On bascule donc sur
-     * le pilote « file » le temps de l'assistant, avant que StartSession ne résolve
-     * le gestionnaire de session pour la requête.
+     * Avant installation, les stores par défaut « database » (session ET cache) ne
+     * peuvent pas fonctionner : ni la table `sessions` ni la table `cache` n'existent
+     * encore. On bascule donc ces deux stores sur le pilote « file » le temps de
+     * l'assistant — avant que StartSession ou le rate limiter (middleware `throttle`
+     * des routes d'installation, qui s'appuie sur le cache) ne les résolvent.
      */
-    protected function useFileSessionBeforeInstall(): void
+    protected function useFileStoresBeforeInstall(): void
     {
         if (app()->runningInConsole()) {
             return;
         }
 
         if (! $this->app->make(InstallState::class)->isInstalled()) {
-            config(['session.driver' => 'file']);
+            config([
+                'session.driver' => 'file',
+                'cache.default' => 'file',
+            ]);
         }
     }
 
