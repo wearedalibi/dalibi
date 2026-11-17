@@ -20,6 +20,7 @@ use App\Constants\Currencies;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -48,6 +49,7 @@ class School extends Model
         'description',
         'active',
         'portal_enabled',
+        'owner_id',
     ];
 
     protected $casts = [
@@ -114,5 +116,15 @@ class School extends Model
     public function activeGradingConfig(): ?GradingConfig
     {
         return $this->gradingConfigs()->where('is_active', true)->first();
+    }
+
+    /**
+     * Propriétaire de l'établissement (administrateur à l'origine de l'installation).
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }

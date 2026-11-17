@@ -8,6 +8,7 @@ use App\Models\School;
 use App\Models\User;
 use App\Support\Install\InstallState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\Rules\Password;
 use Tests\TestCase;
 
 class InstallWizardTest extends TestCase
@@ -67,19 +68,27 @@ class InstallWizardTest extends TestCase
             ->assertSessionHasErrors('locale');
 
         $this->post('/install/language', ['locale' => 'en'])
-            ->assertRedirect('/install/school')
-            ->assertSessionHas('install.language.locale', 'en');
+            ->assertRedirect('/install/admin')
+            ->assertSessionHas('install.language.locale', 'en')
+            // La clé « locale » standard est posée → SetLocale l'applique partout.
+            ->assertSessionHas('locale', 'en');
+
+        // Les étapes suivantes basculent dans la langue choisie (interface complète).
+        $this->get('/install/admin')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'en'));
     }
 
-    public function test_school_step_requires_a_name_and_advances(): void
+    public function test_school_step_requires_a_name_and_is_the_last_step(): void
     {
         $this->notInstalled();
 
         $this->post('/install/school', [])
             ->assertSessionHasErrors('name');
 
+        // L'école est la dernière étape : elle mène directement à l'exécution.
         $this->post('/install/school', ['name' => 'Collège Dalibi'])
-            ->assertRedirect('/install/admin')
+            ->assertRedirect('/install/run')
             ->assertSessionHas('install.school.name', 'Collège Dalibi');
     }
 
@@ -104,17 +113,42 @@ class InstallWizardTest extends TestCase
         ])->assertRedirect('/install/security');
     }
 
-    public function test_security_step_advances_to_run(): void
+    public function test_admin_password_applies_the_app_password_policy(): void
     {
         $this->notInstalled();
 
+        // En test, Password::defaults() est volontairement souple : on force la
+        // politique stricte pour prouver que l'étape admin l'applique réellement (H1).
+        Password::defaults(fn () => Password::min(12)->mixedCase()->numbers()->symbols());
+
+        $this->post('/install/admin', [
+            'firstname' => 'Ada',
+            'lastname' => 'Admin',
+            'email' => 'ada@example.test',
+            'password' => 'faible',
+            'password_confirmation' => 'faible',
+        ])->assertSessionHasErrors('password');
+
+        $this->post('/install/admin', [
+            'firstname' => 'Ada',
+            'lastname' => 'Admin',
+            'email' => 'ada@example.test',
+            'password' => 'Str0ng-P@ssw0rd!',
+            'password_confirmation' => 'Str0ng-P@ssw0rd!',
+        ])->assertRedirect('/install/security')->assertSessionHasNoErrors();
+    }
+
+    public function test_security_step_advances_to_school(): void
+    {
+        $this->notInstalled();
+
+        // La sécurité précède désormais l'école (dernière étape).
         $this->post('/install/security', [
-            'force_2fa' => '1',
             'app_debug_off' => '1',
             'force_https' => '1',
             'enable_sentry' => '0',
             'password_policy' => 'strong',
-        ])->assertRedirect('/install/run');
+        ])->assertRedirect('/install/school');
     }
 
     public function test_run_screen_renders_without_executing(): void
@@ -148,7 +182,9 @@ class InstallWizardTest extends TestCase
             'install.language' => ['locale' => 'fr'],
             'install.school' => [
                 'name' => 'Collège Dalibi',
+                'level' => 'college',
                 'currency' => 'XOF',
+                'principal' => 'M. Dalibi',
                 'period_type' => 'semester',
                 'academic_year_start' => '2026-09-01',
             ],
@@ -159,7 +195,6 @@ class InstallWizardTest extends TestCase
                 'password' => 'secret-pass-123',
             ],
             'install.security' => [
-                'force_2fa' => true,
                 'app_debug_off' => true,
                 'force_https' => false,
                 'enable_sentry' => false,
@@ -169,10 +204,12 @@ class InstallWizardTest extends TestCase
 
         $this->post('/install/execute')->assertRedirect('/login');
 
-        // École créée.
+        // École créée avec les champs du modèle.
         $school = School::query()->where('name', 'Collège Dalibi')->first();
         $this->assertNotNull($school);
         $this->assertSame('XOF', $school->currency);
+        $this->assertSame('college', $school->level);
+        $this->assertSame('M. Dalibi', $school->principal);
 
         // Administrateur créé, rôle attribué, pas de changement de mot de passe imposé.
         $admin = User::query()->where('email', 'ada@example.test')->first();
@@ -180,6 +217,10 @@ class InstallWizardTest extends TestCase
         $this->assertTrue($admin->hasRole(Roles::ADMINISTRATOR));
         $this->assertFalse($admin->must_change_password);
         $this->assertNotEmpty($admin->natricule);
+
+        // Le propriétaire de l'école est l'administrateur créé.
+        $this->assertSame($admin->id, $school->owner_id);
+        $this->assertTrue($school->owner->is($admin));
 
         // Une année scolaire active existe.
         $this->assertTrue(AcademicYear::query()->where('active', true)->exists());

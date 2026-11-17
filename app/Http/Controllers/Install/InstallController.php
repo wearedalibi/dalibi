@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Install;
 
+use App\Concerns\PasswordValidationRules;
+use App\Constants\Currencies;
 use App\Constants\Locales;
 use App\Http\Controllers\Controller;
 use App\Support\Install\Installer;
@@ -23,6 +25,8 @@ use Throwable;
  */
 class InstallController extends Controller
 {
+    use PasswordValidationRules;
+
     /** Étape 1 — Langue & bienvenue. */
     public function welcome(RequirementsChecker $requirements): Response|RedirectResponse
     {
@@ -43,29 +47,44 @@ class InstallController extends Controller
             'locale' => ['required', 'string', 'in:'.implode(',', Locales::codes())],
         ]);
 
-        session(['install.language' => $validated]);
+        // On mémorise le choix pour l'installation ET sous la clé « locale »
+        // standard : le middleware SetLocale l'applique alors à toutes les étapes
+        // suivantes et à l'ensemble de l'interface (invité, avant connexion).
+        session([
+            'install.language' => $validated,
+            'locale' => $validated['locale'],
+        ]);
         app()->setLocale($validated['locale']);
 
-        return redirect('/install/school');
+        return redirect('/install/admin');
     }
 
-    /** Étape 2 — École. */
+    /** Étape 4 (dernière) — École. Déclenche l'installation. */
     public function school(): Response
     {
         return Inertia::render('install/school', [
             'defaults' => config('install.defaults'),
+            'currencies' => Currencies::options(),
             'values' => session('install.school'),
         ]);
     }
 
     public function storeSchool(Request $request): RedirectResponse
     {
-        // PHASE 1 : validation minimale pour garder le squelette navigable.
-        // La validation complète (FormRequest SchoolRequest) arrive en Phase 2.
+        // Champs calqués sur le modèle School (colonnes réelles de la table « schools »).
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'level' => ['nullable', 'in:primaire,college,lycee'],
             'code' => ['nullable', 'string', 'max:50'],
-            'currency' => ['nullable', 'string', 'max:10'],
+            'currency' => ['nullable', 'string', 'in:'.implode(',', Currencies::codes())],
+            'principal' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:120'],
+            'region' => ['nullable', 'string', 'max:120'],
+            'po_box' => ['nullable', 'string', 'max:50'],
+            'description' => ['nullable', 'string', 'max:1000'],
             'timezone' => ['nullable', 'string', 'max:64'],
             'academic_year_start' => ['nullable', 'string', 'max:20'],
             'period_type' => ['nullable', 'string', 'max:30'],
@@ -73,10 +92,10 @@ class InstallController extends Controller
 
         session(['install.school' => $validated]);
 
-        return redirect('/install/admin');
+        return redirect('/install/run');
     }
 
-    /** Étape 3 — Administrateur. */
+    /** Étape 2 — Administrateur. */
     public function admin(): Response
     {
         return Inertia::render('install/admin', [
@@ -90,7 +109,9 @@ class InstallController extends Controller
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'confirmed'],
+            // H1 : le compte le plus privilégié applique la politique mdp de l'app
+            // (Password::default() : min 12, casse mixte, chiffres, symboles, uncompromised en prod).
+            'password' => $this->passwordRules(),
         ]);
 
         // On ne conserve pas le mot de passe en clair plus que nécessaire ;
@@ -100,7 +121,7 @@ class InstallController extends Controller
         return redirect('/install/security');
     }
 
-    /** Étape 4 — Protocole de sécurité. */
+    /** Étape 3 — Protocole de sécurité. */
     public function security(): Response
     {
         return Inertia::render('install/security', [
@@ -112,7 +133,6 @@ class InstallController extends Controller
     public function storeSecurity(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'force_2fa' => ['boolean'],
             'force_https' => ['boolean'],
             'app_debug_off' => ['boolean'],
             'enable_sentry' => ['boolean'],
@@ -121,7 +141,7 @@ class InstallController extends Controller
 
         session(['install.security' => $validated]);
 
-        return redirect('/install/run');
+        return redirect('/install/school');
     }
 
     /**

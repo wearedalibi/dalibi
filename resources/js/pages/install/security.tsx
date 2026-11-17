@@ -1,5 +1,5 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Download, KeyRound, Lock, Lock as LockIcon, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, KeyRound, Lock, Lock as LockIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -7,7 +7,6 @@ import { useTranslation } from '@/helpers/i18n';
 import InstallLayout from '@/layouts/install/install-layout';
 
 type Defaults = {
-    force_2fa: boolean;
     force_https: boolean;
     app_debug_off: boolean;
     enable_sentry: boolean;
@@ -42,13 +41,11 @@ export default function InstallSecurity({ defaults, values }: Readonly<Props>) {
     const { t } = useTranslation();
     const init = { ...defaults, ...(values ?? {}) };
 
-    const [force2fa, setForce2fa] = useState(!!init.force_2fa);
     const [appDebugOff, setAppDebugOff] = useState(init.app_debug_off !== false);
     const [forceHttps, setForceHttps] = useState(init.force_https !== false);
     const [sentry, setSentry] = useState(!!init.enable_sentry);
 
     const rows = [
-        { icon: ShieldCheck, label: t('install.security.force_2fa'), on: force2fa, set: () => setForce2fa((x) => !x), name: 'force_2fa' },
         { icon: LockIcon, label: t('install.security.app_debug_off'), on: appDebugOff, set: () => setAppDebugOff((x) => !x), name: 'app_debug_off' },
         { icon: Lock, label: t('install.security.force_https'), on: forceHttps, set: () => setForceHttps((x) => !x), name: 'force_https' },
         { icon: Download, label: t('install.security.enable_sentry'), on: sentry, set: () => setSentry((x) => !x), name: 'enable_sentry' },
@@ -84,6 +81,8 @@ export default function InstallSecurity({ defaults, values }: Readonly<Props>) {
                             </div>
                         </div>
 
+                        <p className="text-xs text-gray-500">{t('install.security.two_factor_note')}</p>
+
                         <p className="flex items-center gap-2 text-xs text-gray-500">
                             <Lock className="h-3.5 w-3.5" />
                             {t('install.security.lock_note')}
@@ -98,7 +97,8 @@ export default function InstallSecurity({ defaults, values }: Readonly<Props>) {
                             </Button>
                             <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={processing}>
                                 {processing && <Spinner />}
-                                {t('install.common.install')}
+                                {t('install.common.continue')}
+                                <ArrowRight className="h-4 w-4" />
                             </Button>
                         </div>
                     </div>

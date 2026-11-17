@@ -39,6 +39,11 @@ return [
     // Fichier-verrou (relatif à storage/app/). Sa présence = application installée.
     'lock_file' => 'installed.json',
 
+    // Forçage HTTPS piloté par l'assistant (écrit FORCE_HTTPS dans .env). Appliqué
+    // par AppServiceProvider hors environnement local (en production, HTTPS est déjà
+    // forcé). Lu ici pour rester compatible avec `config:cache`.
+    'force_https' => (bool) env('FORCE_HTTPS', false),
+
     // Valeurs par défaut proposées dans l'étape « École ».
     'defaults' => [
         'locale' => Locales::DEFAULT,
@@ -47,9 +52,8 @@ return [
     ],
 
     // Réglages de sécurité pré-cochés à l'étape « Protocole de sécurité ».
-    // (Appliqués en Phase 2 ; ici ils alimentent l'écran.)
+    // La 2FA n'est volontairement PAS imposée (choix laissé à chaque utilisateur).
     'security_defaults' => [
-        'force_2fa' => true,
         'force_https' => true,
         'app_debug_off' => true,
         'password_policy' => 'strong',

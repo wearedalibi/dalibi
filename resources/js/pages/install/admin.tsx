@@ -78,7 +78,7 @@ export default function InstallAdmin({ values }: Readonly<Props>) {
 
                         <div className="mt-2 flex items-center justify-between">
                             <Button asChild variant="outline">
-                                <Link href="/install/school">
+                                <Link href="/install">
                                     <ArrowLeft className="h-4 w-4" />
                                     {t('install.common.back')}
                                 </Link>

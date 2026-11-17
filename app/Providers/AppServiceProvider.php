@@ -38,7 +38,9 @@ class AppServiceProvider extends ServiceProvider
         $this->useFileSessionBeforeInstall();
         $this->registerObservers();
 
-        if (app()->environment('production')) {
+        // HTTPS forcé en production, ou lorsque l'assistant d'installation l'a activé
+        // (FORCE_HTTPS=true) — jamais en local pour ne pas casser le dev en http.
+        if (app()->environment('production') || (config('install.force_https') && ! app()->environment('local'))) {
             URL::forceScheme('https');
         }
     }

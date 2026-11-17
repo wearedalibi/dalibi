@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react';
 import { useTranslation } from '@/helpers/i18n';
 
-const STEPS = ['language', 'school', 'admin', 'security'] as const;
+const STEPS = ['language', 'admin', 'security', 'school'] as const;
 
 export type InstallStep = (typeof STEPS)[number];
 

@@ -51,7 +51,8 @@ class Installer
         $school = $this->ensureSchool($schoolInput);
 
         // 3. Données de référence de production (rôles & permissions, catalogues,
-        //    en-têtes/bulletins par école). Entièrement idempotent.
+        //    en-têtes/bulletins par école). Entièrement idempotent, exécuté APRÈS la
+        //    création de l'école pour que les seeders « par école » s'appliquent.
         Artisan::call('db:seed', ['--class' => ReferenceDataSeeder::class, '--force' => true]);
 
         // 4. Découpage des périodes (trimestre / semestre) appliqué aux types de classe.
@@ -61,15 +62,22 @@ class Installer
         $this->ensureAcademicYear($schoolInput['academic_year_start'] ?? null);
 
         // 6. Administrateur — après le seed : le rôle « administrateur » existe désormais.
-        $this->ensureAdministrator($adminInput, $locale);
+        $admin = $this->ensureAdministrator($adminInput, $locale);
 
-        // 7. Réglages de sécurité (best-effort sur le fichier .env).
+        // 7. Propriétaire de l'établissement = administrateur à l'origine de l'installation.
+        if ($admin !== null && $school->owner_id !== $admin->id) {
+            $school->owner_id = $admin->id;
+            $school->save();
+        }
+
+        // 8. Réglages de sécurité (best-effort sur le fichier .env).
         $this->applySecurity($security);
 
-        // 8. Verrou : l'application est désormais installée.
+        // 9. Verrou : l'application est désormais installée.
         $this->state->lock([
             'locale' => $locale,
             'school' => $school->name,
+            'owner' => $admin?->email,
             'timezone' => (string) ($schoolInput['timezone'] ?? config('install.defaults.timezone')),
             'security' => $security,
         ]);
@@ -82,16 +90,28 @@ class Installer
     {
         $name = trim((string) ($input['name'] ?? '')) ?: 'Mon établissement';
         $code = trim((string) ($input['code'] ?? '')) ?: $this->generateSchoolCode($name);
-        $currency = trim((string) ($input['currency'] ?? '')) ?: Currencies::DEFAULT;
+
+        $level = in_array($input['level'] ?? null, ['primaire', 'college', 'lycee'], true)
+            ? (string) $input['level']
+            : 'primaire';
+
+        // Champs facultatifs calqués sur le modèle School.
+        $optional = [];
+        foreach (['currency', 'principal', 'email', 'phone', 'address', 'city', 'region', 'po_box', 'description'] as $field) {
+            $value = trim((string) ($input[$field] ?? ''));
+            if ($value !== '') {
+                $optional[$field] = $value;
+            }
+        }
+        $optional['currency'] = $optional['currency'] ?? Currencies::DEFAULT;
 
         return School::firstOrCreate(
             ['code' => $code],
-            [
+            array_merge([
                 'name' => $name,
-                'level' => 'primaire',
-                'currency' => $currency,
+                'level' => $level,
                 'active' => true,
-            ],
+            ], $optional),
         );
     }
 
@@ -148,12 +168,12 @@ class Installer
     /**
      * @param  array<string, mixed>  $input
      */
-    private function ensureAdministrator(array $input, string $locale): void
+    private function ensureAdministrator(array $input, string $locale): ?User
     {
         $email = strtolower(trim((string) ($input['email'] ?? '')));
 
         if ($email === '') {
-            return; // garde-fou : l'email est validé en amont par l'assistant.
+            return null; // garde-fou : l'email est validé en amont par l'assistant.
         }
 
         $user = User::firstOrNew(['email' => $email]);
@@ -177,20 +197,23 @@ class Installer
 
         $user->save();
         $user->syncRoles([Roles::ADMINISTRATOR]);
+
+        return $user;
     }
 
     /**
      * Normalise les réglages de sécurité (valeurs par défaut sûres).
      *
+     * NB : la 2FA n'est volontairement pas imposée (choix de chaque utilisateur).
+     *
      * @param  array<string, mixed>  $input
-     * @return array{force_2fa: bool, force_https: bool, app_debug_off: bool, enable_sentry: bool, password_policy: string}
+     * @return array{force_https: bool, app_debug_off: bool, enable_sentry: bool, password_policy: string}
      */
     private function normalizeSecurity(array $input): array
     {
         $defaults = (array) config('install.security_defaults');
 
         return [
-            'force_2fa' => (bool) ($input['force_2fa'] ?? $defaults['force_2fa'] ?? true),
             'force_https' => (bool) ($input['force_https'] ?? $defaults['force_https'] ?? true),
             'app_debug_off' => (bool) ($input['app_debug_off'] ?? $defaults['app_debug_off'] ?? true),
             'enable_sentry' => (bool) ($input['enable_sentry'] ?? $defaults['enable_sentry'] ?? false),
@@ -206,7 +229,7 @@ class Installer
      * Best-effort : si .env est absent ou non inscriptible, on n'échoue pas
      * l'installation (les choix restent consignés dans le verrou).
      *
-     * @param  array{force_2fa: bool, force_https: bool, app_debug_off: bool, enable_sentry: bool, password_policy: string}  $security
+     * @param  array{force_https: bool, app_debug_off: bool, enable_sentry: bool, password_policy: string}  $security
      */
     private function applySecurity(array $security): void
     {
@@ -216,12 +239,11 @@ class Installer
             $changes['APP_DEBUG'] = 'false';
         }
 
+        // force_https réellement effectif : FORCE_HTTPS est lu par AppServiceProvider
+        // (hors local) pour appeler URL::forceScheme('https'). On aligne aussi APP_URL.
+        $changes['FORCE_HTTPS'] = $security['force_https'] ? 'true' : 'false';
         if ($security['force_https']) {
             $changes['APP_URL'] = $this->httpsUrl((string) config('app.url'));
-        }
-
-        if ($changes === []) {
-            return;
         }
 
         $this->writeEnv($changes);
