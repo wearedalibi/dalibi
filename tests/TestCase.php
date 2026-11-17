@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Support\Install\InstallState;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,11 @@ abstract class TestCase extends BaseTestCase
         // Vite (manifeste absent en CI, ou périmé en local). La directive @vite
         // est neutralisée, ce qui n'affecte aucune assertion Inertia.
         $this->withoutVite();
+
+        // Par défaut, l'application est considérée installée pour que le middleware
+        // d'installation reste transparent. Les tests de l'assistant forcent l'état
+        // « non installé » via InstallState::fake(false).
+        $this->app->make(InstallState::class)->fake(true);
     }
 
     /**

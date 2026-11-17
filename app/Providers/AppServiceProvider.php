@@ -10,6 +10,7 @@ use App\Observers\AcademicYearObserver;
 use App\Observers\SchoolObserver;
 use App\Observers\StudentObserver;
 use App\Observers\UserObserver;
+use App\Support\Install\InstallState;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // État d'installation partagé et mémoïsé pour toute la requête.
+        $this->app->singleton(InstallState::class);
     }
 
     /**
@@ -33,10 +35,34 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->useFileStoresBeforeInstall();
         $this->registerObservers();
 
-        if (app()->environment('production')) {
+        // HTTPS forcé en production, ou lorsque l'assistant d'installation l'a activé
+        // (FORCE_HTTPS=true) — jamais en local pour ne pas casser le dev en http.
+        if (app()->environment('production') || (config('install.force_https') && ! app()->environment('local'))) {
             URL::forceScheme('https');
+        }
+    }
+
+    /**
+     * Avant installation, les stores par défaut « database » (session ET cache) ne
+     * peuvent pas fonctionner : ni la table `sessions` ni la table `cache` n'existent
+     * encore. On bascule donc ces deux stores sur le pilote « file » le temps de
+     * l'assistant — avant que StartSession ou le rate limiter (middleware `throttle`
+     * des routes d'installation, qui s'appuie sur le cache) ne les résolvent.
+     */
+    protected function useFileStoresBeforeInstall(): void
+    {
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        if (! $this->app->make(InstallState::class)->isInstalled()) {
+            config([
+                'session.driver' => 'file',
+                'cache.default' => 'file',
+            ]);
         }
     }
 
