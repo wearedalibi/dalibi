@@ -287,6 +287,11 @@ class Installer
             }
 
             File::put($path, $content);
+
+            // L4 : si la config est en cache, les nouvelles valeurs .env (APP_DEBUG,
+            // FORCE_HTTPS…) ne seraient pas lues. On purge le cache pour qu'elles
+            // prennent effet dès le prochain boot (no-op si aucun cache).
+            Artisan::call('config:clear');
         } catch (Throwable) {
             // Best-effort : un .env non modifiable ne doit pas faire échouer l'installation.
         }

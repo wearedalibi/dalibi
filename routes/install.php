@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('install.guard')->prefix('install')->name('install.')->group(function () {
+// L3 : throttle sur toutes les étapes (limite le spam de session) ; l'exécution
+// garde en plus sa propre limite stricte.
+Route::middleware(['install.guard', 'throttle:30,1'])->prefix('install')->name('install.')->group(function () {
     Route::get('/', [InstallController::class, 'welcome'])->name('welcome');
     Route::post('language', [InstallController::class, 'storeLanguage'])->name('language.store');
 

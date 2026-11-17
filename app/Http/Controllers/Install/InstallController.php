@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Support\Install\Installer;
 use App\Support\Install\RequirementsChecker;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -192,7 +193,13 @@ class InstallController extends Controller
         try {
             $installer->run($payload);
         } catch (Throwable $e) {
-            Log::error('Échec de l\'installation web', ['exception' => $e]);
+            // L1 : journaliser le type et l'emplacement, mais jamais le message d'une
+            // QueryException (il contient le SQL et ses bindings — email, etc.).
+            Log::error('Échec de l\'installation web', [
+                'type' => $e::class,
+                'at' => $e->getFile().':'.$e->getLine(),
+                'message' => $e instanceof QueryException ? '[requête base masquée]' : $e->getMessage(),
+            ]);
 
             return back()->withErrors([
                 'install' => __('install.running.error'),

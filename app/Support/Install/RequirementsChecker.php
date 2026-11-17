@@ -46,7 +46,9 @@ class RequirementsChecker
             'key' => 'php',
             'label' => 'PHP >= '.$min,
             'ok' => $ok,
-            'hint' => $ok ? PHP_VERSION : 'Version actuelle : '.PHP_VERSION,
+            // L2 : ne pas divulguer la version exacte quand tout va bien (empreinte
+            // système) ; on ne l'affiche que si le prérequis échoue, pour aider à corriger.
+            'hint' => $ok ? 'OK' : 'Version actuelle : '.PHP_VERSION,
         ]];
     }
 
