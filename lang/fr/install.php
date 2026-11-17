@@ -68,7 +68,9 @@ return [
     'running' => [
         'title' => 'Installation en cours',
         'description' => 'Migration, données de référence et création des comptes',
-        'phase_note' => 'Phase 1 — écran de démonstration. L\'exécution réelle sera branchée en Phase 2.',
-        'to_login' => 'Aller à la connexion',
+        'working' => 'Veuillez patienter, ne fermez pas cette page…',
+        'error' => 'L\'installation a échoué. Vérifiez la base de données et les droits, puis réessayez.',
+        'retry' => 'Réessayer',
+        'done' => 'Installation terminée. Connectez-vous avec le compte administrateur.',
     ],
 ];

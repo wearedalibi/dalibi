@@ -4,20 +4,22 @@ namespace App\Http\Controllers\Install;
 
 use App\Constants\Locales;
 use App\Http\Controllers\Controller;
+use App\Support\Install\Installer;
 use App\Support\Install\RequirementsChecker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 /**
  * Assistant d'installation web (façon « première configuration »).
  *
- * PHASE 1 — squelette navigable : les 4 écrans (langue, école, admin, sécurité)
- * s'enchaînent, les données sont accumulées en session, et l'étape finale affiche
- * l'écran de progression. L'exécution réelle (migrate + seed de production +
- * création école/admin + pose du verrou) sera branchée en Phase 2 dans un service
- * Installer dédié. Aucun accès base ni écriture .env n'a lieu ici.
+ * Les quatre écrans (langue, école, admin, sécurité) accumulent leurs données en
+ * session ; l'écran final déclenche l'exécution réelle via le service Installer
+ * (migrate + seed de production + création école/admin/année + réglages de
+ * sécurité + pose du verrou), puis redirige vers la connexion.
  */
 class InstallController extends Controller
 {
@@ -123,18 +125,48 @@ class InstallController extends Controller
     }
 
     /**
-     * Exécution de l'installation.
-     *
-     * PHASE 1 : écran de progression statique uniquement. L'orchestration réelle
-     * (migrate --force, db:seed ReferenceDataSeeder, création école/admin/année,
-     * application des réglages de sécurité, pose du verrou) sera implémentée en
-     * Phase 2 par App\Support\Install\Installer.
+     * Écran de progression. L'exécution réelle est déclenchée par le front
+     * (POST /install/execute) dès l'affichage, puis la page redirige vers /login.
      */
     public function run(): Response
     {
-        return Inertia::render('install/running', [
-            'phasePlaceholder' => true,
-        ]);
+        return Inertia::render('install/running');
+    }
+
+    /**
+     * Exécute l'installation à partir des données accumulées en session.
+     *
+     * Idempotent et protégé : en cas d'échec, l'utilisateur revient à l'écran de
+     * progression avec un message et peut relancer sans créer de doublon.
+     */
+    public function execute(Request $request, Installer $installer): RedirectResponse
+    {
+        // Garde-fou : sans les étapes essentielles, on renvoie l'utilisateur au début.
+        if (! session()->has('install.school') || ! session()->has('install.admin')) {
+            return redirect('/install');
+        }
+
+        $payload = [
+            'locale' => session('install.language.locale', config('install.defaults.locale')),
+            'school' => (array) session('install.school', []),
+            'admin' => (array) session('install.admin', []),
+            'security' => (array) session('install.security', []),
+        ];
+
+        try {
+            $installer->run($payload);
+        } catch (Throwable $e) {
+            Log::error('Échec de l\'installation web', ['exception' => $e]);
+
+            return back()->withErrors([
+                'install' => __('install.running.error'),
+            ]);
+        }
+
+        // Nettoyage : ne pas conserver les données d'installation (dont le mot de passe).
+        $request->session()->forget(['install.language', 'install.school', 'install.admin', 'install.security']);
+
+        return redirect('/login')->with('status', __('install.running.done'));
     }
 
     /** Écran dédié aux prérequis non satisfaits. */

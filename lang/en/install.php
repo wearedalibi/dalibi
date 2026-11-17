@@ -68,7 +68,9 @@ return [
     'running' => [
         'title' => 'Installation in progress',
         'description' => 'Migration, reference data and account creation',
-        'phase_note' => 'Phase 1 — demo screen. Real execution will be wired in Phase 2.',
-        'to_login' => 'Go to login',
+        'working' => 'Please wait, do not close this page…',
+        'error' => 'Installation failed. Check the database and permissions, then try again.',
+        'retry' => 'Try again',
+        'done' => 'Installation complete. Sign in with the administrator account.',
     ],
 ];

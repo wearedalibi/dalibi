@@ -2,6 +2,10 @@
 
 namespace Tests\Feature\Install;
 
+use App\Constants\Roles;
+use App\Models\AcademicYear;
+use App\Models\School;
+use App\Models\User;
 use App\Support\Install\InstallState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -9,6 +13,17 @@ use Tests\TestCase;
 class InstallWizardTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function tearDown(): void
+    {
+        // Ne jamais laisser fuiter le fichier-verrou créé par un test d'exécution.
+        $lock = storage_path('app/'.config('install.lock_file', 'installed.json'));
+        if (is_file($lock)) {
+            @unlink($lock);
+        }
+
+        parent::tearDown();
+    }
 
     private function notInstalled(): void
     {
@@ -109,5 +124,75 @@ class InstallWizardTest extends TestCase
         $this->get('/install/run')
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('install/running'));
+
+        // L'affichage de l'écran ne crée rien : aucune école, aucun utilisateur.
+        $this->assertDatabaseCount('schools', 0);
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_execute_requires_the_essential_steps(): void
+    {
+        $this->notInstalled();
+
+        // Sans données école/admin en session, on repart au début.
+        $this->post('/install/execute')->assertRedirect('/install');
+
+        $this->assertDatabaseCount('schools', 0);
+    }
+
+    public function test_execute_installs_the_application_and_locks_it(): void
+    {
+        $this->notInstalled();
+
+        $this->session([
+            'install.language' => ['locale' => 'fr'],
+            'install.school' => [
+                'name' => 'Collège Dalibi',
+                'currency' => 'XOF',
+                'period_type' => 'semester',
+                'academic_year_start' => '2026-09-01',
+            ],
+            'install.admin' => [
+                'firstname' => 'Ada',
+                'lastname' => 'Admin',
+                'email' => 'ada@example.test',
+                'password' => 'secret-pass-123',
+            ],
+            'install.security' => [
+                'force_2fa' => true,
+                'app_debug_off' => true,
+                'force_https' => false,
+                'enable_sentry' => false,
+                'password_policy' => 'strong',
+            ],
+        ]);
+
+        $this->post('/install/execute')->assertRedirect('/login');
+
+        // École créée.
+        $school = School::query()->where('name', 'Collège Dalibi')->first();
+        $this->assertNotNull($school);
+        $this->assertSame('XOF', $school->currency);
+
+        // Administrateur créé, rôle attribué, pas de changement de mot de passe imposé.
+        $admin = User::query()->where('email', 'ada@example.test')->first();
+        $this->assertNotNull($admin);
+        $this->assertTrue($admin->hasRole(Roles::ADMINISTRATOR));
+        $this->assertFalse($admin->must_change_password);
+        $this->assertNotEmpty($admin->natricule);
+
+        // Une année scolaire active existe.
+        $this->assertTrue(AcademicYear::query()->where('active', true)->exists());
+
+        // Découpage des périodes appliqué aux types de classe.
+        $this->assertDatabaseHas('classroom_types', ['period_system' => 'semestre']);
+
+        // Verrou posé : l'assistant est désormais inaccessible.
+        $this->app->make(InstallState::class)->fake(null);
+        $this->assertTrue($this->app->make(InstallState::class)->isInstalled());
+        $this->get('/install')->assertRedirect('/login');
+
+        // Les données d'installation (dont le mot de passe) ne restent pas en session.
+        $this->assertNull(session('install.admin'));
     }
 }

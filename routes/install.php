@@ -29,5 +29,6 @@ Route::middleware('install.guard')->prefix('install')->name('install.')->group(f
 
     Route::get('requirements', [InstallController::class, 'requirements'])->name('requirements');
 
-    Route::get('run', [InstallController::class, 'run'])->middleware('throttle:10,1')->name('run');
+    Route::get('run', [InstallController::class, 'run'])->name('run');
+    Route::post('execute', [InstallController::class, 'execute'])->middleware('throttle:6,1')->name('execute');
 });
