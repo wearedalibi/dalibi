@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\Countries;
 use App\Constants\Currencies;
 use App\Constants\Locales;
 
@@ -48,7 +49,25 @@ return [
     'defaults' => [
         'locale' => Locales::DEFAULT,
         'currency' => Currencies::DEFAULT,
+        'country' => Countries::DEFAULT,
         'timezone' => 'Africa/Lome',
+    ],
+
+    // Niveaux / cycles proposés à l'étape « École ». Une école peut en cocher
+    // un, deux ou davantage : ils sont rattachés comme « types de classe »
+    // (relation School::classTypes via la table pivot class_type_school).
+    //
+    // Clé = slug stable (envoyé par le formulaire, libellé traduit côté front) ;
+    // valeur = nom EXACT du ClassroomType tel que posé par ClassTypeSeeder — c'est
+    // par ce nom que l'Installer retrouve le type semé pour l'attacher à l'école.
+    // Toute modification doit rester synchronisée avec ClassTypeSeeder
+    // (garde-fou : InstallWizardTest::class_types_config_matches_seeder).
+    'levels' => [
+        'maternelle' => 'Maternelle (Préscolaire)',
+        'primaire' => 'Primaire (EPP)',
+        'college' => 'Collège (Secondaire 1)',
+        'lycee' => 'Lycée (Secondaire 2)',
+        'lycee_technique' => 'Lycée Technique',
     ],
 
     // Réglages de sécurité pré-cochés à l'étape « Protocole de sécurité ».

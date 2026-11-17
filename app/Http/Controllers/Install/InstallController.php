@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Install;
 
 use App\Concerns\PasswordValidationRules;
+use App\Constants\Countries;
 use App\Constants\Currencies;
 use App\Constants\Locales;
 use App\Http\Controllers\Controller;
@@ -68,17 +69,27 @@ class InstallController extends Controller
         return Inertia::render('install/school', [
             'defaults' => config('install.defaults'),
             'currencies' => Currencies::options(),
+            'countries' => Countries::options(),
+            'levels' => array_keys((array) config('install.levels')),
             'values' => session('install.school'),
         ]);
     }
 
     public function storeSchool(Request $request): RedirectResponse
     {
+        $levelKeys = array_keys((array) config('install.levels'));
+
         // Champs calqués sur le modèle School (colonnes réelles de la table « schools »).
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'level' => ['nullable', 'in:primaire,college,lycee'],
+            // Niveaux/cycles : une école peut en cocher un ou plusieurs. Rattachés
+            // comme « types de classe » après le seed (cf. Installer::attachClassTypes).
+            'levels' => ['nullable', 'array'],
+            'levels.*' => ['string', 'in:'.implode(',', $levelKeys)],
             'code' => ['nullable', 'string', 'max:50'],
+            // « devise » = slogan/exergue de l'école (ex. « Travail - Liberté - Patrie »),
+            // distincte de « currency » (monnaie, code ISO).
+            'devise' => ['nullable', 'string', 'max:500'],
             'currency' => ['nullable', 'string', 'in:'.implode(',', Currencies::codes())],
             'principal' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
@@ -86,6 +97,7 @@ class InstallController extends Controller
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:120'],
             'region' => ['nullable', 'string', 'max:120'],
+            'country' => ['nullable', 'string', 'in:'.implode(',', Countries::codes())],
             'po_box' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string', 'max:1000'],
             'timezone' => ['nullable', 'string', 'max:64'],

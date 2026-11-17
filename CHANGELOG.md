@@ -4,6 +4,32 @@ Toutes les évolutions notables de **Dalibi** sont consignées ici.
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le versionnage
 respecte [SemVer](https://semver.org/lang/fr/).
 
+## [Non publié]
+
+### Ajouté
+- **Assistant d'installation web** (« première configuration » façon WordPress) : écrans
+  **Langue → Administrateur → Sécurité → École**, puis exécution réelle de l'installation
+  (migration, données de référence de production, création de l'école/administrateur/année active,
+  réglages de sécurité) et **verrouillage** de l'application. Étapes **idempotentes**, base comme
+  source de vérité de l'état « installé ». Voir
+  [`documentations/prise-en-main/installation-web.md`](documentations/prise-en-main/installation-web.md).
+- **École** : sélection du **pays** (liste ISO via `App\Constants\Countries`), **niveaux multiples**
+  rattachés comme types de classe (un établissement peut cumuler plusieurs cycles), et distinction
+  explicite entre **monnaie** (`currency`, code ISO) et **devise/slogan** (`devise`, exergue).
+- **Fichiers de langue de validation** `lang/{fr,en}/validation.php` : messages d'erreur de
+  formulaire traduits (dont le bloc `password`) avec libellés d'attributs lisibles.
+
+### Sécurité
+- Durcissement de l'assistant d'installation : mot de passe administrateur appliquant la politique
+  de l'app et **chiffré en session** jusqu'à l'exécution, **limitation de débit** des routes,
+  **masquage du SQL** dans les journaux d'erreur, purge du cache de configuration après écriture du
+  `.env`, et **base de données** comme source de vérité de l'état installé (le fichier-verrou n'est
+  qu'un cache).
+
+### Supprimé
+- Seeder de démonstration obsolète `DemoSeeder` (non référencé ; le jeu de démo est produit par
+  `DefaultUsersSeeder` + `StudentTestSeeder` + `DocumentTemplateSeeder`).
+
 ## [1.0.2] — 2026-11-13
 
 ### Ajouté

@@ -7,6 +7,7 @@ Documentation technique de **Dalibi** — logiciel libre de gestion scolaire.
 Légende : ✅ disponible · 🚧 à rédiger.
 
 ## 🚀 Prise en main
+- ✅ [Assistant d'installation web](prise-en-main/installation-web.md) — première configuration (langue, admin, sécurité, école)
 - ✅ [Configuration `.env`](prise-en-main/configuration-env.md)
 - 🚧 Installation locale — voir le [README](../README.md)
 - 🚧 Premiers pas — créer une école, une année, un premier élève

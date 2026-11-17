@@ -2,11 +2,14 @@
 
 namespace Tests\Feature\Install;
 
+use App\Constants\Countries;
 use App\Constants\Roles;
 use App\Models\AcademicYear;
 use App\Models\School;
 use App\Models\User;
 use App\Support\Install\InstallState;
+use Database\Seeders\ClassTypeSeeder;
+use Database\Seeders\CountrySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -198,6 +201,30 @@ class InstallWizardTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    public function test_class_types_config_matches_seeder(): void
+    {
+        // Garde-fou : chaque nom de cycle déclaré dans config('install.levels') doit
+        // correspondre à un ClassroomType réellement posé par ClassTypeSeeder, sinon
+        // l'Installer ne pourrait pas rattacher le type à l'école.
+        $this->seed(ClassTypeSeeder::class);
+
+        $names = array_values((array) config('install.levels'));
+
+        foreach ($names as $name) {
+            $this->assertDatabaseHas('classroom_types', ['name' => $name]);
+        }
+    }
+
+    public function test_country_seeder_matches_countries_constant(): void
+    {
+        // La table « countries » est peuplée depuis App\Constants\Countries (source
+        // unique) : le select pays de l'assistant et la base restent cohérents.
+        $this->seed(CountrySeeder::class);
+
+        $this->assertDatabaseCount('countries', count(Countries::all()));
+        $this->assertDatabaseHas('countries', ['code' => 'TG', 'name' => 'Togo']);
+    }
+
     public function test_execute_installs_the_application_and_locks_it(): void
     {
         $this->notInstalled();
@@ -206,8 +233,12 @@ class InstallWizardTest extends TestCase
             'install.language' => ['locale' => 'fr'],
             'install.school' => [
                 'name' => 'Collège Dalibi',
-                'level' => 'college',
+                // Multi-niveaux : collège + lycée (rattachés comme types de classe).
+                'levels' => ['college', 'lycee'],
+                // « devise » = slogan, distincte de « currency » (monnaie).
+                'devise' => 'Travail - Liberté - Patrie',
                 'currency' => 'XOF',
+                'country' => 'TG',
                 'principal' => 'M. Dalibi',
                 'period_type' => 'semester',
                 'academic_year_start' => '2026-09-01',
@@ -233,8 +264,18 @@ class InstallWizardTest extends TestCase
         $school = School::query()->where('name', 'Collège Dalibi')->first();
         $this->assertNotNull($school);
         $this->assertSame('XOF', $school->currency);
+        $this->assertSame('TG', $school->country);
+        // « devise » (slogan) et « currency » (monnaie) sont bien deux champs distincts.
+        $this->assertSame('Travail - Liberté - Patrie', $school->devise);
+        // Niveau principal (enum) dérivé des cycles cochés : collège le plus bas présent.
         $this->assertSame('college', $school->level);
         $this->assertSame('M. Dalibi', $school->principal);
+
+        // Multi-niveaux : les deux cycles cochés sont rattachés comme types de classe.
+        $this->assertEqualsCanonicalizing(
+            ['Collège (Secondaire 1)', 'Lycée (Secondaire 2)'],
+            $school->classTypes()->pluck('name')->all(),
+        );
 
         // Administrateur créé, rôle attribué, pas de changement de mot de passe imposé.
         $admin = User::query()->where('email', 'ada@example.test')->first();

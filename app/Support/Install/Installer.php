@@ -2,6 +2,7 @@
 
 namespace App\Support\Install;
 
+use App\Constants\Countries;
 use App\Constants\Currencies;
 use App\Constants\Locales;
 use App\Constants\Roles;
@@ -55,6 +56,10 @@ class Installer
         //    création de l'école pour que les seeders « par école » s'appliquent.
         Artisan::call('db:seed', ['--class' => ReferenceDataSeeder::class, '--force' => true]);
 
+        // 3bis. Cycles cochés → types de classe rattachés à l'école (après le seed,
+        //       une fois les ClassroomType posés). Vrai support « multi-niveaux ».
+        $this->attachClassTypes($school, (array) ($schoolInput['levels'] ?? []));
+
         // 4. Découpage des périodes (trimestre / semestre) appliqué aux types de classe.
         $this->applyPeriodSystem($schoolInput['period_type'] ?? null);
 
@@ -91,19 +96,22 @@ class Installer
         $name = trim((string) ($input['name'] ?? '')) ?: 'Mon établissement';
         $code = trim((string) ($input['code'] ?? '')) ?: $this->generateSchoolCode($name);
 
-        $level = in_array($input['level'] ?? null, ['primaire', 'college', 'lycee'], true)
-            ? (string) $input['level']
-            : 'primaire';
+        // L'enum `level` ne stocke qu'une valeur ; le vrai « multi-niveaux » est porté
+        // par les types de classe rattachés (cf. attachClassTypes). On dérive ici le
+        // niveau principal à partir des cycles cochés (le plus bas présent).
+        $level = $this->deriveLevel((array) ($input['levels'] ?? []));
 
-        // Champs facultatifs calqués sur le modèle School.
+        // Champs facultatifs calqués sur le modèle School. « devise » (slogan/exergue)
+        // est distincte de « currency » (monnaie, code ISO).
         $optional = [];
-        foreach (['currency', 'principal', 'email', 'phone', 'address', 'city', 'region', 'po_box', 'description'] as $field) {
+        foreach (['devise', 'currency', 'country', 'principal', 'email', 'phone', 'address', 'city', 'region', 'po_box', 'description'] as $field) {
             $value = trim((string) ($input[$field] ?? ''));
             if ($value !== '') {
                 $optional[$field] = $value;
             }
         }
         $optional['currency'] = $optional['currency'] ?? Currencies::DEFAULT;
+        $optional['country'] = $optional['country'] ?? Countries::DEFAULT;
 
         return School::firstOrCreate(
             ['code' => $code],
@@ -113,6 +121,59 @@ class Installer
                 'active' => true,
             ], $optional),
         );
+    }
+
+    /**
+     * Niveau principal (colonne enum `level`) déduit des cycles cochés.
+     * Priorité au cycle le plus bas présent ; « primaire » par défaut.
+     *
+     * @param  array<int, string>  $levels  slugs issus de config('install.levels')
+     */
+    private function deriveLevel(array $levels): string
+    {
+        if (in_array('maternelle', $levels, true) || in_array('primaire', $levels, true)) {
+            return 'primaire';
+        }
+
+        if (in_array('college', $levels, true)) {
+            return 'college';
+        }
+
+        if (in_array('lycee', $levels, true) || in_array('lycee_technique', $levels, true)) {
+            return 'lycee';
+        }
+
+        return 'primaire';
+    }
+
+    /**
+     * Rattache à l'école les types de classe correspondant aux cycles cochés.
+     * Appelé APRÈS le seed (les ClassroomType existent alors). Idempotent : sync()
+     * fixe exactement l'ensemble sélectionné, sans doublon de pivot.
+     *
+     * @param  array<int, string>  $levels  slugs issus de config('install.levels')
+     */
+    private function attachClassTypes(School $school, array $levels): void
+    {
+        $map = (array) config('install.levels');
+
+        // slugs cochés → noms canoniques de ClassroomType (ClassTypeSeeder).
+        $names = [];
+        foreach ($levels as $slug) {
+            if (isset($map[$slug])) {
+                $names[] = $map[$slug];
+            }
+        }
+
+        if ($names === []) {
+            return; // aucun cycle coché : on ne touche pas au pivot.
+        }
+
+        $ids = DB::table('classroom_types')->whereIn('name', $names)->pluck('id')->all();
+
+        if ($ids !== []) {
+            $school->classTypes()->sync($ids);
+        }
     }
 
     private function generateSchoolCode(string $name): string

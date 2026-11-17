@@ -41,6 +41,7 @@ class School extends Model
         'ministry',
         'address',
         'region',
+        'country',
         'city',
         'po_box',
         'phone',
