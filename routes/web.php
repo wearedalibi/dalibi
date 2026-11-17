@@ -68,6 +68,9 @@ use App\Http\Controllers\Statistics\StatisticsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Assistant d'installation (chargé dans le groupe web : session + Inertia).
+require __DIR__.'/install.php';
+
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');

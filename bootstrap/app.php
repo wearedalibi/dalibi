@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureAppInstalled;
+use App\Http\Middleware\EnsureAppNotInstalled;
 use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -28,8 +30,24 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            // Tant que l'application n'est pas installée, tout est redirigé vers
+            // l'assistant (transparent une fois installée).
+            EnsureAppInstalled::class,
             ForcePasswordChange::class,
         ]);
+
+        // Garde des routes de l'assistant : inaccessibles une fois installé.
+        $middleware->alias([
+            'install.guard' => EnsureAppNotInstalled::class,
+        ]);
+
+        // La redirection « non installé » doit précéder l'authentification, sinon
+        // une route protégée renverrait vers /login avant d'atteindre l'assistant.
+        // La liste de priorité cible l'interface, pas la classe concrète.
+        $middleware->prependToPriorityList(
+            before: \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+            prepend: EnsureAppInstalled::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Capture des exceptions vers Sentry/GlitchTip. No-op si SENTRY_LARAVEL_DSN est vide.

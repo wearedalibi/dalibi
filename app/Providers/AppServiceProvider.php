@@ -10,6 +10,7 @@ use App\Observers\AcademicYearObserver;
 use App\Observers\SchoolObserver;
 use App\Observers\StudentObserver;
 use App\Observers\UserObserver;
+use App\Support\Install\InstallState;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // État d'installation partagé et mémoïsé pour toute la requête.
+        $this->app->singleton(InstallState::class);
     }
 
     /**
@@ -33,10 +35,28 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->useFileSessionBeforeInstall();
         $this->registerObservers();
 
         if (app()->environment('production')) {
             URL::forceScheme('https');
+        }
+    }
+
+    /**
+     * Avant installation, le pilote de session par défaut (« database ») ne peut
+     * pas fonctionner : la table sessions n'existe pas encore. On bascule donc sur
+     * le pilote « file » le temps de l'assistant, avant que StartSession ne résolve
+     * le gestionnaire de session pour la requête.
+     */
+    protected function useFileSessionBeforeInstall(): void
+    {
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        if (! $this->app->make(InstallState::class)->isInstalled()) {
+            config(['session.driver' => 'file']);
         }
     }
 
