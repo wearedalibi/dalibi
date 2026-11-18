@@ -4,7 +4,7 @@ Toutes les évolutions notables de **Dalibi** sont consignées ici.
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le versionnage
 respecte [SemVer](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [1.1.0] — 2026-11-18
 
 ### Ajouté
 - **Assistant d'installation web** (« première configuration » façon WordPress) : écrans
