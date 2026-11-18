@@ -172,4 +172,21 @@ class TimetableTest extends TestCase
         $response->assertOk();
         $this->assertEquals('application/pdf', $response->headers->get('content-type'));
     }
+
+    /**
+     * Régression (audit F1) : l'export d'emploi du temps doit être soumis à la
+     * permission view_timetable. La Comptabilité ne la détient pas → 403.
+     */
+    public function test_export_forbidden_without_view_timetable_permission(): void
+    {
+        $class = $this->classroom();
+        $this->slot($class, ['subject_id' => $this->subject()->id]);
+
+        $accounting = User::factory()->create();
+        $accounting->assignRole(Roles::ACCOUNTING);
+
+        $this->actingAs($accounting)
+            ->get(route('timetable.export', $class->id))
+            ->assertForbidden();
+    }
 }

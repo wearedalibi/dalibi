@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Services\DocumentRenderer;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class DocumentHeaderTest extends TestCase
@@ -63,6 +65,45 @@ class DocumentHeaderTest extends TestCase
         $this->assertCount(1, $header->layout['elements']);
         $this->assertTrue($header->watermark['enabled']);
         $this->assertSame('CONFIDENTIEL', $header->watermark['text']);
+    }
+
+    /**
+     * Régression (audit NV1) : l'upload du filigrane n'accepte que des images
+     * matricielles (jpg/jpeg/png/webp). Un SVG — vecteur de XSS stocké sur le
+     * disque public `media` — doit être rejeté.
+     */
+    public function test_watermark_upload_rejects_svg(): void
+    {
+        School::factory()->create();
+
+        $svg = UploadedFile::fake()->createWithContent(
+            'wm.svg',
+            '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+        );
+
+        $this->actingAs($this->admin())
+            ->post(route('document-header.update'), [
+                'preset' => 'personnalise',
+                'layout' => json_encode(['width' => 760, 'height' => 130, 'elements' => []]),
+                'watermark' => json_encode(['enabled' => true, 'type' => 'image']),
+                'watermark_image' => $svg,
+            ])
+            ->assertSessionHasErrors('watermark_image');
+    }
+
+    public function test_watermark_upload_accepts_png(): void
+    {
+        Storage::fake('media');
+        School::factory()->create();
+
+        $this->actingAs($this->admin())
+            ->post(route('document-header.update'), [
+                'preset' => 'personnalise',
+                'layout' => json_encode(['width' => 760, 'height' => 130, 'elements' => []]),
+                'watermark' => json_encode(['enabled' => true, 'type' => 'image']),
+                'watermark_image' => UploadedFile::fake()->image('wm.png', 120, 120),
+            ])
+            ->assertSessionHasNoErrors();
     }
 
     public function test_update_rejects_unknown_preset(): void

@@ -68,6 +68,9 @@ use App\Http\Controllers\Statistics\StatisticsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Assistant d'installation (chargé dans le groupe web : session + Inertia).
+require __DIR__.'/install.php';
+
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
@@ -436,7 +439,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Routes « enseignant » avant {classId}/export pour ne pas être captées par le paramètre.
     Route::get('timetable/teacher', [TimetableController::class, 'teacher'])->middleware('can:view_timetable')->name('timetable.teacher');
     Route::get('timetable/teacher/export', [TimetableController::class, 'teacherExport'])->middleware('can:view_timetable')->name('timetable.teacher.export');
-    Route::get('timetable/{classId}/export', [TimetableController::class, 'export'])->name('timetable.export');
+    Route::get('timetable/{classId}/export', [TimetableController::class, 'export'])->middleware('can:view_timetable')->name('timetable.export');
     Route::post('timetable', [TimetableController::class, 'store'])->middleware('can:create_timetable')->name('timetable.store');
     Route::put('timetable/{timetableSlot}', [TimetableController::class, 'update'])->middleware('can:edit_timetable')->name('timetable.update');
     Route::delete('timetable/{timetableSlot}', [TimetableController::class, 'destroy'])->middleware('can:delete_timetable')->name('timetable.destroy');

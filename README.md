@@ -48,10 +48,11 @@ chaque section, aligné sur les indicateurs de l'annuaire statistique / carte sc
 
 ### Gestion des établissements
 
-- Support multi-écoles (primaire, collège, lycée)
-- Paramétrage par établissement : nom, code, devise, terme (ex. « République Togolaise »)
+- Support multi-écoles (maternelle, primaire, collège, lycée, lycée technique)
+- **Niveaux multiples par école** : un établissement peut cumuler plusieurs cycles (rattachés comme **types de classe**)
+- Paramétrage par établissement : nom, code, **pays**, **monnaie** (code ISO, ex. XOF), **devise / slogan** (ex. « Travail - Liberté - Patrie », distincte de la monnaie), terme (ex. « République Togolaise »), ministère de tutelle
 - Upload du logo de l'école (image, avec prévisualisation)
-- Années académiques et périodes (trimestres)
+- Années académiques et périodes (**trimestres / semestres**)
 - Types de classes et niveaux configurables
 
 ### Gestion des utilisateurs & rôles
@@ -262,15 +263,30 @@ DB_USERNAME=postgres
 DB_PASSWORD=votre_mot_de_passe
 ```
 
-### 4. Base de données
+### 4. Première configuration — assistant d'installation web (recommandé)
+
+Une fois le `.env` renseigné (connexion base + `APP_KEY`) et le serveur lancé (étape 5), ouvrez **`/install`**. L'assistant « première configuration » prend tout en charge, **sans ligne de commande** :
+
+1. **Langue** — fixe la langue de l'assistant **et** de l'application (FR / EN).
+2. **Administrateur** — compte principal ; le mot de passe applique la politique de l'app (min. 12 caractères, casse mixte, chiffres, symboles, vérifié contre les fuites connues en production).
+3. **Sécurité** — HTTPS forcé, mode debug coupé, journalisation Sentry (la **2FA reste facultative**, activable par chaque utilisateur).
+4. **École** — identité de l'établissement : nom, code, **pays**, **monnaie**, **devise/slogan**, directeur, contacts, localisation et **niveaux** (un ou plusieurs cycles).
+
+À la validation, l'assistant exécute **réellement** l'installation : `migrate`, données de référence de production (`ReferenceDataSeeder`), création de l'école, de l'administrateur et de l'année scolaire active, application des réglages de sécurité, puis **pose d'un verrou** (`storage/app/installed.json`). Chaque étape est **idempotente** (une reprise après interruption ne crée pas de doublon) et l'assistant **se verrouille** une fois l'application installée.
+
+> 📖 Détails complets : [`documentations/prise-en-main/installation-web.md`](documentations/prise-en-main/installation-web.md).
+
+### 4 bis. Base de données — installation en ligne de commande (alternative)
+
+Pour un déploiement automatisé (CI, Docker, provisioning) ou pour contourner l'assistant, appliquez le schéma et les données de référence manuellement :
 
 ```bash
 php artisan migrate
 php artisan db:seed --class=ReferenceDataSeeder   # données de référence (rôles, classes, matières…)
-php artisan db:seed --class=DemoSeeder            # optionnel : jeu de démonstration complet (élèves, notes, finances…)
+php artisan db:seed                               # optionnel (hors production) : comptes de test + élèves fictifs + modèles de documents
 ```
 
-### 4 bis. Lien de stockage des fichiers
+### 4 ter. Lien de stockage des fichiers
 
 ```bash
 php artisan storage:link   # requis pour servir les fichiers uploadés (logos…)
