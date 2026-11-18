@@ -153,11 +153,11 @@ class SituationController extends Controller
             foreach ($enrollments as $e) {
                 $inv = $e->invoice;
                 fputcsv($out, [
-                    $e->student->matricule ?? '—',
-                    $e->student->lastname ?? '—',
-                    $e->student->firstname ?? '—',
-                    $e->classroom->name ?? '—',
-                    $inv->invoice_number ?? '—',
+                    $this->csvCell($e->student->matricule ?? '—'),
+                    $this->csvCell($e->student->lastname ?? '—'),
+                    $this->csvCell($e->student->firstname ?? '—'),
+                    $this->csvCell($e->classroom->name ?? '—'),
+                    $this->csvCell($inv->invoice_number ?? '—'),
                     number_format((float) ($inv->total ?? 0), 0, ',', ' '),
                     number_format((float) ($inv->amount_paid ?? 0), 0, ',', ' '),
                     number_format((float) ($inv->amount_remaining ?? 0), 0, ',', ' '),
@@ -169,6 +169,22 @@ class SituationController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Neutralise l'injection de formule CSV : une cellule texte commençant par
+     * = + - @ (ou tab/retour chariot) est préfixée d'une apostrophe afin que le
+     * tableur ne l'interprète pas comme une formule à l'ouverture du fichier.
+     */
+    private function csvCell(?string $value): string
+    {
+        $value = (string) $value;
+
+        if ($value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'".$value;
+        }
+
+        return $value;
     }
 
     private function statusLabel(?string $status): string

@@ -51,7 +51,7 @@ class DocumentHeaderController extends Controller
             'preset' => ['required', Rule::in(array_keys(DocumentHeader::PRESETS))],
             'layout' => ['required', 'string'],
             'watermark' => ['required', 'string'],
-            'watermark_image' => ['nullable', 'image', 'max:2048'],
+            'watermark_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $layout = json_decode($validated['layout'], true);
