@@ -406,9 +406,11 @@ L'image est **non-root** (`runAsNonRoot: true` compatible PodSecurity « restric
 
 > Production : `RUN_MIGRATIONS` via le Job/one-shot uniquement (jamais `SEED_DATABASE`). Générez `APP_KEY` avec `php artisan key:generate --show`.
 
-## 👥 Comptes de démonstration (seeder)
+## 👥 Comptes de démonstration (dev / staging)
 
-Le seeder `DefaultUsersSeeder` crée **un compte par rôle** (mot de passe commun : `password`) :
+> ℹ️ **Une installation réelle n'a aucun identifiant par défaut.** Le compte administrateur est créé **par vous** via l'assistant web (`/install`, voir _Installation → étape 4_), avec un mot de passe que vous choisissez. Les comptes ci-dessous sont une **commodité de développement / démonstration uniquement**.
+
+Hors production, `php artisan db:seed` installe le seeder `DefaultUsersSeeder`, qui crée **un compte par rôle** (mot de passe commun : `password`) pour explorer l'application :
 
 | Rôle           | Email                  | Mot de passe |
 | -------------- | ---------------------- | ------------ |
@@ -418,13 +420,13 @@ Le seeder `DefaultUsersSeeder` crée **un compte par rôle** (mot de passe commu
 | Comptabilité   | `comptable@dalibi.tg`  | `password`   |
 | Secrétariat    | `secretaire@dalibi.tg` | `password`   |
 
-Ces comptes sont marqués `is_demo = true` : une **bannière d'avertissement** s'affiche dans l'application lorsqu'ils sont connectés.
+Ces comptes sont marqués `is_demo = true` (une **bannière d'avertissement** s'affiche quand ils sont connectés) et imposent un **changement de mot de passe à la première connexion**.
 
 > ### 🔒 En production
 >
-> 1. **Changez immédiatement** les mots de passe (ou supprimez ces comptes de test).
-> 2. Ne lancez pas `DefaultUsersSeeder` en prod ; créez plutôt votre administrateur, puis les comptes via **Administration → Utilisateurs**.
-> 3. Pour purger les comptes de démo : `User::where('is_demo', true)->delete();`
+> 1. **Ces comptes ne sont jamais créés** : `DefaultUsersSeeder` est automatiquement ignoré quand `APP_ENV=production` (même avec `--force`). Un `db:seed` en prod n'installe que les données de référence.
+> 2. Configurez l'établissement et l'**administrateur** via l'assistant web (`/install`), puis gérez les autres comptes dans **Administration → Utilisateurs**.
+> 3. Pour purger d'éventuels comptes de démo issus d'un staging : `User::where('is_demo', true)->delete();`
 
 ## 🏗️ Structure de la base de données
 
@@ -473,6 +475,7 @@ Ces comptes sont marqués `is_demo = true` : une **bannière d'avertissement** s
 
 ## 🔐 Sécurité
 
+- **Installation sans identifiant par défaut** : l'assistant web (`/install`) crée le compte administrateur avec un mot de passe choisi par l'exploitant (politique forte, vérifié contre les fuites connues en production) — aucune paire login/mot de passe n'est livrée par défaut
 - Authentification email / mot de passe
 - **Inscription publique désactivée** : les comptes sont créés uniquement par un administrateur (module Utilisateurs)
 - Limitation des tentatives de connexion (5/min par e-mail + IP)
